@@ -1,0 +1,68 @@
+name: nitro_nissi
+description: >-
+  Nitro Nissi — a clean-room, open-source guided tax preparation app for
+  US federal returns (TY2024 & TY2025). GPL-3.0. Not affiliated with
+  Intuit/TurboTax or the IRS.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0 <3.22.0" # 3.19.x = last Flutter with Windows 7 support (flutter/flutter#140830)
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  # Material You dynamic color (Android 12+; desktop accents)
+  dynamic_color: ">=1.7.0 <1.8.0" # 1.8+ needs Flutter 3.22+ (Color.toARGB32)
+  # AI provider REST calls (Gemini / Mistral)
+  http: ^1.2.0
+  # Native open/save dialogs on Windows/macOS/Linux (+ web input fallback)
+  file_selector: ^1.0.3
+  # Opening the API-key sign-up pages
+  url_launcher: ^6.2.5
+  # Settings + API key storage (per-platform secure defaults; see docs/AI_SETUP.md)
+  shared_preferences: ^2.2.3
+  # App data directories on desktop/Android
+  path_provider: ^2.1.3
+  # Zip / zlib decoding for TurboTax best-effort import (pure Dart, works on web too)
+  archive: ^3.4.10
+  # Printable return package
+  pdf: ^3.10.8
+  intl: 0.18.1 # pinned by flutter_localizations in Flutter 3.19
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.2
+  # Generates platform icons from assets/icons/icon.png (run: dart run flutter_launcher_icons)
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  image_path: "assets/icons/icon.png"
+  android: true
+  min_sdk_android: 26
+  adaptive_icon_background: "#283593"
+  adaptive_icon_foreground: "assets/icons/icon_foreground.png"
+  ios: false
+  windows:
+    generate: true
+    image_path: "assets/icons/icon.png"
+    icon_size: 256
+  macos:
+    generate: true
+    image_path: "assets/icons/icon.png"
+  linux:
+    generate: true
+    image_path: "assets/icons/icon.png"
+  web:
+    generate: true
+    image_path: "assets/icons/icon.png"
+    background_color: "#283593"
+    theme_color: "#283593"
+
+flutter:
+  uses-material-design: true
+  generate: true

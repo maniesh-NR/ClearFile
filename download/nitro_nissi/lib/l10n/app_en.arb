@@ -1,0 +1,359 @@
+{
+  "@@locale": "en",
+  "navMyReturn": "My return",
+  "navAssistant": "AI assistant",
+  "navSettings": "Settings",
+  "refundEstimate": "Refund",
+  "oweEstimate": "Owe",
+  "topicsHeader": "Let's finish your return",
+  "topicsSubheader": "Work through each topic. You can jump around anytime — your answers save automatically.",
+  "issuesFound": "{count, plural, =1{1 item needs attention before filing} other{{count} items need attention before filing}}",
+  "@issuesFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "issuesFoundInfo": "{count, plural, =1{1 suggestion for your review} other{{count} suggestions for your review}}",
+  "@issuesFoundInfo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "continueToReview": "Continue to review",
+  "jumpToResults": "Jump to my estimate",
+  "autosaveNote": "Autosaved to {name}",
+  "@autosaveNote": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "whyWeAsk": "Why do we ask?",
+  "topicStep": "Step {a} of {b}",
+  "@topicStep": {
+    "placeholders": {
+      "a": {
+        "type": "int"
+      },
+      "b": {
+        "type": "int"
+      }
+    }
+  },
+  "back": "Back",
+  "continueLabel": "Continue",
+  "seeResults": "See my results",
+  "topicPersonal": "Personal info",
+  "topicIncome": "Income",
+  "topicDeductions": "Deductions & adjustments",
+  "topicCredits": "Credits & payments",
+  "pagePersonalInfo": "Tell us about you",
+  "pageSpouse": "Your spouse",
+  "pageDependents": "Dependents",
+  "pageW2": "W-2 wages",
+  "pageInterest": "Interest income",
+  "pageDividends": "Dividends",
+  "pageCapGains": "Investment sales",
+  "pageSelfEmployment": "Self-employment",
+  "pageRetirement": "Retirement distributions",
+  "pageOtherIncome": "Other income",
+  "pageDeductions": "Deductions",
+  "pageCredits": "Credits",
+  "secYourInfo": "Your information",
+  "secFilingStatus": "Filing status",
+  "secSpouseInfo": "Spouse information",
+  "secSocialSecurity": "Social Security benefits",
+  "secUnemployment": "Unemployment compensation",
+  "secOtherIncome": "Other income",
+  "secObbba": "2025 special deductions",
+  "secItemized": "Itemized deductions (optional)",
+  "secAdjustments": "Adjustments to income",
+  "secChildCare": "Child & dependent care",
+  "secEducation": "Education expenses",
+  "secSavers": "Retirement savings contributions",
+  "secPayments": "Payments you already made",
+  "fFirstName": "First name",
+  "fLastName": "Last name",
+  "fSsn": "Social Security number",
+  "fDateOfBirth": "Date of birth",
+  "fBlind": "Legally blind",
+  "fFilingStatus": "Filing status",
+  "fSsBenefits": "Total Social Security benefits received",
+  "fUnemployment": "Unemployment compensation received",
+  "fUnemploymentWithheld": "Federal tax withheld from unemployment",
+  "fOtherIncomeDesc": "Description (e.g., prize, jury pay)",
+  "hOtherIncome": "Brief description of the income",
+  "fOtherIncomeAmount": "Amount",
+  "fCarLoanInterest": "Qualified car loan interest paid (2025–2028)",
+  "fMedical": "Medical & dental expenses",
+  "fSalt": "State & local taxes paid (income + property)",
+  "fMortgage": "Home mortgage interest (Form 1098)",
+  "fCharityCash": "Charitable donations (cash)",
+  "fCharityNonCash": "Charitable donations (goods)",
+  "fIra": "Traditional IRA contributions",
+  "fStudentLoanInterest": "Student loan interest paid (Form 1098-E)",
+  "fHsa": "HSA contributions",
+  "fEducator": "Educator expenses",
+  "fChildCare": "Child care expenses (so you could work or look for work)",
+  "fAotc": "American opportunity credit qualified expenses (max 4,000)",
+  "fLlc": "Lifetime learning qualified expenses (max 10,000)",
+  "fSavers": "Retirement contributions for the Saver's Credit",
+  "fEstimatedPayments": "Estimated tax payments made for this year",
+  "infoYourName": "Enter your legal name exactly as it appears on your Social Security card.",
+  "infoSsn": "We store your SSN only on this device. It never leaves your computer except if you export a file yourself.",
+  "infoDob": "Your age affects extra deductions for people 65+, and the EITC age rules.",
+  "infoPersonal": "These details appear on your return. You can edit them anytime.",
+  "infoSpouse": "Needed for married filing jointly or separately. Qualifying surviving spouse uses your late spouse's details on paper forms.",
+  "infoDependents": "A dependent is a child or relative you support. Each one can unlock the Child Tax Credit, EITC, or education benefits.",
+  "infoW2": "Copy the numbers straight from your W-2 boxes. Box 1 is your taxable wages.",
+  "infoInterest": "From Form 1099-INT: box 1 is taxable interest, box 8 is tax-exempt (like municipal bonds).",
+  "infoDividends": "From Form 1099-DIV: box 1a ordinary dividends, box 1b qualified dividends (taxed at lower rates).",
+  "infoCapGains": "Each sale from your broker's 1099-B: sales price and cost basis. Held over one year = long-term (lower rates).",
+  "infoSe": "Your net profit (income minus expenses) from freelancing or a small business. We compute self-employment tax for you.",
+  "infoRetirement": "From Form 1099-R: the taxable amount is usually in box 2a.",
+  "infoSs": "Find this in box 3 of your SSA-1099. Only part of it may be taxable — we figure that out.",
+  "infoCarLoan": "New for 2025: interest on a car loan for a personal vehicle (from your lender). Phases out at higher incomes.",
+  "infoOtherIncome": "One-time or unusual income. Gambling winnings need special handling — see a professional for those.",
+  "infoMedical": "Only the part above 7.5% of your income counts. Include premiums you paid yourself.",
+  "infoSalt": "State/local income + property taxes. The cap is $10,000 (2024) or $40,000 (2025, phasing down at high incomes).",
+  "infoIra": "Traditional IRA contributions may be deductible depending on your income and workplace plan.",
+  "infoSli": "Up to $2,500 of student loan interest, phased out at higher incomes.",
+  "infoDeductions": "We automatically compare itemized vs standard and use whichever helps you more.",
+  "infoChildCare": "Payments so you could work or look for work. Max $3,000 for one child, $6,000 for two or more.",
+  "infoAotc": "First four years of college. Qualified expenses like tuition and required books (max $4,000).",
+  "infoLlc": "Any level of study: tuition and fees (max $10,000, credit is 20%).",
+  "infoSavers": "Contributions to an IRA or workplace plan may earn up to 50% back as a credit if your income is low to moderate.",
+  "infoCredits": "Payments and credits reduce what you owe. Some credits are refundable — they can increase your refund.",
+  "emptyW2": "No W-2s yet. Add one for each employer.",
+  "addW2": "Add a W-2",
+  "w2N": "W-2 #{n}",
+  "@w2N": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fEmployer": "Employer name",
+  "fEin": "Employer ID number (EIN)",
+  "fWagesBox1": "Wages (Box 1)",
+  "fFedWithheldBox2": "Federal income tax withheld (Box 2)",
+  "fSsWagesBox3": "Social Security wages (Box 3)",
+  "fSsWithheldBox4": "Social Security tax withheld (Box 4)",
+  "fMedicareBox6": "Medicare tax withheld (Box 6)",
+  "fQualifiedTips": "Qualified tips (2025)",
+  "fQualifiedOvertime": "Qualified overtime pay (2025)",
+  "emptyDependents": "No dependents added yet.",
+  "addDependent": "Add a dependent",
+  "dependentN": "Dependent #{n}",
+  "@dependentN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fRelationship": "Relationship to you (son, daughter, mother…)",
+  "fFullTimeStudent": "Full-time student",
+  "fPermanentlyDisabled": "Permanently and totally disabled",
+  "emptyInterest": "No interest income added yet.",
+  "addPayer": "Add a payer",
+  "payerN": "Payer #{n}",
+  "@payerN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fPayer": "Payer name",
+  "fTaxableInterest": "Taxable interest (1099-INT box 1)",
+  "fTaxExemptInterest": "Tax-exempt interest (box 8)",
+  "emptyDividends": "No dividends added yet.",
+  "fOrdinaryDividends": "Ordinary dividends (box 1a)",
+  "fQualifiedDividends": "Qualified dividends (box 1b)",
+  "emptyCapGains": "No sales added yet.",
+  "addSale": "Add a sale",
+  "saleN": "Sale #{n}",
+  "@saleN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fDescription": "Description (e.g., AAPL shares)",
+  "fProceeds": "Sales price",
+  "fCostBasis": "Cost basis (what you paid)",
+  "fLongTerm": "Held more than one year (long-term)",
+  "emptySe": "No businesses added yet.",
+  "addBusiness": "Add a business",
+  "businessN": "Business #{n}",
+  "@businessN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "fBusinessName": "Business name",
+  "fNetProfit": "Net profit (income minus expenses)",
+  "fSeTips": "Qualified tips (2025)",
+  "fSeHealthPremiums": "Self-employed health insurance premiums",
+  "fSepSimple": "SEP/SIMPle plan contributions",
+  "emptyRetirement": "No distributions added yet.",
+  "fGrossDistribution": "Gross distribution (box 1)",
+  "fTaxableAmount": "Taxable amount (box 2a)",
+  "fFedWithheld": "Federal tax withheld (box 4)",
+  "reviewTitle": "Check your answers",
+  "rowWages": "Wages",
+  "rowSeIncome": "Self-employment income",
+  "rowInterest": "Interest",
+  "rowDividends": "Dividends",
+  "rowCapGains": "Net capital gain",
+  "rowRetirement": "Retirement (taxable)",
+  "rowSs": "Social Security (taxable)",
+  "rowUnemployment": "Unemployment",
+  "rowOther": "Other income",
+  "rowTotalIncome": "Total income",
+  "rowAgi": "Adjusted gross income (AGI)",
+  "rowItemized": "Itemized deductions",
+  "rowStandard": "Standard deduction",
+  "rowQbi": "QBI deduction (§199A)",
+  "rowSenior": "Senior deduction",
+  "rowTaxableIncome": "Taxable income",
+  "rowTax": "Tax",
+  "rowSeTax": "Self-employment tax",
+  "rowCtc": "Child Tax Credit",
+  "rowCare": "Child & dependent care credit",
+  "rowAotc": "American opportunity credit",
+  "rowLlc": "Lifetime learning credit",
+  "rowSavers": "Saver's Credit",
+  "rowEitc": "Earned Income Tax Credit",
+  "rowPayments": "Withholding & estimates",
+  "editAnswers": "Edit my answers",
+  "issueMissingSpouse": "This filing status needs a spouse — add one under Personal info.",
+  "issueMfsLimits": "Married filing separately cannot claim the EITC, education credits, or the senior deduction.",
+  "issueMissingSsn": "Your SSN is missing — add it under Personal info.",
+  "issueDependentSsn": "A dependent is missing an SSN, which is required for most credits.",
+  "issueDependentDob": "A dependent is missing a date of birth, so age-based rules can't be checked.",
+  "issueW2Employer": "A W-2 has no employer name.",
+  "issueW2NoWithholding": "A W-2 shows no federal withholding — double-check Box 2.",
+  "issueSeTax": "Self-employment income over $400 triggers SE tax — quarterly estimated payments may be needed next year.",
+  "issueObbbaOnly2025": "Tips and overtime deductions only apply to tax years 2025–2028.",
+  "resultsTitle": "Your estimate",
+  "refundHeadline": "Estimated refund",
+  "oweHeadline": "Estimated balance due",
+  "estimateDisclaimer": "This is a planning estimate produced by Nitro Nissi — not a filed return and not tax advice.",
+  "bracketBreakdown": "How your tax adds up",
+  "preferentialNote": "Includes {amount} taxed at lower 0/15/20% rates (saves {tax} vs ordinary rates).",
+  "@preferentialNote": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "tax": {
+        "type": "String"
+      }
+    }
+  },
+  "factAgi": "Adjusted gross income",
+  "factDeduction": "Deduction used",
+  "factTaxable": "Taxable income",
+  "factEffective": "Effective rate",
+  "factMarginal": "Top marginal rate",
+  "factCredits": "Total credits",
+  "factOtherTaxes": "Other taxes (SE/NIIT)",
+  "exportHeader": "Export",
+  "exportPdf": "Printable return package",
+  "exportMef": "E-file-ready JSON",
+  "savedPackage": "Return package saved.",
+  "savedMef": "E-file-ready JSON saved.",
+  "mefDisclaimer": "The JSON mirrors IRS MeF concepts for portability. It is not transmitted anywhere and is not accepted by the IRS directly.",
+  "exportFailed": "Export failed",
+  "startNewReturn": "Start a new return",
+  "openReturnFile": "Open a return file (.nnx)",
+  "importFromOther": "Import from TurboTax / CSV / paste",
+  "continueLastReturn": "Continue my last return",
+  "welcomeTagline": "A clean-room, open-source guided tax return for US federal 2024 & 2025 — your data stays on your device.",
+  "welcomePrivacyNote": "Nitro Nissi stores everything locally. AI features are optional and only use the free API keys you provide.",
+  "openFailed": "Could not open that file: {error}",
+  "@openFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "eligibilityTitle": "Quick eligibility check",
+  "eligQ1": "Were you a US citizen or resident alien for the whole year?",
+  "eligQ2": "Do you (and your spouse, if filing jointly) have valid SSNs?",
+  "eligQ3": "Is your income only from paychecks, self-employment, interest, dividends, investments, retirement, Social Security, or unemployment?",
+  "eligQ4": "No rental properties, K-1s, farm income, foreign accounts, or a bankruptcy this year?",
+  "answerYes": "Yes",
+  "answerNo": "No",
+  "eligOkTitle": "Great — Nitro Nissi fits your situation",
+  "eligOkBody": "You can complete a federal return here with confidence. You'll still review everything before exporting.",
+  "eligPartialTitle": "You can still continue — with care",
+  "eligPartialBody": "Some answers suggest parts of your taxes may need a professional or more advanced software. Nitro Nissi will flag anything it can't fully handle.",
+  "eligContinue": "Continue to my return",
+  "askPlaceholder": "Ask anything about your return…",
+  "quickReviewReturn": "Review my return",
+  "quickDeductions": "What am I missing?",
+  "quickExplain": "Explain AGI & deductions",
+  "settingsAiHeader": "AI assistant",
+  "googleKeyTitle": "Google AI Studio (Gemini) — free API key",
+  "googleKeySteps": "1. Open aistudio.google.com/apikey and sign in with a Google account.\n2. Click \"Create API key\" (choose or create a project).\n3. Copy the key (starts with AIza…) and paste it below. The free tier includes daily limits per model.",
+  "googleKeyLink": "Get a free Google AI Studio key →",
+  "mistralKeyTitle": "Mistral La Plateforme — free API key",
+  "mistralKeySteps": "1. Open console.mistral.ai/api-keys and create a free account (the \"Experiment\" plan needs no credit card).\n2. Click \"Create new key\", name it, and copy it.\n3. Paste it below. The free plan allows about 1 request/second and 500k tokens/minute.",
+  "mistralKeyLink": "Get a free Mistral key →",
+  "chainHeader": "Model fallback chain",
+  "testChain": "Test",
+  "chainNote": "Nitro Nissi tries the first model, then automatically falls to the next when a key is missing, the model is unavailable, or free-tier limits are hit. Reorder or disable freely.",
+  "automationHeader": "Automation & privacy",
+  "toggleShareContext": "Let the assistant see a summary of my return",
+  "toggleAnonymize": "Anonymize personal data (names, SSNs) in AI requests",
+  "toggleAutoDeductions": "Suggest commonly missed deductions",
+  "toggleAutoExtract": "Extract numbers from pasted documents automatically",
+  "appearanceHeader": "Appearance & language",
+  "themeLabel": "Theme",
+  "languageLabel": "Language",
+  "couldNotOpen": "Could not open {url}",
+  "@couldNotOpen": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "importTitle": "Import",
+  "importIntro": "Bring data in from a TurboTax return file (best-effort — their format is proprietary), a CSV, our own .nnx files, or paste W-2/1099 text and let AI extract the numbers. You always review before anything is applied.",
+  "chooseFile": "Choose a file…",
+  "extractPasted": "Extract from pasted text",
+  "pasteLabel": "Paste document text here",
+  "pasteHint": "e.g., copy the text of a W-2 or 1099…",
+  "detectedFormat": "Detected",
+  "reviewImportNote": "Keep only the fields you verified. Import never overwrites without your checkmarks.",
+  "nothingFound": "No recognizable tax fields were found. Newer TurboTax files may be encrypted or use an undocumented format — see docs/FILE_FORMATS.md.",
+  "applyFields": "Apply {count, plural, =1{1 field} other{{count} fields}}",
+  "@applyFields": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importFaq": "Why best-effort? Intuit's formats are closed and undocumented; we parse container structures and label matches conservatively, and we never attempt to defeat encryption. Docs/REVERSE_ENGINEERING_PLAN.md describes our clean-room roadmap.",
+  "importNotePreview": "Review each detected field, keep what you verified, then apply.",
+  "importNoteZipEncrypted": "This is a ZIP container, but it appears encrypted or non-standard. Try exporting a CSV/PDF from the other app instead.",
+  "importNoteOle2NoFields": "This is an OLE2 (Compound File) container. No recognizable tax fields were found in its streams.",
+  "importNoteOle2Unknown": "This is an OLE2 (Compound File) container, but its contents could not be analyzed.",
+  "importNoteUnknown": "The file type wasn't recognized. Supported: .nnx, JSON, CSV, plain text, and structural scans of proprietary files.",
+  "importErrorUnknown": "Something went wrong while reading that file."
+}
