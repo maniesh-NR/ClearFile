@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  body { margin:0; padding:0; background:#ffffff; font-family:'Helvetica Neue','Segoe UI',Arial,sans-serif; }
+  .canvas { width:940px; height:640px; position:relative; background:#ffffff; }
+  .core { position:absolute; left:20px; right:20px; top:22px; height:224px; border:2px solid #1f6c92; border-radius:14px; background:#f0f1f2; }
+  .core-title { text-align:center; font-size:23px; font-weight:700; color:#131515; padding-top:14px; letter-spacing:0.4px; }
+  .core-sub { text-align:center; font-size:17px; color:#747b7e; margin-top:3px; }
+  .modules { display:flex; gap:14px; padding:16px 16px 0; }
+  .mod { flex:1; background:#ffffff; border:1.5px solid #acbdc5; border-top:4px solid #1f6c92; border-radius:10px; padding:11px 9px; }
+  .mod h4 { margin:0 0 5px; font-size:21px; color:#131515; }
+  .mod p { margin:0; font-size:17px; color:#747b7e; line-height:1.3; }
+  .vconn { position:absolute; left:469px; top:246px; width:2px; height:56px; background:#acbdc5; }
+  .bus { position:absolute; left:104px; right:104px; top:302px; height:2px; background:#acbdc5; }
+  .stub { position:absolute; top:304px; width:2px; height:36px; background:#acbdc5; }
+  .shells { position:absolute; left:20px; right:20px; top:340px; display:flex; gap:14px; }
+  .shell { flex:1; border:1.5px solid #32454e; background:#e8eaeb; border-radius:10px; padding:12px 8px; text-align:center; }
+  .shell h4 { margin:0 0 5px; font-size:21px; color:#131515; }
+  .shell p { margin:0; font-size:17px; color:#747b7e; line-height:1.3; }
+  .notes { position:absolute; left:20px; right:20px; top:566px; display:flex; gap:14px; }
+  .note { flex:1; border-radius:999px; border:1.5px dashed #1f6c92; background:#f4f5f5; padding:10px 18px; text-align:center; }
+  .note span { font-size:17px; color:#131515; }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="core">
+    <div class="core-title">ClearFile Platform-Agnostic Core</div>
+    <div class="core-sub">One codebase, verified behavior, no per-OS business logic</div>
+    <div class="modules">
+      <div class="mod">
+        <h4>Tax Engine</h4>
+        <p>Year-config rule model; TY2025 / TY2026 parameters from IRS sources</p>
+      </div>
+      <div class="mod">
+        <h4>File Formats</h4>
+        <p>.cfr open return JSON; TXF export; experimental .tax inspector</p>
+      </div>
+      <div class="mod">
+        <h4>AI Ladder</h4>
+        <p>5 free models, ranked; automatic step-down on limits or errors</p>
+      </div>
+      <div class="mod">
+        <h4>Interview State</h4>
+        <p>7-step model; plain-language questions; local-first storage</p>
+      </div>
+    </div>
+  </div>
+  <div class="vconn"></div>
+  <div class="bus"></div>
+  <div class="stub" style="left:103px;"></div>
+  <div class="stub" style="left:286px;"></div>
+  <div class="stub" style="left:469px;"></div>
+  <div class="stub" style="left:652px;"></div>
+  <div class="stub" style="left:835px;"></div>
+  <div class="shells">
+    <div class="shell">
+      <h4>Windows 7+</h4>
+      <p>x86 / x64<br>legacy branch</p>
+    </div>
+    <div class="shell">
+      <h4>Windows 10/11</h4>
+      <p>x64 modern<br>WebView stack</p>
+    </div>
+    <div class="shell">
+      <h4>macOS Catalina+</h4>
+      <p>universal binary<br>x86_64 + arm64</p>
+    </div>
+    <div class="shell">
+      <h4>Android 8.0+</h4>
+      <p>armv7 + arm64-v8a<br>API 26+</p>
+    </div>
+    <div class="shell">
+      <h4>Linux Mint</h4>
+      <p>x86_64 deb repo<br>+ Flatpak</p>
+    </div>
+  </div>
+  <div class="notes">
+    <div class="note"><span>Return data stays local: app storage + exported .cfr files</span></div>
+    <div class="note"><span>AI calls go browser/app-direct to providers with user keys</span></div>
+  </div>
+</div>
+</body>
+</html>

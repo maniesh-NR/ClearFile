@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: 794px 1123px; margin: 0; }
+  :root {
+    --c-bg: #f4f5f5;
+    --c-accent: #1f6c92;
+    --c-text: #131515;
+    --c-muted: #747b7e;
+    --c-mid: #32454e;
+    --c-surface: #e8eaeb;
+  }
+  html, body { margin:0; padding:0; width:794px; height:1123px; background: var(--c-bg); font-family:'Inter','Helvetica Neue',Arial,sans-serif; }
+  @media screen {
+    html { height:auto; display:flex; justify-content:center; min-height:100vh; background:var(--c-bg); }
+    body { transform-origin: top center; scale: min(1, calc(100vw / 794), calc(100vh / 1123)); margin:0 auto; box-shadow: 0 0 60px rgba(0,0,0,0.12); }
+  }
+  .cover { width:794px; height:1123px; position:relative; border:none; outline:none; box-shadow:none; }
+  /* Layer 1: background grid (clipped) */
+  .layer1 { position:absolute; inset:0; overflow:hidden; z-index:1;
+    background-image:
+      linear-gradient(to right, rgba(31,108,146,0.05) 0.5px, transparent 0.5px),
+      linear-gradient(to bottom, rgba(31,108,146,0.05) 0.5px, transparent 0.5px);
+    background-size: 66px 66px; }
+  /* Layer 2: structure */
+  .layer2 { position:absolute; inset:0; z-index:2; }
+  .anchor-line { position:absolute; left:95px; top:112px; bottom:112px; width:6px; background:var(--c-accent); }
+  /* Layer 3: content */
+  .layer3 { position:absolute; inset:0; z-index:3; }
+  .kicker { position:absolute; left:155px; top:168px; font-size:16pt; font-weight:400; letter-spacing:3pt; color:var(--c-text); opacity:0.6; text-transform:uppercase; }
+  .hero { position:absolute; left:155px; top:300px; max-width:560px; font-size:42pt; font-weight:900; line-height:1.15; color:var(--c-text); }
+  .hero .accent { color: var(--c-accent); }
+  .summary { position:absolute; left:155px; top:566px; max-width:476px; font-size:17pt; font-weight:400; line-height:1.6; color:var(--c-text); opacity:0.85; }
+  .meta { position:absolute; left:155px; top:842px; font-size:18pt; font-weight:500; color:var(--c-text); line-height:1.55; }
+  .meta .muted { color: var(--c-muted); font-weight:400; font-size:16pt; }
+  .footer { position:absolute; left:155px; top:1032px; font-size:16pt; letter-spacing:3pt; color:var(--c-text); opacity:0.6; text-transform:uppercase; }
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="layer1"></div>
+  <div class="layer2"><div class="anchor-line"></div></div>
+  <div class="layer3">
+    <div class="kicker">Engineering Blueprint &middot; Prototype Report</div>
+    <div class="hero">ClearFile<br><span class="accent">Clean-Room Tax</span><br>Filing Assistant</div>
+    <div class="summary">
+      A clean-room re-implementation of the consumer tax-filing workflow:
+      verified TY2025&ndash;TY2026 federal parameters, a Material Design 3
+      interview interface, open return files, and a bring-your-own-key AI
+      ladder that steps down automatically from the highest-performance free model.
+    </div>
+    <div class="meta">
+      ClearFile Project &mdash; Prototype 0.1<br>
+      <span class="muted">Clean-room &middot; MD3 &middot; BYO-key AI ladder &middot; Open formats</span>
+    </div>
+    <div class="footer">November 2026 &middot; Rev A &middot; Not for filing</div>
+  </div>
+</div>
+</body>
+</html>
