@@ -46,7 +46,10 @@ local-*
 *.log
 dev.log
 dev.out.log
-test
+# Only ignore a top-level `/test/` directory (Next.js scaffolding). The
+# Flutter app's `clearfile/test/` directory holds real unit and widget
+# tests and MUST be tracked.
+/test
 prompt
 
 server.log
