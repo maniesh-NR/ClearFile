@@ -228,4 +228,20 @@ class AppState extends ChangeNotifier {
     servedByLabel = null;
     notifyListeners();
   }
+
+  /// Cancels the pending autosave timer. Call from `dispose()` in tests and
+  /// when the state owner is torn down; otherwise the [Timer] started by
+  /// [update] can outlive the widget tree and leak.
+  ///
+  /// Idempotent: a second call (e.g. once from the test body, once from the
+  /// framework's tree teardown) is a safe no-op. The base class asserts
+  /// against double-dispose in debug mode, so we guard with a local flag.
+  bool _disposed = false;
+  @override
+  void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    _saveDebounce?.cancel();
+    super.dispose();
+  }
 }
