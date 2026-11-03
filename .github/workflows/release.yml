@@ -1,0 +1,238 @@
+name: Build and release all platforms
+
+# Triggered by pushing a tag like v1.0.0. Builds the Flutter app for every
+# target platform (Android armv7/armv8a/x86_64, Linux x64, Windows x64,
+# macOS universal, Web) plus the Next.js standalone web bundle, zips each
+# one, attaches them to a GitHub Release for that tag, and uploads the
+# blueprint PDF and RE protocol doc as additional release assets.
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write   # required to create the release and upload assets
+
+jobs:
+  # --------------------------------------------------------------------------
+  # Flutter: shared setup and tests
+  # --------------------------------------------------------------------------
+  flutter-test:
+    name: Flutter analyze + test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: clearfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.9'
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+  # --------------------------------------------------------------------------
+  # Android: three APKs split by ABI
+  # --------------------------------------------------------------------------
+  android:
+    name: Android APK (split per ABI)
+    needs: flutter-test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: clearfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.9'
+      - run: flutter pub get
+      - name: Build split APKs
+        run: flutter build apk --split-per-abi --release
+      - name: Rename and collect APKs
+        run: |
+          mkdir -p assets
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk assets/clearfile-android-armv7-${GITHUB_REF_NAME}.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk   assets/clearfile-android-armv8a-${GITHUB_REF_NAME}.apk
+          cp build/app/outputs/flutter-apk/app-x86_64-release.apk      assets/clearfile-android-x86_64-${GITHUB_REF_NAME}.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apks
+          path: clearfile/assets/*.apk
+          if-no-files-found: error
+
+  # --------------------------------------------------------------------------
+  # Linux x64
+  # --------------------------------------------------------------------------
+  linux:
+    name: Linux x64
+    needs: flutter-test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: clearfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.9'
+      - name: Install Linux build deps
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev liblzma-dev clang cmake libstdc++-12-dev
+      - run: flutter pub get
+      - run: flutter build linux --release
+      - name: Bundle
+        run: |
+          cd build/linux/x64/release
+          tar czf $GITHUB_WORKSPACE/clearfile-linux-x64-${GITHUB_REF_NAME}.tar.gz bundle
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: clearfile-linux-x64-*.tar.gz
+          if-no-files-found: error
+
+  # --------------------------------------------------------------------------
+  # Windows x64
+  # --------------------------------------------------------------------------
+  windows:
+    name: Windows x64
+    needs: flutter-test
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: clearfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.9'
+      - run: flutter pub get
+      - run: flutter build windows --release
+      - name: Zip Windows bundle
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath clearfile-windows-x64-${{ github.ref_name }}.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: clearfile/clearfile-windows-x64-*.zip
+          if-no-files-found: error
+
+  # --------------------------------------------------------------------------
+  # macOS universal
+  # --------------------------------------------------------------------------
+  macos:
+    name: macOS universal
+    needs: flutter-test
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: clearfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.9'
+      - run: flutter pub get
+      - run: flutter build macos --release
+      - name: Zip macOS bundle
+        run: |
+          cd build/macos/Build/Products/Release
+          ditto -c -k --keepParent clearfile.app clearfile-macos-${GITHUB_REF_NAME}.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: build/macos/Build/Products/Release/clearfile-macos-*.zip
+          if-no-files-found: error
+
+  # --------------------------------------------------------------------------
+  # Flutter Web (static assets)
+  # --------------------------------------------------------------------------
+  flutter-web:
+    name: Flutter Web
+    needs: flutter-test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: clearfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.47.9'
+      - run: flutter pub get
+      - run: flutter build web --release
+      - name: Bundle
+        run: tar czf ../clearfile-flutter-web-${GITHUB_REF_NAME}.tar.gz -C build web
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flutter-web
+          path: clearfile-flutter-web-*.tar.gz
+          if-no-files-found: error
+
+  # --------------------------------------------------------------------------
+  # Next.js Web standalone
+  # --------------------------------------------------------------------------
+  nextjs-web:
+    name: Next.js standalone web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - run: npm run build
+      - name: Bundle standalone
+        run: |
+          cp -r .next/static .next/standalone/.next/
+          cp -r public .next/standalone/
+          tar czf clearfile-web-standalone-${GITHUB_REF_NAME}.tar.gz -C .next standalone
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nextjs-standalone
+          path: clearfile-web-standalone-*.tar.gz
+          if-no-files-found: error
+
+  # --------------------------------------------------------------------------
+  # Release: collect every artifact and publish a GitHub Release
+  # --------------------------------------------------------------------------
+  release:
+    name: Publish GitHub Release
+    needs:
+      - android
+      - linux
+      - windows
+      - macos
+      - flutter-web
+      - nextjs-web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+      - name: Flatten artifact tree
+        run: |
+          mkdir -p flat
+          find release-assets -type f \( -name '*.apk' -o -name '*.tar.gz' -o -name '*.zip' \) -exec cp {} flat/ \;
+          ls -lh flat
+      - name: Copy docs
+        run: |
+          cp docs/reverse-engineering-protocol.md flat/
+          cp docs/blueprint.pdf flat/ 2>/dev/null || true
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: flat/*
+          fail_on_unmatched_files: true

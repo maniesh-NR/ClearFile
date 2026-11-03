@@ -37,11 +37,27 @@ table's hypotheses as facts — verify against bytes.
    decryptors in this repository is not.** This repo therefore documents the
    container's *existence and shape* and links the public write-up, but embeds
    no key material.
-3. **Copyright splits the formats.** Field layouts, offsets, and calculation
-   structure are methods/ideas (17 U.S.C. §102(b) — not copyrightable).
+3. **Copyright splits the formats.** Field layouts, offsets, calculation
+   structure, and the *methods and ideas* embodied in a program are not
+   copyrightable — 17 U.S.C. §102(b) (the Idea-Expression Dichotomy). When
+   an idea can only be expressed one way (or in a few ways) the expression
+   is said to *merge* with the idea and is likewise unprotected — the
+   Merger Doctrine. Standard, scene-specific elements that any
+   implementation of the same functional goal would necessarily share — the
+   forms, line items, and calculation order dictated by the IRS's own
+   published forms — are *scènes à faire* and are also not protected.
+   Together these three doctrines draw the line ClearFile works to:
+   reproduce *function and field structure*, never *text, copy, or
+   expression*. The leading clean-room precedents are *Computer
+   Associates International, Inc. v. Altai, Inc.*, 982 F.2d 693 (2d Cir.
+   1992) (the Abstraction-Filtration-Comparison test for separating
+   unprotectable ideas from protectable expression) and *Apple Computer,
+   Inc. v. Microsoft Corp.*, 35 F.3d 1435 (9th Cir. 1994) (applying
+   filtration to GUI elements and reaffirming that unprotectable ideas and
+   merger/ scènes-à-faire elements cannot ground an infringement claim).
    Form text, interview copy, help strings and worksheets ARE copyrighted
-   expression. ClearFile's clean-room line stays exactly where it has been:
-   reproduce *function*, never *text*.
+   expression. ClearFile's clean-room line stays exactly where it has
+   been: reproduce *function*, never *text*.
 4. **Work only on files you own** (your own returns, your own licensed
    installs) and keep any proprietary binaries you upload to a cloud
    environment private to your account.
