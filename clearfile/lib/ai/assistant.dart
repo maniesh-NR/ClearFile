@@ -159,7 +159,7 @@ Hi! I'm ClearFile Assist. I can explain any field in plain language, answer
 "can I deduct X?" questions with IRS citations, and review your return for
 things that look off.
 
-I run on YOUR free API key - either Google AI Studio or Mistral - and I try
+I run on YOUR free API key - either Google AI Studio or OpenRouter - and I try
 the strongest free model first, automatically dropping to the next one if a
 model is busy or hits its free limit.
 

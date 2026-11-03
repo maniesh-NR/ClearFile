@@ -45,11 +45,11 @@ export function HeaderBar() {
   const taxYear = useClearFile((s) => s.taxYear)
   const setYear = useClearFile((s) => s.setYear)
   const googleKey = useClearFile((s) => s.googleKey)
-  const mistralKey = useClearFile((s) => s.mistralKey)
+  const openrouterKey = useClearFile((s) => s.openrouterKey)
   const setCopilotOpen = useClearFile((s) => s.setCopilotOpen)
   const setSettingsOpen = useClearFile((s) => s.setSettingsOpen)
 
-  const hasKeys = Boolean(googleKey || mistralKey)
+  const hasKeys = Boolean(googleKey || openrouterKey)
   const isDark = resolvedTheme === 'dark'
 
   return (

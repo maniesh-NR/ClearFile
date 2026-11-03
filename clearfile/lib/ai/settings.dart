@@ -4,7 +4,7 @@ import 'dart:io';
 import 'models/json_codec.dart';
 
 /// Which provider a model in the fallback chain belongs to.
-enum AiProviderKind { google, mistral }
+enum AiProviderKind { google, openrouter }
 
 /// One entry in the editable model chain. The chain is tried top-to-bottom;
 /// the first model that answers serves the request.
@@ -21,7 +21,7 @@ class AiModelSpec {
 
   String get label => switch (provider) {
         AiProviderKind.google => '$modelId - Google AI Studio',
-        AiProviderKind.mistral => '$modelId - Mistral',
+        AiProviderKind.openrouter => '$modelId - OpenRouter',
       };
 
   AiModelSpec copyWith({bool? enabled}) =>
@@ -31,8 +31,8 @@ class AiModelSpec {
       {'provider': provider.name, 'modelId': modelId, 'enabled': enabled};
 
   static AiModelSpec fromJson(Map<String, dynamic> json) => AiModelSpec(
-        provider: json['provider'] == 'mistral'
-            ? AiProviderKind.mistral
+        provider: json['provider'] == 'openrouter'
+            ? AiProviderKind.openrouter
             : AiProviderKind.google,
         modelId: readString(json, 'modelId'),
         enabled: readBool(json, 'enabled', true),
@@ -50,14 +50,19 @@ class AiModelSpec {
 }
 
 /// Suggested models shown in the "add model" sheet. Defaults reflect the
-/// free tiers of Google AI Studio and Mistral as of late 2026; because model
-/// lineups change often, every entry stays editable in-app.
+/// free tiers of Google AI Studio and OpenRouter as of 2026-11 (the
+/// OpenRouter rungs were verified against the live free-model catalogue on
+/// 2026-11-03: Nemotron 3.5 Super VL answered all task types fastest and most
+/// faithfully; the 550B Nemotron 3 Ultra and OpenRouter's own free-pool
+/// router serve as deep fallbacks). Model lineups change often, so every
+/// entry stays editable in-app.
 const List<AiModelSpec> suggestedModels = [
-  AiModelSpec(provider: AiProviderKind.google, modelId: 'gemini-2.5-pro'),
-  AiModelSpec(provider: AiProviderKind.google, modelId: 'gemini-2.5-flash'),
-  AiModelSpec(provider: AiProviderKind.google, modelId: 'gemini-2.0-flash'),
-  AiModelSpec(provider: AiProviderKind.mistral, modelId: 'mistral-small-latest'),
-  AiModelSpec(provider: AiProviderKind.mistral, modelId: 'open-mistral-nemo'),
+  AiModelSpec(provider: AiProviderKind.google, modelId: 'gemini-3.1-pro-preview'),
+  AiModelSpec(provider: AiProviderKind.google, modelId: 'gemini-3.8-flash'),
+  AiModelSpec(provider: AiProviderKind.google, modelId: 'gemini-3.5-flash-lite'),
+  AiModelSpec(provider: AiProviderKind.openrouter, modelId: 'nvidia/nemotron-3.5-super-vl:free'),
+  AiModelSpec(provider: AiProviderKind.openrouter, modelId: 'nvidia/nemotron-3-ultra-550b-a55b:free'),
+  AiModelSpec(provider: AiProviderKind.openrouter, modelId: 'openrouter/free'),
 ];
 
 /// User-held AI configuration. API keys are bring-your-own, stored only in
@@ -67,31 +72,31 @@ class AiSettings {
   AiSettings({
     this.assistantEnabled = false,
     this.googleApiKey = '',
-    this.mistralApiKey = '',
+    this.openrouterApiKey = '',
     List<AiModelSpec>? chain,
     this.sendReturnContext = true,
   }) : chain = chain ?? List<AiModelSpec>.from(suggestedModels);
 
   bool assistantEnabled;
   String googleApiKey;
-  String mistralApiKey;
+  String openrouterApiKey;
   List<AiModelSpec> chain;
 
   /// Whether return figures may be included in the assistant prompt.
   bool sendReturnContext;
 
   bool get isConfigured =>
-      googleApiKey.trim().isNotEmpty || mistralApiKey.trim().isNotEmpty;
+      googleApiKey.trim().isNotEmpty || openrouterApiKey.trim().isNotEmpty;
 
   bool hasKeyFor(AiProviderKind provider) => switch (provider) {
         AiProviderKind.google => googleApiKey.trim().isNotEmpty,
-        AiProviderKind.mistral => mistralApiKey.trim().isNotEmpty,
+        AiProviderKind.openrouter => openrouterApiKey.trim().isNotEmpty,
       };
 
   Map<String, dynamic> toJson() => {
         'assistantEnabled': assistantEnabled,
         'googleApiKey': googleApiKey,
-        'mistralApiKey': mistralApiKey,
+        'openrouterApiKey': openrouterApiKey,
         'sendReturnContext': sendReturnContext,
         'chain': chain.map((m) => m.toJson()).toList(),
       };
@@ -99,10 +104,13 @@ class AiSettings {
   static AiSettings fromJson(Map<String, dynamic> json) => AiSettings(
         assistantEnabled: readBool(json, 'assistantEnabled'),
         googleApiKey: readString(json, 'googleApiKey'),
-        mistralApiKey: readString(json, 'mistralApiKey'),
+        openrouterApiKey: readString(json, 'openrouterApiKey'),
         sendReturnContext: readBool(json, 'sendReturnContext', true),
         chain: (json['chain'] as List? ?? [])
             .whereType<Map>()
+            // 'mistral' entries belong to a provider whose free tier ended
+            // on 2026-09-21; drop them instead of misrouting to Google.
+            .where((m) => m['provider'] != 'mistral')
             .map((m) => AiModelSpec.fromJson(Map<String, dynamic>.from(m)))
             .toList(),
       );

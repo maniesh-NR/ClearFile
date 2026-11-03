@@ -688,39 +688,51 @@ story.extend(table_block(
 # ================================================================== 8
 story.extend(h1_block(8, 'AI Assistance Layer', P(
     'ClearFile\'s AI assistance is bring-your-own-key by design: the user obtains a free API '
-    'key from Google AI Studio (the Gemini family) or Mistral\'s La Plateforme console, pastes '
-    'it into Settings, and the application stores it only in local browser storage. Requests '
-    'travel directly from the user\'s browser to the provider endpoint - there is no ClearFile '
-    'server in the middle, and the prototype collects no names, SSNs, or addresses, so the '
-    'context sent to models is a summarized return only. Step-by-step key instructions and '
-    'direct links appear both in Settings and in Appendix B.')))
+    'key from Google AI Studio (the Gemini family) or OpenRouter (an aggregator that serves '
+    'many providers\' free models under one key), pastes it into Settings, and the application '
+    'stores it only in local browser storage. Requests travel directly from the user\'s '
+    'browser to the provider endpoint - there is no ClearFile server in the middle, and the '
+    'prototype collects no names, SSNs, or addresses, so the context sent to models is a '
+    'summarized return only. Step-by-step key instructions and direct links appear both in '
+    'Settings and in Appendix B. Mistral La Plateforme was removed from the ladder after its '
+    'free direct-inference tier ended on 21 September 2026; OpenRouter\'s free models now '
+    'cover the fallback rungs, with the added benefit that the endpoint is CORS-enabled, so '
+    'browser-direct calls work for both providers.')))
 story.append(P(
     'The provider ladder implements the product\'s core requirement: always try the '
     'highest-performance free model first, then step down when a model is inaccessible or its '
     'limits have been reached. Every call classifies its outcome - rate limit, authentication '
     'or quota rejection, model unavailable, network or CORS failure, or timeout - and the '
     'ladder moves to the next model on any failure, remembering the last model that answered. '
-    'The classification was verified live during testing: an invalid Google key produced the '
-    'correct "key rejected" status on all three Gemini models while Mistral models reported '
-    '"no key" - exactly the designed behavior.'))
+    'The classification was verified live: an invalid Google key produces the correct "key '
+    'rejected" status on all three Gemini models while unkeyed rungs report "no key", and on '
+    '3 November 2026 the OpenRouter tail was exercised end-to-end with a real free-tier key - '
+    'all three task types (copilot chat, pasted-form extraction, pre-submit review) completed '
+    'through the ladder, and the upstream rate limits probed during model vetting stepped '
+    'down exactly as designed.'))
 story.extend(table_block(
     'Model ladder (tried in order)',
     make_table(
         ['Order', 'Model', 'Provider', 'Role'],
         [
-            ['1', 'Gemini 2.5 Pro', 'Google AI Studio', 'Highest performance free model; '
-             'tightest limits, first to fall back'],
-            ['2', 'Gemini 2.5 Flash', 'Google AI Studio', 'Balanced reasoning and speed; '
-             'generous free tier'],
-            ['3', 'Gemini 2.5 Flash-Lite', 'Google AI Studio', 'Fastest, most permissive '
+            ['1', 'Gemini 3.1 Pro (preview)', 'Google AI Studio', 'Flagship preview tier; '
+             'tightest free quota, first to fall back'],
+            ['2', 'Gemini 3.8 Flash', 'Google AI Studio', 'Newest Flash generation; balanced '
+             'reasoning and speed'],
+            ['3', 'Gemini 3.5 Flash-Lite', 'Google AI Studio', 'Fastest, most permissive '
              'Google fallback'],
-            ['4', 'Mistral Large', 'Mistral La Plateforme', 'Flagship fallback once Google '
-             'limits are exhausted'],
-            ['5', 'Mistral Small', 'Mistral La Plateforme', 'Final lightweight fallback'],
+            ['4', 'Nemotron 3.5 Super VL', 'OpenRouter (free)', 'Vetted top OpenRouter rung: '
+             'fastest replies and the strictest adherence to provided numbers in task '
+             'testing'],
+            ['5', 'Nemotron 3 Ultra 550B', 'OpenRouter (free)', 'Heavyweight 550B-class '
+             'fallback with a 1M-token context; slower replies'],
+            ['6', 'OpenRouter Free Router', 'OpenRouter (free)', 'Catch-all: routes each '
+             'request to whichever free model is currently serving'],
         ],
         [0.1, 0.26, 0.26, 0.38],
         cell_aligns=['c', 'l', 'l', 'l']),
-    'Table 9. The five-model performance ladder with automatic step-down.'))
+    'Table 9. The six-model performance ladder with automatic step-down; the OpenRouter '
+    'rungs passed all task types live on 2026-11-03.'))
 story.extend(table_block(
     'Error classification and ladder action',
     make_table(
@@ -728,12 +740,15 @@ story.extend(table_block(
         [
             ['HTTP 429', 'Rate limit reached', 'Step down immediately; UI notes limits '
              'were hit'],
-            ['HTTP 400 / 401 / 403', 'Key rejected or quota exceeded',
-             'Step down; user directed to check the key'],
-            ['HTTP 404', 'Model unavailable for this key', 'Step down'],
-            ['Fetch TypeError', 'Network or CORS failure', 'Step down; Mistral browser-direct '
-             'calls typically land here'],
-            ['AbortError', 'Timeout', 'Step down after 45 s'],
+            ['HTTP 400 / 401 / 402 / 403', 'Key rejected, credits exhausted, or quota '
+             'exceeded', 'Step down; user directed to check the key'],
+            ['HTTP 404', 'Model unavailable for this key', 'Step down; free lineups rotate, '
+             'so withdrawn models land here'],
+            ['Empty completion', 'Provider error', 'Step down; prevented proactively on '
+             'OpenRouter rungs by disabling reasoning tokens'],
+            ['Fetch TypeError', 'Network or CORS failure', 'Step down; rare now that both '
+             'providers send CORS headers'],
+            ['AbortError', 'Timeout', 'Step down after 45 s (90 s on OpenRouter rungs)'],
             ['All models failed', 'Ladder exhausted', 'Per-model failure table shown with '
              'actionable hints'],
         ],
@@ -750,12 +765,32 @@ story.append(P(
     'narrative of findings and a plain-language summary, always labeled as AI output that '
     'must be verified.'))
 story.append(P(
-    'One limitation is documented rather than hidden: Mistral\'s API does not send CORS '
-    'headers, so browser-direct Mistral calls fail as unreachable in the web prototype. The '
-    'ladder treats this exactly like any inaccessible model, and the Settings screen says so. '
-    'The production build adds an optional local proxy - trivial in the desktop shells, where '
-    'the application itself can relay requests - which restores Mistral and also enables '
-    'per-device key encryption. This is scheduled with the platform shells in Phase 2.'))
+    'Free-model selection is engineering, not catalog shopping. During live vetting on '
+    '3 November 2026, four otherwise-eligible free models were excluded for cause: Inkling '
+    'rejects direct API use with HTTP 403 (harness-only routing), Nemotron 3.5 Lightning '
+    'returned empty completions on two task types, Recursive Flint had no upstreams (503), '
+    'and both Gemma 4 free variants sat behind persistent upstream rate limits. The three '
+    'models that passed every task became the rungs. The vetting also surfaced a subtle '
+    'failure mode: Nemotron-family free models are reasoning models whose thinking tokens '
+    'count against the completion budget, intermittently starving the visible answer to an '
+    'empty string. ClearFile disables reasoning on its OpenRouter calls - the tasks need '
+    'transcription and JSON, not deliberation - which both fixed the empties and cut '
+    'response times roughly fivefold.'))
+story.append(P(
+    'Two limitations are documented rather than hidden. First, OpenRouter\'s free endpoints '
+    'run on hosts whose terms may permit prompt training (for example NVIDIA\'s free-tier '
+    'terms); OpenRouter\'s account privacy settings can restrict routing to such hosts, and '
+    'ClearFile sends de-identified summaries that never contain names, SSNs, or addresses. '
+    'Second, the Google rungs were rebaselined during the same test session: Google retired '
+    'the previous Gemini generation for new users, and the API\'s own error messages named '
+    'the successors, so the ladder now carries Gemini 3.1 Pro, 3.8 Flash, and 3.5 Flash-Lite. '
+    'All three successor models were confirmed live and the test key authenticated '
+    '(a quota-gated 429 on the Pro rung proves the key passed authentication), but live '
+    'generation from the test environment is geo-restricted, so the Google tail was '
+    'validated structurally rather than with a completed turn, while the OpenRouter tail '
+    'ran end-to-end against a real key. The production build still adds an optional local '
+    'relay - no longer needed for CORS, it now provides per-device key encryption and '
+    'organization-managed keys - scheduled with the platform shells in Phase 2.'))
 
 # ================================================================== 9
 story.extend(h1_block(9, 'Compliance & Certification Path', P(
@@ -816,8 +851,8 @@ story.extend(table_block(
              '2-4 engineer-months'],
             ['2 - Platform shells', 'Rust core + WASM/FFI; five shell targets; CI matrix',
              'Green builds and released installers on all tiers', '3-6 engineer-months'],
-            ['3 - AI hardening', 'Local proxy for CORS-free Mistral; key encryption; '
-             'review escalation paths', 'Penetration-tested key handling', '1-2 '
+            ['3 - AI hardening', 'Local relay for org-managed keys; per-device key '
+             'encryption; review escalation paths', 'Penetration-tested key handling', '1-2 '
              'engineer-months'],
             ['4 - .tax interop (gated)', 'Isolated RE team, documented format spec, '
              'importer', 'Counsel sign-off; round-trip test corpus', '2-3 engineer-months '
@@ -859,14 +894,17 @@ story.extend(h1_block(0, 'Appendix B - Obtaining Free AI Keys', P(
 story.append(P('<b>Google AI Studio (Gemini family).</b> Open '
                'aistudio.google.com/apikey and sign in with a Google account; click '
                '"Create API key" and pick or create a project; copy the generated key '
-               '(it begins with "AIza"); paste it into ClearFile Settings. The free tier '
-               'carries per-model rate limits, which the ladder treats as a normal '
-               'step-down condition.'))
-story.append(P('<b>Mistral (La Plateforme).</b> Open console.mistral.ai/api-keys and '
-               'create an account; choose the free Experiment plan when prompted; click '
-               '"Create new key," name it, and copy it into Settings. Browser-direct calls '
-               'to Mistral are blocked by CORS in the web prototype - the ladder reports '
-               'this honestly and the desktop build\'s local proxy removes the limitation.'))
+               '(it begins with "AIza" or the newer "AQ." prefix); paste it into '
+               'ClearFile Settings. The free tier carries per-model rate limits, which the '
+               'ladder treats as a normal step-down condition.'))
+story.append(P('<b>OpenRouter (free models).</b> Open openrouter.ai and create a free '
+               'account, then go to openrouter.ai/settings/keys and click "Create Key"; '
+               'copy the key (it begins with "sk-or-v1-") into ClearFile Settings. One '
+               'key reaches many providers\' free models; requests are capped at 20 per '
+               'minute and roughly 100 per day (1,000 per day after a one-time $10 credit '
+               'purchase). Free endpoints run on hosts whose terms may permit prompt '
+               'training - OpenRouter\'s privacy settings can restrict that, and ClearFile '
+               'sends de-identified summaries only.'))
 story.append(P(
     'Privacy notes shown in the application bear repeating: keys are stored only in the '
     'local browser, are transmitted only to the provider whose key they are, and clearing '

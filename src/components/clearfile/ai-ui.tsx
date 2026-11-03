@@ -36,7 +36,6 @@ export function LadderErrorCard({ error }: { error: LadderError }) {
     return <KeyOnboardingCard />
   }
   const rateLimited = error.attempts.some((a) => a.errorKind === 'rate-limit')
-  const mistralNetwork = error.attempts.some((a) => a.errorKind === 'network' && a.provider === 'mistral')
   return (
     <div className="rounded-3xl border border-md-outline-variant bg-md-error-container/40 p-4 space-y-3">
       <div className="flex items-center gap-2 text-md-on-surface">
@@ -57,15 +56,12 @@ export function LadderErrorCard({ error }: { error: LadderError }) {
       </ul>
       <div className="space-y-1 text-xs text-md-on-surface-variant">
         {rateLimited && (
-          <p>Free-tier rate limits were hit. The ladder will automatically try the next model down on your next request — just ask again in a minute.</p>
-        )}
-        {mistralNetwork && (
           <p>
-            Mistral&apos;s API blocks direct browser calls (no CORS headers), so those models show as unreachable. Gemini
-            keys work browser-direct; the production fix for Mistral is a server-side proxy (see the engineering blueprint).
+            Free-tier rate limits were hit (20 requests/minute and a daily cap on OpenRouter; per-model limits on Google).
+            The ladder will automatically try the next model down on your next request — just ask again in a minute.
           </p>
         )}
-        {!rateLimited && !mistralNetwork && <p>Check the key in Settings, or try again shortly.</p>}
+        {!rateLimited && <p>Check the key in Settings, or try again shortly.</p>}
       </div>
     </div>
   )
@@ -85,7 +81,7 @@ export function KeyOnboardingCard() {
       </div>
       <p className="text-sm text-md-on-surface-variant">
         ClearFile&apos;s copilot, document auto-fill, and return review run on free keys you own. Get one from Google AI
-        Studio (Gemini) or Mistral — both have free tiers. Keys stay in this browser; requests go directly from your
+        Studio (Gemini) or OpenRouter — both have free tiers. Keys stay in this browser; requests go directly from your
         browser to the provider.
       </p>
       <div className="flex flex-wrap gap-2">
@@ -99,8 +95,8 @@ export function KeyOnboardingCard() {
           </a>
         </Button>
         <Button asChild variant="outline" className="rounded-full h-10">
-          <a href="https://console.mistral.ai/api-keys" target="_blank" rel="noreferrer">
-            Mistral console <ExternalLink className="size-3.5" aria-hidden />
+          <a href="https://openrouter.ai/settings/keys" target="_blank" rel="noreferrer">
+            OpenRouter keys <ExternalLink className="size-3.5" aria-hidden />
           </a>
         </Button>
       </div>
@@ -122,7 +118,7 @@ export function CopilotDrawer() {
   const open = useClearFile((s) => s.copilotOpen)
   const setOpen = useClearFile((s) => s.setCopilotOpen)
   const googleKey = useClearFile((s) => s.googleKey)
-  const mistralKey = useClearFile((s) => s.mistralKey)
+  const openrouterKey = useClearFile((s) => s.openrouterKey)
   const lastWorkingModel = useClearFile((s) => s.lastWorkingModel)
 
   const [messages, setMessages] = React.useState<ChatTurn[]>([])
@@ -131,7 +127,7 @@ export function CopilotDrawer() {
   const [error, setError] = React.useState<LadderError | null>(null)
   const [meta, setMeta] = React.useState<{ label: string; ms: number } | null>(null)
 
-  const hasKeys = Boolean(googleKey || mistralKey)
+  const hasKeys = Boolean(googleKey || openrouterKey)
 
   async function send(question?: string) {
     const q = (question ?? input).trim()
@@ -145,7 +141,7 @@ export function CopilotDrawer() {
       const filing = filingFromStore(s)
       const computed = compute(filing, YEARS[filing.taxYear])
       const { system, user } = chatTurn(q, filing, computed, messages)
-      const res = await runLadder(system, user, { googleKey, mistralKey })
+      const res = await runLadder(system, user, { googleKey, openrouterKey })
       setMessages((m) => [...m, { role: 'assistant', content: res.text }])
       setMeta({ label: res.label, ms: res.ms })
       useClearFile.getState().setLastWorkingModel(res.model)
@@ -286,7 +282,7 @@ export function AutofillPanel() {
   const addW2 = useClearFile((s) => s.addW2)
   const setIncomeField = useClearFile((s) => s.setIncomeField)
   const googleKey = useClearFile((s) => s.googleKey)
-  const mistralKey = useClearFile((s) => s.mistralKey)
+  const openrouterKey = useClearFile((s) => s.openrouterKey)
   const setSettingsOpen = useClearFile((s) => s.setSettingsOpen)
   const { toast } = useToast()
 
@@ -296,7 +292,7 @@ export function AutofillPanel() {
   const [selected, setSelected] = React.useState<Record<number, boolean>>({})
   const [error, setError] = React.useState<LadderError | null>(null)
 
-  const hasKeys = Boolean(googleKey || mistralKey)
+  const hasKeys = Boolean(googleKey || openrouterKey)
 
   async function extract() {
     if (!raw.trim() || busy) return
@@ -305,7 +301,7 @@ export function AutofillPanel() {
     setForms(null)
     try {
       const { system, user } = extractPrompt(raw)
-      const res = await runLadder(system, user, { googleKey, mistralKey }, { temperature: 0 })
+      const res = await runLadder(system, user, { googleKey, openrouterKey }, { temperature: 0 })
       const parsed = parseExtracted(res.text)
       if (!parsed) {
         setError(new LadderError('The model did not return usable form data. Try pasting the text again.', []))
@@ -363,7 +359,7 @@ export function AutofillPanel() {
       <CardContent className="space-y-3">
         {!hasKeys && (
           <div className="space-y-2">
-            <p className="text-sm text-md-on-surface-variant">Auto-fill needs a free AI key (Google AI Studio or Mistral).</p>
+            <p className="text-sm text-md-on-surface-variant">Auto-fill needs a free AI key (Google AI Studio or OpenRouter).</p>
             <Button variant="outline" className="rounded-full h-9" onClick={() => setSettingsOpen(true)}>
               <Sparkles className="size-4" aria-hidden /> Connect a key
             </Button>
@@ -441,14 +437,14 @@ export function AutofillPanel() {
 
 export function ReviewPanel({ checks }: { checks: RuleCheck[] }) {
   const googleKey = useClearFile((s) => s.googleKey)
-  const mistralKey = useClearFile((s) => s.mistralKey)
+  const openrouterKey = useClearFile((s) => s.openrouterKey)
   const setSettingsOpen = useClearFile((s) => s.setSettingsOpen)
 
   const [review, setReview] = React.useState<AiReview | null>(null)
   const [busy, setBusy] = React.useState(false)
   const [error, setError] = React.useState<LadderError | null>(null)
 
-  const hasKeys = Boolean(googleKey || mistralKey)
+  const hasKeys = Boolean(googleKey || openrouterKey)
 
   async function run() {
     if (busy) return
@@ -459,7 +455,7 @@ export function ReviewPanel({ checks }: { checks: RuleCheck[] }) {
       const filing = filingFromStore(s)
       const computed = compute(filing, YEARS[filing.taxYear])
       const { system, user } = reviewPrompt(filing, computed, checks)
-      const res = await runLadder(system, user, { googleKey, mistralKey }, { temperature: 0.2, maxTokens: 1400 })
+      const res = await runLadder(system, user, { googleKey, openrouterKey }, { temperature: 0.2, maxTokens: 1400 })
       setReview(parseReview(res.text) ?? { summary: res.text, findings: [] })
       useClearFile.getState().setLastWorkingModel(res.model)
     } catch (e) {

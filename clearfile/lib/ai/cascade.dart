@@ -90,9 +90,9 @@ class AiCascade {
               temperature: temperature,
               maxOutputTokens: maxTokens,
             ),
-          AiProviderKind.mistral => await callMistralModel(
+          AiProviderKind.openrouter => await callOpenrouterModel(
               _client,
-              apiKey: settings.mistralApiKey.trim(),
+              apiKey: settings.openrouterApiKey.trim(),
               model: spec.modelId,
               system: system,
               conversation: conversation,

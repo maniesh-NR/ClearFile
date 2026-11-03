@@ -106,9 +106,9 @@ export function WelcomeStep() {
   const next = useClearFile((s) => s.next)
   const loadSample = useClearFile((s) => s.loadSample)
   const googleKey = useClearFile((s) => s.googleKey)
-  const mistralKey = useClearFile((s) => s.mistralKey)
+  const openrouterKey = useClearFile((s) => s.openrouterKey)
   const { toast } = useToast()
-  const hasKeys = Boolean(googleKey || mistralKey)
+  const hasKeys = Boolean(googleKey || openrouterKey)
 
   return (
     <div className="space-y-5">

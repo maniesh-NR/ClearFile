@@ -33,7 +33,7 @@ interface ClearFileStore extends FilingData {
   copilotOpen: boolean
   settingsOpen: boolean
   googleKey: string
-  mistralKey: string
+  openrouterKey: string
   lastWorkingModel: string | null
 
   setStep: (step: number) => void
@@ -51,7 +51,7 @@ interface ClearFileStore extends FilingData {
   resetFiling: () => void
   loadSample: () => void
   setGoogleKey: (key: string) => void
-  setMistralKey: (key: string) => void
+  setOpenrouterKey: (key: string) => void
   setLastWorkingModel: (model: string | null) => void
   setCopilotOpen: (open: boolean) => void
   setSettingsOpen: (open: boolean) => void
@@ -79,7 +79,7 @@ export const useClearFile = create<ClearFileStore>()(
       copilotOpen: false,
       settingsOpen: false,
       googleKey: '',
-      mistralKey: '',
+      openrouterKey: '',
       lastWorkingModel: null,
 
       setStep: (step) => set({ step: Math.max(0, Math.min(STEP_COUNT - 1, step)) }),
@@ -113,13 +113,22 @@ export const useClearFile = create<ClearFileStore>()(
       loadSample: () => set({ ...SAMPLE_FILING, step: 1 }),
 
       setGoogleKey: (googleKey) => set({ googleKey }),
-      setMistralKey: (mistralKey) => set({ mistralKey }),
+      setOpenrouterKey: (openrouterKey) => set({ openrouterKey }),
       setLastWorkingModel: (lastWorkingModel) => set({ lastWorkingModel }),
       setCopilotOpen: (copilotOpen) => set({ copilotOpen }),
       setSettingsOpen: (settingsOpen) => set({ settingsOpen }),
     }),
     {
       name: 'clearfile-store-v1',
+      version: 1,
+      // v0 (before 2026-11) persisted a Mistral La Plateforme key. Mistral's
+      // free direct-inference tier ended on 2026-09-21 and OpenRouter
+      // replaced it, so the stale field is dropped on load.
+      migrate: (persisted, version) => {
+        const s = (persisted ?? {}) as Record<string, unknown>
+        if (version < 1) delete s.mistralKey
+        return s as ClearFileStore
+      },
       partialize: (s) => ({
         taxYear: s.taxYear,
         status: s.status,
@@ -134,7 +143,7 @@ export const useClearFile = create<ClearFileStore>()(
         estimatedPayments: s.estimatedPayments,
         step: s.step,
         googleKey: s.googleKey,
-        mistralKey: s.mistralKey,
+        openrouterKey: s.openrouterKey,
         lastWorkingModel: s.lastWorkingModel,
       }),
     }

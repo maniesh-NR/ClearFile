@@ -138,8 +138,12 @@ String _extractGoogleText(http.Response response, String model) {
       AiFailureKind.other, '$model returned no text ($feedback)');
 }
 
-/// Calls one Mistral La Plateforme model.
-Future<String> callMistralModel(
+/// Calls one OpenRouter model (OpenAI-compatible chat completions).
+///
+/// OpenRouter's free-tier models cover the fallback rungs since Mistral's
+/// free direct-inference tier ended on 2026-09-21. Native clients do not
+/// face CORS restrictions, so the call is a plain HTTPS POST.
+Future<String> callOpenrouterModel(
   http.Client client, {
   required String apiKey,
   required String model,
@@ -149,7 +153,7 @@ Future<String> callMistralModel(
   double temperature = 0.2,
   int maxTokens = 1024,
 }) async {
-  final uri = Uri.parse('https://api.mistral.ai/v1/chat/completions');
+  final uri = Uri.parse('https://openrouter.ai/api/v1/chat/completions');
   final messages = <Map<String, String>>[
     {'role': 'system', 'content': system},
     for (final turn in conversation)
@@ -163,6 +167,10 @@ Future<String> callMistralModel(
     'messages': messages,
     'temperature': temperature,
     'max_tokens': maxTokens,
+    // Nemotron-family free models are reasoning models whose thinking
+    // tokens count against max_tokens and can starve the visible content;
+    // ClearFile's tasks need transcription and JSON, not deliberation.
+    'reasoning': {'enabled': false},
   };
 
   final http.Response response;
@@ -171,6 +179,7 @@ Future<String> callMistralModel(
         headers: {
           'content-type': 'application/json',
           'authorization': 'Bearer $apiKey',
+          'X-Title': 'ClearFile',
         },
         body: jsonEncode(body));
   } on TimeoutException {
@@ -198,7 +207,7 @@ Future<String> callMistralModel(
     }
     throw AiCallException(AiFailureKind.other, '$model returned no text');
   }
-  throw _httpError('Mistral', model, response);
+  throw _httpError('OpenRouter', model, response);
 }
 
 AiCallException _httpError(
@@ -228,11 +237,18 @@ AiCallException _httpError(
     case 401:
     case 403:
       kind = AiFailureKind.auth;
+    // OpenRouter: credits or the daily free-model allowance ran out.
+    case 402:
+      kind = AiFailureKind.quota;
     case 404:
       kind = AiFailureKind.modelNotFound;
     default:
       if (response.statusCode >= 500) {
         kind = AiFailureKind.server;
+      } else if (response.statusCode == 400 &&
+          lower.contains('location is not supported')) {
+        // Google geo-blocks some regions before auth; the key may be fine.
+        kind = AiFailureKind.other;
       } else if (response.statusCode == 400 &&
           (lower.contains('api key') || lower.contains('api_key'))) {
         kind = AiFailureKind.auth;

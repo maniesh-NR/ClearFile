@@ -104,9 +104,9 @@ export function SettingsDialog() {
   const open = useClearFile((s) => s.settingsOpen)
   const setOpen = useClearFile((s) => s.setSettingsOpen)
   const googleKey = useClearFile((s) => s.googleKey)
-  const mistralKey = useClearFile((s) => s.mistralKey)
+  const openrouterKey = useClearFile((s) => s.openrouterKey)
   const setGoogleKey = useClearFile((s) => s.setGoogleKey)
-  const setMistralKey = useClearFile((s) => s.setMistralKey)
+  const setOpenrouterKey = useClearFile((s) => s.setOpenrouterKey)
   const setLastWorkingModel = useClearFile((s) => s.setLastWorkingModel)
   const { toast } = useToast()
 
@@ -117,7 +117,7 @@ export function SettingsDialog() {
     setTesting(true)
     setAttempts(null)
     try {
-      const res = await testLadder({ googleKey, mistralKey })
+      const res = await testLadder({ googleKey, openrouterKey })
       setAttempts(res)
       const ok = res.find((a) => a.ok)
       if (ok) {
@@ -165,7 +165,7 @@ export function SettingsDialog() {
             steps={[
               'Open aistudio.google.com/apikey and sign in with a Google account.',
               'Click "Create API key" (pick or create a project when asked).',
-              'Copy the key — it starts with "AIza".',
+              'Copy the key — it starts with "AIza" or "AQ.".',
               'Paste it below. Free-tier rate limits apply per model.',
             ]}
             link="https://aistudio.google.com/apikey"
@@ -175,18 +175,18 @@ export function SettingsDialog() {
           />
 
           <ProviderCard
-            title="Mistral (La Plateforme)"
-            subtitle={'Free Experiment plan on console.mistral.ai. Serves Mistral Large and Small.'}
+            title="OpenRouter (free models)"
+            subtitle="One key reaches many providers' free models (Nemotron, Gemma, and more). Browser-direct calls are supported (CORS-enabled endpoint)."
             steps={[
-              'Open console.mistral.ai/api-keys and create an account.',
-              'Pick the free Experiment plan when prompted.',
-              'Click "Create new key", name it, and copy it.',
-              'Paste it below. Note: Mistral blocks direct browser calls (CORS) — see the ladder note.',
+              'Open openrouter.ai and create a free account (email or Google sign-in).',
+              'Go to Settings → Keys and click "Create Key".',
+              'Copy the key — it starts with "sk-or-v1-".',
+              'Paste it below. Free models are capped at 20 requests/minute and roughly 100 requests/day (1,000/day after a one-time $10 credit purchase).',
             ]}
-            link="https://console.mistral.ai/api-keys"
-            linkLabel="console.mistral.ai"
-            keyValue={mistralKey}
-            onKeyChange={setMistralKey}
+            link="https://openrouter.ai/settings/keys"
+            linkLabel="openrouter.ai"
+            keyValue={openrouterKey}
+            onKeyChange={setOpenrouterKey}
           />
 
           <Card className="rounded-3xl border-md-outline-variant">
@@ -240,9 +240,9 @@ export function SettingsDialog() {
                 </table>
               </div>
               <p className="text-xs text-md-on-surface-variant">
-                Browser-direct mode: Google AI Studio allows browser calls; Mistral&apos;s endpoint does not send CORS
-                headers, so its models will read as unreachable in-browser. The production build routes Mistral through
-                an optional local proxy (documented in the engineering blueprint).
+                Browser-direct mode: both Google AI Studio and OpenRouter send CORS headers, so keys work straight from
+                your browser. OpenRouter&apos;s free models run on shared community capacity — an upstream rate limit
+                (429) simply steps the ladder down to the next model.
               </p>
             </CardContent>
           </Card>
@@ -257,14 +257,15 @@ export function SettingsDialog() {
               <ul className="space-y-1.5 list-disc list-inside">
                 <li>Keys are stored only in this browser (localStorage) and are never sent anywhere except directly to the provider.</li>
                 <li>ClearFile never collects names, SSNs, or addresses — AI requests see only the summarized return shown in the copilot.</li>
+                <li>OpenRouter&apos;s free endpoints run on hosts whose terms may allow prompt training (for example NVIDIA&apos;s free-tier terms). You can restrict that in your OpenRouter privacy settings; what ClearFile sends is already de-identified.</li>
                 <li>Clearing your browser data removes the keys. No telemetry exists in this prototype.</li>
               </ul>
               <div className="flex flex-wrap gap-2 pt-1">
                 <Button variant="outline" className="rounded-full h-9 text-md-error" onClick={() => setGoogleKey('')}>
                   <Trash2 className="size-3.5" aria-hidden /> Clear Google key
                 </Button>
-                <Button variant="outline" className="rounded-full h-9 text-md-error" onClick={() => setMistralKey('')}>
-                  <Trash2 className="size-3.5" aria-hidden /> Clear Mistral key
+                <Button variant="outline" className="rounded-full h-9 text-md-error" onClick={() => setOpenrouterKey('')}>
+                  <Trash2 className="size-3.5" aria-hidden /> Clear OpenRouter key
                 </Button>
               </div>
             </CardContent>
