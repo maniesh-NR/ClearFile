@@ -51,7 +51,7 @@ CsvW2Import parseW2Csv(String contents) {
     final row = rows[i];
     if (row.isEmpty || row.every((cell) => cell.trim().isEmpty)) continue;
 
-    String cell(int idx) => idx != null && idx < row.length ? row[idx].trim() : '';
+    String cell(int? idx) => idx != null && idx < row.length ? row[idx].trim() : '';
 
     final wages = _parseAmount(cell(wagesIdx));
     final withholding =
@@ -64,7 +64,7 @@ CsvW2Import parseW2Csv(String contents) {
     }
     entries.add(W2Entry(
       employer: employer,
-      wages: wages ?? 0,
+      wages: wages,
       withholding: withholding ?? 0,
     ));
   }

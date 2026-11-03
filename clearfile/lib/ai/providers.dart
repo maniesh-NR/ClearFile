@@ -4,8 +4,6 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
-import 'settings.dart';
-
 /// Why a single model call failed. The cascade uses this to decide whether
 /// to try the next model in the chain.
 enum AiFailureKind {

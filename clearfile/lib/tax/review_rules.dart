@@ -107,7 +107,7 @@ List<ReviewFinding> runReview(TaxReturnData r, TaxResult res) {
         'Child Tax Credit age check',
         '${d.name.isEmpty ? "A dependent" : d.name} is marked as a qualifying '
         'child but is 17 or older. Only children under 17 at the end of 2025 '
-        'qualify for the $2,200 credit; they may still qualify for the $500 '
+        'qualify for the \$2,200 credit; they may still qualify for the \$500 '
         'credit for other dependents.',
         ReviewActionKind.reviewDependents,
       ));
@@ -117,7 +117,7 @@ List<ReviewFinding> runReview(TaxReturnData r, TaxResult res) {
         ReviewSeverity.info,
         'Dependent without a credit type',
         'Mark whether each dependent is a qualifying child under 17 or '
-        'qualifies for the $500 credit for other dependents.',
+        'qualifies for the \$500 credit for other dependents.',
         ReviewActionKind.reviewDependents,
       ));
     }
@@ -138,7 +138,7 @@ List<ReviewFinding> runReview(TaxReturnData r, TaxResult res) {
     f.add(const ReviewFinding(
       ReviewSeverity.info,
       'Student loan interest is capped',
-      'Only up to $2,500 of student loan interest is deductible; the engine '
+      'Only up to \$2,500 of student loan interest is deductible; the engine '
       'already applied the cap.',
       ReviewActionKind.reviewDeductions,
     ));
@@ -161,8 +161,8 @@ List<ReviewFinding> runReview(TaxReturnData r, TaxResult res) {
     f.add(ReviewFinding(
       ReviewSeverity.info,
       'Senior deduction is partially phased out',
-      'The $6,000 senior deduction starts shrinking once income exceeds '
-      '$75,000 ($150,000 married filing jointly). Yours is currently '
+      'The \$6,000 senior deduction starts shrinking once income exceeds '
+      '\$75,000 (\$150,000 married filing jointly). Yours is currently '
       '${_money(res.seniorDeduction)}.',
     ));
   }

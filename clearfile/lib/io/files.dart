@@ -16,23 +16,25 @@ class ReturnFileIO {
     final bytes = utf8.encode(
       const JsonEncoder.withIndent('  ').convert(r.toJson()),
     );
-    final path = await FilePicker.platform.saveFile(
+    final uri = await FilePicker.saveFile(
       fileName: '${_safeFileName(r.displayName)}.$fileExtension',
       bytes: bytes,
+      mimeType: 'application/json',
       dialogTitle: 'Export ClearFile return',
     );
-    return path;
+    if (uri == null) return null;
+    return uri.scheme == 'file' ? uri.toFilePath() : uri.toString();
   }
 
   /// Returns the parsed return, or null when cancelled or unreadable.
   static Future<TaxReturnData?> importReturn() async {
-    final result = await FilePicker.platform.pickFiles(
+    final files = await FilePicker.pickFiles(
       dialogTitle: 'Open a ClearFile return',
       type: FileType.custom,
       allowedExtensions: ['json'],
     );
-    if (result == null) return null;
-    final path = result.files.single.path;
+    if (files.isEmpty) return null;
+    final path = files.first.path;
     if (path == null) return null;
     try {
       final text = await File(path).readAsString();

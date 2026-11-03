@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'models/json_codec.dart';
+import '../models/json_codec.dart';
 
 /// Which provider a model in the fallback chain belongs to.
 enum AiProviderKind { google, openrouter }
