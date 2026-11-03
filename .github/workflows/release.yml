@@ -151,7 +151,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: macos
-          path: build/macos/Build/Products/Release/clearfile-macos-*.zip
+          path: clearfile/build/macos/Build/Products/Release/clearfile-macos-*.zip
           if-no-files-found: error
 
   # --------------------------------------------------------------------------
