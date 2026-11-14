@@ -1,34 +1,36 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-14 (after the Stage-1 entry gate — Stage 1 ENTERED)
+**Updated:** 2026-11-14 (after the Stage-1 execution session — Stage 1
+complete pending its exit gate)
 
 ## Repository
 
 - GitHub: `maniesh-NR/ClearFile` (public), branch `main`. The Stage-1
-  session's closing backup commit is the tip (this session's work: owner
-  decisions applied, entry conditions cleared, Stage-1 gate held and
-  conditions applied — see `adversarial/CONSENSUS.md`).
-- Tag `v1.0.0`: release carries the patched description — demo disclaimer,
-  unsigned statement, **AI-broken note** (Android/macOS binaries cannot
-  reach AI providers), and the GPL §6 corresponding-source line (API-200
-  verified twice).
-- Public tree: project-only. `bun.lock` deleted (npm lockfiles
-  standardized); `package-lock.json` tracked; blueprint PDF regenerated
-  with corrected privacy copy + "Tax Return Study Prototype" title
-  (verified via pdftotext).
+  execution session's closing backup is the tip (code work backed up as
+  `0bbb564`, memory records in the closing commit).
+- Tag `v1.0.1` (release 445310560): **published 2026-11-14** via the
+  fresh-tag dispatch path — 11 assets including the first
+  `SHA256SUMS.txt` (one asset locally re-verified), the Android INTERNET +
+  macOS network-client fix, the network disclosure, and the hardened CI's
+  first full green run (8/8 jobs, run 43598726491). The tag points at
+  exactly `0bbb564` (target_commitish honored). The existing-tag poisoning
+  guard was proven by the intentional refusal run 43598383213.
+- `hygiene.yml` (gitleaks weekly + harness_check on push) — first push run
+  green. All workflow actions SHA-pinned.
+- Public tree: project-only; 61-test suite; GPL-3.0-only SPDX headers on
+  own code (vendored shadcn excluded); SECURITY.md present.
 
 ## Gate status
 
 - Stage 0: PASSED (2026-11-14).
-- **Stage 1: ENTERED (2026-11-14)** — unanimous 4 × PROCEED-WITH-CONDITIONS,
-  all conditions applied in-session or assigned to Stage-1 execution
-  (gitleaks, action pinning, dispatch dry-run, v1.0.1 closing tag). The
-  Stage-2 entry gate reviews Stage 1's execution evidence.
-- Owner decisions all ratified: ADR-008 accept-and-document (README NOTICE);
-  ADR-009 **feature parity** (two-session tripwire + freeze fallback +
-  fixtures-first ordering); INTERNET add-and-disclose (manifest +
-  entitlement + disclosures); PAT unchanged (risk accepted).
-- ADR-011: settings `schemaVersion: 2` + legacy `sendReturnContext` reset.
+- **Stage 1: ENTERED + EXECUTION COMPLETE (2026-11-14)** — items 5-9 all
+  DONE (ROADMAP carries the evidence); the v1.0.1 closing tag landed.
+  Stage 1 formally closes at the Stage-2 entry gate's review of this
+  evidence.
+- Owner decisions all ratified earlier: ADR-008 accept-and-document;
+  ADR-009 feature parity (two-session tripwire + freeze fallback);
+  INTERNET add-and-disclose; PAT unchanged. ADR-010 closed (web smoke
+  tests exist; strict mode ON). ADR-011: settings schemaVersion 2.
 
 ## Environment facts (sandbox)
 
@@ -73,13 +75,19 @@ t   text-only (`-I`): icon/bitmap pixel data legitimately trips
 10. Blueprint regen: generator + playwright cover + merge (needs
     `mkdir -p download` on fresh clones); not byte-deterministic
     (timestamps) — never cite it as a reproducibility exemplar.
+11. **Bulk scripted file edits must be re-verified immediately** — the
+    SPDX header script split 15 first lines (line- vs character-offset
+    bug); caught by `head` spot-checks + full analyze/test/tsc/smoke
+    re-run before commit. Never trust a bulk edit without the suite.
+12. **The PAT is broader than its recorded profile** (Actions write/read
+    observed 2026-11-14; WORKFLOW §5 carries the correction). Check
+    permissions in the UI when rotating.
 
 ## Immediately next
 
-Stage-1 execution (ROADMAP items 5-9): gitleaks CI scan, action SHA
-pinning, caching verification, dispatch dry-run (fresh-tag AND
-existing-tag), widget/web test expansion, GPL headers, SECURITY.md,
-`harness_check.sh` (D19 — checklist in ROADMAP item 9), then the
-**v1.0.1 closing tag** (Android/macOS network fix + first SHA256SUMS +
-hardened CI's first full run). Stage-2 entry gate reviews that evidence
-(and decides Stage-2-vs-3 ordering rationale, PROD note 7).
+**Convene the Stage-2 entry gate** (next session's first task per
+WORKFLOW §3.4): full-depth, 4 independent reviewers over (a) the Stage-1
+execution evidence (this session's log + ROADMAP marks + the live v1.0.1
+release/hygiene runs) and (b) the Stage-2 plan. The gate also settles
+Stage-2-vs-Stage-3 ordering (ADV-PROD note 7) and re-checks the parity
+tripwire clock (ADR-009: Stage 3 not yet started, box intact).

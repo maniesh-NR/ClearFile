@@ -155,6 +155,15 @@ as untested. `typescript.ignoreBuildErrors` was turned OFF today (tsc
 clean, typecheck added to CI); strict mode follows once its failure mode is
 covered by tests rather than luck.
 
+**CLOSURE 2026-11-14 (Stage-1 execution):** the web smoke tests now exist —
+`scripts/web_smoke.py` (build + standalone serve + headless Chromium:
+welcome copy, sample load, results, and a mid-flow reload that rehydrates
+state from localStorage — the persist path strict mode stresses). The
+flag was flipped ON the same day and the smoke suite passes against the
+strict-mode build. Residual noted in DEBT/SESSION_LOG: dev-mode
+double-mounting itself runs only in `next dev`; promote a dev-mode
+assertion when Stage 4's Pages deploy gate lands.
+
 ---
 
 ## Ratifications recorded 2026-11-14 (owner, in-conversation)

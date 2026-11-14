@@ -148,3 +148,80 @@ POSITIVE — clearfile/windows/runner/resources/app_icon.ico trips the
 ASCII hex digits). The guard now scans binaries for TOKEN patterns only and
 keeps the hex heuristic text files for the hex check — reasoning documented
 in the script itself. Suite/test counts at close: 49/49.
+
+---
+
+## 2026-11-14 (Stage-1 execution session) · Stage 1 executed end-to-end
+
+Baseline at entry: analyze clean, 49/49, tsc exit 0, tree clean at `a0e6d34`.
+
+**Code work (local, all verified green before commit):**
+- D2: shared `parseMoney()` in `util/money.dart` (both callers rewired);
+  comma-plus-1/2-digit shapes ("6,5") refused instead of silently parsing
+  as 65; 5 edge tests + a CSV-path warning test. D6 was a LIVE crash
+  discovered in the process (W2Entry/Dependent are value-equal → two blank
+  rows = duplicate ValueKeys → build crash): ObjectKey identity keys +
+  identity removal in both list steps; settings chain removal now drops
+  exactly one row (removeAt); 3 guard tests pin all of it.
+- D4: `ReturnStore` abstracted (+ `FileReturnStore`); `test/fakes.dart`
+  FakeReturnStore — the new per-step widget tests run OUTSIDE runAsync.
+- Suite: 61/61 (19 calc, 8 cascade, 10 CSV, 3 JSON, 5 privacy, 2 autosave
+  regressions, 5 money, 6 step/settings guards, 3 widget).
+- Web: `scripts/web_smoke.py` — build + standalone serve + headless
+  Chromium; 6/6 assertions incl. mid-flow reload persistence (the
+  localStorage persist/rehydrate path); `reactStrictMode` flipped ON
+  (ADR-010 closed).
+- D7: `clearfile/assets/sample_w2.csv` removed (duplicate of the template
+  const, unreferenced); android CI collects APKs under gitignored
+  `clearfile/build/release-apks/`.
+
+**CI hardening (SEC-5/D10/ENG-7):**
+- All `uses:` in `release.yml` + new `hygiene.yml` pinned to 40-hex SHAs
+  (lightweight tags resolved via `git ls-remote`; version in comments).
+- Tag-SHA poisoning guard in all 7 RELEASE_TAG-consuming jobs; fresh tags
+  pinned to the run's SHA via `target_commitish`.
+- `hygiene.yml`: gitleaks (weekly + push + dispatch) + harness_check —
+  **first push run green on `0bbb564`** (run 43598360301).
+
+**Docs & tooling:** SECURITY.md (D13, no invented SLAs); GPL-3.0-only SPDX
+headers on 70 own-code files (D14; shadcn `src/components/ui/**` +
+`src/hooks/**` deliberately excluded — MIT-derived, never relabelled);
+`scripts/harness_check.sh` (D19) — its first dogfood run caught 5 REAL
+drifts (README said 47 tests; STATE line; ROADMAP Stage-1 still "PENDING";
+plus its own extraction bug) — all fixed; 11 checks green after.
+
+**Incidents (recorded for honesty):**
+1. `add_spdx_headers.py` first run had a line-vs-character-offset bug that
+   split the first line of 15 shebang/'use client' files
+   (`#!/usr/bin/env bash` → `## SPDX…` + `!/usr/bin/env bash`).
+   `scripts/repair_spdx_insertion.py` restored all 15; full
+   analyze/test/tsc/smoke re-run green afterward. Both scripts kept
+   (scripts/README documents the incident).
+2. The PAT dispatched workflows (HTTP 204) and read Actions job logs
+   (HTTP 200) — Actions permissions beyond the recorded Contents-only
+   profile. WORKFLOW §5 corrected with a dated note.
+
+**v1.0.1 closing event (fresh-tag dispatch path):**
+- Existing-tag guard test FIRST: dispatch with tag=v1.0.0 (exists, points
+  elsewhere) → every build job REFUSED at the guard before building,
+  publish job skipped (run 43598383213 — intentional failure; the ADV-ENG
+  note-7 poisoning vector is closed).
+- Fresh-tag dispatch with tag=v1.0.1: run 43598726491, **8/8 jobs green in
+  ~6 minutes** (log evidence: "Cache hit for:
+  flutter-linux-stable-3.47.9-x64-…" — caching verified; nextjs-web ran
+  npm ci + tsc + build green on the runner).
+- Release 445310560: 11 assets including the first `SHA256SUMS.txt`; the
+  linux asset downloaded and re-verified locally (`sha256sum -c`: OK);
+  body verified to carry demo disclaimer, unsigned posture, SHA256SUMS
+  pointer, and the network disclosure.
+- Tag `v1.0.1` → `0bbb564` exactly (target_commitish honored — the tag
+  equals the built commit).
+
+**Backups:** `0bbb564` (code work, pre-release) + this closing backup.
+
+**Open at teardown:** the Stage-2 entry gate is the NEXT session's first
+task (full-depth; reviews this session's evidence and decides Stage-2 vs
+Stage-3 ordering per ADV-PROD note 7). Residuals: dev-mode strict-mode
+assertion deferred to Stage 4 (ADR-010 closure note); harness_check's
+per-stage patterns must be updated when a stage legitimately advances
+(self-documented in the checker).

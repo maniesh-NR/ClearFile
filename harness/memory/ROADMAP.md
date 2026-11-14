@@ -89,33 +89,53 @@ artifacts; decisions were ratified 2026-11-14, see CONSENSUS):**
    disclosed in copy; Settings/Welcome copy aligned; web auto-fill
    "stores vs transmits" wording fixed; web app title de-"Filing"-ed;
    privacy contract pinned by `clearfile/test/privacy_test.dart`.
-5. Release integrity follow-through: `SHA256SUMS` (workflow step drafted —
-   verify at next tag), release `body:` disclaimer + network disclosure
-   (drafted; live v1.0.0 description patched), signing story decision
-   (unsigned-demo posture already stated; revisit only if a need appears).
-6. CI: gitleaks scheduled scan (repo hygiene ≠ sandbox backup, so it does
-   not violate the no-cron owner directive), action SHA pinning (D10),
-   caching verification, dispatch dry-run of the hardened workflow
-   (explicitly covering both fresh-tag and existing-tag dispatch —
-   ADV-ENG Stage-1 note 7).
-7. Web reproducibility verification: `npm ci` + typecheck + build in CI
-   on the next tag (steps drafted 2026-11-14; verify they pass).
-8. Tests: widget coverage per interview step, `ReturnStore` interface
-   seam (fake store escapes the runAsync tax), web smoke test; flip
-   `reactStrictMode` on when web tests exist (ADR-010).
-9. GPL headers (D14); SECURITY.md (D13); harness self-check
-   (`scripts/harness_check.sh`, D19 — checklist to include: CONSENSUS ↔
-   ROADMAP gate-status AND gate-scope consistency, STATE-vs-ledger
-   freshness, stated test total vs actual test declarations, staged-mode
-   drift); money-field `parseMoney()` shared util + edge tests (D2);
-   sample_w2.csv wiring or removal (D7); ValueKey duplicates guard (D6);
-   scripts/ README or untrack for the sandbox-research scripts
-   (ADV-PROD Stage-1 note 8).
+5. ~~Release integrity follow-through~~ — **DONE 2026-11-14**: the
+   v1.0.1 release carries the first `SHA256SUMS.txt`; one asset
+   (`clearfile-linux-x64-v1.0.1.tar.gz`) downloaded and re-verified
+   against it locally (`sha256sum -c`: OK). Body disclaimer + network
+   disclosure verified in the published body; unsigned-demo posture
+   stands.
+6. CI: gitleaks scheduled scan **landed + first run green** (hygiene.yml,
+   push + weekly + dispatch; gitleaks and harness_check both green on
+   `0bbb564`); action SHA pinning **done** (all `uses:` pinned, D10);
+   caching verification + dispatch dry-run — **existing-tag dispatch
+   verified 2026-11-14**: a dispatch against `v1.0.0` (exists, points
+   elsewhere) was REFUSED at the tag-SHA guard in every build job before
+   any build ran, publish job skipped (run 43598383213, intentional
+   failure); fresh-tag dispatch is the v1.0.1 closing run itself; caching
+   verified from that run's logs ("Cache hit for:
+   flutter-linux-stable-3.47.9-x64-…" in the android job; npm + SDK cache
+   post-steps green on every job).
+7. ~~Web reproducibility verification~~ — **DONE 2026-11-14**: the v1.0.1
+   run's `Next.js standalone web` job ran `npm ci` + `npx tsc --noEmit` +
+   `npm run build` green on a GitHub runner (plus the local web smoke test,
+   `scripts/web_smoke.py`, 6/6).
+8. ~~Tests~~ — **DONE 2026-11-14**: per-step widget coverage (6 tests), the
+   `ReturnStore` seam + `FakeReturnStore` (D4 — new tests escape the
+   runAsync tax), web smoke test (`scripts/web_smoke.py`, 6/6 assertions
+   incl. reload persistence), `reactStrictMode` flipped ON (ADR-010
+   closed). Suite 61/61; `flutter analyze` clean.
+9. ~~Docs & tooling~~ — **DONE 2026-11-14**: GPL-3.0-only SPDX headers on
+   70 own-code files (D14; vendored shadcn excluded deliberately);
+   SECURITY.md (D13); `scripts/harness_check.sh` (D19 — 11 checks,
+   dogfooded 0 failures, runs in CI); `parseMoney()` shared util + edge
+   tests (D2); `sample_w2.csv` removed + android CI out of the tracked
+   tree (D7); duplicate-row guards: ObjectKey keys + identity removal +
+   one-row chain removal (D6 — the ValueKey collision was a live crash);
+   scripts/README updated.
 
 **Closing event (ADV-PROD Stage-1 condition 1):** Stage 1 ends with a
 **v1.0.1 tag** — its rehearsal is item 6's dispatch dry-run — which ships the
 Android/macOS network fix, the first `SHA256SUMS.txt`, and the hardened
 CI's first full green run.
+
+**DONE 2026-11-14**: dispatched via `workflow_dispatch` (the fresh-tag path,
+run 43598726491 — all 8 jobs green in ~6 minutes on restored SDK caches);
+release 445310560 carries 11 assets including the first `SHA256SUMS.txt`
+(one asset re-verified locally); the tag points at exactly the built commit
+`0bbb564` (target_commitish honored). The existing-tag guard was verified
+separately by the intentional refusal run 43598383213. **Stage 1 execution is
+complete; the Stage-2 entry gate is next.**
 
 **Gate status:** PASSED (full-depth gate, 2026-11-14) — Stage 1 ENTERED;
 execution in progress (Stage-1 session); exit gate = the Stage-2 entry

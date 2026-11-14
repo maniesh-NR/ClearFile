@@ -194,6 +194,13 @@ in platform scaffolding; the `origin` remote, the Flutter SDK (`tools/`),
   only. A fine-grained PAT with Contents:RW is effectively repo-admin
   (force-push, release mutation) — treat its theft as a full-repo
   compromise.
+- **Profile correction 2026-11-14 (Stage-1 session, observed in use):** the
+  token successfully dispatched workflow runs (Actions API `POST …
+  /dispatches` → HTTP 204) and read Actions job logs (HTTP 200) — it carries
+  Actions write/read beyond the Contents-only profile recorded above. Treat
+  the token as broader than first recorded: full-repo AND CI compromise on
+  theft. When next rotating, the owner should check the PAT's actual
+  permission set in the GitHub UI.
 - **Rotation policy:** rotate at every sandbox recycle, or at most every
   90 days; rotate immediately if the token value is ever echoed into any
   transcript, log, or file. The owner should set an explicit expiry when
