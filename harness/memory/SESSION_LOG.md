@@ -84,3 +84,4 @@ happened (ADV-PROD finding 3 was right to call this out). Actual outcome:
   expiry + branch protection) and the Stage-1 entry list.
 - Closing action: event-driven backup (this run) + a failure drill of the
   backup script (commit → unpushed → script must exit 1 → push → clean).
+- drill 08:33:13: backup script must refuse (exit 1) while unpushed
