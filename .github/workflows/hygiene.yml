@@ -62,6 +62,10 @@ jobs:
         working-directory: clearfile
       - run: npm ci
       - run: npx tsc --noEmit
+      # Stage-3 fixtures-first (2026-11-14): the independent golden-fixture
+      # oracle (Decimal arithmetic written from the IRS form text, not from
+      # either engine) runs in CI so the fixtures stay form-true.
+      - run: python3 scripts/verify_golden_fixtures.py
 
   harness-check:
     name: Harness memory self-check (D19)

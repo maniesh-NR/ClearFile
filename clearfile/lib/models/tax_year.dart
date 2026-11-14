@@ -81,6 +81,11 @@ class TaxYearParameters {
 
   /// Qualified dividends / net long-term capital gains: top of the 0% band
   /// and top of the 15% band, by filing status (stacked on ordinary income).
+  /// Breakpoints are the Qualified Dividends and Capital Gain Tax Worksheet
+  /// lines 6 and 13 in the Instructions for Form 1040 (2025). Note the MFS
+  /// 15% cap is a flat $300,000 by statute — NOT half of the $600,050 MFJ
+  /// breakpoint (a previous 300,025 value was corrected by the golden
+  /// fixtures, 2026-11-14).
   final Map<FilingStatus, double> qdiZeroCap;
   final Map<FilingStatus, double> qdiFifteenCap;
 
@@ -92,7 +97,8 @@ class TaxYearParameters {
   final Map<FilingStatus, double> saltFloor;
 
   /// Net investment income tax (simplified: applied to interest, dividends
-  /// and capital gains).
+  /// and capital gains). Thresholds per the Instructions for Form 8960
+  /// (2025): $250,000 MFJ/QSS, $200,000 single/HoH, $125,000 MFS.
   final double niitRate;
   final Map<FilingStatus, double> niitThreshold;
 
@@ -123,6 +129,10 @@ class TaxYearParameters {
     'https://taxfoundation.org/data/all/federal/2025-tax-brackets/',
     'https://www.irs.gov/newsroom/check-your-eligibility-for-the-new-enhanced-deduction-for-seniors',
     'https://www.irs.gov/instructions/i1040gi',
+    'https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf',
+    'https://www.irs.gov/pub/irs-pdf/i1040sca.pdf',
+    'https://www.irs.gov/pub/irs-pdf/f1040s8.pdf',
+    'https://www.irs.gov/instructions/i8960',
     'https://www.irs.gov/taxtopics/tc456',
     'https://www.congress.gov/bill/119th-congress/house-bill/1',
   ];
@@ -222,7 +232,8 @@ class TaxYearParameters {
     qdiFifteenCap: {
       FilingStatus.single: 533400,
       FilingStatus.marriedJoint: 600050,
-      FilingStatus.marriedSeparate: 300025,
+      // Worksheet line 13: "$300,000 if married filing separately."
+      FilingStatus.marriedSeparate: 300000,
       FilingStatus.headOfHousehold: 566700,
       FilingStatus.survivingSpouse: 600050,
     },
@@ -249,7 +260,9 @@ class TaxYearParameters {
     },
     niitThreshold: {
       FilingStatus.single: 200000,
-      FilingStatus.marriedSeparate: 200000,
+      // Instructions for Form 8960 (2025): "Married filing separately is
+      // $125,000" (not the $200,000 single threshold).
+      FilingStatus.marriedSeparate: 125000,
       FilingStatus.headOfHousehold: 200000,
       FilingStatus.marriedJoint: 250000,
       FilingStatus.survivingSpouse: 250000,

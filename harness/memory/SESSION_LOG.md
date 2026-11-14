@@ -304,3 +304,88 @@ WORKFLOW §5 posture unchanged).
 patterns, YAML validation on both workflows, guard test 4/4, README/DEBT/
 ROADMAP/CONSENSUS/STATE consistency) + mode normalization check +
 event-driven backup (this run) — the last action before this reply.
+
+---
+
+## 2026-11-14 (Stage-3 fixtures-first session) · Golden fixtures landed + four engine corrections
+
+Baseline at entry: tree clean at `e47c4a2` (in sync with origin) — but the
+sandbox had recycled AGAIN between sessions (third observed): history
+intact, `node_modules` survived, Flutter SDK gone, 155 mode-only flips,
+`bun.lock` back as scaffolding. Recovery per WORKFLOW §4: `git restore .`
+for the modes; SDK 3.47.9 reinstalled via the resuming loop (sha256
+`25ed8c3c…` verified against a freshly fetched `releases_linux.json`;
+revision c197ca5199); `bun.lock` added to the `.gitignore` backup-scope
+block so it stops being noise.
+
+**Session task (STATE "Immediately next"): Stage 3 execution, fixtures
+FIRST — the shared golden fixtures as the reference engine's regression
+suite. DONE:**
+
+- **Research first, numbers only from IRS publications.** Fetched and read
+  the actual TY2025 forms/instructions: i1040gi (QDIVCG worksheet lines 1-25,
+  Tax Table with its own MFJ worked example at $25,300 → $2,562, Tax
+  Computation Worksheet constants, Student Loan Interest Deduction
+  Worksheet, Schedule 1-A instructions), f1040s1a (Part V senior-deduction
+  worksheet: 6% phase-out, married-must-file-jointly caution),
+  i1040sca (SALT worksheet: 30% over $500k/$250k, $10k floor),
+  f1040s8 + i1040s8 (Schedule 8812: $2,200/$1,700/$500, next-$1,000 excess
+  rounding, COMBINED CTC+ODC floor, 15%-over-$2,500 ACTC), i8960 ($125,000
+  MFS NIIT threshold, 3.8%-of-the-lesser rule).
+- **16 golden fixtures** in repo-level `fixtures/tax/` (+ README with the
+  authoring discipline): every file pins its `source` (verbatim quotations
+  or exact table rows), carries a line-referenced `derivation`, and a
+  `tolerance` (0.005 exact; 0.505 where the pin is an IRS whole-dollar
+  Tax Table row). Coverage: tax-table rows (single + the instructions'
+  own MFJ example), QDI stacking across 0/15/20% bands, the flat $300,000
+  MFS 15% cap, NIIT (single + MFS threshold), senior deduction (single
+  phase-out, MFJ both-65, MFS ineligibility), SALT phase-down (the
+  Fidelity-cross-checked $575k→$17,500 case + MFS floor), 8812 phase-out
+  (next-$1,000 rounding + combined floor), refundable ACTC, student-loan
+  0.500 midpoint, zero-income edge.
+- **Independent oracle:** `scripts/verify_golden_fixtures.py` — the whole
+  1040 flow re-implemented as Decimal arithmetic from the form text
+  (deliberately not from the Dart engine), verifying every fixture's
+  expected values. 16/16 fixtures, 0 field failures; now runs in the
+  hygiene `suites` CI job. It also caught its own bug: Python `Decimal //`
+  truncates toward zero, so the 8812 ceiling used the `+999` offset.
+- **Four reference-engine corrections forced by the fixtures** (each
+  pinned to a form line, recorded in DEBT's correction note):
+  1. MFS QDI 15% cap 300,025 → **300,000** (QDIVCG worksheet line 13 —
+     a flat statutory number, not half of MFJ's 600,050);
+  2. MFS NIIT threshold 200,000 → **125,000** (Form 8960 instructions);
+  3. MFS senior deduction → **ineligible** (Schedule 1-A Part V: married
+     filers must file jointly);
+  4. CTC phase-out → **8812 semantics**: excess rounded UP to the next
+     $1,000 before ×5%, and the phase-out floors the COMBINED CTC+ODC
+     (engine previously used raw-excess ×5% with per-credit flooring).
+  Deliberately-unpinned simplifications (ACTC allocation zone, SLI
+  three-place reading, ordinary-only marginal rate) recorded as **D31**.
+- **Suites:** `golden_fixtures_test.dart` (data-driven loader; structural
+  checks throw StateError, never bare `expect()` outside tests —
+  OutsideTestException quirk recorded). **77/77 green** (61 hand-written +
+  16 fixtures); `flutter analyze` clean; `npx tsc --noEmit` exit 0;
+  harness_check green after teaching it to count data-driven fixtures
+  (fixture JSON count instead of the single static declaration — its
+  README/STATE test-count checks now expect 77, all three rows updated).
+- **Docs:** README test-table + fixtures row + run-block; scripts/README
+  (oracle entry); tax_year.dart parameterSources gained the
+  Schedule 1-A/Schedule A/8812/8960 URLs; fixtures/tax/README.md.
+
+**Session quirks (recorded for honesty):** my own hand arithmetic was
+wrong four times mid-session (22% band treated as 24%, 12% run past
+48,475, etc.) — the python Decimal pre-check caught every one before any
+fixture was written; the fixtures are derived from the form text and the
+oracle, never from the engine. One background `cd /tmp && curl … & curl …`
+chain lost the cd for the second/third downloads (files landed in the
+project root; moved, lesson recorded as STATE quirk 15).
+
+**Tripwire status:** working session 1 of the four-session total consumed
+(fixtures-first included by definition); the two-session web-parity box
+is untouched. Next session = the boxed web parity set against these same
+fixtures.
+
+**Closing action:** full re-verification (oracle 16/16, analyze clean,
+77/77, tsc exit 0, harness_check 0 failures, YAML validated) + mode
+normalization check + event-driven backup (this run) — the last action
+before this reply.

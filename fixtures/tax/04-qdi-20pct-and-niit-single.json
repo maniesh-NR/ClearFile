@@ -1,0 +1,59 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "qdi-20pct-and-niit-single",
+  "description": "A single filer with only long-term capital gains large enough to fill the 0% band ($48,350), the entire 15% band (to $533,400), and spill into the 20% band, plus the 3.8% Net Investment Income Tax on the lesser of net investment income or MAGI over the $200,000 threshold.",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Instructions for Form 1040 (2025), Qualified Dividends and Capital Gain Tax Worksheet; Instructions for Form 8960 (2025)",
+    "urls": ["https://www.irs.gov/instructions/i1040gi", "https://www.irs.gov/pub/irs-pdf/i8960.pdf"],
+    "pin": "QDIVCG worksheet lines 6/13 (single: $48,350 / $533,400), lines 18 and 21 (15% and 20% slices). Form 8960: 'The NIIT is 3.8% of the lesser of (a) net investment income, or (b) the excess of MAGI over the threshold'; threshold $200,000 single."
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "single",
+    "taxpayer65OrOlder": false,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 600000,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": []
+  },
+  "expected": {
+    "totalIncome": 600000,
+    "agi": 600000,
+    "standardDeductionTotal": 15750,
+    "taxableIncome": 584250,
+    "preferentialIncome": 584250,
+    "ordinaryTax": 0,
+    "preferentialTax": 82927.5,
+    "niit": 15200,
+    "nonRefundableCredits": 0,
+    "refundableCredits": 0,
+    "totalTax": 98127.5,
+    "amountOwed": 98127.5
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "LTCG $600,000 only; standard deduction $15,750; taxable income = $584,250, all preferential.",
+    "0% band (worksheet line 9): min(584,250, 48,350) - 0 = $48,350 at 0%.",
+    "15% band (lines 16-17): 533,400 - (0 + 48,350) = $485,050 at 15% = $72,757.50.",
+    "20% band (line 20): 584,250 - (48,350 + 485,050) = $50,850 at 20% = $10,170.00.",
+    "Preferential tax = 72,757.50 + 10,170.00 = $82,927.50; ordinary tax $0.",
+    "NIIT (Form 8960): 3.8% x min(600,000 NII, 600,000 - 200,000 MAGI excess) = 3.8% x 400,000 = $15,200.00.",
+    "Total tax = 82,927.50 + 15,200.00 = $98,127.50."
+  ]
+}

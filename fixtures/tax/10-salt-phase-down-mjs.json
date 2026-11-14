@@ -1,0 +1,62 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "salt-phase-down-mjs",
+  "description": "The OBBBA SALT cap phase-down: married filing jointly, MAGI $575,000, SALT paid $45,000. The $40,000 cap is reduced by 30% of the $75,000 MAGI excess over $500,000, to $17,500 - the exact worked example Fidelity publishes, and the Schedule A State and Local Taxes Worksheet line by line.",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Instructions for Schedule A (Form 1040) (2025), State and Local Taxes Worksheet lines 5-10; cross-check: Fidelity 'What is the SALT deduction?' (same numbers)",
+    "urls": ["https://www.irs.gov/pub/irs-pdf/i1040sca.pdf", "https://www.fidelity.com/learning-center/personal-finance/what-is-the-salt-deduction"],
+    "pin": "Schedule A worksheet verbatim: line 5 'Enter $500,000 ($250,000 if married filing separately)'; line 7 'Multiply line 6 by 30% (0.30)'; line 8 'Subtract line 7 from line 1' (line 1 = $40,000 cap); line 9 'Enter the larger of the amount on line 8 or $10,000'. Fidelity cross-check: 'multiply that $75,000 overage by 30%... to get $22,500. Then subtract $22,500 [from $40,000]' = $17,500."
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "marriedJoint",
+    "taxpayer65OrOlder": false,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [{"employer": "Example W-2", "wages": 575000, "withholding": 0}],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 0,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "itemized",
+    "stateLocalIncomeOrSalesTax": 30000,
+    "realEstateTax": 15000,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": []
+  },
+  "expected": {
+    "totalIncome": 575000,
+    "agi": 575000,
+    "saltPaid": 45000,
+    "saltCap": 17500,
+    "saltAllowed": 17500,
+    "itemizedDeductionTotal": 17500,
+    "deductionMethodUsed": "itemized",
+    "deductionUsed": 17500,
+    "taxableIncome": 557500,
+    "preferentialIncome": 0,
+    "ordinaryTax": 134219.5,
+    "preferentialTax": 0,
+    "niit": 0,
+    "nonRefundableCredits": 0,
+    "refundableCredits": 0,
+    "totalTax": 134219.5,
+    "amountOwed": 134219.5
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "Wages $575,000 = MAGI; SALT paid = 30,000 state income tax + 15,000 real estate = $45,000; itemizing elected.",
+    "SALT cap: 40,000 - 30% x (575,000 - 500,000) = 40,000 - 22,500 = $17,500 (above the $10,000 floor). saltAllowed = min(45,000, 17,500) = $17,500.",
+    "Itemized total = $17,500; taxable income = 575,000 - 17,500 = $557,500.",
+    "MFJ schedule: 2,385 + 8,772 + 22% x 109,750 (24,145) + 24% x 187,900 (45,096) + 32% x 106,450 (34,064) + 35% x 56,450 (19,757.50) = $134,219.50.",
+    "NIIT $0 (no investment income). Total tax $134,219.50."
+  ]
+}

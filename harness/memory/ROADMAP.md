@@ -217,6 +217,26 @@ and the project definition of done (ADV-PROD F5: "v1.1 = a reader can
 verify every number against a cited IRS source without reading git
 history").
 
+**Fixtures-first progress (2026-11-14 — tripwire clock: working session 1
+of the four-session total, fixtures-first included; the two-session parity
+box is still untouched): DONE.** 16 shared golden fixtures live in
+repo-level `fixtures/tax/`
+— each an IRS-pinned `(TaxReturnData, TaxResult)` JSON pair with citation,
+derivation and tolerance (Tax Table rows + the instructions' own MFJ
+example; QDIVCG worksheet breakpoints incl. the flat $300,000 MFS 15% cap;
+Schedule 1-A Part V senior deduction; Schedule A SALT worksheet incl. the
+$575k→$17,500 phase-down; Schedule 8812 incl. next-$1,000 phase-out
+rounding and the combined CTC+ODC floor; Form 8960 incl. the $125,000 MFS
+threshold; the student-loan worksheet at the unambiguous 0.500 midpoint).
+Consumed by `clearfile/test/golden_fixtures_test.dart` (suite now 77/77)
+and independently re-derived by `scripts/verify_golden_fixtures.py`
+(Decimal oracle written from the form text; runs in the hygiene `suites`
+CI job). Authoring the fixtures flushed out and closed four reference-
+engine divergences (DEBT correction note 2026-11-14): MFS QDI 15% cap,
+MFS NIIT threshold, MFS senior-deduction ineligibility, 8812 phase-out
+mechanics. Deliberately-unpinned simplifications are D31. **Next inside
+Stage 3:** the boxed web parity set (two sessions max, tripwire armed).
+
 **Gate status:** **Stage 3 ENTERED 2026-11-14** — at the Stage-2 entry
 gate, under the re-sequencing: the full-depth panel reviewed this stage's
 plan on its agenda and entered it (see `../adversarial/CONSENSUS.md`).

@@ -1,0 +1,57 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "sli-phaseout-single",
+  "description": "Student loan interest deduction phase-out at the exact midpoint of the band: single filer, MAGI $92,500, $2,500 interest paid. The deduction is half of $2,500 because $7,500 of MAGI over the $85,000 start is exactly half the $15,000 phase-out band - the one point in the band where the worksheet's 'rounded to at least three places' instruction is unambiguous (0.500 exactly).",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Instructions for Form 1040 (2025), Student Loan Interest Deduction Worksheet - Schedule 1, Line 21; Publication 970 (2025)",
+    "urls": ["https://www.irs.gov/instructions/i1040gi", "https://www.irs.gov/pub/irs-pdf/p970.pdf"],
+    "pin": "Worksheet verbatim: line 1 'Don't enter more than $2,500'; line 5 'Single, head of household, or qualifying surviving spouse - $85,000'; line 7 'Divide line 6 by $15,000 ($30,000 if married filing jointly). Enter the result as a decimal (rounded to at least three places). If the result is 1.000 or more, enter 1.000'; line 8 'Multiply line 1 by line 7'; line 9 = line 1 - line 8. Excess $7,500 / $15,000 = 0.500 exactly - no rounding ambiguity at any decimal precision."
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "single",
+    "taxpayer65OrOlder": false,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [{"employer": "Example W-2", "wages": 92500, "withholding": 0}],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 0,
+    "otherIncome": 0,
+    "studentLoanInterest": 2500,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": []
+  },
+  "expected": {
+    "totalIncome": 92500,
+    "studentLoanDeduction": 1250,
+    "agi": 91250,
+    "standardDeductionTotal": 15750,
+    "taxableIncome": 75500,
+    "preferentialIncome": 0,
+    "ordinaryTax": 11524,
+    "preferentialTax": 0,
+    "niit": 0,
+    "nonRefundableCredits": 0,
+    "refundableCredits": 0,
+    "totalTax": 11524,
+    "amountOwed": 11524
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "Wages $92,500 (MAGI before the deduction itself); interest paid $2,500 (the line-1 cap).",
+    "Worksheet: line 6 = 92,500 - 85,000 = $7,500; line 7 = 7,500 / 15,000 = 0.500 exactly; line 8 = 2,500 x 0.500 = $1,250; line 9 = 2,500 - 1,250 = $1,250 deduction.",
+    "AGI = 92,500 - 1,250 = $91,250; taxable income = 91,250 - 15,750 = $75,500.",
+    "Ordinary tax (single schedule): 1,192.50 + 4,386.00 + 22% x (75,500 - 48,475) = 22% x 27,025 = 5,945.50; total $11,524.00."
+  ]
+}

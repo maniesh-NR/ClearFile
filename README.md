@@ -17,7 +17,8 @@ Licensed under [GPL-3.0](LICENSE).
 | --- | --- |
 | `src/` | The original **Next.js 16 web prototype**: a seven-step Material 3 tax interview (status → income → deductions → dependents → payments → review → results) with a **simplified** TY2025/TY2026 calculation engine (see [Engine limitations](#engine-limitations)), deterministic review findings, and an optional bring-your-own-key AI assistant. |
 | `clearfile/` | The **Flutter 3.47 app** — the full-featured implementation: the five-step interview, the complete TY2025 engine and the AI cascade, compiled to Android, iOS, macOS, Windows, Linux and Web from one Dart codebase. The two codebases share no code; the web prototype is the earlier, simplified model. |
-| `clearfile/test/` | 61 Dart tests — 19 calculator, 8 AI cascade, 10 CSV import, 3 JSON roundtrip, 5 privacy (incl. the findings-path leak guard), 2 autosave regressions (delete + switch), 5 money-parsing edges, 6 step/settings widget guards (incl. the duplicate-row guards), 3 app-flow widget — that pin the engine, the UI behaviour and the AI-privacy contract. `flutter analyze` is clean and `flutter test` is green. |
+| `clearfile/test/` | 77 Dart tests — 61 hand-written (19 calculator, 8 AI cascade, 10 CSV import, 3 JSON roundtrip, 5 privacy (incl. the findings-path leak guard), 2 autosave regressions (delete + switch), 5 money-parsing edges, 6 step/settings widget guards (incl. the duplicate-row guards), 3 app-flow widget) plus 16 IRS-pinned golden fixtures (repo-level `fixtures/tax/`, shared with the web engine's parity tests and re-derived independently by `scripts/verify_golden_fixtures.py`) — that pin the engine, the UI behaviour and the AI-privacy contract. `flutter analyze` is clean and `flutter test` is green. |
+| `fixtures/tax/` | The **shared golden fixtures**: 16 `(TaxReturnData, TaxResult)` JSON pairs, each pinned to an IRS-published TY2025 worked example or worksheet (Tax Table, QDIVCG worksheet, Schedule 1-A Part V, Schedule A SALT worksheet, Schedule 8812, Form 8960) with its citation, derivation and tolerance in the file. The single source of truth the two engines are both held to. |
 | `docs/reverse-engineering-protocol.md` | The **clean-room RE playbook** for studying legacy proprietary tax-file formats (`.tax`, `.tax[YYYY]`, `.LIF`, `.FIL`, `.RCD`, `.1PE`, `.3ME`, `.3PE`, `.DGC`, `.SCD`, `.THP`, `.TVL`, `.1PH`, `.TT[YYYY]STATE`). Read §2 before any RE session. |
 | `docs/blueprint.pdf` | 17-page design blueprint for the prototype (interview flow, MD3 system, engine, AI cascade). |
 | [GitHub Releases](https://github.com/maniesh-NR/ClearFile/releases) | Pre-built binaries for every target platform. Release assets live on GitHub Releases, not in the repository tree. |
@@ -159,7 +160,7 @@ git clone https://github.com/maniesh-NR/ClearFile.git
 cd ClearFile/clearfile
 flutter pub get
 flutter run                       # picks the active device
-flutter test                      # 61 tests green
+flutter test                      # 77 tests green (61 + 16 golden fixtures)
 flutter build apk --split-per-abi # Android armv7 / armv8a / x86_64
 flutter build linux               # Linux x64
 flutter build macos               # macOS universal

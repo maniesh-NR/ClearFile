@@ -16,9 +16,22 @@ Scripts in this directory fall into two groups:
      Needs `pip install playwright && playwright install chromium`.
    - `harness_check.sh` — harness self-enforcement (D19): mechanical
      cross-checks of ROADMAP↔CONSENSUS gate status, tiering consistency,
-     STATE freshness, stated-vs-declared test totals, mode drift, and
-     unpushed memory. Runs locally at teardown and in CI
+     STATE freshness, stated-vs-declared test totals (data-driven golden
+     fixtures in `fixtures/tax/` are counted per JSON file), mode drift,
+     and unpushed memory. Runs locally at teardown and in CI
      (`.github/workflows/hygiene.yml`).
+   - `verify_golden_fixtures.py` — the independent oracle for
+     `fixtures/tax/` (Stage-3 fixtures-first, 2026-11-14): re-derives every
+     fixture's expected values as Decimal arithmetic written directly from
+     the IRS TY2025 form and worksheet text (Tax Table, QDIVCG worksheet,
+     Schedule 1-A Part V, Schedule A SALT worksheet, Schedule 8812,
+     Form 8960) — deliberately NOT from either project engine, so a
+     Dart/TS disagreement against a fixture can be adjudicated against the
+     form text. Runs in CI (hygiene.yml `suites` job) alongside
+     `flutter test`, whose `golden_fixtures_test.dart` consumes the same
+     files. NB: Python `Decimal //` truncates toward zero — the script's
+     ceiling-to-next-$1,000 uses the `+999` offset (learned the hard way;
+     see the comment in `ctc_phaseout_amount`).
    - `test_tag_guard.sh` — functional test of the release.yml tag guard
      (Stage-2 entry gate ENG-1): extracts the guard body verbatim from
      `release.yml` (never drifts from what CI runs) and exercises all four

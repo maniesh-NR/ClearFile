@@ -109,14 +109,28 @@ class TaxCalculator {
     final otherDependents =
         r.dependents.where((d) => d.otherDependentCredit).length;
     final ctcPhaseoutStart = params.ctcPhaseoutStart[status]!;
-    final excessAgi = max(0.0, agi - ctcPhaseoutStart);
+    // Schedule 8812 (2025), line 10: the excess MAGI is rounded UP to the
+    // next multiple of $1,000 BEFORE the 5% phase-out is applied ("if the
+    // result is $425, enter $1,000; if the result is $1,025, enter $2,000").
+    // Cents-normalize first so floating-point dust cannot bump an exact
+    // multiple of $1,000 up to the next unit.
+    final rawExcess = agi - ctcPhaseoutStart;
+    final excessCents = rawExcess <= 0 ? 0.0 : (rawExcess * 100).roundToDouble();
+    final phaseOutBase = excessCents <= 0
+        ? 0.0
+        : (excessCents / 100000).ceilToDouble() * 1000;
+    final phaseOutAmount = params.ctcPhaseoutRate * phaseOutBase;
     final grossCtc = kids * params.ctcPerChild;
     final grossOdc = otherDependents * params.odcPerDependent;
-    final phasedCtc = max(0.0, grossCtc - params.ctcPhaseoutRate * excessAgi);
-    final phasedOdc = max(0.0, grossOdc - params.ctcPhaseoutRate * excessAgi);
+    // 8812 line 12: the phase-out reduces the COMBINED CTC + ODC amount,
+    // floored at zero (not each credit separately).
+    final phasedTotal = max(0.0, grossCtc + grossOdc - phaseOutAmount);
+    // ODC is strictly non-refundable, so only the CTC portion feeds the
+    // refundable ACTC side.
+    final phasedCtc = max(0.0, grossCtc - phaseOutAmount);
 
     final taxBeforeCredits = ordinaryTax + preferentialTax;
-    final nonRefundableCredits = min(phasedCtc + phasedOdc, taxBeforeCredits);
+    final nonRefundableCredits = min(phasedTotal, taxBeforeCredits);
 
     // Refundable ACTC (simplified): 15% of earned income above the floor,
     // capped at the per-child refundable amount.
@@ -217,6 +231,10 @@ class TaxCalculator {
     double agi,
     TaxYearParameters params,
   ) {
+    // Schedule 1-A (2025), Part V caution: "If you are married, you must
+    // file a joint return with your spouse to claim this deduction" —
+    // married filing separately gets nothing.
+    if (status == FilingStatus.marriedSeparate) return 0;
     final seniorPersons = (r.taxpayer65OrOlder ? 1 : 0) +
         (r.spouse65OrOlder && r.hasSpouse ? 1 : 0);
     if (seniorPersons == 0) return 0;

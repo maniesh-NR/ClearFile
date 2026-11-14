@@ -1,0 +1,57 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "niit-mfs-threshold-125000",
+  "description": "Married filing separately with wages plus interest: pins the $125,000 MFS MAGI threshold for the 3.8% Net Investment Income Tax, where the tax is limited by the smaller of net investment income ($20,000) or the MAGI excess ($25,000).",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Instructions for Form 8960 (2025)",
+    "urls": ["https://www.irs.gov/instructions/i8960", "https://www.irs.gov/pub/irs-pdf/i8960.pdf"],
+    "pin": "Threshold list verbatim: 'Married filing jointly is $250,000. Married filing separately is $125,000. Single or Head of household is $200,000.' 'The NIIT is 3.8% of the lesser of' net investment income or the MAGI excess."
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "marriedSeparate",
+    "taxpayer65OrOlder": false,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [{"employer": "Example W-2", "wages": 130000, "withholding": 0}],
+    "interestIncome": 20000,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 0,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": []
+  },
+  "expected": {
+    "totalIncome": 150000,
+    "agi": 150000,
+    "standardDeductionTotal": 15750,
+    "taxableIncome": 134250,
+    "preferentialIncome": 0,
+    "ordinaryTax": 25067,
+    "preferentialTax": 0,
+    "niit": 760,
+    "nonRefundableCredits": 0,
+    "refundableCredits": 0,
+    "totalTax": 25827,
+    "amountOwed": 25827
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "Wages $130,000 + interest $20,000 = $150,000 MAGI.",
+    "MFS standard deduction $15,750; taxable income $134,250.",
+    "MFS rate schedule: 10% x 11,925 = 1,192.50; 12% x 36,550 = 4,386.00; 22% x 54,875 = 12,072.50; 24% x (134,250 - 103,350) = 24% x 30,900 = 7,416.00. Ordinary tax = $25,067.00.",
+    "NIIT: MAGI 150,000 exceeds the $125,000 MFS threshold by $25,000; net investment income is $20,000; tax = 3.8% x 20,000 = $760.00. (An engine using the $200,000 single threshold here would produce $0 and fail this fixture.)",
+    "Total tax = 25,067.00 + 760.00 = $25,827.00."
+  ]
+}

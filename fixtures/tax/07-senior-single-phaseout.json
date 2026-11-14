@@ -1,0 +1,60 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "senior-single-phaseout",
+  "description": "Single filer age 65+ in the 6% phase-out range of the OBBBA enhanced deduction for seniors: $6,000 reduced by 6% of MAGI over $75,000, on top of the 65+ additional standard deduction.",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Schedule 1-A (Form 1040) 2025, Part V 'Enhanced Deduction for Seniors', lines 31-37; Instructions for Form 1040 (2025)",
+    "urls": ["https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf", "https://www.irs.gov/instructions/i1040gi"],
+    "pin": "Worksheet lines 31-37 verbatim: 'Enter $75,000 ($150,000 if married filing jointly)... Subtract line 32 from line 31... Multiply line 33 by 6% (0.06)... Subtract line 34 from $6,000. If zero or less, enter -0-.' Additional standard deduction $2,000 (single 65+), VITA Standard Deduction page."
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "single",
+    "taxpayer65OrOlder": true,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [{"employer": "Example W-2", "wages": 100000, "withholding": 0}],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 0,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": []
+  },
+  "expected": {
+    "totalIncome": 100000,
+    "agi": 100000,
+    "basicStandardDeduction": 15750,
+    "additionalStandardDeduction": 2000,
+    "seniorDeduction": 4500,
+    "standardDeductionTotal": 22250,
+    "taxableIncome": 77750,
+    "preferentialIncome": 0,
+    "ordinaryTax": 12019,
+    "preferentialTax": 0,
+    "niit": 0,
+    "nonRefundableCredits": 0,
+    "refundableCredits": 0,
+    "totalTax": 12019,
+    "amountOwed": 12019
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "Wages $100,000 = MAGI (Part I of Schedule 1-A; no Puerto Rico / Form 2555 items).",
+    "Part V: line 32 = $75,000 (single); line 33 = 100,000 - 75,000 = $25,000; line 34 = 6% x 25,000 = $1,500; line 35 = 6,000 - 1,500 = $4,500 senior deduction.",
+    "Standard deduction total = 15,750 + 2,000 (65+ single) + 4,500 = $22,250; taxable income = $77,750.",
+    "Ordinary tax (single schedule): 1,192.50 + 4,386.00 + 22% x (77,750 - 48,475) = 22% x 29,275 = 6,440.50; total $12,019.00.",
+    "NIIT $0 (MAGI under $200,000, no investment income). Total tax $12,019.00."
+  ]
+}

@@ -69,6 +69,9 @@ server.log
 #   download/            - local deliverables (release binaries live on
 #                          GitHub Releases; nitro_nissi is an unrelated app)
 #   tools/                - SDKs (Flutter toolchain, gitlink)
+#   bun.lock              - bun scaffolding re-provisioned by sandbox recycles
+#                          (npm/package-lock is the repo standard; see the
+#                          2026-11-14 Stage-1 entry session log)
 # ---------------------------------------------------------------------------
 /.env
 /db/
@@ -81,3 +84,4 @@ server.log
 /upload/
 /download/
 /tools/
+/bun.lock

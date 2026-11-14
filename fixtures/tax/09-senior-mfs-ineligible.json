@@ -1,0 +1,60 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "senior-mfs-ineligible",
+  "description": "A married taxpayer filing separately is NOT eligible for the enhanced deduction for seniors, whatever their age - Schedule 1-A Part V requires a joint return. This fixture pinned and corrected the engine, which previously granted a single-style senior deduction to MFS filers.",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Schedule 1-A (Form 1040) 2025, Part V; Instructions for Form 1040 (2025), 'Enhanced deduction for seniors'",
+    "urls": ["https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf", "https://www.irs.gov/instructions/i1040gi"],
+    "pin": "Part V caution verbatim: 'If you are married, you must file a joint return with your spouse to claim this deduction.' The MFS filer still gets the $1,600 additional standard deduction for age 65+ (married amounts), but zero senior deduction."
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "marriedSeparate",
+    "taxpayer65OrOlder": true,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [{"employer": "Example W-2", "wages": 50000, "withholding": 0}],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 0,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": []
+  },
+  "expected": {
+    "totalIncome": 50000,
+    "agi": 50000,
+    "basicStandardDeduction": 15750,
+    "additionalStandardDeduction": 1600,
+    "seniorDeduction": 0,
+    "standardDeductionTotal": 17350,
+    "taxableIncome": 32650,
+    "preferentialIncome": 0,
+    "ordinaryTax": 3679.5,
+    "preferentialTax": 0,
+    "niit": 0,
+    "nonRefundableCredits": 0,
+    "refundableCredits": 0,
+    "totalTax": 3679.5,
+    "amountOwed": 3679.5
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "Wages $50,000, MFS, taxpayer 65+.",
+    "Senior deduction = $0 (Part V caution: married filers must file jointly to claim it).",
+    "Additional standard deduction for 65+ at the MARRIED amount: $1,600. Standard deduction total = 15,750 + 1,600 = $17,350.",
+    "Taxable income $32,650. MFS schedule: 10% x 11,925 = 1,192.50 + 12% x 20,725 = 2,487.00 = $3,679.50.",
+    "NIIT $0 (MAGI $50,000 below the $125,000 MFS threshold). Total tax $3,679.50."
+  ]
+}

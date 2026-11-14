@@ -1,0 +1,63 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "ctc-phaseout-rounding-mjs",
+  "description": "Schedule 8812 line 10 rounding: MFJ with two qualifying children and MAGI $401,425 - the $1,425 excess over the $400,000 threshold is rounded UP to the next multiple of $1,000 ($2,000) BEFORE the 5% phase-out, so the credit is $4,400 - $100 = $4,300, not $4,400 - $71.25. This fixture pinned and corrected the engine's raw-excess phase-out.",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Schedule 8812 (Form 1040) 2025, lines 4-12; Instructions for Schedule 8812 (2025)",
+    "urls": ["https://www.irs.gov/pub/irs-pdf/f1040s8.pdf", "https://www.irs.gov/pub/irs-pdf/i1040s8.pdf"],
+    "pin": "Schedule 8812 line 10 verbatim: 'If more than zero and not a multiple of $1,000, enter the next multiple of $1,000. For example, if the result is $425, enter $1,000; if the result is $1,025, enter $2,000.' Line 11: 'Multiply line 10 by 5% (0.05).' Line 12: subtract line 11 from line 8 (the combined CTC+ODC amount), floored at zero. Line 5: 'Multiply line 4 by $2,200.' Threshold (line 9): 'Married filing jointly - $400,000.'"
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "marriedJoint",
+    "taxpayer65OrOlder": false,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [{"employer": "Example W-2", "wages": 401425, "withholding": 30000}],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 0,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": [
+      {"name": "Child A", "age": 8, "relationship": "child", "qualifyingChild": true, "otherDependentCredit": false},
+      {"name": "Child B", "age": 11, "relationship": "child", "qualifyingChild": true, "otherDependentCredit": false}
+    ]
+  },
+  "expected": {
+    "totalIncome": 401425,
+    "agi": 401425,
+    "qualifyingChildren": 2,
+    "standardDeductionTotal": 31500,
+    "taxableIncome": 369925,
+    "preferentialIncome": 0,
+    "ordinaryTax": 74476,
+    "preferentialTax": 0,
+    "niit": 0,
+    "nonRefundableCredits": 4300,
+    "refundableCredits": 0,
+    "totalTax": 70176,
+    "totalPayments": 30000,
+    "amountOwed": 40176
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "Wages $401,425; standard deduction $31,500; taxable income $369,925; withholding $30,000.",
+    "Ordinary tax (MFJ schedule): 2,385 + 8,772 + 24,145 + 24% x 163,225 (39,174) = $74,476.00.",
+    "CTC: 2 children x $2,200 = $4,400 (Schedule 8812 line 5).",
+    "Phase-out: MAGI excess = 401,425 - 400,000 = $1,425, not a multiple of $1,000, so line 10 = $2,000; line 11 = 5% x 2,000 = $100; line 12 = 4,400 - 100 = $4,300.",
+    "Non-refundable credit = min(4,300, 74,476) = $4,300 (fully absorbed by tax; no refundable ACTC).",
+    "Total tax = 74,476 - 4,300 = $70,176; owed = 70,176 - 30,000 = $40,176."
+  ]
+}

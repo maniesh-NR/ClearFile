@@ -1,0 +1,56 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "tax-table-example-mjf-25325",
+  "description": "The Instructions for Form 1040 (2025) contain their own worked Tax Table example: a married couple filing jointly with taxable income $25,300 reads $2,562 from the row 25,300-25,350. The published row value corresponds to the row midpoint $25,325, where the bracket computation is exactly $2,562.00.",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Instructions for Form 1040 (2025), Tax Table 'Sample Table' example",
+    "urls": ["https://www.irs.gov/instructions/i1040gi", "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf"],
+    "pin": "Verbatim: 'Example. A married couple is filing a joint return. Their taxable income on Form 1040, line 15, is $25,300. ... the amount shown where the taxable income line and filing status column meet is $2,562.'"
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "marriedJoint",
+    "taxpayer65OrOlder": false,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [{"employer": "Example W-2", "wages": 56825, "withholding": 0}],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 0,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": []
+  },
+  "expected": {
+    "totalIncome": 56825,
+    "agi": 56825,
+    "standardDeductionTotal": 31500,
+    "taxableIncome": 25325,
+    "ordinaryTax": 2562,
+    "preferentialTax": 0,
+    "niit": 0,
+    "nonRefundableCredits": 0,
+    "refundableCredits": 0,
+    "totalTax": 2562,
+    "totalPayments": 0,
+    "amountOwed": 2562
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "Wages $56,825; AGI $56,825.",
+    "Standard deduction (MFJ, 2025): $31,500. Taxable income = 56,825 - 31,500 = $25,325, the midpoint of the Tax Table row 25,300-25,350 that the IRS example uses.",
+    "MFJ rate schedule (2025): 10% x 23,850 = 2,385.00; 12% x (25,325 - 23,850) = 12% x 1,475 = 177.00.",
+    "Total = 2,385.00 + 177.00 = $2,562.00 exactly - the value the IRS example publishes for this row."
+  ]
+}

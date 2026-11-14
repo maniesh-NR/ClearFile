@@ -36,6 +36,7 @@ Each item carries its owner stage.
 | D28 | ADV-ENG Stage-2 ENG-3 | `MoneyField` silently ignores comma shapes (`money_field.dart:69-70`) while CSV import warns — fold into the Stage-3 parser-hardening tests | 3 |
 | D29 | ADV-ENG Stage-2 ENG-5 | Tag-PUSH trigger path of the release guard unverified (both live proofs were dispatches; an annotated-tag push may peel to the tag-object SHA and be refused fail-closed) — verify once at the NEXT tagged release, or drop the push trigger for dispatch-only | next tagged release |
 | D30 | ADV-SEC Stage-2 SEC-2/SEC-4 | Owner-side hardening standing recommendations: Dependabot alerts, branch protection on `main`, PAT expiry (see WORKFLOW §5) — re-affirmed by the Stage-2 entry gate | owner-side |
+| D31 | Stage-3 fixtures-first (2026-11-14) | Engine simplifications deliberately NOT pinned by the golden fixtures: (a) ACTC allocation between CTC and ODC in the partial-absorption zone (engine subtracts the whole non-refundable credit from the CTC portion; Schedule 8812's Part II-A has its own allocation) — fixtures avoid the ambiguous zone; (b) the student-loan worksheet's "rounded to at least three places" is read as exact precision (existing calculator test pins 1,333.33 at MAGI 92k where a 3-place worksheet gives 1,332.50) — the SLI fixture uses the unambiguous 0.500 midpoint; (c) marginal rate is computed on ordinary taxable only (QDI-heavy returns report the ordinary schedule's rate) — no fixture asserts marginalRate | Stage-3 parity set |
 
 **D2 correction (2026-11-14, Stage-2 entry gate ENG-3, append-only):** the
 DONE note above overstates the empty-cell half of the original finding. What
@@ -51,3 +52,12 @@ fail-closed tag-guard fix (ENG-1) is APPLIED with its functional test
 `scripts/test_tag_guard.sh` (4/4 scenarios green) — not debt; the GPL §6
 release-body line (SEC-1/LEGAL-1), push-CI suites job (ENG-4), and
 THIRD-PARTY-NOTICES.md (LEGAL-2) are likewise applied in-session.
+
+**Stage-3 fixtures-first corrections (2026-11-14):** the golden fixtures
+exposed and closed four reference-engine divergences from the published
+forms — MFS QDI 15% cap 300,025→300,000 (QDIVCG worksheet line 13), MFS
+NIIT threshold 200,000→125,000 (Form 8960 instructions), MFS senior-
+deduction ineligibility (Schedule 1-A Part V caution), and the 8812
+phase-out (next-$1,000 ceiling + combined CTC+ODC floor, form lines
+9-12). These are fixed, not debt; recorded here so the correction
+trail exists. D31 above holds what was deliberately left simplified.

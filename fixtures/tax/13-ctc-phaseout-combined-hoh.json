@@ -1,0 +1,62 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "ctc-phaseout-combined-hoh",
+  "description": "Head of household, one qualifying child ($2,200) plus one other dependent ($500), MAGI $250,000: the 5% phase-out reduces the COMBINED $2,700 credit by 5% of the $50,000 excess ($2,500), leaving $200 - the Credit for Other Dependents survives because Schedule 8812 line 12 floors the combined amount, not each credit separately. This fixture pinned and corrected the engine's per-credit flooring.",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Schedule 8812 (Form 1040) 2025, lines 4-14; Instructions for Schedule 8812 (2025)",
+    "urls": ["https://www.irs.gov/pub/irs-pdf/f1040s8.pdf", "https://www.irs.gov/pub/irs-pdf/i1040s8.pdf"],
+    "pin": "Schedule 8812: line 5 'Multiply line 4 by $2,200'; line 7 'Multiply line 6 by $500'; line 8 'Add lines 5 and 7'; line 9 threshold 'All other filing statuses - $200,000'; line 11 'Multiply line 10 by 5% (0.05)'; line 12 'Subtract line 11 from line 8' (combined, floored at zero)."
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "headOfHousehold",
+    "taxpayer65OrOlder": false,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [{"employer": "Example W-2", "wages": 250000, "withholding": 0}],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 0,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": [
+      {"name": "Child", "age": 9, "relationship": "child", "qualifyingChild": true, "otherDependentCredit": false},
+      {"name": "Parent", "age": 68, "relationship": "parent", "qualifyingChild": false, "otherDependentCredit": true}
+    ]
+  },
+  "expected": {
+    "totalIncome": 250000,
+    "agi": 250000,
+    "qualifyingChildren": 1,
+    "standardDeductionTotal": 23625,
+    "taxableIncome": 226375,
+    "preferentialIncome": 0,
+    "ordinaryTax": 47764,
+    "preferentialTax": 0,
+    "niit": 0,
+    "nonRefundableCredits": 200,
+    "refundableCredits": 0,
+    "totalTax": 47564,
+    "amountOwed": 47564
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "Wages $250,000; HoH standard deduction $23,625; taxable income $226,375.",
+    "HoH schedule: 1,700 + 12% x 47,850 (5,742) + 22% x 38,500 (8,470) + 24% x 93,950 (22,548) + 32% x 29,075 (9,304) = $47,764.00.",
+    "Credits: $2,200 (child) + $500 (other dependent) = $2,700 combined (lines 5 + 7 = line 8).",
+    "Phase-out: excess = 250,000 - 200,000 = $50,000, already a multiple of $1,000 (line 10 unchanged); line 11 = 5% x 50,000 = $2,500; line 12 = 2,700 - 2,500 = $200 (combined floor).",
+    "Non-refundable credit = min(200, 47,764) = $200; the CTC portion is fully phased out, so no refundable ACTC (Part II-A).",
+    "Total tax = 47,764 - 200 = $47,564."
+  ]
+}

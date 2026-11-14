@@ -1,0 +1,61 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "senior-mjs-both-65-phaseout",
+  "description": "Married filing jointly, both spouses 65+, MAGI $200,000: each spouse's $6,000 enhanced deduction is independently reduced by 6% of the $50,000 over the $150,000 MFJ threshold (per-person $3,000, total $6,000), added to the 2 x $1,600 65+ additional standard deduction.",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Schedule 1-A (Form 1040) 2025, Part V lines 31-37 (lines 36a/36b are entered per person); Instructions for Form 1040 (2025)",
+    "urls": ["https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf", "https://www.irs.gov/instructions/i1040gi"],
+    "pin": "Part V worksheet: line 32 = '$150,000 if married filing jointly'; line 34 = 6% of the excess; line 35 = $6,000 minus line 34; lines 36a and 36b each take line 35 (one per eligible spouse); line 37 adds them. Instructions: 'If you are married filing jointly, and both you and your spouse were born before January 2, 1961... the maximum amount... is $12,000.'"
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "marriedJoint",
+    "taxpayer65OrOlder": true,
+    "spouse65OrOlder": true,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [{"employer": "Example W-2", "wages": 200000, "withholding": 0}],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 0,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": []
+  },
+  "expected": {
+    "totalIncome": 200000,
+    "agi": 200000,
+    "basicStandardDeduction": 31500,
+    "additionalStandardDeduction": 3200,
+    "seniorDeduction": 6000,
+    "standardDeductionTotal": 40700,
+    "taxableIncome": 159300,
+    "preferentialIncome": 0,
+    "ordinaryTax": 24874,
+    "preferentialTax": 0,
+    "niit": 0,
+    "nonRefundableCredits": 0,
+    "refundableCredits": 0,
+    "totalTax": 24874,
+    "amountOwed": 24874
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "Wages $200,000 = MAGI.",
+    "Part V: line 32 = $150,000 (MFJ); line 33 = $50,000; line 34 = 6% x 50,000 = $3,000; line 35 = 6,000 - 3,000 = $3,000 per eligible spouse.",
+    "Line 37 = 3,000 + 3,000 = $6,000 total senior deduction (both spouses 65+).",
+    "Standard deduction = 31,500 + 2 x 1,600 + 6,000 = $40,700; taxable income = $159,300.",
+    "MFJ schedule: 2,385 + 12% x 73,100 = 8,772 + 22% x (159,300 - 96,950) = 22% x 62,350 = 13,717; ordinary tax $24,874.00.",
+    "NIIT $0 (MAGI under the $250,000 MFJ threshold). Total tax $24,874.00."
+  ]
+}

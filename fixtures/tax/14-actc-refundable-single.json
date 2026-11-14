@@ -1,0 +1,61 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "actc-refundable-single",
+  "description": "The refundable Additional Child Tax Credit for a single filer with one child and almost no tax: the unused CTC pays out as the smaller of the per-child refundable cap ($1,700) and 15% of earned income over the $2,500 floor.",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Instructions for Schedule 8812 (2025), Additional Child Tax Credit worksheet lines 1-5; Instructions for Form 1040 (2025)",
+    "urls": ["https://www.irs.gov/pub/irs-pdf/i1040s8.pdf", "https://www.irs.gov/instructions/i1040gi"],
+    "pin": "Instructions for Schedule 8812 (2025) verbatim: 'the maximum amount you can claim for the ACTC is $1,700 per qualifying child'; worksheet line 2 'Number of qualifying children... x $1,700'; line 4 'Is the amount on line 3 more than $2,500? ... Subtract $2,500'; line 5 'Multiply the amount on line 4 by 15% (0.15)'."
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "single",
+    "taxpayer65OrOlder": false,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [{"employer": "Example W-2", "wages": 12000, "withholding": 0}],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 0,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": [
+      {"name": "Child", "age": 6, "relationship": "child", "qualifyingChild": true, "otherDependentCredit": false}
+    ]
+  },
+  "expected": {
+    "totalIncome": 12000,
+    "agi": 12000,
+    "qualifyingChildren": 1,
+    "standardDeductionTotal": 15750,
+    "taxableIncome": 0,
+    "preferentialIncome": 0,
+    "ordinaryTax": 0,
+    "preferentialTax": 0,
+    "niit": 0,
+    "nonRefundableCredits": 0,
+    "refundableCredits": 1425,
+    "totalTax": 0,
+    "totalPayments": 0,
+    "refund": 1425
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "Wages $12,000; standard deduction $15,750 exceeds income, so taxable income and tax are $0.",
+    "CTC $2,200 (one child); MAGI $12,000 is far below the $200,000 phase-out start, so no reduction.",
+    "Non-refundable CTC limited by tax before credits = $0; the full CTC is unused.",
+    "ACTC = min(2,200 unused, 1,700 per-child cap, 15% x (12,000 - 2,500)) = min(2,200, 1,700, 1,425) = $1,425.",
+    "Total tax $0; refund = ACTC $1,425 paid out on the payments side of Form 1040."
+  ]
+}

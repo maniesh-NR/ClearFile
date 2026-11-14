@@ -1,0 +1,57 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "zero-income-return",
+  "description": "Degenerate case: an untouched default return must produce zeroes everywhere (guards divide-by-zero on the effective rate and negative deductions).",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Engine contract; parameters per IRS Instructions for Form 1040 (2025)",
+    "urls": ["https://www.irs.gov/instructions/i1040gi"]
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "single",
+    "taxpayer65OrOlder": false,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 0,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": []
+  },
+  "expected": {
+    "totalIncome": 0,
+    "agi": 0,
+    "standardDeductionTotal": 15750,
+    "deductionUsed": 15750,
+    "taxableIncome": 0,
+    "ordinaryTax": 0,
+    "preferentialTax": 0,
+    "niit": 0,
+    "nonRefundableCredits": 0,
+    "refundableCredits": 0,
+    "totalTax": 0,
+    "totalPayments": 0,
+    "refund": 0,
+    "amountOwed": 0,
+    "effectiveRate": 0
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "No income: total income, AGI, taxable income, tax, NIIT, credits are all zero.",
+    "Standard deduction (single, 2025): $15,750 per the Instructions for Form 1040 (2025) and the IRS VITA Standard Deduction page.",
+    "Effective rate must be 0, not NaN: engine guard on AGI <= 0."
+  ]
+}

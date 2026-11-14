@@ -87,7 +87,13 @@ else
 fi
 
 # --- 4. Stated test totals vs actual declarations ---------------------------
-DECLARED=$(grep -h -E '^[[:space:]]*(test|testWidgets)\(' clearfile/test/*.dart | wc -l | tr -d ' ')
+# Static declarations, except golden_fixtures_test.dart which is data-driven:
+# its single test declaration expands to one executed test per JSON fixture
+# in fixtures/tax/, so its fixtures are counted instead of its declaration.
+STATIC_ALL=$(grep -h -E '^[[:space:]]*(test|testWidgets)\(' clearfile/test/*.dart | wc -l | tr -d ' ')
+GOLDEN_STATIC=$(grep -h -E '^[[:space:]]*(test|testWidgets)\(' clearfile/test/golden_fixtures_test.dart 2>/dev/null | wc -l | tr -d ' ')
+GOLDEN_TESTS=$(ls fixtures/tax/*.json 2>/dev/null | wc -l | tr -d ' ')
+DECLARED=$(( STATIC_ALL - GOLDEN_STATIC + GOLDEN_TESTS ))
 RM_ROW="$(grep -oE '[0-9]+ Dart tests' README.md | head -1 | grep -oE '^[0-9]+')"
 RM_RUN="$(grep -oE '[0-9]+ tests green' README.md | head -1 | grep -oE '^[0-9]+')"
 ST_GREEN="$(grep -oE '\*\*[0-9]+/[0-9]+ green\*\*' "$STATE" | head -1 | grep -oE '[0-9]+/[0-9]+' | cut -d/ -f1)"

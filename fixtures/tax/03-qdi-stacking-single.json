@@ -1,0 +1,60 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "qdi-stacking-single",
+  "description": "Qualified dividends and long-term capital gains stacked on ordinary income: fills the 0% band (to $48,350) then spills into 15%, with the ordinary slice taxed on the single rate schedule. The engine's stacking must reproduce the Qualified Dividends and Capital Gain Tax Worksheet line by line.",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Instructions for Form 1040 (2025), Qualified Dividends and Capital Gain Tax Worksheet-Line 16",
+    "urls": ["https://www.irs.gov/instructions/i1040gi", "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf"],
+    "pin": "Worksheet line 6: $48,350 if single (top of the 0% band); line 13: $533,400 if single (top of the 15% band); line 22 taxes the ordinary slice on the Tax Table / Tax Computation Worksheet."
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "single",
+    "taxpayer65OrOlder": false,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [{"employer": "Example W-2", "wages": 30000, "withholding": 0}],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 30000,
+    "longTermCapitalGains": 20000,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": []
+  },
+  "expected": {
+    "totalIncome": 80000,
+    "agi": 80000,
+    "standardDeductionTotal": 15750,
+    "taxableIncome": 64250,
+    "preferentialIncome": 50000,
+    "ordinaryTax": 1471.5,
+    "preferentialTax": 2385,
+    "niit": 0,
+    "nonRefundableCredits": 0,
+    "refundableCredits": 0,
+    "totalTax": 3856.5,
+    "amountOwed": 3856.5
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "Total income = 30,000 wages + 30,000 qualified dividends + 20,000 LTCG = $80,000; AGI $80,000.",
+    "Standard deduction $15,750; taxable income $64,250.",
+    "QDIVCG worksheet: line 4 (qualified dividends + LTCG, no Schedule D) = $50,000; line 5 (ordinary taxable) = 64,250 - 50,000 = $14,250.",
+    "Line 6 = $48,350 (single); line 9 (0% band amount) = min(48,350, 64,250) - 14,250 = $34,100 taxed at 0%.",
+    "Line 13 = $533,400 (single); the 15% slice = 50,000 - 34,100 = $15,900 (line 17 <= line 16: 533,400 - (14,250 + 34,100)).",
+    "Line 22 tax on line 5 ($14,250 ordinary): 10% x 11,925 + 12% x 2,325 = 1,192.50 + 279.00 = $1,471.50.",
+    "Line 18: 15% x 15,900 = $2,385.00; line 20 (20% slice) = 0.",
+    "Total tax = 1,471.50 + 2,385.00 = $3,856.50. NIIT: MAGI 80,000 < 200,000 single threshold (Instructions for Form 8960 (2025)) = $0."
+  ]
+}

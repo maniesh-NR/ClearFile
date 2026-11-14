@@ -1,0 +1,59 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "qdi-mfs-fifteencap-300000",
+  "description": "Married filing separately with long-term gains crossing the 15% band ceiling. The QDIVCG worksheet line 13 breakpoint is a flat $300,000 for MFS - NOT half of the $600,050 MFJ breakpoint. This fixture pinned and corrected the engine's former 300,025 value (which produced $38,596.25 instead of $38,597.50). Also exercises the $125,000 MFS NIIT threshold.",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Instructions for Form 1040 (2025), Qualified Dividends and Capital Gain Tax Worksheet-Line 16, line 13; Instructions for Form 8960 (2025)",
+    "urls": ["https://www.irs.gov/instructions/i1040gi", "https://www.irs.gov/pub/irs-pdf/i8960.pdf"],
+    "pin": "Worksheet line 13 verbatim: 'Enter: $533,400 if single, $300,000 if married filing separately, $600,050 if married filing jointly or qualifying surviving spouse, $566,700 if head of household.' Form 8960 thresholds: 'Married filing separately is $125,000.'"
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "marriedSeparate",
+    "taxpayer65OrOlder": false,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 0,
+    "longTermCapitalGains": 320000,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": []
+  },
+  "expected": {
+    "totalIncome": 320000,
+    "agi": 320000,
+    "standardDeductionTotal": 15750,
+    "taxableIncome": 304250,
+    "preferentialIncome": 304250,
+    "ordinaryTax": 0,
+    "preferentialTax": 38597.5,
+    "niit": 7410,
+    "nonRefundableCredits": 0,
+    "refundableCredits": 0,
+    "totalTax": 46007.5,
+    "amountOwed": 46007.5
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "LTCG $320,000 only; MFS standard deduction $15,750; taxable income $304,250, all preferential.",
+    "0% band: MFS zero breakpoint (worksheet line 6) $48,350 at 0%.",
+    "15% band: line 13 cap $300,000 (MFS) - room = 300,000 - 48,350 = $251,650 at 15% = $37,747.50.",
+    "20% slice: 304,250 - (48,350 + 251,650) = $4,250 at 20% = $850.00.",
+    "Preferential tax = 37,747.50 + 850.00 = $38,597.50. (A 300,025 cap would give 38,596.25 - this fixture distinguishes them.)",
+    "NIIT: MFS threshold $125,000; 3.8% x min(320,000, 320,000 - 125,000) = 3.8% x 195,000 = $7,410.00.",
+    "Total tax = 38,597.50 + 7,410.00 = $46,007.50."
+  ]
+}
