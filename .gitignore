@@ -46,6 +46,9 @@ local-*
 *.log
 dev.log
 dev.out.log
+# Stage-3 web-parity test build output (scripts/web_parity_test.mjs compiles
+# the engine here before running the golden fixtures; never tracked).
+/.parity-build/
 # Only ignore a top-level `/test/` directory (Next.js scaffolding). The
 # Flutter app's `clearfile/test/` directory holds real unit and widget
 # tests and MUST be tracked.

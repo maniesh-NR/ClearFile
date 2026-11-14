@@ -12,8 +12,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { useClearFile, filingFromStore } from '@/lib/store'
-import { YEARS } from '@/lib/tax/config'
-import { compute } from '@/lib/tax/engine'
 import { serializeCfr, parseCfr, downloadText, downloadBytes, CfrParseError } from '@/lib/files/cfr'
 import { exportTxf } from '@/lib/files/txf'
 import { analyzeTaxFile, exportTaxContainer, type TaxAnalysis } from '@/lib/files/taxfile'
@@ -63,8 +61,7 @@ export function FileMenu() {
 
   function exportTxfAction() {
     const { filing } = snapshot()
-    const computed = compute(filing, YEARS[filing.taxYear])
-    downloadText(`clearfile-${filing.taxYear}.txf`, exportTxf(filing, computed), 'application/octet-stream')
+    downloadText(`clearfile-${filing.taxYear}.txf`, exportTxf(filing), 'application/octet-stream')
     toast({
       title: 'TXF exported',
       description: 'Wages and federal withholding only (demo scope). Verify after importing into the receiving software.',

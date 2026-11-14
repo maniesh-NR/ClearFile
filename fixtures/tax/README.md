@@ -24,8 +24,10 @@ works — quoting and deriving from them is unproblematic.
   arithmetic written from the form text, not from either engine. Its
   agreement with the hand-written fixtures is what proves the numbers are
   form-derived rather than engine-derived. Runs in CI (hygiene `suites`).
-- The web engine's parity suite (Stage-3, upcoming) reads the same files
-  from the repo root.
+- `scripts/web_parity_test.mjs` — the web engine's parity suite (Stage-3,
+  landed 2026-11-15): compiles `src/lib/tax/engine.ts` and runs it against
+  these same files from the repo root — the parity half of ADR-009's
+  both-engine requirement. Runs in CI (hygiene `suites`).
 
 ## File schema (`format: clearfile.golden`, version 1)
 

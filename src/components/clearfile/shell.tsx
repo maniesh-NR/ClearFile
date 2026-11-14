@@ -4,12 +4,11 @@
 import * as React from 'react'
 import { useTheme } from 'next-themes'
 import {
-  Moon, Sun, Sparkles, Settings2, ChevronDown, Check, FileCheck2, Users, Wallet,
+  Moon, Sun, Sparkles, Settings2, Check, FileCheck2, Users, Wallet,
   ReceiptText, Baby, Landmark, BadgeCheck, Rocket,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { STEPS, useClearFile } from '@/lib/store'
 import { FileMenu } from './filemenu'
 import { cn } from '@/lib/utils'
@@ -43,8 +42,6 @@ export function Logo() {
 
 export function HeaderBar() {
   const { resolvedTheme, setTheme } = useTheme()
-  const taxYear = useClearFile((s) => s.taxYear)
-  const setYear = useClearFile((s) => s.setYear)
   const googleKey = useClearFile((s) => s.googleKey)
   const openrouterKey = useClearFile((s) => s.openrouterKey)
   const setCopilotOpen = useClearFile((s) => s.setCopilotOpen)
@@ -58,15 +55,9 @@ export function HeaderBar() {
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 sm:px-6">
         <Logo />
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
-          <Select value={String(taxYear)} onValueChange={(v) => setYear(v === '2025' ? 2025 : 2026)}>
-            <SelectTrigger className="h-10 rounded-full w-[4.6rem] sm:w-[5.5rem] text-sm" aria-label="Tax year">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="rounded-2xl">
-              <SelectItem value="2026">TY 2026</SelectItem>
-              <SelectItem value="2025">TY 2025</SelectItem>
-            </SelectContent>
-          </Select>
+          <span className="inline-flex items-center rounded-full border border-md-outline-variant px-2.5 py-1 text-xs font-medium text-md-on-surface-variant" aria-label="Tax year 2025 (the only supported year)">
+            TY 2025
+          </span>
           <FileMenu />
           <Button
             variant="ghost"
@@ -179,7 +170,6 @@ export function MobileStepper() {
 }
 
 export function FooterBar() {
-  const taxYear = useClearFile((s) => s.taxYear)
   return (
     <footer className="no-print mt-auto border-t border-md-outline-variant/60 bg-md-surface-1/50">
       <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 sm:px-6 py-3 text-[11px] leading-relaxed text-md-on-surface-variant sm:flex-row sm:items-center sm:justify-between">
@@ -187,7 +177,7 @@ export function FooterBar() {
           ClearFile prototype — demo calculations only. Not IRS-approved software; do not use it to file a real return.
         </p>
         <p className="sm:text-right">
-          TY{taxYear} engine parameters from IRS Rev. Proc. 2025-32 / OBBBA · open .cfr format · MD3 UI
+          TY2025 engine parameters from IRS publications / OBBBA · open .cfr format · MD3 UI
         </p>
       </div>
     </footer>

@@ -15,10 +15,10 @@ Licensed under [GPL-3.0](LICENSE).
 
 | Path | What it is |
 | --- | --- |
-| `src/` | The original **Next.js 16 web prototype**: a seven-step Material 3 tax interview (status → income → deductions → dependents → payments → review → results) with a **simplified** TY2025/TY2026 calculation engine (see [Engine limitations](#engine-limitations)), deterministic review findings, and an optional bring-your-own-key AI assistant. |
-| `clearfile/` | The **Flutter 3.47 app** — the full-featured implementation: the five-step interview, the complete TY2025 engine and the AI cascade, compiled to Android, iOS, macOS, Windows, Linux and Web from one Dart codebase. The two codebases share no code; the web prototype is the earlier, simplified model. |
+| `src/` | The **Next.js 16 web prototype**: a seven-step Material 3 tax interview (status → income → deductions → dependents → payments → review → results) with the **same TY2025 calculation engine as the Flutter app** (ADR-009 parity, 2026-11-15: line-for-line port validated against the shared golden fixtures), deterministic review findings, and an optional bring-your-own-key AI assistant. |
+| `clearfile/` | The **Flutter 3.47 app** — the full-featured implementation: the five-step interview, the complete TY2025 engine and the AI cascade, compiled to Android, iOS, macOS, Windows, Linux and Web from one Dart codebase. The two codebases share no code; the web engine is a line-for-line TypeScript port of this one (Stage-3 parity). |
 | `clearfile/test/` | 77 Dart tests — 61 hand-written (19 calculator, 8 AI cascade, 10 CSV import, 3 JSON roundtrip, 5 privacy (incl. the findings-path leak guard), 2 autosave regressions (delete + switch), 5 money-parsing edges, 6 step/settings widget guards (incl. the duplicate-row guards), 3 app-flow widget) plus 16 IRS-pinned golden fixtures (repo-level `fixtures/tax/`, shared with the web engine's parity tests and re-derived independently by `scripts/verify_golden_fixtures.py`) — that pin the engine, the UI behaviour and the AI-privacy contract. `flutter analyze` is clean and `flutter test` is green. |
-| `fixtures/tax/` | The **shared golden fixtures**: 16 `(TaxReturnData, TaxResult)` JSON pairs, each pinned to an IRS-published TY2025 worked example or worksheet (Tax Table, QDIVCG worksheet, Schedule 1-A Part V, Schedule A SALT worksheet, Schedule 8812, Form 8960) with its citation, derivation and tolerance in the file. The single source of truth the two engines are both held to. |
+| `fixtures/tax/` | The **shared golden fixtures**: 16 `(TaxReturnData, TaxResult)` JSON pairs, each pinned to an IRS-published TY2025 worked example or worksheet (Tax Table, QDIVCG worksheet, Schedule 1-A Part V, Schedule A SALT worksheet, Schedule 8812, Form 8960) with its citation, derivation and tolerance in the file. The single source of truth **both** engines are held to: `clearfile/test/golden_fixtures_test.dart` (Dart) and `scripts/web_parity_test.mjs` (TypeScript) run the same files in CI. |
 | `docs/reverse-engineering-protocol.md` | The **clean-room RE playbook** for studying legacy proprietary tax-file formats (`.tax`, `.tax[YYYY]`, `.LIF`, `.FIL`, `.RCD`, `.1PE`, `.3ME`, `.3PE`, `.DGC`, `.SCD`, `.THP`, `.TVL`, `.1PH`, `.TT[YYYY]STATE`). Read §2 before any RE session. |
 | `docs/blueprint.pdf` | 17-page design blueprint for the prototype (interview flow, MD3 system, engine, AI cascade). |
 | [GitHub Releases](https://github.com/maniesh-NR/ClearFile/releases) | Pre-built binaries for every target platform. Release assets live on GitHub Releases, not in the repository tree. |
@@ -51,13 +51,14 @@ exemption and the AES-layer handling of modern `.tax` files, is in
 
 ## Calculation engines
 
-The repository contains **two independent implementations** (no shared
-code). They intentionally disagree on scope — read this section and
-[Engine limitations](#engine-limitations) before comparing their outputs.
+The repository contains **two independent implementations** (no shared code)
+now held to the same behavior by the shared golden fixtures. The Flutter
+engine is the reference; the web engine is a line-for-line port of it
+(Stage-3 parity, ADR-009).
 
 ### Flutter engine — `clearfile/lib/tax/calculator.dart` (TY2025)
 
-The complete model. Implements:
+The reference model. Implements:
 
 - Five filing statuses with the MFJ / MFS / QSS / Single schedules.
 - Standard deduction with the **OBBBA senior deduction** (age 65+).
@@ -72,39 +73,48 @@ The complete model. Implements:
 - Charitable deduction capped at 60% of AGI.
 
 Every parameter is a named constant with its source cited; every parameter
-is pinned by a calculator test that hand-verifies the math. Cross-engine
-parity tests pinned to official IRS worked examples are Roadmap Stage 3
-(`harness/memory/ROADMAP.md`).
+is pinned by a calculator test that hand-verifies the math. The cross-engine
+parity tests pinned to the IRS worked examples are the shared golden
+fixtures (`fixtures/tax/`) — landed with the Stage-3 parity set
+(2026-11-15).
 
-### Web prototype engine — `src/lib/tax/engine.ts` (simplified)
+### Web engine — `src/lib/tax/engine.ts` (TY2025, at parity)
 
-The earlier, smaller model used by the Next.js prototype: **no**
-qualified-dividend/LTCG preferential stacking, **no** NIIT, **no** SALT
-cap, **no** OBBBA senior deduction, no student-loan-interest deduction;
-itemized deductions are medical + other with no AGI ceilings; whole-dollar
-rounding. It supports TY2025 and TY2026 year configs (TY2026 default), and
-models the CTC phase-out in $50-per-$1,000 units rather than the Flutter
-engine's exact 5%-of-excess. The same inputs can produce different refunds
-between the two engines.
+A line-for-line TypeScript port of the Flutter reference engine
+(`TaxReturnData` model, same per-status parameters in `config.ts`, same
+computation order — including the QDIVCG stacking, the SALT phase-down,
+the OBBBA senior deduction, the student-loan phase-out, NIIT, and the
+Schedule-8812 exact 5%-of-excess CTC phase-out with next-$1,000 rounding,
+all at cent precision). It runs the same 16 shared golden fixtures in CI
+(`scripts/web_parity_test.mjs`) — 16/16, zero field failures — and the two
+engines' inputs are the same JSON shape, so `.cfr` files round-trip.
+
+Two scope notes, recorded as debt: the previously projected TY2026
+parameters were **dropped** rather than half-supported (parity with a
+reference that has no TY2026 parameter set cannot be invented — D32; the
+web store and `.cfr` loader migrate old saves to TY2025), and the
+whole-dollar display rounding is UI-level only.
 
 ## Engine limitations
 
 Both engines are demonstration-grade simplifications; neither is a
 form-for-form 1040 implementation. In particular:
 
-- **Flutter (TY2025)**: some parameters and phase-outs are modelled at a
-  summary level rather than form-by-form (for example, no AMT, no
-  Schedule SE/self-employment tax, no state returns, no estate/trust
-  schedules); phase-outs apply the published formulas but do not replicate
-  every worksheet's intermediate rounding.
-- **Web prototype**: the gap list above — no QDI stacking, no NIIT, no SALT
-  cap, no OBBBA senior deduction, no student-loan-interest deduction;
-  whole-dollar rounding.
-- **Neither engine** is validated against official IRS worked examples by
-  automated parity tests yet (Roadmap Stage 3).
-- The deterministic review layer flags missing or inconsistent entries
-  but is not a substitute for review by a qualified preparer or
-  IRS-authorized software.
+- **Both engines (identically, by construction of the parity port)**: some
+  parameters and phase-outs are modelled at a summary level rather than
+  form-by-form (for example, no AMT, no Schedule SE/self-employment tax, no
+  state returns, no estate/trust schedules); phase-outs apply the published
+  formulas but do not replicate every worksheet's intermediate rounding;
+  the ACTC allocation between CTC and ODC in the partial-absorption zone,
+  the student-loan worksheet's three-place rounding, and the marginal rate
+  being ordinary-only are deliberately simplified (D31).
+- **Web engine only**: TY2026 is not supported (the reference engine has
+  no TY2026 parameter set to mirror — D32; old saves are migrated to
+  TY2025).
+- The web engine's engine-level parity is pinned by automated tests against
+  the shared IRS-pinned golden fixtures; the deterministic review layer
+  flags missing or inconsistent entries but is not a substitute for review
+  by a qualified preparer or IRS-authorized software.
 
 ## NOTICE — history contents
 
@@ -175,6 +185,7 @@ cd ClearFile
 npm install
 npm run build      # next build (standalone output)
 npm start          # serve the standalone build
+node scripts/web_parity_test.mjs   # web engine vs the shared golden fixtures (16/16)
 ```
 
 The standalone build plus `cp -r .next/static .next/standalone/.next/` and

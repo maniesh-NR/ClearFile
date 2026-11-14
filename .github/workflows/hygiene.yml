@@ -66,6 +66,11 @@ jobs:
       # oracle (Decimal arithmetic written from the IRS form text, not from
       # either engine) runs in CI so the fixtures stay form-true.
       - run: python3 scripts/verify_golden_fixtures.py
+      # Stage-3 web parity (ADR-009, 2026-11-15): the TypeScript engine runs
+      # the SAME shared golden fixtures the Flutter suite runs (compiles the
+      # engine to .parity-build via scripts/tsconfig.parity.json, then asserts
+      # every expected field within tolerance).
+      - run: node scripts/web_parity_test.mjs
 
   harness-check:
     name: Harness memory self-check (D19)

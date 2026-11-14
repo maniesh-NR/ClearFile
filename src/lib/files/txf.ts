@@ -9,11 +9,11 @@
  *   426 — Federal income tax withheld (W-2)
  * Amounts are aggregated across forms because TXF importers typically map
  * each record to one schedule line. Warnings shown in the UI:
- *  - Only wages and federal withholding are exported (demo scope).
+ *  - Only wages, withholding and interest are exported (demo scope).
  *  - Verify the import in the receiving software.
  */
 
-import type { Computed, FilingData } from '../tax/engine'
+import { totalWages, totalWithholding, type TaxReturnData } from '../tax/engine'
 
 function txfDate(): string {
   const d = new Date()
@@ -33,15 +33,15 @@ function record(code: number, description: string, amount: number): string[] {
   ]
 }
 
-export function exportTxf(f: FilingData, c: Computed): string {
+export function exportTxf(f: TaxReturnData): string {
   const lines: string[] = [
     'V042',
     'A N 1',
     `D ${txfDate()}`,
     '^',
-    ...record(425, 'W-2 wages, salaries, tips (all forms combined)', c.earnedIncome),
-    ...record(426, 'Federal income tax withheld (all W-2s combined)', c.withholding),
-    ...record(425, `Interest income (${f.taxYear})`, f.interest),
+    ...record(425, 'W-2 wages, salaries, tips (all forms combined)', totalWages(f)),
+    ...record(426, 'Federal income tax withheld (all W-2s combined)', totalWithholding(f)),
+    ...record(425, `Interest income (${f.taxYear})`, f.interestIncome),
   ]
   return `${lines.join('\n')}\n`
 }

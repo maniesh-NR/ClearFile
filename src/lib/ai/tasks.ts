@@ -9,28 +9,31 @@
  *    numbers, and point back to the app for calculations.
  */
 
-import type { Computed, FilingData } from '../tax/engine'
+import type { TaxResult, TaxReturnData } from '../tax/engine'
+import { totalWages, totalWithholding } from '../tax/engine'
 import { usd } from '../tax/config'
 
 const DISCLAIMER = 'ClearFile is a prototype demo, not licensed tax advice or filing software.'
 
-export function filingSummary(f: FilingData, c: Computed): string {
+export function filingSummary(f: TaxReturnData, c: TaxResult): string {
   const lines = [
     `Tax year: ${f.taxYear}`,
-    `Filing status: ${f.status}`,
+    `Filing status: ${f.filingStatus}`,
+    `Age/blind: taxpayer${f.taxpayer65OrOlder ? ' 65+' : ''}${f.taxpayerBlind ? ' blind' : ''}; spouse${f.spouse65OrOlder ? ' 65+' : ''}${f.spouseBlind ? ' blind' : ''}`,
     `W-2 forms: ${f.w2s.length}` +
       (f.w2s.length
-        ? ` (wages ${usd(c.earnedIncome)}, federal withholding ${usd(c.withholding)})`
+        ? ` (wages ${usd(totalWages(f))}, federal withholding ${usd(totalWithholding(f))})`
         : ''),
-    `Interest income: ${usd(f.interest)}`,
-    `Dividend income (ordinary): ${usd(f.dividends)}`,
+    `Interest income: ${usd(f.interestIncome)}`,
+    `Dividends: ordinary ${usd(f.ordinaryDividends)}, qualified ${usd(f.qualifiedDividends)}`,
+    `Long-term capital gains: ${usd(f.longTermCapitalGains)}`,
     `Other income: ${usd(f.otherIncome)}`,
-    `Adjustments to income: ${usd(f.adjustments)}`,
-    `Deduction used: ${c.deductionChoice} (${usd(c.deduction)})`,
-    `Qualifying children under 17: ${f.qualifyingChildren}`,
-    `Other dependents: ${f.otherDependents}`,
+    `Student loan interest paid: ${usd(f.studentLoanInterest)} (deducted ${usd(c.studentLoanDeduction)})`,
+    `Deduction used: ${c.deductionMethodUsed} (${usd(c.deductionUsed)}, of which senior deduction ${usd(c.seniorDeduction)})`,
+    `Qualifying children: ${f.dependents.filter((d) => d.qualifyingChild).length}`,
+    `Other dependents: ${f.dependents.filter((d) => d.otherDependentCredit).length}`,
     `Estimated payments: ${usd(f.estimatedPayments)}`,
-    `Computed: total income ${usd(c.totalIncome)}, AGI ${usd(c.agi)}, taxable income ${usd(c.taxableIncome)}, tax before credits ${usd(c.taxBeforeCredits)}, CTC applied ${usd(c.ctcApplied)}, refundable CTC ${usd(c.actc)}, total tax ${usd(c.totalTax)}, projected ${c.isRefund ? 'refund' : 'balance due'} ${usd(Math.abs(c.balance))}`,
+    `Computed: total income ${usd(c.totalIncome)}, AGI ${usd(c.agi)}, taxable income ${usd(c.taxableIncome)}, ordinary tax ${usd(c.ordinaryTax)}, preferential tax ${usd(c.preferentialTax)}, NIIT ${usd(c.niit)}, non-refundable credits ${usd(c.nonRefundableCredits)}, refundable ACTC ${usd(c.refundableCredits)}, total tax ${usd(c.totalTax)}, projected ${c.refund > 0 ? 'refund' : 'balance due'} ${usd(Math.abs(c.refund - c.amountOwed))}`,
   ]
   return lines.join('\n')
 }
@@ -47,7 +50,7 @@ Rules:
 - Use ONLY the numbers in the provided filing context for anything quantitative; never invent thresholds, rates, or amounts. If the answer depends on rules outside the context (state taxes, credits this demo does not model), say so and suggest checking IRS.gov.
 - You explain concepts and help the user decide what to enter; the app does the math.`
 
-export function chatTurn(question: string, f: FilingData, c: Computed, history: ChatTurn[]): { system: string; user: string } {
+export function chatTurn(question: string, f: TaxReturnData, c: TaxResult, history: ChatTurn[]): { system: string; user: string } {
   const convo = history
     .slice(-6)
     .map((t) => `${t.role === 'user' ? 'User' : 'Assistant'}: ${t.content}`)
@@ -134,7 +137,7 @@ Rules:
 - Use only the numbers provided. For credits this demo does not model (EITC, education credits, saver's credit), phrase findings as questions to consider, not amounts.
 - Never recommend specific dollar adjustments you cannot derive from the provided data.`
 
-export function reviewPrompt(f: FilingData, c: Computed, localChecks: { title: string; detail: string; severity: string }[]): { system: string; user: string } {
+export function reviewPrompt(f: TaxReturnData, c: TaxResult, localChecks: { title: string; detail: string; severity: string }[]): { system: string; user: string } {
   return {
     system: REVIEW_SYSTEM,
     user: [

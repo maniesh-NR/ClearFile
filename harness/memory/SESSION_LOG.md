@@ -389,3 +389,80 @@ fixtures.
 77/77, tsc exit 0, harness_check 0 failures, YAML validated) + mode
 normalization check + event-driven backup (this run) — the last action
 before this reply.
+
+---
+
+## 2026-11-15 · Stage-3 web parity session — TS engine ported to reference parity
+
+Baseline at entry: tree clean at `99d6823` (in sync with origin) — after the
+FOURTH observed sandbox recycle: history intact, content intact, 174
+mode-only flips (normalized via `git restore .` per WORKFLOW §4),
+`node_modules/` survived, Flutter SDK gone (NOT reinstalled — this
+session's work is TS-side).
+
+**Session task (STATE "Immediately next"): Stage 3, the boxed web parity
+set. DONE — and under budget (parity-box session 1 of 2):**
+
+- **Session start = handoff verification first** (the inherited context was
+  a context-exhausted MultiEdit with unknown landing state): read the
+  harness end-to-end before touching anything. Result: the four owner
+  decisions AND their implementation items had all landed (README NOTICE,
+  Android INTERNET manifest, macOS network-client entitlement, ROADMAP
+  parity scope, v1.0.1 release chain) and the repo had advanced three
+  sessions BEYOND that task (Stage-1 execution, Stage-2 entry gate,
+  Stage-3 fixtures-first). Only true residual: DECISIONS.md ADR-008/009
+  headers still said "DRAFT — owner ratification required" below their
+  recorded ratifications — headers synced (status-field fix, ADR-010
+  inline-closure precedent).
+- **The engine port** (`src/lib/tax/engine.ts`, line-for-line from
+  `clearfile/lib/tax/calculator.dart`; parameters in `config.ts` mirror
+  `tax_year.dart`): QDI/LTCG stacking (0%/15%/20%, flat $300,000 MFS 15%
+  cap), NIIT ($125,000 MFS threshold), SALT 30% phase-down, OBBBA senior
+  deduction (MFS ineligible), student-loan MAGI phase-out (MFS ineligible),
+  exact 8812 next-$1,000 CTC phase-out with cents normalization and the
+  combined CTC+ODC floor, cent-level precision. **The parity suite passed
+  16/16, zero field failures, on its FIRST run** — no engine corrections
+  were needed; the port was written from the reference + oracle, never by
+  adapting fixture numbers.
+- **New both-engine harness:** `scripts/web_parity_test.mjs` +
+  `scripts/tsconfig.parity.json` (compiles the two tax files to the
+  gitignored `.parity-build/`, then asserts every expected key within
+  tolerance; `deductionMethodUsed` exact) — wired into the hygiene
+  `suites` CI job after the oracle. `.parity-build/` gitignored.
+- **Model rewiring across the whole web app:** store persist v1→v2
+  migration (conservative: interest→interestIncome, dividends→ordinary,
+  adjustments/medical/other dropped, counts→placeholder dependents,
+  statuses renamed, year forced to 2025); `.cfr` schema v2 with v1-file
+  migration + version guard; all six interview steps (65+/blind switches,
+  QSS fifth status, qualified-dividend/LTCG fields, deduction-method
+  radio + SALT/charity/student-loan inputs, dependents card editor with
+  the two credit flags); TXF/`.tax` exporters and AI prompt summaries
+  on the new model. `tsc --noEmit` exit 0; web smoke suite 6/6 against
+  the new standalone build (including the persist-migration rehydrate
+  path). Disclaimer copy fixed (the old text claimed "no preferential
+  capital-gain rates" — now that the engine HAS them, the claim moved to
+  the honest remaining simplifications).
+- **TY2026 dropped from the web engine** (D32): the reference has no
+  TY2026 parameter set, so parity cannot be invented — the old projected
+  brackets were removed rather than half-supported; old saves migrate to
+  TY2025. README engine sections rewritten (web "at parity", both-engine
+  limitations, parity run-block line).
+- **Tripwire:** working session 2 of the four-session total; the
+  two-session parity box CLOSED in session 1 of 2 (under budget — record
+  at the exit gate). Remaining Stage-3 scope: the bridges (TXF import +
+  exporter verification, `.clearfile.json` versioning + guards,
+  save-format unification decision, parser-hardening tests,
+  `docs/engine.md`, guided tour, discrepancy templates, project DoD).
+
+**Session quirks (recorded for honesty):** tsconfig `files` paths resolve
+relative to the tsconfig's own directory (first parity run failed on
+`scripts/src/...` — STATE quirk 16); `lucide-react` exports `UserPlus`, not
+`PersonAddAlt`, and dropping an icon from an import list while it is still
+used (`Check`) breaks tsc — both caught by the immediate re-run the bulk
+edits mandate (quirk 11 discipline held: tsc + parity + oracle + smoke all
+re-ran after every batch, never trusting a single tool's success report).
+
+**Closing action:** full re-verification (web parity 16/16, oracle 16/16,
+tsc exit 0, YAML validation on both workflows, web smoke 6/6, harness_check)
++ mode normalization check + event-driven backup (this run) — the last
+action before this reply.

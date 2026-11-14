@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox'
 import { useToast } from '@/hooks/use-toast'
 import { useClearFile, filingFromStore } from '@/lib/store'
-import { YEARS } from '@/lib/tax/config'
+import { YEARS, type TaxYear } from '@/lib/tax/config'
 import { compute, type RuleCheck } from '@/lib/tax/engine'
 import { runLadder, LadderError, ERROR_KIND_LABEL } from '@/lib/ai/ladder'
 import {
@@ -140,7 +140,7 @@ export function CopilotDrawer() {
     try {
       const s = useClearFile.getState()
       const filing = filingFromStore(s)
-      const computed = compute(filing, YEARS[filing.taxYear])
+      const computed = compute(filing, YEARS[filing.taxYear as TaxYear] ?? YEARS[2025])
       const { system, user } = chatTurn(q, filing, computed, messages)
       const res = await runLadder(system, user, { googleKey, openrouterKey })
       setMessages((m) => [...m, { role: 'assistant', content: res.text }])
@@ -266,12 +266,12 @@ export function CopilotDrawer() {
 /* W-2 / 1099 auto-fill (Income step)                                  */
 /* ------------------------------------------------------------------ */
 
-const AUTOFILL_SAMPLE = `W-2 Wage and Tax Statement (2026)
+const AUTOFILL_SAMPLE = `W-2 Wage and Tax Statement (2025)
 Employer: Acme Corp
 Box 1 wages, tips: 52,500.00
 Box 2 federal income tax withheld: 4,200.00
 
-W-2 Wage and Tax Statement (2026)
+W-2 Wage and Tax Statement (2025)
 Employer: Star Labs
 Box 1 wages, tips: 18,000.00
 Box 2 federal income tax withheld: 900.00
@@ -329,7 +329,7 @@ export function AutofillPanel() {
       if (!selected[i]) continue
       const f = forms[i]
       if (f.type === 'W-2') {
-        addW2({ employer: f.employer, wages: f.wages ?? 0, federalWithheld: f.federalWithheld ?? 0 })
+        addW2({ employer: f.employer, wages: f.wages ?? 0, withholding: f.federalWithheld ?? 0 })
         w2Count++
       } else if (f.type === '1099-INT') {
         interest += f.interest ?? 0
@@ -337,11 +337,11 @@ export function AutofillPanel() {
         dividends += f.dividends ?? 0
       }
     }
-    if (interest) setIncomeField('interest', (s.interest || 0) + interest)
-    if (dividends) setIncomeField('dividends', (s.dividends || 0) + dividends)
+    if (interest) setIncomeField('interestIncome', (s.interestIncome || 0) + interest)
+    if (dividends) setIncomeField('ordinaryDividends', (s.ordinaryDividends || 0) + dividends)
     toast({
       title: 'Forms applied',
-      description: `${w2Count} W-2${w2Count === 1 ? '' : 's'} added${interest ? `, ${fmtMoney(interest)} interest` : ''}${dividends ? `, ${fmtMoney(dividends)} dividends` : ''}. Review the values below.`,
+      description: `${w2Count} W-2${w2Count === 1 ? '' : 's'} added${interest ? `, ${fmtMoney(interest)} interest` : ''}${dividends ? `, ${fmtMoney(dividends)} ordinary dividends (mark qualified dividends separately)` : ''}. Review the values below.`,
     })
     setForms(null)
     setRaw('')
@@ -455,7 +455,7 @@ export function ReviewPanel({ checks }: { checks: RuleCheck[] }) {
     try {
       const s = useClearFile.getState()
       const filing = filingFromStore(s)
-      const computed = compute(filing, YEARS[filing.taxYear])
+      const computed = compute(filing, YEARS[filing.taxYear as TaxYear] ?? YEARS[2025])
       const { system, user } = reviewPrompt(filing, computed, checks)
       const res = await runLadder(system, user, { googleKey, openrouterKey }, { temperature: 0.2, maxTokens: 1400 })
       setReview(parseReview(res.text) ?? { summary: res.text, findings: [] })

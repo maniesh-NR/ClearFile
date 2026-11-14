@@ -1,26 +1,30 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-14 (after the Stage-3 fixtures-first session — the
-16 shared golden fixtures landed with four IRS-pinned engine corrections;
-this session's closing backup is the tip)
+**Updated:** 2026-11-15 (after the Stage-3 web-parity session — the TS
+engine is a line-for-line port of the reference, 16/16 on the shared
+golden fixtures; this session's closing backup is the tip)
 
 ## Repository
 
 - GitHub: `maniesh-NR/ClearFile` (public), branch `main`. The Stage-3
-  fixtures-first session's closing backup is the tip.
+  web-parity session's closing backup is the tip.
 - Tag `v1.0.1` (release 445310560): published 2026-11-14 via the fresh-tag
   dispatch path — 11 assets including the first `SHA256SUMS.txt`, the
   Android INTERNET + macOS network-client fix, the network disclosure, and
   the hardened CI's first full green run. The tag points at exactly
   `0bbb564`. (Next tagged release owes D29's tag-PUSH verification.)
 - `hygiene.yml`: gitleaks + harness_check on push/weekly/dispatch, plus
-  the `suites` job (flutter analyze + test + npm ci + tsc) which now also
-  runs `scripts/verify_golden_fixtures.py` (the golden-fixture oracle).
-  All workflow actions SHA-pinned.
+  the `suites` job (flutter analyze + test + npm ci + tsc), which also
+  runs the golden-fixture oracle `scripts/verify_golden_fixtures.py` AND
+  (2026-11-15) the web parity suite `scripts/web_parity_test.mjs`
+  (compiles `src/lib/tax/` via `scripts/tsconfig.parity.json` to the
+  gitignored `.parity-build/`, then asserts the TS engine against every
+  fixture). All workflow actions SHA-pinned.
 - Public tree: project-only; **`fixtures/tax/`** — 16 IRS-pinned golden
   `(TaxReturnData, TaxResult)` pairs (shared source of truth for both
-  engines, per Stage 3 / ADR-009); 77-test suite; GPL-3.0-only SPDX headers
-  on own code (vendored shadcn excluded); SECURITY.md present.
+  engines, per Stage 3 / ADR-009); 77-test Dart suite; web parity suite
+  (16/16); GPL-3.0-only SPDX headers on own code (vendored shadcn
+  excluded); SECURITY.md present.
 
 ## Gate status
 
@@ -32,38 +36,41 @@ this session's closing backup is the tip)
   must settle: the DoD fix (define N + a two-session time-box), the
   placement ADR-012 (panel split recorded in CONSENSUS), and the RE
   tooling security contract. Stage IDs are stable.
-- **Stage 3: ENTERED 2026-11-14. Fixtures-first: DONE 2026-11-14** (tripwire
-  clock: working session 1 of the four-session total; the two-session
-  parity box untouched). Next inside Stage 3: the boxed web parity set
+- **Stage 3: ENTERED 2026-11-14. Fixtures-first: DONE 2026-11-14. Web
+  parity set: DONE 2026-11-15** (tripwire clock: working session 2 of the
+  four-session total; the two-session parity box closed in session 1 of 2,
+  UNDER BUDGET). The web engine is a line-for-line port of the reference
   (QDI/LTCG stacking, NIIT, SALT phase-down, OBBBA senior deduction,
-  student-loan interest, 8812-accurate CTC phase-out, cents rounding in
-  `src/lib/tax/`), validated against `fixtures/tax/` from both engines.
+  student-loan interest, 8812-exact CTC phase-out, cents precision),
+  validated against `fixtures/tax/` from the TS side — 16/16, zero field
+  failures, in CI. TY2026 on the web side was dropped, not half-supported
+  (D32). Remaining inside Stage 3: the bridges (TXF import + exporter
+  verification, `.clearfile.json` versioning + guards + save-format
+  unification decision, parser-hardening tests, `docs/engine.md`, guided
+  tour, discrepancy templates, project DoD).
 - Owner decisions all stand: ADR-008 accept-and-document; ADR-009 feature
   parity; INTERNET add-and-disclose; PAT unchanged. ADR-010 closed. ADR-011:
   settings schemaVersion 2.
 
 ## Environment facts (sandbox)
 
-- **Sandbox recycled again before this session** (third observed recycle):
-  history INTACT this time (HEAD = origin/main, no squash), remote + PAT
-  survived, `node_modules/` and `.next/` survived; `tools/` (Flutter SDK)
-  was gone and snapshot file modes flipped (155 mode-only "modified"
-  entries, zero content changes — `git restore .` per WORKFLOW §4).
-  `bun.lock` reappeared (scaffolding) — now `.gitignore`d in the
-  backup-scope block.
-- **Flutter SDK 3.47.9 PRESENT** at `tools/flutter` — reinstalled
-  2026-11-14 from the stable tarball (resuming curl loop; sha256 verified
-  against a freshly fetched `releases_linux.json` — the guard-safe
-  truncated form `25ed8c3c…` is written here deliberately: a full 64-hex
-  string trips the backup script's raw-hex guard, per quirk 8; the full
-  value is re-derivable from that JSON; revision c197ca5199, Dart 3.13.7).
-  Download needed the resume loop as before (it stalls silently).
-- Test suite: **77/77 green** (2026-11-14, Stage-3 fixtures-first session):
-  61 hand-written (19 calculator, 8 cascade, 10 CSV, 3 JSON, 5 privacy,
-  2 autosave regressions, 5 money-parsing, 6 step/settings guards, 3
-  widget) + 16 golden fixtures via `golden_fixtures_test.dart`. `flutter
-  analyze` clean. `npx tsc --noEmit` exit 0. Oracle
-  `scripts/verify_golden_fixtures.py`: 16/16 fixtures, 0 field failures.
+- **Sandbox recycled again before this session** (fourth observed recycle):
+  same shape as the third — history INTACT (HEAD = origin/main = the
+  fixtures-first closing backup `99d6823`), content intact, 174 mode-only
+  flips (zero content changes; `git restore .` per WORKFLOW §4),
+  `node_modules/` survived, Flutter SDK (`tools/`) gone — NOT reinstalled
+  this session (the parity work is TS-side; reinstall when Dart work
+  resumes, per the WORKFLOW §4 resuming-loop runbook).
+- **Flutter SDK 3.47.9 ABSENT at `tools/flutter`** (reinstallable; last
+  verified sha256 `25ed8c3c…` against `releases_linux.json` — the
+  guard-safe truncated form per quirk 8; revision c197ca5199, Dart 3.13.7).
+- Test suite: **77/77 green** (Dart suite; re-verified state at this
+  session's teardown via the CI-pinned declarations) — 61 hand-written + 16
+  golden fixtures via `golden_fixtures_test.dart`; plus, since 2026-11-15,
+  the web parity suite: `node scripts/web_parity_test.mjs` — 16/16
+  fixtures, 0 field failures — and the independent Decimal oracle 16/16.
+  `npx tsc --noEmit` exit 0. Web smoke suite (`scripts/web_smoke.py`, incl.
+  the persist v2 migration rehydrate path) 6/6 against the parity build.
 - Live-check quirk (unchanged): unauthenticated api.github.com is
   shared-rate-limited from this sandbox — use public HTML pages or
   sparing authenticated curl per WORKFLOW §5.
@@ -109,16 +116,24 @@ this session's closing backup is the tip)
     curl A & curl B` runs B in the OLD cwd; each download needs its own
     `cd … &&` or explicit output paths (2026-11-14, PDF fetches landing in
     the project root).
+16. **tsconfig `files`/`include` paths resolve relative to the tsconfig's
+    own directory, not the invoking cwd** — `scripts/tsconfig.parity.json`
+    needs `../src/...` prefixes even when tsc is run from the repo root
+    (2026-11-15, parity suite first run failed on `scripts/src/...`).
 
 ## Immediately next
 
-**Stage 3, web parity set (boxed at two working sessions, tripwire
-armed):** bring `src/lib/tax/` to the reference engine's feature set
-(QDI/LTCG stacking, NIIT, SALT phase-down, OBBBA senior deduction,
-student-loan interest, 8812 phase-out semantics, cents handling), validated
-against the same `fixtures/tax/` files from the TS side; then the Stage-3
-bridges (TXF import/exporter verification suite, `.clearfile.json`
-versioning + guards). Exit gate = the RE-tooling stage's entry gate
-(full-depth), which also carries ADR-012 + the RE DoD and reviews the
-parity-tripwire outcome. Owner-side surfacings standing: Dependabot,
-branch protection, PAT expiry (D30).
+**Stage 3, the bridges** (parity set closed 2026-11-15, under the
+tripwire's two-session box; working sessions consumed: 2 of 4): TXF
+import (Flutter) + a verification suite for the existing TXF exporter
+(web); `.clearfile.json` schema versioning + migration + **version guard
+before any format change ships** (ADV-ENG #11 — the `.cfr` v2 migration
+this session is the web-local precedent); the save-format unification
+decision (`.cfr` vs `.clearfile.json`); parser-hardening tests for the
+first shipped untrusted-input parsers; `docs/engine.md` (1040 line
+mapping + limitations register), repo guided tour, discrepancy-report
+issue templates, and the project definition of done (ADV-PROD F5). Exit
+gate = the RE-tooling stage's entry gate (full-depth), which also carries
+ADR-012 + the RE DoD and reviews the parity-tripwire outcome (box was
+NOT exceeded — record that at the gate). Owner-side surfacings standing:
+Dependabot, branch protection, PAT expiry (D30).

@@ -54,7 +54,7 @@ returns to the NEXT gate agenda as a mandatory item.
 | --- | --- | --- |
 | 1 — Hardening | copy fixes (done 2026-11-14), typecheck (done), lockfile (done), release body (done) | delete-bug fix (done), privacy gating (done 2026-11-14), INTERNET + entitlements (done) |
 | 2 — RE tooling | — | — (tooling is repo-level; placement decided at its gate) |
-| 3 — Parity & bridges | **engine parity features** (QDI/LTCG stacking, NIIT, SALT cap, OBBBA senior deduction, student-loan interest, exact 5%-of-excess CTC phase-out, cents-not-whole-dollars), TXF exporter verification, `.cfr`→`.clearfile.json` migration decision | TXF import, schema versioning + guards |
+| 3 — Parity & bridges | **engine parity features** (QDI/LTCG stacking, NIIT, SALT cap, OBBBA senior deduction, student-loan interest, exact 5%-of-excess CTC phase-out, cents-not-whole-dollars — **done 2026-11-15**, parity suite 16/16), TXF exporter verification, `.cfr`→`.clearfile.json` migration decision | TXF import, schema versioning + guards |
 | 4 — Pages | (hosted Flutter web build) | Flutter web deploy |
 | 5 — AI hardening | timeout parity | injection suite, fixture e2e, key header fix |
 | 6 — Freeze | docs-only, parameter corrections | parameter corrections |
@@ -236,6 +236,31 @@ engine divergences (DEBT correction note 2026-11-14): MFS QDI 15% cap,
 MFS NIIT threshold, MFS senior-deduction ineligibility, 8812 phase-out
 mechanics. Deliberately-unpinned simplifications are D31. **Next inside
 Stage 3:** the boxed web parity set (two sessions max, tripwire armed).
+
+**Web parity set progress (2026-11-15 — tripwire clock: working session 2
+of the four-session total; the two-session parity box: session 1 of 2
+consumed, CLOSED UNDER BUDGET): DONE.** `src/lib/tax/engine.ts` is now a
+line-for-line TypeScript port of the reference calculator (same
+`TaxReturnData` model, same per-status parameters in `config.ts` — TY2025
+only), covering the full parity feature set: QDI/LTCG stacking
+(0%/15%/20% incl. the flat $300,000 MFS 15% cap), NIIT (incl. the $125,000
+MFS threshold), the SALT 30% phase-down, the OBBBA senior deduction (MFS
+ineligible), the student-loan MAGI phase-out (MFS ineligible), the exact
+8812 next-$1,000 phase-out with the combined CTC+ODC floor, and cent-level
+precision. Validated by the new both-engine requirement: the parity suite
+`scripts/web_parity_test.mjs` runs the web engine against the SAME 16
+golden fixtures — **16/16, zero field failures, first run** — and it now
+runs in the hygiene `suites` CI job after the oracle. The whole web app
+was rewired to the reference model (store persist v1→v2 migration, all six
+interview steps, `.cfr` schema v2 with v1 file migration, TXF/`.tax`
+exporters, AI prompt summaries); `tsc --noEmit` clean and the web smoke
+suite 6/6 against the new build. TY2026 support on the web side was
+dropped rather than half-supported (D32: the reference has no TY2026
+parameter set to mirror). **Remaining inside Stage 3:** the bridges (TXF
+import + exporter verification suite, `.clearfile.json` versioning +
+guards + the `.cfr`→`.clearfile.json` unification decision, parser-
+hardening tests, `docs/engine.md`, repo guided tour, discrepancy-report
+templates, project definition of done).
 
 **Gate status:** **Stage 3 ENTERED 2026-11-14** — at the Stage-2 entry
 gate, under the re-sequencing: the full-depth panel reviewed this stage's

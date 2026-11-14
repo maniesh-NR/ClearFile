@@ -32,6 +32,14 @@ Scripts in this directory fall into two groups:
      files. NB: Python `Decimal //` truncates toward zero — the script's
      ceiling-to-next-$1,000 uses the `+999` offset (learned the hard way;
      see the comment in `ctc_phaseout_amount`).
+   - `web_parity_test.mjs` + `tsconfig.parity.json` — the Stage-3 web-parity
+     suite (ADR-009, 2026-11-15): compiles the TypeScript engine
+     (`src/lib/tax/`) via the dedicated tsconfig to the gitignored
+     `.parity-build/`, then runs it against the SAME shared golden fixtures
+     the Dart suite runs — every `expected` key within tolerance,
+     `deductionMethodUsed` exact. Runs in CI (hygiene `suites`) right
+     after the oracle; run locally with `node scripts/web_parity_test.mjs`
+     from the repo root (needs the npm devDependencies for tsc).
    - `test_tag_guard.sh` — functional test of the release.yml tag guard
      (Stage-2 entry gate ENG-1): extracts the guard body verbatim from
      `release.yml` (never drifts from what CI runs) and exercises all four

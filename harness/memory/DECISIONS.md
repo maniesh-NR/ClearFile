@@ -100,7 +100,7 @@ split shipped with Flutter 3.47.
 zero-dependency theming. Revisit if the package publishes a 3.47-compatible
 release.
 
-## ADR-008 · History debt: `nitro_nissi` provenance + rewrite-vs-accept (2026-11-14, DRAFT — owner ratification required)
+## ADR-008 · History debt: `nitro_nissi` provenance + rewrite-vs-accept (2026-11-14 — RATIFIED: accept-and-document; see ratification record below)
 
 **Decision (recommended default).** Accept-and-document: the pre-`df617e8`
 history retains the accidentally-pushed sandbox scaffolding (`.env` with a
@@ -126,7 +126,7 @@ added to the README in Stage 1. If no, or unverifiable → history rewrite
 pre-rewrite tree on an orphan branch so the v1.0.0 binaries' corresponding
 source stays publicly retrievable, GPL §6).
 
-## ADR-009 · Two-codebase policy (2026-11-14, DRAFT — owner ratification required)
+## ADR-009 · Two-codebase policy (2026-11-14 — RATIFIED: FEATURE PARITY, owner prerogative over the recommended freeze; see ratification record below)
 
 **Decision (recommended default).** Freeze the Next.js web prototype as a
 first-generation study artifact: docs-only maintenance (README already

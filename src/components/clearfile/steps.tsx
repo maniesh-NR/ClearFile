@@ -3,10 +3,11 @@
 
 import * as React from 'react'
 import {
-  Plus, Minus, Trash2, Printer, Save, FileDown, Archive, ShieldCheck,
-  FileCheck2, ArrowRight, TriangleAlert, Info, Sparkles, BadgeCheck,
+  Plus, Trash2, Printer, Save, FileDown, Archive, ShieldCheck,
+  FileCheck2, ArrowRight, TriangleAlert, Info, Sparkles, BadgeCheck, UserPlus,
 } from 'lucide-react'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -16,9 +17,14 @@ import { Progress } from '@/components/ui/progress'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useToast } from '@/hooks/use-toast'
 import { useClearFile, filingFromStore } from '@/lib/store'
-import { YEARS, usd, pct, STATUS_LABELS, STATUS_HELP } from '@/lib/tax/config'
-import type { FilingStatus } from '@/lib/tax/config'
-import { compute, ruleChecks, type Computed, type FilingData, type W2 } from '@/lib/tax/engine'
+import {
+  YEARS, usd, pct, STATUS_LABELS, STATUS_HELP, DEDUCTION_METHOD_LABELS,
+  type FilingStatus, type DeductionMethod, type TaxYear,
+} from '@/lib/tax/config'
+import {
+  compute, ruleChecks, totalWages, totalWithholding, bracketWalk,
+  type RuleCheck, type TaxResult, type TaxReturnData, type W2Entry, type Dependent,
+} from '@/lib/tax/engine'
 import { KeyOnboardingCard, AutofillPanel, ReviewPanel } from './ai-ui'
 import { serializeCfr, downloadText, downloadBytes } from '@/lib/files/cfr'
 import { exportTxf } from '@/lib/files/txf'
@@ -27,10 +33,11 @@ import { cn } from '@/lib/utils'
 
 /* ---------------------------------------------------------------- */
 
-function useFilingComputed(): { filing: FilingData; computed: Computed } {
+function useFilingComputed(): { filing: TaxReturnData; computed: TaxResult } {
   const store = useClearFile()
   const filing = filingFromStore(store)
-  const computed = compute(filing, YEARS[filing.taxYear])
+  const params = YEARS[filing.taxYear as TaxYear] ?? YEARS[2025]
+  const computed = compute(filing, params)
   return { filing, computed }
 }
 
@@ -80,6 +87,32 @@ function MoneyInput({
   )
 }
 
+function FlagRow({
+  checked,
+  onChange,
+  title,
+  hint,
+}: {
+  checked: boolean
+  onChange: (v: boolean) => void
+  title: string
+  hint?: string
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4 py-3">
+      <div className="min-w-0">
+        <p className="text-sm font-medium">{title}</p>
+        {hint && <p className="mt-0.5 text-xs leading-relaxed text-md-on-surface-variant">{hint}</p>}
+      </div>
+      <Switch
+        checked={checked}
+        onCheckedChange={onChange}
+        aria-label={title}
+      />
+    </div>
+  )
+}
+
 function DisclaimerAlert({ className }: { className?: string }) {
   return (
     <div
@@ -92,8 +125,8 @@ function DisclaimerAlert({ className }: { className?: string }) {
       <TriangleAlert className="size-4 shrink-0 mt-0.5 text-md-tertiary" aria-hidden />
       <p>
         <span className="font-semibold">Prototype software.</span> ClearFile demonstrates a clean-room tax workflow with
-        verified TY2025/TY2026 federal parameters, but it is simplified (no preferential capital-gain rates, AMT, or
-        state returns) and is not IRS e-file software. Do not use it to file a real return.
+        verified TY2025 federal parameters, but it is simplified (no AMT, self-employment tax, or state returns) and is
+        not IRS e-file software. Do not use it to file a real return.
       </p>
     </div>
   )
@@ -168,23 +201,33 @@ export function WelcomeStep() {
 /* Filing status                                                     */
 /* ---------------------------------------------------------------- */
 
+const STATUS_ORDER: FilingStatus[] = [
+  'single', 'marriedJoint', 'marriedSeparate', 'headOfHousehold', 'survivingSpouse',
+]
+
 export function StatusStep() {
-  const status = useClearFile((s) => s.status)
+  const status = useClearFile((s) => s.filingStatus)
   const setStatus = useClearFile((s) => s.setStatus)
+  const setFlag = useClearFile((s) => s.setFlag)
+  const taxpayer65 = useClearFile((s) => s.taxpayer65OrOlder)
+  const spouse65 = useClearFile((s) => s.spouse65OrOlder)
+  const taxpayerBlind = useClearFile((s) => s.taxpayerBlind)
+  const spouseBlind = useClearFile((s) => s.spouseBlind)
   const { computed } = useFilingComputed()
+  const hasSpouse = status === 'marriedJoint'
 
   return (
     <section aria-labelledby="status-heading">
       <StepHeader
         title="How were you set up at the end of the year?"
-        sub="Your filing status sets your standard deduction and your tax brackets. Not sure? The IRS Interactive Tax Assistant can help you decide."
+        sub="Your filing status sets your standard deduction and your tax brackets. Pick the status that matched your situation on December 31, 2025."
       />
       <RadioGroup
         value={status}
         onValueChange={(v) => setStatus(v as FilingStatus)}
         className="grid gap-3 sm:grid-cols-2"
       >
-        {(['single', 'mfj', 'mfs', 'hoh'] as const).map((st) => (
+        {STATUS_ORDER.map((st) => (
           <label
             key={st}
             className={cn(
@@ -199,12 +242,37 @@ export function StatusStep() {
               <span className="block font-medium">{STATUS_LABELS[st]}</span>
               <span className="mt-1 block text-xs leading-relaxed text-md-on-surface-variant">{STATUS_HELP[st]}</span>
               <span className="mt-2 block text-xs font-medium text-md-primary">
-                Standard deduction: {usd(YEARS[useClearFile.getState().taxYear].standardDeduction[st])}
+                Standard deduction: {usd(YEARS[2025].standardDeduction[st])}
               </span>
             </span>
           </label>
         ))}
       </RadioGroup>
+
+      <Card className="mt-5 rounded-3xl border-md-outline-variant">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">About you{hasSpouse ? ' (and your spouse)' : ''}</CardTitle>
+          <CardDescription>
+            Each person who is 65 or older or legally blind adds an extra standard-deduction amount.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="divide-y divide-md-outline-variant/50">
+          <FlagRow
+            checked={taxpayer65}
+            onChange={(v) => setFlag('taxpayer65OrOlder', v)}
+            title="I was 65 or older on Dec 31, 2025"
+            hint="Adds an extra standard deduction amount for each person 65+."
+          />
+          <FlagRow checked={taxpayerBlind} onChange={(v) => setFlag('taxpayerBlind', v)} title="I am legally blind" />
+          {hasSpouse && (
+            <>
+              <FlagRow checked={spouse65} onChange={(v) => setFlag('spouse65OrOlder', v)} title="My spouse was 65 or older" />
+              <FlagRow checked={spouseBlind} onChange={(v) => setFlag('spouseBlind', v)} title="My spouse is legally blind" />
+            </>
+          )}
+        </CardContent>
+      </Card>
+
       <p className="mt-4 text-xs text-md-on-surface-variant">
         With your current entries the engine would use the {STATUS_LABELS[status]} brackets — top marginal rate{' '}
         {pct(computed.marginalRate)}.
@@ -217,7 +285,7 @@ export function StatusStep() {
 /* Income                                                            */
 /* ---------------------------------------------------------------- */
 
-function W2Card({ w2 }: { w2: W2 }) {
+function W2Card({ w2 }: { w2: W2Entry }) {
   const updateW2 = useClearFile((s) => s.updateW2)
   const removeW2 = useClearFile((s) => s.removeW2)
   return (
@@ -225,7 +293,7 @@ function W2Card({ w2 }: { w2: W2 }) {
       <div className="flex items-center gap-2">
         <Input
           value={w2.employer}
-          onChange={(e) => updateW2(w2.id, { employer: e.target.value })}
+          onChange={(e) => updateW2(w2.id ?? '', { employer: e.target.value })}
           placeholder="Employer name"
           className="rounded-xl h-10"
           aria-label="Employer name"
@@ -234,7 +302,7 @@ function W2Card({ w2 }: { w2: W2 }) {
           variant="ghost"
           size="icon"
           className="rounded-full size-10 shrink-0 text-md-error hover:bg-md-error-container/40"
-          onClick={() => removeW2(w2.id)}
+          onClick={() => removeW2(w2.id ?? '')}
           aria-label={`Remove W-2 for ${w2.employer || 'this employer'}`}
         >
           <Trash2 className="size-4" aria-hidden />
@@ -244,12 +312,12 @@ function W2Card({ w2 }: { w2: W2 }) {
         <MoneyInput
           label="Box 1 — Wages, tips, other comp"
           value={w2.wages}
-          onChange={(v) => updateW2(w2.id, { wages: v })}
+          onChange={(v) => updateW2(w2.id ?? '', { wages: v })}
         />
         <MoneyInput
           label="Box 2 — Federal income tax withheld"
-          value={w2.federalWithheld}
-          onChange={(v) => updateW2(w2.id, { federalWithheld: v })}
+          value={w2.withholding}
+          onChange={(v) => updateW2(w2.id ?? '', { withholding: v })}
         />
       </div>
     </div>
@@ -266,7 +334,7 @@ export function IncomeStep() {
     <section aria-labelledby="income-heading">
       <StepHeader
         title="Income"
-        sub="Start with your W-2s, then any bank interest or dividends. ClearFile adds everything up as you go."
+        sub="Start with your W-2s, then bank interest, dividends, and capital gains. ClearFile adds everything up as you go."
       />
       <div className="space-y-4">
         <Card className="rounded-3xl border-md-outline-variant">
@@ -274,18 +342,18 @@ export function IncomeStep() {
             <CardTitle className="text-base flex items-center justify-between gap-2">
               W-2 forms
               <Badge variant="outline" className="rounded-full font-normal text-md-on-surface-variant">
-                wages {usd(computed.earnedIncome)}
+                wages {usd(totalWages(filing))}
               </Badge>
             </CardTitle>
             <CardDescription>Box 1 and Box 2 from each form.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {w2s.map((w) => (
-              <W2Card key={w.id} w2={w} />
+              <W2Card key={w.id ?? w.employer} w2={w} />
             ))}
             <Button
               variant="secondary"
-              onClick={() => addW2({ employer: '', wages: 0, federalWithheld: 0 })}
+              onClick={() => addW2({ employer: '', wages: 0, withholding: 0 })}
               className="rounded-full h-10"
             >
               <Plus className="size-4" aria-hidden /> Add a W-2
@@ -302,28 +370,34 @@ export function IncomeStep() {
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
             <MoneyInput
-              label="Interest (1099-INT)"
-              value={filing.interest}
-              onChange={(v) => setIncomeField('interest', v)}
+              label="Interest (1099-INT, Box 1)"
+              value={filing.interestIncome}
+              onChange={(v) => setIncomeField('interestIncome', v)}
               hint="Bank and brokerage interest."
             />
             <MoneyInput
-              label="Dividends (1099-DIV, ordinary)"
-              value={filing.dividends}
-              onChange={(v) => setIncomeField('dividends', v)}
-              hint="Demo engine taxes these as ordinary income."
+              label="Ordinary dividends (1099-DIV, Box 1a)"
+              value={filing.ordinaryDividends}
+              onChange={(v) => setIncomeField('ordinaryDividends', v)}
+              hint="The part NOT taxed at lower rates. Add qualified dividends separately."
+            />
+            <MoneyInput
+              label="Qualified dividends (1099-DIV, Box 1b)"
+              value={filing.qualifiedDividends}
+              onChange={(v) => setIncomeField('qualifiedDividends', v)}
+              hint="Taxed at the lower capital-gains rates."
+            />
+            <MoneyInput
+              label="Long-term capital gains"
+              value={filing.longTermCapitalGains}
+              onChange={(v) => setIncomeField('longTermCapitalGains', v)}
+              hint="Assets held more than one year."
             />
             <MoneyInput
               label="Other income"
               value={filing.otherIncome}
               onChange={(v) => setIncomeField('otherIncome', v)}
-              hint="Miscellaneous income in this simplified demo."
-            />
-            <MoneyInput
-              label="Adjustments to income"
-              value={filing.adjustments}
-              onChange={(v) => setIncomeField('adjustments', v)}
-              hint="Above-the-line items, e.g. student loan interest, HSA."
+              hint="Self-employment, gig platforms, prizes, etc."
             />
           </CardContent>
         </Card>
@@ -342,67 +416,106 @@ export function IncomeStep() {
 /* ---------------------------------------------------------------- */
 
 export function DeductionsStep() {
-  const setItemizedField = useClearFile((s) => s.setItemizedField)
+  const setIncomeField = useClearFile((s) => s.setIncomeField)
+  const setDeductionMethod = useClearFile((s) => s.setDeductionMethod)
   const { filing, computed } = useFilingComputed()
-  const itemized = filing.itemized
+  const methods = ['auto', 'standard', 'itemized'] as const
 
   return (
     <section aria-labelledby="deductions-heading">
       <StepHeader
         title="Deductions"
-        sub="Two ways to lower your taxable income. ClearFile automatically uses whichever is larger — you cannot lose by trying itemized."
+        sub="Two ways to lower your taxable income. If you let ClearFile compare, it uses whichever is larger — you cannot lose by trying itemized."
       />
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div
-          className={cn(
-            'rounded-3xl border p-5',
-            computed.deductionChoice === 'standard'
-              ? 'border-md-primary bg-md-primary-container/30'
-              : 'border-md-outline-variant'
-          )}
-        >
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium">Standard deduction</h3>
-            {computed.deductionChoice === 'standard' && (
-              <Badge className="rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary font-normal">used</Badge>
-            )}
-          </div>
-          <p className="mt-2 text-2xl font-semibold tabular-nums">{usd(computed.standardDeduction)}</p>
-          <p className="mt-1 text-xs text-md-on-surface-variant">Automatic for your filing status — no receipts needed.</p>
-        </div>
-        <div
-          className={cn(
-            'rounded-3xl border p-5',
-            computed.deductionChoice === 'itemized'
-              ? 'border-md-primary bg-md-primary-container/30'
-              : 'border-md-outline-variant'
-          )}
-        >
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium">Itemized deductions</h3>
-            {computed.deductionChoice === 'itemized' && (
-              <Badge className="rounded-full bg-md-primary text-md-on-primary hover:bg-md-primary font-normal">used</Badge>
-            )}
-          </div>
-          <p className="mt-2 text-2xl font-semibold tabular-nums">{usd(computed.itemizedTotal)}</p>
-          <p className="mt-1 text-xs text-md-on-surface-variant">Your qualifying expenses added up below.</p>
-        </div>
+
+      <Card className="rounded-3xl border-md-outline-variant">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Deduction method</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RadioGroup
+            value={filing.deductionMethod}
+            onValueChange={(v) => setDeductionMethod(v as DeductionMethod)}
+            className="grid gap-3"
+          >
+            {methods.map((m) => (
+              <label
+                key={m}
+                className={cn(
+                  'flex cursor-pointer items-center gap-3 rounded-3xl border p-4 transition-colors',
+                  filing.deductionMethod === m
+                    ? 'border-md-primary bg-md-primary-container/35'
+                    : 'border-md-outline-variant hover:bg-md-surface-1'
+                )}
+              >
+                <RadioGroupItem value={m} />
+                <span className="text-sm font-medium">{DEDUCTION_METHOD_LABELS[m]}</span>
+              </label>
+            ))}
+          </RadioGroup>
+        </CardContent>
+      </Card>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Badge variant="outline" className="rounded-full h-9 px-4 font-normal text-md-on-surface-variant">
+          Standard {usd(computed.standardDeductionTotal)}
+        </Badge>
+        <Badge variant="outline" className="rounded-full h-9 px-4 font-normal text-md-on-surface-variant">
+          Itemized {usd(computed.itemizedDeductionTotal)}
+        </Badge>
+        <Badge className="rounded-full h-9 px-4 bg-md-primary text-md-on-primary hover:bg-md-primary">
+          {computed.deductionMethodUsed === 'itemized' ? 'Itemizing is larger' : 'Standard deduction is larger'}
+        </Badge>
       </div>
 
       <Card className="mt-4 rounded-3xl border-md-outline-variant">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Itemized expenses (optional)</CardTitle>
+          <CardTitle className="text-base">If you itemize</CardTitle>
           <CardDescription>
-            Demo simplification: amounts are deducted at face value — no SALT cap or 7.5% medical floor. Production rules
-            are specified in the engineering blueprint.
+            Only needed when you itemize or let ClearFile compare. The state-and-local tax combination is subject to
+            the SALT cap, and charitable gifts are capped at 60% / 30% of AGI.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
-          <MoneyInput label="Medical & dental" value={itemized.medical} onChange={(v) => setItemizedField('medical', v)} />
-          <MoneyInput label="State & local taxes paid" value={itemized.taxesPaid} onChange={(v) => setItemizedField('taxesPaid', v)} />
-          <MoneyInput label="Mortgage interest" value={itemized.mortgageInterest} onChange={(v) => setItemizedField('mortgageInterest', v)} />
-          <MoneyInput label="Charitable gifts" value={itemized.charity} onChange={(v) => setItemizedField('charity', v)} />
-          <MoneyInput label="Other deductible expenses" value={itemized.other} onChange={(v) => setItemizedField('other', v)} />
+          <MoneyInput
+            label="State & local income or sales tax (SALT)"
+            value={filing.stateLocalIncomeOrSalesTax}
+            onChange={(v) => setIncomeField('stateLocalIncomeOrSalesTax', v)}
+          />
+          <MoneyInput
+            label="Real estate taxes"
+            value={filing.realEstateTax}
+            onChange={(v) => setIncomeField('realEstateTax', v)}
+          />
+          <MoneyInput
+            label="Home mortgage interest (1098, Box 1)"
+            value={filing.mortgageInterest}
+            onChange={(v) => setIncomeField('mortgageInterest', v)}
+          />
+          <MoneyInput
+            label="Charitable gifts — cash"
+            value={filing.charitableCash}
+            onChange={(v) => setIncomeField('charitableCash', v)}
+          />
+          <MoneyInput
+            label="Charitable gifts — non-cash (thrift-store value)"
+            value={filing.charitableNonCash}
+            onChange={(v) => setIncomeField('charitableNonCash', v)}
+          />
+        </CardContent>
+      </Card>
+
+      <Card className="mt-4 rounded-3xl border-md-outline-variant">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Adjustments to income</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <MoneyInput
+            label="Student loan interest (1098-E, Box 1)"
+            value={filing.studentLoanInterest}
+            onChange={(v) => setIncomeField('studentLoanInterest', v)}
+            hint="Deductible up to $2,500, phasing out at higher income (not available when married filing separately)."
+          />
         </CardContent>
       </Card>
     </section>
@@ -413,52 +526,75 @@ export function DeductionsStep() {
 /* Dependents                                                        */
 /* ---------------------------------------------------------------- */
 
-function Counter({
-  label,
-  description,
-  value,
-  onChange,
-}: {
-  label: string
-  description: string
-  value: number
-  onChange: (v: number) => void
-}) {
+function DependentCard({ d }: { d: Dependent }) {
+  const updateDependent = useClearFile((s) => s.updateDependent)
+  const removeDependent = useClearFile((s) => s.removeDependent)
+  const id = d.id ?? ''
   return (
-    <div className="flex items-center gap-4 rounded-3xl border border-md-outline-variant p-4">
-      <div className="flex-1 min-w-0">
-        <p className="font-medium">{label}</p>
-        <p className="mt-0.5 text-xs leading-relaxed text-md-on-surface-variant">{description}</p>
+    <div className="rounded-3xl border border-md-outline-variant bg-card p-4 space-y-3">
+      <div className="flex items-center gap-2">
+        <Input
+          value={d.name}
+          onChange={(e) => updateDependent(id, { name: e.target.value })}
+          placeholder="First and last name"
+          className="rounded-xl h-10"
+          aria-label="Dependent name"
+        />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full size-10 shrink-0 text-md-error hover:bg-md-error-container/40"
+          onClick={() => removeDependent(id)}
+          aria-label={`Remove ${d.name || 'this dependent'}`}
+        >
+          <Trash2 className="size-4" aria-hidden />
+        </Button>
       </div>
-      <div className="flex items-center gap-1.5">
-        <Button
-          variant="outline"
-          size="icon"
-          className="rounded-full size-10"
-          onClick={() => onChange(value - 1)}
-          aria-label={`Remove one — ${label}`}
-        >
-          <Minus className="size-4" aria-hidden />
-        </Button>
-        <span className="w-7 text-center text-lg font-semibold tabular-nums" aria-live="polite">{value}</span>
-        <Button
-          variant="outline"
-          size="icon"
-          className="rounded-full size-10"
-          onClick={() => onChange(value + 1)}
-          aria-label={`Add one — ${label}`}
-        >
-          <Plus className="size-4" aria-hidden />
-        </Button>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label className="text-sm font-normal text-md-on-surface-variant">Age at the end of 2025</Label>
+          <Input
+            type="number"
+            min={0}
+            value={d.age === 0 ? '' : d.age}
+            placeholder="0"
+            onChange={(e) => updateDependent(id, { age: Math.max(0, Math.round(Number(e.target.value) || 0)) })}
+            className="rounded-xl h-12 text-sm tabular-nums"
+            aria-label="Dependent age"
+          />
+        </div>
+        <Input
+          value={d.relationship}
+          onChange={(e) => updateDependent(id, { relationship: e.target.value })}
+          placeholder="Relationship (son, parent, niece...)"
+          className="rounded-xl h-12"
+          aria-label="Relationship"
+        />
+      </div>
+      <div className="divide-y divide-md-outline-variant/50 rounded-2xl border border-md-outline-variant/60 px-4">
+        <FlagRow
+          checked={d.qualifyingChild}
+          onChange={(v) => updateDependent(id, { qualifyingChild: v })}
+          title="Qualifying child under 17"
+          hint="Child Tax Credit, $2,200 per child."
+        />
+        <FlagRow
+          checked={d.otherDependentCredit}
+          onChange={(v) => updateDependent(id, { otherDependentCredit: v })}
+          title="Qualifies for the other-dependent credit"
+          hint="$500 credit — for example a parent or a child 17+."
+        />
       </div>
     </div>
   )
 }
 
 export function DependentsStep() {
-  const setDependentField = useClearFile((s) => s.setDependentField)
-  const { filing, computed } = useFilingComputed()
-  const threshold = filing.status === 'mfj' ? 400000 : 200000
+  const addDependent = useClearFile((s) => s.addDependent)
+  const dependents = useClearFile((s) => s.dependents)
+  const { computed } = useFilingComputed()
+  const kids = computed.qualifyingChildren
+  const threshold = useClearFile((s) => (s.filingStatus === 'marriedJoint' || s.filingStatus === 'survivingSpouse' ? 400000 : 200000))
   const nearPhaseout = computed.agi > threshold * 0.9
 
   return (
@@ -468,18 +604,17 @@ export function DependentsStep() {
         sub="People you support can lower your tax — the child tax credit is worth up to $2,200 per qualifying child, part of it refundable."
       />
       <div className="space-y-3">
-        <Counter
-          label="Qualifying children under 17"
-          description="Lived with you over half the year, under 17 at year end, and you provided over half their support."
-          value={filing.qualifyingChildren}
-          onChange={(v) => setDependentField('qualifyingChildren', v)}
-        />
-        <Counter
-          label="Other dependents"
-          description="Dependents who do not qualify for the child tax credit — worth $500 each (Credit for Other Dependents)."
-          value={filing.otherDependents}
-          onChange={(v) => setDependentField('otherDependents', v)}
-        />
+        {dependents.map((d) => (
+          <DependentCard key={d.id ?? d.name} d={d} />
+        ))}
+        {dependents.length === 0 && (
+          <div className="rounded-3xl border border-md-outline-variant bg-md-surface-1/50 p-4 text-sm text-md-on-surface-variant">
+            No dependents. Skip this step if nobody depends on you.
+          </div>
+        )}
+        <Button variant="secondary" onClick={addDependent} className="rounded-full h-10">
+          <UserPlus className="size-4" aria-hidden /> Add dependent
+        </Button>
       </div>
 
       <Card className="mt-4 rounded-3xl border-md-outline-variant bg-md-surface-1/50">
@@ -488,26 +623,19 @@ export function DependentsStep() {
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-md-on-surface-variant">Child tax credit (max, before phase-out)</span>
-            <span className="font-semibold tabular-nums">{usd(computed.ctcMax)}</span>
+            <span className="text-md-on-surface-variant">Child tax credit (after phase-out)</span>
+            <span className="font-semibold tabular-nums">{usd(Math.max(0, computed.nonRefundableCredits))}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-md-on-surface-variant">Applied against this year&apos;s tax</span>
-            <span className="font-semibold tabular-nums">{usd(computed.ctcApplied)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-md-on-surface-variant">Refundable portion (ACTC, simplified)</span>
-            <span className="font-semibold tabular-nums">{usd(computed.actc)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-md-on-surface-variant">Credit for other dependents</span>
-            <span className="font-semibold tabular-nums">{usd(computed.odcApplied)}</span>
+            <span className="text-md-on-surface-variant">Refundable portion (ACTC)</span>
+            <span className="font-semibold tabular-nums">{usd(computed.refundableCredits)}</span>
           </div>
           {nearPhaseout && (
             <p className="flex gap-2 rounded-2xl bg-md-tertiary-container/40 p-3 text-xs leading-relaxed">
               <Info className="size-4 shrink-0 mt-0.5 text-md-tertiary" aria-hidden />
-              The credit phases out above {usd(threshold)} of income for your filing status (your AGI:{' '}
-              {usd(computed.agi)}), reducing the credit by $50 per $1,000 over.
+              The credits phase out above {usd(threshold)} of AGI for your filing status (your AGI: {usd(computed.agi)}
+              ) — the phase-out is 5% of the excess, rounded up to each $1,000 ({kids} qualifying child
+              {kids === 1 ? '' : 'ren'} on file).
             </p>
           )}
         </CardContent>
@@ -525,7 +653,7 @@ export function PaymentsStep() {
   const setStep = useClearFile((s) => s.setStep)
   const { filing, computed } = useFilingComputed()
 
-  const coveredRatio = computed.totalTax > 0 ? (computed.totalPayments + computed.actc) / computed.totalTax : 1
+  const coveredRatio = computed.totalTax > 0 ? (computed.totalPayments + computed.refundableCredits) / computed.totalTax : 1
   const coverageLabel =
     computed.totalTax === 0
       ? 'No tax due with your current entries.'
@@ -547,7 +675,7 @@ export function PaymentsStep() {
             <CardTitle className="text-base flex items-center justify-between">
               Federal withholding (from W-2s)
               <Badge variant="outline" className="rounded-full font-normal text-md-on-surface-variant">
-                {usd(computed.withholding)}
+                {usd(totalWithholding(filing))}
               </Badge>
             </CardTitle>
             <CardDescription>Box 2 totals from the Income step.</CardDescription>
@@ -581,7 +709,7 @@ export function PaymentsStep() {
           <CardContent className="space-y-2">
             <Progress value={Math.min(100, Math.round(coveredRatio * 100))} className="h-2.5" aria-label="Payment coverage" />
             <div className="flex justify-between text-xs text-md-on-surface-variant">
-              <span>Paid so far: {usd(computed.totalPayments + computed.actc)}</span>
+              <span>Paid so far: {usd(computed.totalPayments + computed.refundableCredits)}</span>
               <span>Computed tax: {usd(computed.totalTax)}</span>
             </div>
           </CardContent>
@@ -598,25 +726,40 @@ export function PaymentsStep() {
 export function ResultsStep() {
   const { filing, computed } = useFilingComputed()
   const { toast } = useToast()
-  const checks = ruleChecks(filing, computed)
+  const checks: RuleCheck[] = ruleChecks(filing, computed)
+  const refund = computed.refund
+  const isRefundNow = refund > 0
+  const balance = refund - computed.amountOwed
+  const params = YEARS[filing.taxYear as TaxYear] ?? YEARS[2025]
+  const ordinaryTaxable = computed.taxableIncome - computed.preferentialIncome
+  const bracketRows = bracketWalk(ordinaryTaxable, params.ordinaryBrackets[filing.filingStatus])
 
   const rows: [string, string, string?][] = [
-    ['Total income', usd(computed.totalIncome), 'Wages + interest + dividends + other'],
-    ['Adjustments to income', `−${usd(filing.adjustments)}`],
+    ['Total income', usd(computed.totalIncome), 'Wages + interest + dividends + gains + other'],
+    ...(computed.studentLoanDeduction > 0
+      ? ([['Student loan interest deduction', `−${usd(computed.studentLoanDeduction)}`]] as [string, string][])
+      : []),
     ['Adjusted gross income (AGI)', usd(computed.agi)],
     [
-      `Deduction — ${computed.deductionChoice}`,
-      `−${usd(computed.deduction)}`,
-      computed.deductionChoice === 'itemized'
-        ? 'Itemized total (larger than standard)'
-        : `Standard deduction for ${STATUS_LABELS[filing.status]}`,
+      `Deduction — ${computed.deductionMethodUsed}`,
+      `−${usd(computed.deductionUsed)}`,
+      computed.deductionMethodUsed === 'itemized'
+        ? 'Itemized total after the SALT cap (incl. senior deduction)'
+        : `Standard deduction for ${STATUS_LABELS[filing.filingStatus]} (incl. 65+/blind additions${computed.seniorDeduction > 0 ? ' and the senior deduction' : ''})`,
     ],
     ['Taxable income', usd(computed.taxableIncome)],
-    ['Tax before credits', usd(computed.taxBeforeCredits), 'Bracket walk on taxable income'],
-    ['Child tax credit (nonrefundable)', `−${usd(computed.ctcApplied)}`, `of up to ${usd(computed.ctcMax)}`],
-    ['Credit for other dependents', `−${usd(computed.odcApplied)}`],
+    ['Tax on ordinary income', usd(computed.ordinaryTax), 'Bracket walk on the ordinary slice'],
+    ...(computed.preferentialTax > 0
+      ? ([['Tax on qualified dividends & long-term gains', usd(computed.preferentialTax), '0% / 15% / 20% stacking']] as [string, string, string?][])
+      : []),
+    ...(computed.niit > 0 ? ([['Net investment income tax', usd(computed.niit), '3.8%']] as [string, string, string?][]) : []),
+    ...(computed.nonRefundableCredits > 0
+      ? ([['Non-refundable credits', `−${usd(computed.nonRefundableCredits)}`, 'CTC + other-dependent credit, after phase-out']] as [string, string, string?][])
+      : []),
     ['Total tax', usd(computed.totalTax)],
-    ['Refundable child tax credit (ACTC)', `+${usd(computed.actc)}`, 'Simplified Schedule 8812 formula'],
+    ...(computed.refundableCredits > 0
+      ? ([['Additional child tax credit (refundable)', `+${usd(computed.refundableCredits)}`, '15% of earned income above $2,500']] as [string, string, string?][])
+      : []),
     ['Withholding + estimated payments', `+${usd(computed.totalPayments)}`],
   ]
 
@@ -625,7 +768,7 @@ export function ResultsStep() {
     toast({ title: 'Return saved', description: 'Open .cfr file — keep it anywhere, reopen it here anytime.' })
   }
   function saveTxf() {
-    downloadText(`clearfile-${filing.taxYear}.txf`, exportTxf(filing, computed), 'application/octet-stream')
+    downloadText(`clearfile-${filing.taxYear}.txf`, exportTxf(filing), 'application/octet-stream')
     toast({
       title: 'TXF exported',
       description: 'Wages + withholding only (demo scope). Verify after import.',
@@ -644,7 +787,7 @@ export function ResultsStep() {
       <div className="hidden print:block mb-2">
         <p className="text-lg font-semibold">ClearFile — return summary (prototype)</p>
         <p className="text-xs">
-          Tax year {filing.taxYear} · {STATUS_LABELS[filing.status]} · Demo output — not for filing. Generated locally in
+          Tax year {filing.taxYear} · {STATUS_LABELS[filing.filingStatus]} · Demo output — not for filing. Generated locally in
           your browser.
         </p>
       </div>
@@ -657,18 +800,18 @@ export function ResultsStep() {
       <div
         className={cn(
           'rounded-[28px] p-6 sm:p-8',
-          computed.isRefund ? 'bg-md-success-container text-md-on-success-container' : 'bg-md-error-container text-md-on-error-container'
+          isRefundNow ? 'bg-md-success-container text-md-on-success-container' : 'bg-md-error-container text-md-on-error-container'
         )}
       >
         <p className="text-sm font-medium uppercase tracking-wide">
-          {computed.isRefund ? 'Projected refund' : 'Projected balance due'}
+          {isRefundNow ? 'Projected refund' : 'Projected balance due'}
         </p>
-        <p className="mt-1 text-4xl sm:text-5xl font-semibold tabular-nums">{usd(Math.abs(computed.balance))}</p>
+        <p className="mt-1 text-4xl sm:text-5xl font-semibold tabular-nums">{usd(Math.abs(balance))}</p>
         <p className="mt-2 text-sm leading-relaxed">
-          {computed.isRefund
-            ? `You have paid ${usd(computed.totalPayments + computed.actc)} against a computed tax of ${usd(computed.totalTax)}.`
-            : `Your computed tax of ${usd(computed.totalTax)} exceeds payments of ${usd(computed.totalPayments + computed.actc)}.`}{' '}
-          Effective tax rate {pct(computed.effectiveRate)} of total income; top bracket {pct(computed.marginalRate)}.
+          {isRefundNow
+            ? `You have paid ${usd(computed.totalPayments + computed.refundableCredits)} against a computed tax of ${usd(computed.totalTax)}.`
+            : `Your computed tax of ${usd(computed.totalTax)} exceeds payments of ${usd(computed.totalPayments + computed.refundableCredits)}.`}{' '}
+          Effective tax rate {pct(computed.effectiveRate)} of AGI; top ordinary bracket {pct(computed.marginalRate)}.
         </p>
       </div>
 
@@ -725,11 +868,11 @@ export function ResultsStep() {
               ))}
               <TableRow className="hover:bg-transparent border-t-2 border-md-outline-variant">
                 <TableCell className="py-3 font-semibold">
-                  {computed.isRefund ? 'Refund' : 'Amount you owe'}
+                  {isRefundNow ? 'Refund' : 'Amount you owe'}
                 </TableCell>
                 <TableCell className="py-3 text-right font-semibold tabular-nums whitespace-nowrap">
-                  {computed.isRefund ? '+' : '−'}
-                  {usd(Math.abs(computed.balance))}
+                  {isRefundNow ? '+' : '−'}
+                  {usd(Math.abs(balance))}
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -741,12 +884,15 @@ export function ResultsStep() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Where your tax comes from</CardTitle>
           <CardDescription>
-            Taxable income {usd(computed.taxableIncome)} walked through the {filing.taxYear} brackets for{' '}
-            {STATUS_LABELS[filing.status]}.
+            Ordinary taxable income {usd(ordinaryTaxable)} walked through the {filing.taxYear} brackets for{' '}
+            {STATUS_LABELS[filing.filingStatus]}
+            {computed.preferentialIncome > 0
+              ? `; qualified dividends and long-term gains (${usd(computed.preferentialIncome)}) stack on top at their own rates.`
+              : '.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {computed.bracketRows
+          {bracketRows
             .filter((r) => r.income > 0)
             .map((row) => (
               <div key={row.rate} className="space-y-1">
@@ -764,13 +910,13 @@ export function ResultsStep() {
                 <div className="h-2 rounded-full bg-md-surface-2 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-md-primary"
-                    style={{ width: `${computed.taxableIncome > 0 ? (row.income / computed.taxableIncome) * 100 : 0}%` }}
+                    style={{ width: `${ordinaryTaxable > 0 ? (row.income / ordinaryTaxable) * 100 : 0}%` }}
                   />
                 </div>
               </div>
             ))}
           {computed.taxableIncome === 0 && (
-            <p className="text-sm text-md-on-surface-variant">No taxable income — the standard deduction covered it all.</p>
+            <p className="text-sm text-md-on-surface-variant">No taxable income — your deductions covered it all.</p>
           )}
         </CardContent>
       </Card>
