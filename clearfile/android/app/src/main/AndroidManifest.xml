@@ -1,4 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- INTERNET in the MAIN manifest (owner decision 2026-11-14: "add and
+         disclose"). Previously only the debug/profile manifests declared it,
+         so release APKs shipped from v1.0.0 could not run the optional AI
+         assistant at all (Stage-0 gate, ADV-SEC finding 1). The assistant
+         is opt-in, bring-your-own-key, and calls Google AI Studio /
+         OpenRouter directly; no other network use exists in the app. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="clearfile"
         android:name="${applicationName}"

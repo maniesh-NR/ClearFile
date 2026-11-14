@@ -77,9 +77,19 @@ Before **any** roadmap stage begins, the standing panel
    all reports are in, by the orchestrator, and recorded in
    `adversarial/CONSENSUS.md`.
 2. **Comprehensiveness.** Each reviewer examines (a) all work completed
-   since the last gate, (b) the whole current repository state, and (c) the
-   plan for the stage about to start. Evidence is required: file paths,
-   line numbers, command output — never "someone said".
+   since the last gate, (b) the current repository state, and (c) the plan
+   for the stage about to start. Evidence is required: file paths, line
+   numbers, command output — never "someone said".
+   **Gate-depth tiering (Stage-0 amendment, ratified by the Stage-1
+   gate):** the *scope* of (b) is tiered per `memory/ROADMAP.md`'s
+   "Gate depth tiering" section — full-repository review for Stage-1
+   entry, Stage-2 entry, and any history-rewrite execution;
+   delta-since-last-gate plus named risk surfaces for all other gates
+   and spot reviews. Independence, evidence requirements, and the verdict
+   vocabulary below are never relaxed — only the review scope is. If
+   WORKFLOW and ROADMAP ever disagree on a gate's scope, the fuller
+   (full-depth) scope applies until the discrepancy is fixed and
+   `scripts/harness_check.sh` flags it.
 3. **Verdicts.** Each reviewer's verdict must be exactly one of:
    - `PROCEED` — sound; no conditions.
    - `PROCEED-WITH-CONDITIONS` — sound *only if* the numbered conditions
@@ -189,6 +199,12 @@ in platform scaffolding; the `origin` remote, the Flutter SDK (`tools/`),
   transcript, log, or file. The owner should set an explicit expiry when
   minting tokens and attest to it; sessions should ask for the current
   PAT rather than trusting one recovered from stale context.
+- **Owner decision 2026-11-14: the PAT is left as-is** (no expiry change,
+  no rotation at this time) — an explicit, acknowledged risk acceptance.
+  The rotation policy above remains the standing guidance for when the
+  owner chooses to act; the token continues to live only in `.git/config`
+  and must be re-supplied by the owner after any recycle where it stops
+  authenticating.
 - Owner-side recommendation: enable branch protection on `main` (at
   minimum, reject force-pushes from non-owner actors) so the PAT is not
   the only guard on history integrity.

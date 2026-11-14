@@ -74,7 +74,9 @@ class AiSettings {
     this.googleApiKey = '',
     this.openrouterApiKey = '',
     List<AiModelSpec>? chain,
-    this.sendReturnContext = true,
+    // Off by default (Stage-0 gate, ADV-LEGAL finding 3): sharing return
+    // figures is opt-in, matching every privacy claim the app makes.
+    this.sendReturnContext = false,
   }) : chain = chain ?? List<AiModelSpec>.from(suggestedModels);
 
   bool assistantEnabled;
@@ -94,6 +96,7 @@ class AiSettings {
       };
 
   Map<String, dynamic> toJson() => {
+        'schemaVersion': schemaVersion,
         'assistantEnabled': assistantEnabled,
         'googleApiKey': googleApiKey,
         'openrouterApiKey': openrouterApiKey,
@@ -101,19 +104,31 @@ class AiSettings {
         'chain': chain.map((m) => m.toJson()).toList(),
       };
 
-  static AiSettings fromJson(Map<String, dynamic> json) => AiSettings(
-        assistantEnabled: readBool(json, 'assistantEnabled'),
-        googleApiKey: readString(json, 'googleApiKey'),
-        openrouterApiKey: readString(json, 'openrouterApiKey'),
-        sendReturnContext: readBool(json, 'sendReturnContext', true),
-        chain: (json['chain'] as List? ?? [])
-            .whereType<Map>()
-            // 'mistral' entries belong to a provider whose free tier ended
-            // on 2026-09-21; drop them instead of misrouting to Google.
-            .where((m) => m['provider'] != 'mistral')
-            .map((m) => AiModelSpec.fromJson(Map<String, dynamic>.from(m)))
-            .toList(),
-      );
+  /// Current settings-file schema version. Files without this field were
+  /// written before 2026-11-14, when `sendReturnContext` silently defaulted
+  /// ON — a "grandfathered consent" the user never affirmatively gave
+  /// (ADV-LEGAL Stage-1 finding 4). Loading a schema-less (legacy) file
+  /// resets the flag to today's opt-in default; explicit files are honored.
+  static const int schemaVersion = 2;
+
+  static AiSettings fromJson(Map<String, dynamic> json) {
+    final legacy = json['schemaVersion'] is! int;
+    return AiSettings(
+      assistantEnabled: readBool(json, 'assistantEnabled'),
+      googleApiKey: readString(json, 'googleApiKey'),
+      openrouterApiKey: readString(json, 'openrouterApiKey'),
+      sendReturnContext: legacy
+          ? false
+          : readBool(json, 'sendReturnContext', false),
+      chain: (json['chain'] as List? ?? [])
+          .whereType<Map>()
+          // 'mistral' entries belong to a provider whose free tier ended
+          // on 2026-09-21; drop them instead of misrouting to Google.
+          .where((m) => m['provider'] != 'mistral')
+          .map((m) => AiModelSpec.fromJson(Map<String, dynamic>.from(m)))
+          .toList(),
+    );
+  }
 
   AiSettings clone() => AiSettings.fromJson(toJson());
 }

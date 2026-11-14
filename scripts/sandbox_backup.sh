@@ -43,10 +43,23 @@ if [ "$BRANCH" != "main" ]; then
   exit 1
 fi
 
-# The no-op path must still verify nothing is unpushed (ADV-SEC finding 3,
-# scenario A: a previously failed push must never be masked by 'tree clean').
+# The no-op path must still verify nothing is unpushed (ADV-SEC Stage-0
+# finding 3, scenario A) — and the fetch itself must never echo
+# credential-bearing URLs (ADV-SEC Stage-1 finding 2): stderr goes through
+# the same 0600 temp + sanitizer path as the push.
 check_unpushed() {
-  git fetch -q origin
+  local ferr
+  ferr="$(mktemp)"
+  chmod 600 "$ferr"
+  if ! git fetch -q origin 2>"$ferr"; then
+    echo "backup: 'git fetch origin' failed (sanitized):" >&2
+    sed -E 's#(x-access-token:)[^@]+@#\1***@#g; s#//[^@/]+@github.com#//***@github.com#g' \
+      "$ferr" | tail -3 >&2
+    rm -f "$ferr"
+    echo "  Treat local state as NOT backed up until the network recovers." >&2
+    exit 1
+  fi
+  rm -f "$ferr"
   if [ -n "$(git log origin/main..main)" ]; then
     echo "backup: local main is ahead of origin/main — unpushed commits exist." >&2
     git log --oneline origin/main..main >&2
@@ -65,13 +78,19 @@ if git diff --cached --quiet; then
 fi
 
 # --- secret guard: refuse to commit token-shaped strings -------------------
-# Wide token pattern set (ADV-SEC #10, ADV-LEGAL #9) plus a raw-hex-blob
-# heuristic. Lockfiles legitimately contain 64-hex sha256 checksums, so the
-# hex check excludes them; token patterns apply everywhere.
+# TOKEN patterns scan ALL files, binaries included (no -I; ADV-SEC Stage-1
+# finding 3 — a pasted github_pat_/ghp_/sk-… inside a PDF/PNG must refuse
+# the commit; genuine token strings are distinctive enough that binary
+# data never false-positives them). The raw-hex heuristic stays TEXT-ONLY
+# (-I): bitmap/icon pixel data naturally contains long runs of ASCII-hex
+# bytes (verified: clearfile/windows/runner/resources/app_icon.ico trips
+# [0-9a-fA-F]{64} six times on plain pixel bytes) — a false positive class,
+# not a leak. Lockfiles legitimately contain 64-hex sha256 checksums and
+# are excluded from the hex check regardless.
 TOKEN_PATTERNS='github_pat_[A-Za-z0-9_]{10,}|gh[pousr]_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9]{28,}|sk-(ant|proj)-[A-Za-z0-9-]{20,}|AIza[A-Za-z0-9_-]{30,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|npm_[A-Za-z0-9]{30,}|glpat-[A-Za-z0-9-]{20,}|BEGIN [A-Z ]*PRIVATE KEY'
 HEX_PATTERNS='[0-9a-fA-F]{64}'
 HITS="$(
-  { git grep --cached -I -l -E "$TOKEN_PATTERNS" -- . || true
+  { git grep --cached -l -E "$TOKEN_PATTERNS" -- . || true
     git grep --cached -I -l -E "$HEX_PATTERNS" -- . ':(exclude)*.lock' \
       ':(exclude)package-lock.json' ':(exclude)bun.lock' ':(exclude)pnpm-lock.yaml' || true
   } | sort -u

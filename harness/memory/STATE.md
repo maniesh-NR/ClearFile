@@ -1,81 +1,82 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-14 (after the Stage-0 adversarial gate closed)
+**Updated:** 2026-11-14 (after the Stage-1 entry gate — Stage 1 ENTERED)
 
 ## Repository
 
-- GitHub: `maniesh-NR/ClearFile` (public), branch `main`. Tip after this
-  session: the Stage-0 closing backup commit (see SESSION_LOG /
-  CONSENSUS). Tag `v1.0.0` (points at the pre-hygiene `13205da`); its
-  GitHub Release carries 8 platform assets + the RE protocol doc, and — as
-  of 2026-11-14 — a **patched release description** carrying the demo
-  disclaimer (HTTP 200 verified).
-- Public tree: project-only (`clearfile/`, `src/`, `docs/`, `scripts/`,
-  `harness/`, `.github/`, `blueprint-assets/`, `prisma/`, `public/`,
-  configs, `README.md`, `LICENSE`, `package-lock.json`). Sandbox
-  scaffolding is untracked and gitignored (backup scope, `.gitignore`
-  "sandbox backup scope" block — includes `upload/`).
-- **History debt:** pre-`df617e8` history retains the scaffolding (no
-  secrets — triple-verified); **ADR-008 (accept-and-document) awaits owner
-  ratification.**
-- Stage-0 gate: **PASSED** (4 × PROCEED-WITH-CONDITIONS; ledger in
-  `adversarial/CONSENSUS.md`). **Stage 1 is NOT entered** — owner
-  decisions + Stage-1 entry conditions pending.
+- GitHub: `maniesh-NR/ClearFile` (public), branch `main`. The Stage-1
+  session's closing backup commit is the tip (this session's work: owner
+  decisions applied, entry conditions cleared, Stage-1 gate held and
+  conditions applied — see `adversarial/CONSENSUS.md`).
+- Tag `v1.0.0`: release carries the patched description — demo disclaimer,
+  unsigned statement, **AI-broken note** (Android/macOS binaries cannot
+  reach AI providers), and the GPL §6 corresponding-source line (API-200
+  verified twice).
+- Public tree: project-only. `bun.lock` deleted (npm lockfiles
+  standardized); `package-lock.json` tracked; blueprint PDF regenerated
+  with corrected privacy copy + "Tax Return Study Prototype" title
+  (verified via pdftotext).
+
+## Gate status
+
+- Stage 0: PASSED (2026-11-14).
+- **Stage 1: ENTERED (2026-11-14)** — unanimous 4 × PROCEED-WITH-CONDITIONS,
+  all conditions applied in-session or assigned to Stage-1 execution
+  (gitleaks, action pinning, dispatch dry-run, v1.0.1 closing tag). The
+  Stage-2 entry gate reviews Stage 1's execution evidence.
+- Owner decisions all ratified: ADR-008 accept-and-document (README NOTICE);
+  ADR-009 **feature parity** (two-session tripwire + freeze fallback +
+  fixtures-first ordering); INTERNET add-and-disclose (manifest +
+  entitlement + disclosures); PAT unchanged (risk accepted).
+- ADR-011: settings `schemaVersion: 2` + legacy `sendReturnContext` reset.
 
 ## Environment facts (sandbox)
 
-- **Flutter SDK 3.47.9: ABSENT** (recycled 2026-11-14). Reinstall from the
-  stable Linux tarball to `tools/flutter` (verify sha256), then
-  `export PATH="$PWD/tools/flutter/bin:$PATH"`. Gradle note: if
-  `gradle-wrapper.jar` is missing again, fetch it from the Gradle v9.3.1
-  tag (previous session's fix).
-- **`node_modules/` SURVIVED the recycle** (verified: `npx tsc` runs).
-  `.next/` is gone — run `npm run build` when web output is needed.
-  `npm ci` now works off the committed `package-lock.json`.
-- `typescript.ignoreBuildErrors` is **off**; `npx tsc --noEmit` exits 0
-  (tsconfig excludes the untracked `examples/` and `skills/` scaffolding).
-- Git identity resolves to the platform default (`z@container`). Remote
-  auth uses the owner's fine-grained PAT, embedded only in `.git/config`.
-- Dart tests: **42/42 green as of 2026-11-03**, +1 delete-regression test
-  added 2026-11-14 (43 total, **pending SDK verification at Stage-1
-  entry**). `flutter analyze` clean as of 2026-11-03.
+- **Flutter SDK 3.47.9 PRESENT** at `tools/flutter` (reinstalled
+  2026-11-14, sha256 `25ed8c3c…` verified against
+  `tools/releases_linux.json`; the tarball download stalls — use a
+  resuming loop with `--speed-limit 1024 --speed-time 30`).
+- `node_modules/` present; `.next/` absent (`npm run build` when needed).
+  `npx tsc --noEmit` exit 0 (tsconfig excludes untracked `examples/`,
+  `skills/`).
+- Test suite: **49/49 green** (2026-11-14, post-gate-condition fixes):
+  19 calculator, 8 cascade, 9 CSV, 3 JSON, 4 privacy (+1 findings-leak),
+  1 delete-regression, 1 switch-regression, 3 widget. `flutter analyze`
+  clean.
+- Git identity: platform default (`z@container`). Remote auth: owner's
+  fine-grained PAT in `.git/config` only (owner declined rotation —
+  WORKFLOW §5).
 
 ## Hard-won quirks (do not relearn these)
 
-1. **Widget tests + filesystem = hang.** In this SDK (Flutter 3.47), any
-   `dart:io` Future awaited inside a `testWidgets` body in the binding's
-   test zone never resolves. Every FS-touching call in widget tests must
-   run inside `tester.runAsync(() async { ... })`. See
-   `clearfile/test/widget_test.dart` header. (Plain `test()` bodies are
-   unaffected — the delete regression test uses one.)
-2. **`AppState.dispose()` is idempotent**; test bodies call it before
-   returning because `_verifyInvariants` (no pending timers) runs *before*
-   teardown callbacks.
-3. **`deleteReturn` cancels the autosave debounce and the timer callback
-   is identity-guarded** (2026-11-14) — deleted returns must never
-   resurrect; regression test pins it.
-4. Dart string literals: `$` must be `\$` (money strings!).
-5. `file_picker` 13.x: static `FilePicker.pickFiles()` (cancellation →
-   empty list, not null); `FilePicker.saveFile()` returns `Uri?`.
-6. `RadioListTile` group params are gone; wrap choices in `RadioGroup<T>`.
-7. `dynamic_color` is unusable at Flutter 3.47 (ColorScheme type clash
-   with the `material_ui` split) — static teal seed `0xFF00696E`.
-8. `upload-artifact` `path:` resolves from the **workspace root**, not
-   from `defaults.run.working-directory` (cost one failed macOS job on
-   v1.0.0).
-9. Root `.gitignore` needs `/test` (not `test`), or the bare pattern hides
-   `clearfile/test/` entirely.
-10. **Sandbox recycles squash local git history** (one "Initial commit"
-    that sweeps in scaffolding) — GitHub is the source of truth; the
-    recovery runbook is WORKFLOW.md §4 and it works (executed 2026-11-14).
-11. `pubspec.lock` contains 64-hex sha256 checksums — any hex-blob secret
-    heuristic must exclude lockfiles (the backup script does).
+1. **Widget tests + filesystem = hang** — FS work inside `testWidgets` must
+   run in `tester.runAsync` (plain `test()` is unaffected).
+2. `AppState.dispose()` idempotent; call before test-body return
+   (`_verifyInvariants` runs before teardown).
+3. **Autosave contract (2026-11-14):** `deleteReturn` cancels the debounce;
+   the timer callback is identity-guarded; `_open` **flushes the prior
+   return's pending save on switch** — three regression tests pin all of
+   it (delete, switch, and the privacy contract).
+4. Dart `$` escaping; `file_picker` 13.x static API; `RadioGroup<T>`;
+   static teal seed (`dynamic_color` unusable at 3.47).
+5. `upload-artifact` path: workspace root, not working-directory.
+6. Root `.gitignore` `/test` (not `test`).
+7. **Sandbox recycles squash local history** — GitHub is source of truth;
+   runbook WORKFLOW §4 works (proven twice).
+8. Hex-blob heuristics must exclude lockfiles (sha256 checksums).
+9. **Snapshot restores flip file modes to 755** — normalize before
+   committing or every diff noisies (proven twice; now a pre-backup step
+   and a future harness_check item).
+10. Blueprint regen: generator + playwright cover + merge (needs
+    `mkdir -p download` on fresh clones); not byte-deterministic
+    (timestamps) — never cite it as a reproducibility exemplar.
 
 ## Immediately next
 
-Per CONSENSUS.md "Owner decisions required": (1) ratify ADR-008
-(nitro_nissi provenance), (2) ratify ADR-009 (web freeze vs parity),
-(3) decide the Android INTERNET permission question, (4) set PAT expiry +
-branch protection. Then the Stage-1 entry list (reinstall SDK, run 43
-tests, privacy-copy fixes) — and only after that does the Stage-1 gate
-convene. See `adversarial/CONSENSUS.md` and `memory/ROADMAP.md`.
+Stage-1 execution (ROADMAP items 5-9): gitleaks CI scan, action SHA
+pinning, caching verification, dispatch dry-run (fresh-tag AND
+existing-tag), widget/web test expansion, GPL headers, SECURITY.md,
+`harness_check.sh` (D19 — checklist in ROADMAP item 9), then the
+**v1.0.1 closing tag** (Android/macOS network fix + first SHA256SUMS +
+hardened CI's first full run). Stage-2 entry gate reviews that evidence
+(and decides Stage-2-vs-3 ordering rationale, PROD note 7).

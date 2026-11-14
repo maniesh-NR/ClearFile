@@ -17,7 +17,7 @@ Licensed under [GPL-3.0](LICENSE).
 | --- | --- |
 | `src/` | The original **Next.js 16 web prototype**: a seven-step Material 3 tax interview (status → income → deductions → dependents → payments → review → results) with a **simplified** TY2025/TY2026 calculation engine (see [Engine limitations](#engine-limitations)), deterministic review findings, and an optional bring-your-own-key AI assistant. |
 | `clearfile/` | The **Flutter 3.47 app** — the full-featured implementation: the five-step interview, the complete TY2025 engine and the AI cascade, compiled to Android, iOS, macOS, Windows, Linux and Web from one Dart codebase. The two codebases share no code; the web prototype is the earlier, simplified model. |
-| `clearfile/test/` | 43 Dart tests — 19 calculator, 8 AI cascade, 9 CSV import, 3 JSON roundtrip, 3 widget, 1 delete-regression — that pin the engine and UI behaviour. `flutter analyze` is clean and `flutter test` is green. |
+| `clearfile/test/` | 47 Dart tests — 19 calculator, 8 AI cascade, 9 CSV import, 3 JSON roundtrip, 3 widget, 1 delete-regression, 4 privacy — that pin the engine, the UI behaviour and the AI-privacy contract. `flutter analyze` is clean and `flutter test` is green. |
 | `docs/reverse-engineering-protocol.md` | The **clean-room RE playbook** for studying legacy proprietary tax-file formats (`.tax`, `.tax[YYYY]`, `.LIF`, `.FIL`, `.RCD`, `.1PE`, `.3ME`, `.3PE`, `.DGC`, `.SCD`, `.THP`, `.TVL`, `.1PH`, `.TT[YYYY]STATE`). Read §2 before any RE session. |
 | `docs/blueprint.pdf` | 17-page design blueprint for the prototype (interview flow, MD3 system, engine, AI cascade). |
 | [GitHub Releases](https://github.com/maniesh-NR/ClearFile/releases) | Pre-built binaries for every target platform. Release assets live on GitHub Releases, not in the repository tree. |
@@ -105,11 +105,34 @@ form-for-form 1040 implementation. In particular:
   but is not a substitute for review by a qualified preparer or
   IRS-authorized software.
 
+## NOTICE — history contents
+
+Early commits in this repository's history (before the 2026-11-14 hygiene
+commit `df617e8`) accidentally included sandbox scaffolding, among it
+`download/nitro_nissi/` — **an earlier iteration of this same project**
+created by the same author under its working name, superseded by ClearFile
+and retained in git history only. It is not part of the current tree, is
+not maintained, and carries no license of its own beyond the repository's
+GPL-3.0. Current `main` contains none of that scaffolding; the decision to
+accept-and-document rather than rewrite history is recorded in
+`harness/memory/DECISIONS.md` (ADR-008, ratified 2026-11-14).
+
 ## AI assistant (bring your own free key)
 
 The AI cascade is **opt-in** and **bring-your-own-key**. No keys ship with
 the app, no telemetry is sent, and the providers are called directly from
-the user's device.
+the user's device. In the Flutter app, return figures go to your chosen
+provider **only when you opt in** (off by default) — tapping the assistant's
+review button shares the same de-identified figures per request. In the
+web prototype, the copilot panel always sees the summarized return
+(de-identified: no names, SSNs, or employer names — the one exception is
+text pasted into auto-fill, which is transmitted to your provider for
+extraction).
+
+> **Note on the v1.0.0 release binaries:** the Android and macOS binaries
+> shipped with tag `v1.0.0` predate the network permission/entitlement and
+> **cannot reach AI providers** — the assistant silently fails on them.
+> Fixed in the repository; the next tagged release will carry the fix.
 
 The default chain walks the strongest free tiers top-to-bottom and
 auto-degrades on rate limits (429) and auth failures (401):
@@ -135,7 +158,7 @@ git clone https://github.com/maniesh-NR/ClearFile.git
 cd ClearFile/clearfile
 flutter pub get
 flutter run                       # picks the active device
-flutter test                      # 42/42 green
+flutter test                      # 47 tests green
 flutter build apk --split-per-abi # Android armv7 / armv8a / x86_64
 flutter build linux               # Linux x64
 flutter build macos               # macOS universal

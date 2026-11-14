@@ -186,8 +186,9 @@ export function CopilotDrawer() {
             {messages.length === 0 && (
               <div className="space-y-3">
                 <p className="text-sm text-md-on-surface-variant">
-                  Ask anything about what you are seeing. The copilot knows your filing context (no names or SSNs —
-                  ClearFile never collects them) and answers in plain language.
+                  Ask anything about what you are seeing. The copilot sees your summarized return — ClearFile does not store
+                  names or SSNs, and they are never included in AI requests. Anything you paste into auto-fill is transmitted
+                  to your chosen provider for extraction.
                 </p>
                 {!hasKeys && <KeyOnboardingCard />}
                 {hasKeys && (

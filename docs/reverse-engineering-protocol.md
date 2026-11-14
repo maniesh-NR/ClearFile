@@ -83,8 +83,9 @@ Phase 1 — **Passive identification (no execution, works anywhere).**
 Phase 2 — **Container archaeology.**
 - ZIP-like: list entries (`unzip -l`, Python `zipfile`), look for
   manifests/indexes, per-entry compression, sizes vs actual (flags padding).
-- OLE2/CFB: enumerate streams and storages (our web prototype's
-  `ole_cfb.dart` already implements a reader).
+- OLE2/CFB: enumerate streams and storages (a reader of this shape is
+  straightforward to re-implement; the historical prototype's reader
+  lives in git history under the pre-rename project).
 - Unknown container: search for repeating length-prefixed records
   (try u16/u32 LE/BE length + payload), TLV runs, and alignment (4/8/16).
 

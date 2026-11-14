@@ -85,6 +85,12 @@ Rules you must follow in every reply:
   }
 
   /// A plain-language review request covering the whole return.
+  ///
+  /// De-identified by construction (Stage-0 gate, ADV-LEGAL finding 2): no
+  /// employer strings, no dependent names/ages — only counts and figures.
+  /// The user taps the review button explicitly, so figures are consented by
+  /// the action itself; the privacy switch governs the *ambient* chat
+  /// context instead (see [systemPromptFor]).
   String buildReviewPrompt(
     TaxReturnData r,
     TaxResult result,
@@ -92,11 +98,14 @@ Rules you must follow in every reply:
   ) {
     final checkedTitles =
         deterministicFindings.map((f) => '- ${f.title}').join('\n');
+    final qualifyingChildren =
+        r.dependents.where((d) => d.qualifyingChild).length;
+    final otherDependents = r.dependents.length - qualifyingChildren;
     final summary = <String, dynamic>{
       'filingStatus': r.filingStatus.name,
+      'w2Count': r.w2s.length,
       'w2s': r.w2s
           .map((w) => {
-                'employer': w.employer,
                 'box1': w.wages,
                 'box2': w.withholding,
               })
@@ -114,14 +123,9 @@ Rules you must follow in every reply:
       'charitableCash': r.charitableCash,
       'charitableNonCash': r.charitableNonCash,
       'estimatedPayments': r.estimatedPayments,
-      'dependents': r.dependents
-          .map((d) => {
-                'name': d.name,
-                'age': d.age,
-                'qualifyingChild': d.qualifyingChild,
-                'otherDependentCredit': d.otherDependentCredit,
-              })
-          .toList(),
+      'dependentCount': r.dependents.length,
+      'qualifyingChildCount': qualifyingChildren,
+      'otherDependentCreditCount': otherDependents,
       'computed': {
         'agi': result.agi,
         'taxableIncome': result.taxableIncome,
@@ -135,7 +139,8 @@ Please review my 2025 demo return summary below and reply with a short
 plain-language checklist:
 1. Anything missing or inconsistent that could change my refund or balance.
 2. Two or three specific numbers I should double-check against my W-2s or
-   1098-E/1099s.
+   1098-E/1099s (summary is de-identified: no employer names, no dependent
+   names — only counts and figures).
 3. One line about anything I might be over-paying or leaving on the table.
 Keep every item to a single line. Do not restate the summary.
 
@@ -145,13 +150,6 @@ $checkedTitles
 Return summary (JSON):
 $summary''';
   }
-
-  /// Pre-fills a question when the user taps "Ask about this field".
-  String buildFieldQuestion(String fieldTitle, String fieldValue) =>
-      'About the "$fieldTitle" field (currently '
-      '"${fieldValue.isEmpty ? "empty" : fieldValue}"): '
-      'what is this for, where do I find the number, and does it usually '
-      'affect my refund? Please cite the IRS source.';
 
   /// Pre-fills the first-time setup message.
   String get welcomeMessage => '''

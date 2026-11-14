@@ -22,8 +22,14 @@ Each item carries its owner stage.
 | D14 | ADV-LEGAL #5 | GPL per-file SPDX headers absent | 1 |
 | D15 | ADV-LEGAL #6 | `z-ai-web-dev-sdk` — REMOVED from package.json 2026-11-14 ✓ | done |
 | D16 | ADV-LEGAL #7 | Flutter Google transport key-in-URL (= D11) | 5 |
-| D17 | ADV-LEGAL #8 | Web auto-fill sends pasted text verbatim (may contain SSN/name/address) while copy says "never collects" — soften copy or pre-send notice | 1 |
-| D18 | ADV-LEGAL #12 | Web app title "Clean-Room Tax Filing Assistant" vs its own "do not file" copy — consider "Tax Return Study Prototype" | 1 |
+| D17 | ADV-LEGAL #8 | Web auto-fill copy — **FIXED 2026-11-14** ("does not store" + auto-fill exception wording in ai-ui.tsx + settings.tsx; README scoped) | done |
+| D18 | ADV-LEGAL #12 | Title de-"Filing"-ed — **FIXED 2026-11-14** (layout.tsx + blueprint PDF + cover) | done |
 | D19 | ADV-PROD #6 | Harness self-enforcement: add `scripts/harness_check.sh` (CONSENSUS ↔ ROADMAP gate-status consistency; SESSION_LOG last entry postdates nothing unpushed) | 1 |
-| D20 | ADV-SEC #1 | Android release APKs lack INTERNET permission → shipped AI cascade silently dead; macOS entitlements lack network-client — **owner decision** (add permission + disclosure, or compile AI UI out of Android release) | 1 (decision first) |
+| D20 | ADV-SEC #1 | INTERNET decision — **APPLIED 2026-11-14** (owner: add-and-disclose; manifest + entitlement + disclosures; v1.0.0 release description patched with the AI-broken note) | done |
 | D21 | ADV-ENG #8 | Harness pointer drift — FIXED 2026-11-14 (§-refs audited, typo, STATE node_modules) ✓ | done |
+| D22 | ADV-SEC Stage-1 #1 / LEGAL | README web-figures scoping — **FIXED 2026-11-14** (opt-in scoped to Flutter; web copilot + review-button + auto-fill exceptions stated) | done |
+| D23 | ADV-ENG Stage-1 #1 | Switch-path autosave drop — **FIXED 2026-11-14** (`_open` flush + regression test) | done |
+| D24 | ADV-ENG Stage-1 #4 | `store.ts` migrate shape checks — **FIXED 2026-11-14** (Array.isArray/object checks) | done |
+| D25 | ADV-LEGAL Stage-1 #4 | Grandfathered `sendReturnContext` consent — **FIXED 2026-11-14** (ADR-011: schemaVersion 2 + legacy reset) | done |
+| D26 | ADV-SEC Stage-1 #4 | `bun.lock` drift — **FIXED 2026-11-14** (deleted; npm standardized) | done |
+| D27 | ADV-SEC Stage-1 #1 | Web figures toggle equivalent — deferred to Stage-3 parity scope (documented in README now) | 3 |

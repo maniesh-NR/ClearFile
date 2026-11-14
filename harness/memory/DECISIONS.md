@@ -154,3 +154,59 @@ persist/migrate path — precisely the code path ADV-ENG finding 6 flagged
 as untested. `typescript.ignoreBuildErrors` was turned OFF today (tsc
 clean, typecheck added to CI); strict mode follows once its failure mode is
 covered by tests rather than luck.
+
+---
+
+## Ratifications recorded 2026-11-14 (owner, in-conversation)
+
+**ADR-008 — RATIFIED (1. accept and document).** The owner confirmed the
+accept-and-document path. README now carries the NOTICE paragraph
+describing `download/nitro_nissi/` in history as the same author's earlier
+project iteration. No history rewrite; the v1.0.0 tag and release identity
+stand.
+
+**ADR-009 — RATIFIED (2. pursue feature alignment = PARITY).** The owner
+chose feature parity over the panel's recommended web-prototype freeze —
+an explicit owner prerogative against the ADV-PROD/ADV-ENG recommendation.
+Consequences (recorded in ROADMAP): the web prototype is a live
+implementation target; Stage 3 now carries the web engine parity features
+(QDI/LTCG stacking, NIIT, SALT phase-down, OBBBA senior deduction,
+student-loan interest, exact CTC phase-out, cents rounding) and the parity
+tests must cover BOTH engines against shared golden fixtures pinned to
+IRS-published examples. Parity was already implied by the README rewrite;
+it is now policy. Risk accepted by the owner: per-stage engine work
+roughly doubles in cost; the single-maintainer burnout risk ADV-PROD F1
+named applies.
+
+**D20 / SEC-1 — DECIDED (3. add and disclose).** Android main manifest now
+declares `INTERNET`; macOS Release.entitlements gains the network-client
+entitlement; the network behaviour is disclosed in-app (welcome footer,
+settings privacy switch copy) and on the release page (workflow `body:`).
+The v1.0.0 release binaries predate this and cannot run the assistant on
+Android — noted in the NOTICE/limitations; the next tagged release ships
+the fix.
+
+**PAT — DECIDED (4. do not alter).** The owner declined expiry/rotation
+changes to the fine-grained PAT at this time. Risk acknowledged and
+recorded in WORKFLOW §5 (the rotation policy remains guidance for the
+future; branch protection remains recommended, owner-side).
+
+## ADR-011 · Grandfathered-consent migration for `sendReturnContext` (2026-11-14, Stage-1 gate condition LEGAL-4)
+
+**Decision.** Settings files gain `schemaVersion: 2`. Loading a file with no
+`schemaVersion` (written before 2026-11-14) is a *legacy* file: its
+`sendReturnContext` is reset to the new opt-in default (false) regardless
+of the stored value, because pre-fix builds silently defaulted it ON — the
+user never affirmatively approved sharing. Files written with
+`schemaVersion` present honor the stored value (explicit opt-in/opt-out
+survives).
+
+**Context.** ADV-LEGAL Stage-1 finding 4: v1.0.0 wrote `sendReturnContext:
+true` by default; without a migration, upgraded users keep transmitting
+figures under copy that says "off by default" and "figures you approved".
+The alternative (an in-app note) was rejected as weaker: resetting is the
+only option that makes the copy true for everyone.
+
+**Consequence.** One-time opt-in loss for legacy users who wanted sharing
+(they must re-enable it — the privacy-conservative direction). Round-trip
+and legacy-load behaviour pinned by the cascade/privacy tests.

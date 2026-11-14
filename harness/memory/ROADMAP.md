@@ -19,22 +19,35 @@ survives contact with reality instead of being quietly abandoned:
 - Independence, evidence-based findings, and the verdict vocabulary are
   never relaxed; only the review scope is.
 
-## Per-stage implementation targets (Stage-0 amendment, ADV-PROD condition 4)
+## Per-stage implementation targets (amended 2026-11-14 after owner ratification)
+
+**ADR-009 ratified 2026-11-14: FEATURE PARITY** (the owner chose alignment
+over the panel's recommended web-freeze — owner prerogative, recorded in
+`memory/DECISIONS.md`). The web prototype is a live implementation target;
+the Flutter engine is the reference model the web engine must match.
+
+**Cost statement + tripwire (Stage-1 gate, ADV-PROD condition 3):** parity
+roughly doubles per-stage engine cost for a single maintainer — risk
+knowingly accepted in ADR-009. It is therefore *time-boxed*: the web-engine
+parity set is boxed at two working sessions; if the box is exceeded or the
+Stage-3 gate slips, the web-freeze option returns to the NEXT gate agenda
+as a mandatory item. Inside Stage 3, the shared golden fixtures land FIRST
+(they double as the Flutter reference engine's regression suite and keep
+producing value even if parity is deferred by the tripwire).
 
 | Stage | Web prototype (`src/`) | Flutter app (`clearfile/`) |
 | --- | --- | --- |
-| 1 — Hardening | copy fixes, typecheck, lockfile, release body | delete-bug fix (done), privacy gating, INTERNET decision |
+| 1 — Hardening | copy fixes (done 2026-11-14), typecheck (done), lockfile (done), release body (done) | delete-bug fix (done), privacy gating (done 2026-11-14), INTERNET + entitlements (done) |
 | 2 — RE tooling | — | — (tooling is repo-level; placement decided at its gate) |
-| 3 — Bridges | TXF exporter verification, `.cfr`→`.clearfile.json` migration decision | TXF import, schema versioning + guards |
-| 4 — Pages | (hosted Flutter web build; web prototype itself frozen) | Flutter web deploy |
+| 3 — Parity & bridges | **engine parity features** (QDI/LTCG stacking, NIIT, SALT cap, OBBBA senior deduction, student-loan interest, exact 5%-of-excess CTC phase-out, cents-not-whole-dollars), TXF exporter verification, `.cfr`→`.clearfile.json` migration decision | TXF import, schema versioning + guards |
+| 4 — Pages | (hosted Flutter web build) | Flutter web deploy |
 | 5 — AI hardening | timeout parity | injection suite, fixture e2e, key header fix |
-| 6 — Freeze | docs-only | parameter corrections |
+| 6 — Freeze | docs-only, parameter corrections | parameter corrections |
 
-The two-codebase policy itself (freeze the web prototype as a
-first-generation study artifact vs. feature parity) is **ADR-009,
-owner ratification required** — see `memory/DECISIONS.md`. Until ratified,
-parity work is NOT scheduled and the web prototype is treated as frozen
-(recommended default).
+Parity tests in Stage 3 must cover **both engines** against shared golden
+fixtures (`(TaxReturnData, TaxResult)` JSON pairs consumed by the Dart and
+TS suites) pinned to IRS-published worked examples — the single source of
+truth that settles any disagreement between the two implementations.
 
 ---
 
@@ -60,34 +73,52 @@ before Stage-1 feature work (owner decisions included — see CONSENSUS).
 ## Stage 1 — Hardening & trust (next)
 
 **Ordered scope (re-sequenced per ADV-PROD F7 — decisions before
-artifacts):**
+artifacts; decisions were ratified 2026-11-14, see CONSENSUS):**
 
-1. **History decision ADR-008 ratified** (nitro_nissi provenance +
-   rewrite-vs-accept; default: accept-and-document) — *owner decision*.
-2. **Two-codebase policy ADR-009 ratified** (freeze vs parity; default:
-   freeze) — *owner decision*.
-3. **Android INTERNET-permission decision** (add permission + disclose
-   network use, or compile the AI UI out of Android release builds) —
-   *owner decision*; ADV-SEC #1, also invalidates README AI claims as
-   shipped.
-4. Privacy copy matches code (ADV-LEGAL #2/#3): `buildReviewPrompt`
-   personal fields gated/`sendReturnContext` default flip + copy alignment
-   in Settings/Welcome; web auto-fill "collects vs transmits" wording.
-5. Release integrity: `SHA256SUMS` (workflow step drafted in Stage 0 —
-   verify at next tag), release `body:` disclaimer (drafted in Stage 0;
-   live v1.0.0 release description patched), signing story decision.
-6. CI: per-job permissions, action SHA pinning, dispatch tag input,
-   timeouts + concurrency (drafted in Stage 0 — verify), gitleaks
-   scheduled scan (repo hygiene ≠ sandbox backup, so it does not violate
-   the no-cron owner directive), pub/npm caching.
-7. Web reproducibility: `package-lock.json` + `npm ci` (drafted in Stage
-   0 — verify), typecheck step, `store.ts` cast cleared, then flip
-   `ignoreBuildErrors` off; ADR for `reactStrictMode: false`.
+1. ~~**History decision ADR-008 ratified**~~ — DONE 2026-11-14:
+   accept-and-document; README NOTICE added.
+2. ~~**Two-codebase policy ADR-009 ratified**~~ — DONE 2026-11-14:
+   **feature parity** (owner choice against the recommended freeze);
+   Stage 3 scope amended accordingly.
+3. ~~**Android INTERNET-permission decision**~~ — DONE 2026-11-14:
+   add-and-disclose — main manifest INTERNET permission, macOS
+   network-client entitlement, in-app + release-page network disclosure.
+4. ~~**Privacy copy matches code**~~ — DONE 2026-11-14: review prompt
+   de-identified by construction (no employer/dependent names — counts
+   and figures only); `sendReturnContext` defaults OFF with the default
+   disclosed in copy; Settings/Welcome copy aligned; web auto-fill
+   "stores vs transmits" wording fixed; web app title de-"Filing"-ed;
+   privacy contract pinned by `clearfile/test/privacy_test.dart`.
+5. Release integrity follow-through: `SHA256SUMS` (workflow step drafted —
+   verify at next tag), release `body:` disclaimer + network disclosure
+   (drafted; live v1.0.0 description patched), signing story decision
+   (unsigned-demo posture already stated; revisit only if a need appears).
+6. CI: gitleaks scheduled scan (repo hygiene ≠ sandbox backup, so it does
+   not violate the no-cron owner directive), action SHA pinning (D10),
+   caching verification, dispatch dry-run of the hardened workflow
+   (explicitly covering both fresh-tag and existing-tag dispatch —
+   ADV-ENG Stage-1 note 7).
+7. Web reproducibility verification: `npm ci` + typecheck + build in CI
+   on the next tag (steps drafted 2026-11-14; verify they pass).
 8. Tests: widget coverage per interview step, `ReturnStore` interface
-   seam (fake store escapes the runAsync tax), web smoke test.
-9. GPL headers; SECURITY.md; harness self-check (`scripts/harness_check.sh`).
+   seam (fake store escapes the runAsync tax), web smoke test; flip
+   `reactStrictMode` on when web tests exist (ADR-010).
+9. GPL headers (D14); SECURITY.md (D13); harness self-check
+   (`scripts/harness_check.sh`, D19 — checklist to include: CONSENSUS ↔
+   ROADMAP gate-status AND gate-scope consistency, STATE-vs-ledger
+   freshness, stated test total vs actual test declarations, staged-mode
+   drift); money-field `parseMoney()` shared util + edge tests (D2);
+   sample_w2.csv wiring or removal (D7); ValueKey duplicates guard (D6);
+   scripts/ README or untrack for the sandbox-research scripts
+   (ADV-PROD Stage-1 note 8).
 
-**Gate status:** PENDING (full-depth gate).
+**Closing event (ADV-PROD Stage-1 condition 1):** Stage 1 ends with a
+**v1.0.1 tag** — its rehearsal is item 6's dispatch dry-run — which ships the
+Android/macOS network fix, the first `SHA256SUMS.txt`, and the hardened
+CI's first full green run.
+
+**Gate status:** PENDING (full-depth gate) — convening 2026-11-14 (this
+session) after entry-condition verification (SDK + tests) completes.
 
 ## Stage 2 — Format-study infrastructure (RE Phases 1–3 only)
 
@@ -103,18 +134,27 @@ its own definition of done: published specs for N formats.
 
 **Gate status:** PENDING (full-depth gate; ADV-LEGAL weighted).
 
-## Stage 3 — Clean-room bridges & study artifacts (highest value)
+## Stage 3 — Parity & clean-room bridges (highest value)
 
-TXF import (Flutter) + verification suite for the existing exporter (web);
-`.clearfile.json` schema versioning + migration + **version guard before
-any format change ships** (ADV-ENG #11); save-format unification decision
-(`.cfr` vs `.clearfile.json`); engine parity tests pinned to IRS-published
-worksheet examples via a shared golden-fixture format consumed by both
-Dart and TS suites; parser-hardening tests for the first shipped
-untrusted-input parsers; `docs/engine.md` (1040 line mapping + limitations
-register), repo guided tour, discrepancy-report issue templates, and the
-project definition of done (ADV-PROD F5: "v1.1 = a reader can verify every
-number against a cited IRS source without reading git history").
+**Engine parity (owner decision, ADR-009):** bring `src/lib/tax/` to
+feature parity with the Flutter reference engine — qualified-dividend/LTCG
+stacking with the 0%/15% bands, NIIT, the SALT 30% phase-down, the OBBBA
+senior deduction, student-loan-interest deduction with MAGI phase-out, the
+exact 5%-of-excess CTC phase-out (replacing the $50-per-$1,000 units), and
+cents-level rounding — validated by shared golden-fixture parity tests
+covering BOTH engines, pinned to IRS-published worksheet examples.
+**Ordering (tripwire):** golden fixtures FIRST (regression suite for the
+reference engine), then the web parity set, boxed at two sessions.
+
+**Bridges:** TXF import (Flutter) + verification suite for the existing
+exporter (web); `.clearfile.json` schema versioning + migration + **version
+guard before any format change ships** (ADV-ENG #11); save-format unification
+decision (`.cfr` vs `.clearfile.json`); parser-hardening tests for the first
+shipped untrusted-input parsers; `docs/engine.md` (1040 line mapping +
+limitations register), repo guided tour, discrepancy-report issue templates,
+and the project definition of done (ADV-PROD F5: "v1.1 = a reader can
+verify every number against a cited IRS source without reading git
+history").
 
 **Gate status:** PENDING (delta-scoped gate).
 

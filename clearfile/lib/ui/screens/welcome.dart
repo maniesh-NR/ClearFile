@@ -165,8 +165,11 @@ class WelcomeScreen extends StatelessWidget {
           ],
           const SizedBox(height: 16),
           Text(
-            'Your data stays on this device. AI features run on your own free '
-            'API keys and call the providers directly.',
+            'Your returns stay on this device. When the AI assistant is '
+            'enabled (your own free API keys), it calls Google AI Studio or '
+            'OpenRouter directly, sending only the de-identified figures you '
+            'approved - never names, SSNs, or employer names. Nothing else '
+            'leaves this device.',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: scheme.onSurfaceVariant,

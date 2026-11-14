@@ -1,5 +1,5 @@
 name: clearfile
-description: "A new Flutter project."
+description: "ClearFile - clean-room demonstration TY2025 US federal tax-return prototype (not IRS-authorized; see README)."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

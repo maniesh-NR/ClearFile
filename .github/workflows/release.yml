@@ -33,7 +33,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.ref_name }}-${{ inputs.tag }}
+  # Group by the tag alone (ADV-SEC/ADV-ENG Stage-1 notes): a tag push and a
+  # dispatch for the same tag must share one queue, not race the release job.
+  group: release-${{ inputs.tag || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -354,6 +356,14 @@ jobs:
 
             Binaries are **unsigned** (no code-signing certificates are held
             for this project). Verify downloads against `SHA256SUMS.txt`.
+
+            **Network disclosure (Android and macOS builds):** the optional
+            AI assistant, if enabled with your own free API key, calls
+            Google AI Studio / OpenRouter directly from the device, sending
+            only the de-identified return figures you approved — never names,
+            SSNs, or employer names. Tapping the assistant's review button
+            shares the same de-identified figures for that request. All other
+            data stays on the device; no telemetry exists.
 
             See the repository README for the engine scope, the per-engine
             limitations, and the demo disclaimer.

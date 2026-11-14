@@ -142,3 +142,152 @@ applied, assigned, or surfaced to the owner as recorded above).
 **Stage 1: NOT ENTERED** — entry conditions (the four owner decisions and
 the Stage-1 entry list above) are pending. Next session's first task per
 WORKFLOW.md §3.4 is to confirm/clear them, then convene the Stage-1 gate.
+
+---
+
+## Appendix: owner decisions + Stage-1 entry conditions · 2026-11-14
+
+**Owner decisions received in-conversation (verbatim):** "1. accept and
+document  2. pursue feature alignment  3. add and disclose  4. do not
+alter PAT". All four were required gate outputs; each is applied and
+ratified in `memory/DECISIONS.md`:
+
+1. **ADR-008 RATIFIED — accept-and-document.** README NOTICE paragraph
+   added (nitro_nissi = the owner's earlier project iteration, history
+   only). No rewrite; v1.0.0 identity stands.
+2. **ADR-009 RATIFIED — feature parity** (against the panel's freeze
+   recommendation; explicit owner prerogative). ROADMAP Stage 3 carries
+   the web-engine parity features; parity tests must cover both engines
+   on shared golden fixtures.
+3. **D20 DECIDED — add and disclose.** Android main-manifest INTERNET
+   permission, macOS network-client entitlement, in-app disclosure
+   (welcome footer + settings privacy copy), release-body network
+   disclosure.
+4. **PAT — unchanged** (risk acknowledged, recorded in WORKFLOW §5).
+
+**Stage-1 entry conditions cleared in the same session:**
+
+- LEGAL-2 (privacy copy matches code): applied — `buildReviewPrompt`
+  de-identified by construction (employer/dependent names stripped;
+  counts and figures only — the "or stripped" branch of the condition),
+  `sendReturnContext` defaults OFF with the default disclosed in the
+  switch copy, Settings/Welcome/blueprint-generator copy aligned, web
+  auto-fill "stores vs transmits" wording fixed, web title de-"Filing"-ed.
+  Contract pinned by `clearfile/test/privacy_test.dart` (4 tests).
+- ENG-1 verification: Flutter SDK reinstall in progress at ledger time;
+  `flutter analyze` + full `flutter test` (now 44 planned: 19 calculator,
+  8 cascade, 9 CSV, 3 JSON, 3 widget, 1 delete-regression, 4 privacy) to
+  be recorded in the Stage-1 gate input below when green.
+- SEC-4 remainder: signing posture = unsigned-demo (stated on the release
+  body); v1.0.0 release description already patched (200, verified).
+
+**Gate plan:** Stage-1 full-depth gate convenes immediately after the
+test run is green; its four reports will be filed under
+`reports/2026-11-14-stage1-*.md` and its verdict appended below.
+
+---
+
+## Gate: Stage 1 entry · 2026-11-14 (convened after entry conditions cleared)
+
+**Reviewers (4, independent, full-depth):** ADV-SEC, ADV-LEGAL, ADV-ENG,
+ADV-PROD. Reports filed near-verbatim in
+`reports/2026-11-14-stage1-{security,legal,engineering,product}.md`.
+All four independently re-ran verifications (tsc, analyze, guard greps,
+test counts, live release page/API where reachable).
+
+**Gate input — verified entry facts (recorded here per ENG-3/PROD-4):**
+`flutter analyze` — No issues found (fresh SDK 3.47.9, sha256-verified
+install); `flutter test` — **+47: All tests passed** (first run, 2026-11-14,
+the run this gate was gated on; after the gate's own condition fixes the
+suite re-ran at **+49: All tests passed** — 19 calculator, 8 cascade, 9
+CSV, 3 JSON, 4 privacy, 1 delete-regression, 1 switch-regression, 3
+widget + 1 findings-leak privacy test);
+`npx tsc --noEmit` — exit 0.
+
+### Verdicts
+
+| Reviewer | Verdict | Blocking? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (5) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (4) | no |
+| ADV-ENG | PROCEED-WITH-CONDITIONS (4) | no |
+| ADV-PROD | PROCEED-WITH-CONDITIONS (5) | no |
+
+Unanimous non-BLOCK → **consensus reached. Stage 1 ENTERED** (its
+execution scope = ROADMAP items 5-9 + the v1.0.1 closing event).
+
+### Condition ledger — all conditions applied in-session unless noted
+
+- SEC-1 / LEGAL-2 — README opt-in sentence scoped per implementation
+  (Flutter switch vs web always-attached summary), review-button exception
+  stated, web auto-fill exception stated; v1.0.0 AI-broken note added to
+  README; release body carries the same exception clauses.
+- SEC-2 — `check_unpushed()` fetch stderr now goes through the same 0600
+  mktemp + sed sanitizer with a script-owned failure message (also clears
+  ENG note 5's exit-code drift).
+- SEC-3 — `-I` dropped from both guard greps (binary coverage).
+- SEC-4 — `bun.lock` deleted (npm lockfiles standardized; CI is `npm ci`).
+- SEC-5 — **assigned to Stage-1 execution**: gitleaks CI scan, action SHA
+  pinning, dispatch dry-run (fresh-tag AND existing-tag), v1.0.1 tag with
+  SHA256SUMS + first full hardened-CI run (the stage's own scope, with
+  verification evidence due at the Stage-2 gate).
+- LEGAL-1 — blueprint: the three contradictory sentences + all
+  "Filing Assistant"/"never collects" strings corrected in the generator
+  AND the cover (playwright re-render); regenerated; **verified by text
+  extraction** (Filing Assistant gone, never-collects gone, auto-fill
+  exceptions present, Study-Prototype title present).
+- LEGAL-2 — see SEC-1; **live v1.0.0 release description re-patched (API
+  200, verified: "cannot reach AI providers" + GPL §6 corresponding-source
+  line present)** — clears the false "noted in the NOTICE" record and adds
+  the §6 statement (LEGAL note 11).
+- LEGAL-3 — publication sequencing discharged by this session's closing
+  backup; verification recorded below (post-push check of NOTICE/privacy
+  on origin/main).
+- LEGAL-4 — grandfathered consent: settings `schemaVersion: 2` +
+  one-time reset of `sendReturnContext` for schema-less legacy files
+  (decision recorded in DECISIONS.md); roundtrip/legacy behaviour pinned
+  by tests.
+- ENG-1 — switch-path autosave flush (`_open` cancels + saves the prior
+  return) + switch regression test; 49/49 green.
+- ENG-2 — findings-path privacy test (leaky fixture triggers both
+  name-bearing findings; asserts prompt clean).
+- ENG-3 — this entry itself + README run-block count fixed (47) + the
+  correction note below.
+- ENG-4 — `store.ts` migrate now performs real shape checks
+  (Array.isArray for list fields, object checks for containers).
+- PROD-1 — v1.0.0 disclosure + fix vehicle: live release patched, README
+  note added, **ROADMAP Stage 1 closing event = v1.0.1 tag** (INTERNET fix
+  + first SHA256SUMS + hardened-CI first run; dispatch dry-run is its
+  rehearsal).
+- PROD-2 — parity tripwire: two-session box on the web parity set; exceed
+  or slip → web-freeze returns to the next gate agenda as a mandatory
+  item; golden fixtures land FIRST in Stage 3; doubled-cost statement
+  added beside the implementation-target matrix.
+- PROD-3 — gate-doc reconciliation: WORKFLOW §2.2 now carries the tiering
+  cross-reference + a fuller-scope-wins tiebreaker; harness_check
+  checklist (ROADMAP item 9) includes the cross-document consistency
+  check.
+- PROD-4 — this entry + STATE.md refresh.
+- PROD-5 — mode normalization before the closing backup (verification
+  below).
+- Notes applied: dead `buildFieldQuestion` deleted (SEC-7/LEGAL-9);
+  concurrency group tag-only (ENG-6); existing-tag dispatch guard folded
+  into ROADMAP item 6 (ENG-7); blueprint pipeline portability documented
+  (scripts/README.md, ENG-8/PROD-8); RE protocol `ole_cfb.dart` pointer
+  fixed (LEGAL-8); pubspec description fixed (LEGAL-5/PROD-10); scripts
+  README written (PROD-8). PROD-7 (Stage 2 vs 3 ordering) is noted for the
+  Stage-2 gate agenda, per the reviewer's own framing.
+
+### Correction note (append-only)
+
+The appendix above says "now 44 planned" — its own itemization (19+8+9+3+3+1+4)
+sums to 47; the correct planned total at that moment was 47, and after the
+gate's condition fixes the suite stands at 49 (the switch regression and
+findings-leak tests were added). Recorded as a correction, not an edit.
+
+### Gate outcome
+
+**Stage 1: ENTERED** (unanimous PROCEED-WITH-CONDITIONS; every condition
+applied in-session or explicitly assigned to Stage-1 execution with a
+named verification event). Stage-1 feature work may proceed; its exit
+gate is the Stage-2 entry gate.

@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ClearFile — Clean-Room Tax Filing Assistant (Prototype)",
+  title: "ClearFile — Clean-Room Tax Return Study Prototype",
   description:
-    "Clean-room, Material Design 3 tax filing prototype: verified TY2025/TY2026 federal engine, optional bring-your-own-key AI copilot with automatic model fallback, open .cfr format and TXF export. Demo software — not for filing real taxes.",
+    "Clean-room, Material Design 3 tax-return study prototype: simplified TY2025/TY2026 federal engine (parity roadmap in harness/memory/ROADMAP.md), optional bring-your-own-key AI copilot with automatic model fallback, open .cfr format and TXF export. Demo software — not for filing real taxes.",
   applicationName: "ClearFile",
   keywords: ["tax", "clean-room", "prototype", "MD3", "AI assistant", "open source"],
   authors: [{ name: "ClearFile Project" }],

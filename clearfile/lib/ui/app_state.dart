@@ -105,6 +105,12 @@ class AppState extends ChangeNotifier {
   }
 
   void _open(TaxReturnData r) {
+    // Flush the previous return's pending autosave before switching
+    // (ADV-ENG Stage-1 finding 1): the identity-guarded timer refuses to
+    // save the old return once `current` changes, so without an explicit
+    // flush the old return's last <600 ms of edits would silently vanish.
+    _saveDebounce?.cancel();
+    if (current != null) store.save(current!);
     current = r;
     stepIndex = 0;
     selectedIndex = 1;

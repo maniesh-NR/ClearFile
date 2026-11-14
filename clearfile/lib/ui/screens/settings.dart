@@ -104,9 +104,11 @@ class SettingsScreen extends StatelessWidget {
                       state.updateSettings((s) => s.sendReturnContext = v),
                   title: const Text('Share anonymous return figures'),
                   subtitle: const Text(
-                      'When on, totals like AGI and taxable income (never '
-                      'names or SSNs) are included so answers fit your '
-                      'numbers.'),
+                      'Off by default. When on, de-identified totals like AGI '
+                      'and taxable income go to your chosen provider with '
+                      'your questions. Never names, SSNs, or employer names. '
+                      'The review button sends the same de-identified '
+                      'figures when you tap it.'),
                 ),
               ),
               const SizedBox(height: 16),

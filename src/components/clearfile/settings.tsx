@@ -256,7 +256,7 @@ export function SettingsDialog() {
             <CardContent className="space-y-2 text-sm text-md-on-surface-variant">
               <ul className="space-y-1.5 list-disc list-inside">
                 <li>Keys are stored only in this browser (localStorage) and are never sent anywhere except directly to the provider.</li>
-                <li>ClearFile never collects names, SSNs, or addresses — AI requests see only the summarized return shown in the copilot.</li>
+                <li>ClearFile does not store names, SSNs, or addresses, and AI requests see only the summarized return shown in the copilot. The one exception: text you paste into auto-fill is transmitted to your chosen provider for extraction.</li>
                 <li>OpenRouter&apos;s free endpoints run on hosts whose terms may allow prompt training (for example NVIDIA&apos;s free-tier terms). You can restrict that in your OpenRouter privacy settings; what ClearFile sends is already de-identified.</li>
                 <li>Clearing your browser data removes the keys. No telemetry exists in this prototype.</li>
               </ul>

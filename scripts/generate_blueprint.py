@@ -289,7 +289,7 @@ def on_page(canvas, doc):
     canvas.setFont('FreeSerif-Italic', 7.5)
     canvas.setFillColor(TEXT_MUTED)
     canvas.drawString(MARGIN, PAGE_H - 40,
-                      'ClearFile - Clean-Room Tax Filing Assistant - Engineering Blueprint')
+                      'ClearFile - Clean-Room Tax Return Study Prototype - Engineering Blueprint')
     canvas.setStrokeColor(ACCENT)
     canvas.setLineWidth(1.2)
     canvas.line(MARGIN, PAGE_H - 46, PAGE_W - MARGIN, PAGE_H - 46)
@@ -462,8 +462,9 @@ story.append(P(
     'Data flow is local-first by default. A return lives in browser or application storage and '
     'in files the user exports; nothing is uploaded to any server at any time. The only network '
     'traffic the prototype can generate is a direct browser-to-provider AI request, which occurs '
-    'only after the user pastes their own API key, and even then the payload is a summarized '
-    'return containing no names, SSNs, or addresses - ClearFile never collects them.'))
+    'only after the user pastes their own API key, and even then the payload is a summarized, '
+    'de-identified return - no names, SSNs, or addresses. (Exception: text the user pastes '
+    'into auto-fill is transmitted to their chosen provider for extraction.)'))
 
 # ================================================================== 4
 story.extend(h1_block(4, 'Platform & Toolchain Matrix', P(
@@ -691,9 +692,10 @@ story.extend(h1_block(8, 'AI Assistance Layer', P(
     'key from Google AI Studio (the Gemini family) or OpenRouter (an aggregator that serves '
     'many providers\' free models under one key), pastes it into Settings, and the application '
     'stores it only in local browser storage. Requests travel directly from the user\'s '
-    'browser to the provider endpoint - there is no ClearFile server in the middle, and the '
-    'prototype collects no names, SSNs, or addresses, so the context sent to models is a '
-    'summarized return only. Step-by-step key instructions and direct links appear both in '
+    'browser to the provider endpoint - there is no ClearFile server in the middle. The context '
+    'sent to models is a summarized, de-identified return only; the one exception is auto-fill, '
+    'where text the user pastes (which may contain names or SSNs from a form) is transmitted to '
+    'their chosen provider for extraction. Step-by-step key instructions and direct links appear both in '
     'Settings and in Appendix B. Mistral La Plateforme was removed from the ladder after its '
     'free direct-inference tier ended on 21 September 2026; OpenRouter\'s free models now '
     'cover the fallback rungs, with the added benefit that the endpoint is CORS-enabled, so '
@@ -780,7 +782,9 @@ story.append(P(
     'Two limitations are documented rather than hidden. First, OpenRouter\'s free endpoints '
     'run on hosts whose terms may permit prompt training (for example NVIDIA\'s free-tier '
     'terms); OpenRouter\'s account privacy settings can restrict routing to such hosts, and '
-    'ClearFile sends de-identified summaries that never contain names, SSNs, or addresses. '
+    'ClearFile sends de-identified summaries that never contain names, SSNs, or addresses - '
+    'the one exception being auto-fill, where text the user pastes (which may contain them) '
+    'is transmitted to the chosen provider for extraction. '
     'Second, the Google rungs were rebaselined during the same test session: Google retired '
     'the previous Gemini generation for new users, and the API\'s own error messages named '
     'the successors, so the ladder now carries Gemini 3.1 Pro, 3.8 Flash, and 3.5 Flash-Lite. '
@@ -908,8 +912,9 @@ story.append(P('<b>OpenRouter (free models).</b> Open openrouter.ai and create a
 story.append(P(
     'Privacy notes shown in the application bear repeating: keys are stored only in the '
     'local browser, are transmitted only to the provider whose key they are, and clearing '
-    'browser data removes them. AI requests see a summarized return without names, SSNs, '
-    'or addresses, because ClearFile never collects those fields in the first place.'))
+    'browser data removes them. AI requests see a summarized, de-identified return - no names, '
+    'SSNs, or addresses - except the auto-fill path, where pasted text goes to the chosen '
+    'provider for extraction.'))
 
 story.append(Spacer(1, 14))
 story.append(HRFlowable(width='100%', color=ACCENT, thickness=1.2, spaceAfter=10))
@@ -925,10 +930,10 @@ doc = TocDocTemplate(
     pagesize=A4,
     leftMargin=MARGIN, rightMargin=MARGIN,
     topMargin=TOP_MARGIN, bottomMargin=BOTTOM_MARGIN,
-    title='ClearFile - Clean-Room Tax Filing Assistant Engineering Blueprint',
+    title='ClearFile - Clean-Room Tax Return Study Prototype Engineering Blueprint',
     author='Z.ai',
     creator='Z.ai',
-    subject='Engineering blueprint and prototype report for a clean-room tax filing assistant',
+    subject='Engineering blueprint and prototype report for a clean-room tax-return study prototype',
 )
 doc.multiBuild(story, onFirstPage=on_page, onLaterPages=on_page)
 print('body pages:', doc.page)
