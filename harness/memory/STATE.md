@@ -63,7 +63,10 @@
 6. Root `.gitignore` `/test` (not `test`).
 7. **Sandbox recycles squash local history** — GitHub is source of truth;
    runbook WORKFLOW §4 works (proven twice).
-8. Hex-blob heuristics must exclude lockfiles (sha256 checksums).
+8. Hex-blob heuristics must exclude lockfiles (sha256 checksums) AND stay
+t   text-only (`-I`): icon/bitmap pixel data legitimately trips
+   `[0-9a-fA-F]{64}` (the Windows app_icon.ico did, six times). Token
+   patterns scan binaries fine — they're too distinctive to false-positive.
 9. **Snapshot restores flip file modes to 755** — normalize before
    committing or every diff noisies (proven twice; now a pre-backup step
    and a future harness_check item).

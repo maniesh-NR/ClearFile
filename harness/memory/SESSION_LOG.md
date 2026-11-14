@@ -136,3 +136,15 @@ Flutter tarball download stalls silently - the looping resume with
 
 **Closing action:** mode normalization (no 100755 flips in the commit) +
 event-driven backup + origin verification.
+
+### Correction note (append-only, same session)
+
+The Stage-1 session log entry above predates two in-session incidents worth
+recording: (1) the Flutter tarball download stalls silently — the resuming
+loop with --speed-limit/--speed-time is now the documented approach; (2)
+the widened no-I secret guard refused the first backup run on a FALSE
+POSITIVE — clearfile/windows/runner/resources/app_icon.ico trips the
+64-hex heuristic six times on plain bitmap pixel bytes (0x44/0x11/... are
+ASCII hex digits). The guard now scans binaries for TOKEN patterns only and
+keeps the hex heuristic text files for the hex check — reasoning documented
+in the script itself. Suite/test counts at close: 49/49.
