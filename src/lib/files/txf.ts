@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 /**
  * TXF (Tax Exchange Format) export — best-effort.
  *

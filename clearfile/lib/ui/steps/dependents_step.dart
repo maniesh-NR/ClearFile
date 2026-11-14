@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -32,7 +33,10 @@ class DependentsStep extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         for (final d in r.dependents)
-          _DependentCard(key: ValueKey(d), state: state, dependent: d),
+          // ObjectKey, not ValueKey (Stage-1 D6): Dependent is value-equal,
+          // so two freshly added blank dependents would collide as
+          // duplicate ValueKeys and crash the build.
+          _DependentCard(key: ObjectKey(d), state: state, dependent: d),
         if (r.dependents.isEmpty)
           Card(
             margin: const EdgeInsets.only(bottom: 8),
@@ -86,8 +90,10 @@ class _DependentCard extends StatelessWidget {
                 IconButton(
                   tooltip: 'Remove',
                   icon: const Icon(Icons.delete_outline),
-                  onPressed: () =>
-                      state.update((x) => x.dependents.remove(dependent)),
+                  // Identity removal (D6): value-equal dependents are
+                  // distinct cards; List.remove would drop the first equal.
+                  onPressed: () => state.update((x) =>
+                      x.dependents.removeWhere((e) => identical(e, dependent))),
                 ),
               ],
             ),

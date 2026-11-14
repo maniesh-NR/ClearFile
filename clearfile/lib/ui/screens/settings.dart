@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -141,7 +142,7 @@ class SettingsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('ClearFile 1.0.0 - demonstration software',
+                      Text('ClearFile 1.0.1 - demonstration software',
                           style: Theme.of(context).textTheme.titleSmall),
                       const SizedBox(height: 8),
                       Text(
@@ -358,8 +359,15 @@ class _ChainTile extends StatelessWidget {
               IconButton(
                 tooltip: 'Remove from chain',
                 icon: const Icon(Icons.remove_circle_outline),
-                onPressed: () => state.updateSettings(
-                    (s) => s.chain.removeWhere((m) => m == spec)),
+                onPressed: () {
+                  // Remove exactly ONE entry (Stage-1 D6): value-equal chain
+                  // entries are distinct rows, and removeWhere would delete
+                  // every duplicate of that model at once.
+                  final index = state.settings.chain.indexOf(spec);
+                  if (index >= 0) {
+                    state.updateSettings((s) => s.chain.removeAt(index));
+                  }
+                },
               ),
           ],
         ),

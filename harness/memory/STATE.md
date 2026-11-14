@@ -39,10 +39,10 @@
 - `node_modules/` present; `.next/` absent (`npm run build` when needed).
   `npx tsc --noEmit` exit 0 (tsconfig excludes untracked `examples/`,
   `skills/`).
-- Test suite: **49/49 green** (2026-11-14, post-gate-condition fixes):
-  19 calculator, 8 cascade, 9 CSV, 3 JSON, 4 privacy (+1 findings-leak),
-  1 delete-regression, 1 switch-regression, 3 widget. `flutter analyze`
-  clean.
+- Test suite: **61/61 green** (2026-11-14, Stage-1 execution additions):
+  19 calculator, 8 cascade, 10 CSV, 3 JSON, 5 privacy, 2 autosave
+  regressions, 5 money-parsing, 6 step/settings guards, 3 widget.
+  `flutter analyze` clean.
 - Git identity: platform default (`z@container`). Remote auth: owner's
   fine-grained PAT in `.git/config` only (owner declined rotation —
   WORKFLOW §5).

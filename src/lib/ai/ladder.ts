@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 /**
  * ClearFile AI — provider ladder with automatic step-down.
  *

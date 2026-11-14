@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'filing_status.dart';
 
 /// One rung of a progressive rate schedule.

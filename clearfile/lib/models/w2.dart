@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'json_codec.dart';
 
 /// One W-2 wage statement (or an equivalent manual wage entry).

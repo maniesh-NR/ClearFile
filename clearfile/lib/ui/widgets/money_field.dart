@@ -1,5 +1,8 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import '../../util/money.dart';
 
 /// Text field for money amounts: dollar prefix, tolerant parsing
 /// ("1,234.5", "\$52,500.00", "6 200") and canonical formatting on blur.
@@ -59,16 +62,13 @@ class _MoneyFieldState extends State<MoneyField> {
   static String _display(double v) => v == 0 ? '' : v.toStringAsFixed(2);
 
   void _onChanged(String raw) {
-    final cleaned = raw
-        .replaceAll('\$', '')
-        .replaceAll(',', '')
-        .replaceAll(RegExp(r'\s'), '');
-    if (cleaned.isEmpty) {
-      if (widget.value != 0) widget.onChanged(0);
-      return;
-    }
-    final parsed = double.tryParse(cleaned);
-    if (parsed != null && parsed != widget.value) widget.onChanged(parsed);
+    // Shared parser (Stage-1 D2): see util/money.dart parseMoney for the
+    // pinned behaviour. Empty input clears the value to 0; text that does
+    // not parse (including decimal-comma shapes like "6,5") is ignored and
+    // the field keeps its previous value.
+    final parsed = parseMoney(raw);
+    if (parsed == null) return;
+    if (parsed != widget.value) widget.onChanged(parsed);
   }
 
   @override

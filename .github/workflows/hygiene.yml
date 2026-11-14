@@ -1,0 +1,43 @@
+name: Repository hygiene (secret scan + harness self-check)
+
+# Repo hygiene, NOT sandbox backup. The no-cron owner directive (ADR-001 /
+# harness/WORKFLOW.md §1) governs sandbox→GitHub backups, which stay
+# strictly event-driven. A scheduled full-history secret scan is repository
+# CI hygiene — explicitly sanctioned by ROADMAP Stage-1 item 6 — and the
+# push trigger below is event-driven anyway.
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Mondays 04:33 UTC, de-synchronized from the top of the hour.
+    - cron: '33 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hygiene
+  cancel-in-progress: false
+
+jobs:
+  gitleaks:
+    name: gitleaks full-history secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0   # the whole history, not just HEAD
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  harness-check:
+    name: Harness memory self-check (D19)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - run: bash scripts/harness_check.sh

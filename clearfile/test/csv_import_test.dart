@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'package:clearfile/io/csv_import.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -43,6 +44,17 @@ void main() {
     const csv = 'employer,box1_wages,box2\nA,abc,1\nB,200,5\n';
     final r = parseW2Csv(csv);
     expect(r.entries, hasLength(1));
+    expect(r.entries.single.employer, 'B');
+    expect(r.warnings, hasLength(1));
+  });
+
+  test('decimal-comma rows are skipped with a warning, not silently mangled',
+      () {
+    // D2: "6,5" used to parse as 65 with no signal. The shared parseMoney()
+    // refuses comma-plus-one-or-two-digit shapes, so the row is skipped and
+    // the user is told. The cell is quoted so it truly is one field.
+    const csv = 'employer,box1_wages,box2\nA,"6,5",5\nB,200,5\n';
+    final r = parseW2Csv(csv);
     expect(r.entries.single.employer, 'B');
     expect(r.warnings, hasLength(1));
   });

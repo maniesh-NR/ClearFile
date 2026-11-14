@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'package:http/http.dart' as http;
 
 import 'providers.dart';

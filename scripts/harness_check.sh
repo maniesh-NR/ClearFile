@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-only
+# ---------------------------------------------------------------------------
+# harness_check.sh — harness self-enforcement (D19, ROADMAP Stage-1 item 9).
+#
+# Mechanical checks against memory drift, the class of failure every gate
+# has re-discovered by hand so far (four different test counts in one
+# session, a ROADMAP gate status that pre-dated the gate's outcome, a
+# STATE.md snapshot older than the last session-log entry, 100644→100755
+# mode flips from snapshot restores, an appended session log that was
+# never backed up).
+#
+# Read-only: changes nothing. Exit 0 = all checks pass; exit 1 = failures
+# listed. Runs locally (dogfooded at teardown) and in CI (hygiene.yml).
+# ---------------------------------------------------------------------------
+set -u
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+ROADMAP="harness/memory/ROADMAP.md"
+CONSENSUS="harness/adversarial/CONSENSUS.md"
+STATE="harness/memory/STATE.md"
+LOG="harness/memory/SESSION_LOG.md"
+WORKFLOW="harness/WORKFLOW.md"
+
+FAILURES=0
+fail() { echo "harness_check: FAIL — $*" >&2; FAILURES=$((FAILURES + 1)); }
+pass() { echo "harness_check: ok — $1"; }
+
+# --- 1. Gate-status consistency: ROADMAP ↔ CONSENSUS ----------------------
+# Every stage the ROADMAP declares past its gate must have a matching
+# outcome recorded in CONSENSUS, and no stage may silently flip status.
+if grep -q 'gate PASSED' "$ROADMAP" && grep -q '\*\*Stage 0: PASSED\*\*' "$CONSENSUS"; then
+  pass "Stage 0: ROADMAP and CONSENSUS agree (PASSED)"
+else
+  fail "Stage 0 gate status drift between ROADMAP and CONSENSUS"
+fi
+
+if grep -q 'Stage 1 ENTERED' "$ROADMAP" && grep -q '\*\*Stage 1: ENTERED\*\*' "$CONSENSUS"; then
+  pass "Stage 1: ROADMAP and CONSENSUS agree (ENTERED)"
+else
+  fail "Stage 1 gate status drift between ROADMAP and CONSENSUS (ROADMAP still PENDING?)"
+fi
+
+PENDING_RM=$(grep -c 'Gate status:.*PENDING' "$ROADMAP" || true)
+if [ "$PENDING_RM" -eq 5 ]; then
+  pass "Stages 2-6 remain PENDING in ROADMAP ($PENDING_RM)"
+else
+  fail "ROADMAP has $PENDING_RM 'Gate status: PENDING' lines; expected 5 (Stages 2-6). Update this checker if a stage legitimately advanced"
+fi
+
+ENTERED_CS=$(grep -cE '\*\*Stage [2-6]: (ENTERED|PASSED)\*\*' "$CONSENSUS" || true)
+if [ "$ENTERED_CS" -eq 0 ]; then
+  pass "CONSENSUS records no outcome for un-gated stages 2-6"
+else
+  fail "CONSENSUS records $ENTERED_CS outcomes for stages 2-6 that ROADMAP still lists as PENDING"
+fi
+
+# --- 2. Gate-scope consistency: WORKFLOW §2 tiering ↔ ROADMAP tiering -------
+WF_SCOPE=$(grep -c 'Stage-2 entry' "$WORKFLOW" || true)
+RM_SCOPE=$(grep -c 'Stage 2 entry' "$ROADMAP" || true)
+WF_HR=$(grep -c 'history-rewrite' "$WORKFLOW" || true)
+RM_HR=$(grep -c 'history-rewrite' "$ROADMAP" || true)
+if [ "$WF_SCOPE" -ge 1 ] && [ "$RM_SCOPE" -ge 1 ] && [ "$WF_HR" -ge 1 ] && [ "$RM_HR" -ge 1 ]; then
+  pass "gate-depth tiering lists the same full-depth stages in WORKFLOW and ROADMAP"
+else
+  fail "gate-depth tiering diverged between WORKFLOW and ROADMAP (fuller-scope-wins rule applies)"
+fi
+
+# --- 3. STATE freshness vs the session log ----------------------------------
+LAST_LOG="$(grep -E '^## [0-9]{4}-[0-9]{2}-[0-9]{2}' "$LOG" | tail -1 | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}')"
+STATE_UPD="$(grep -m1 -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}' "$STATE")"
+if [ -n "$LAST_LOG" ] && [ -n "$STATE_UPD" ] && [[ "$STATE_UPD" > "$LAST_LOG" || "$STATE_UPD" == "$LAST_LOG" ]]; then
+  pass "STATE.md ($STATE_UPD) is not older than the last session-log entry ($LAST_LOG)"
+else
+  fail "STATE.md ($STATE_UPD) predates the last SESSION_LOG entry ($LAST_LOG) — refresh it at teardown"
+fi
+
+# --- 4. Stated test totals vs actual declarations ---------------------------
+DECLARED=$(grep -h -E '^[[:space:]]*(test|testWidgets)\(' clearfile/test/*.dart | wc -l | tr -d ' ')
+RM_ROW="$(grep -oE '[0-9]+ Dart tests' README.md | head -1 | grep -oE '^[0-9]+')"
+RM_RUN="$(grep -oE '[0-9]+ tests green' README.md | head -1 | grep -oE '^[0-9]+')"
+ST_GREEN="$(grep -oE '\*\*[0-9]+/[0-9]+ green\*\*' "$STATE" | head -1 | grep -oE '[0-9]+/[0-9]+' | cut -d/ -f1)"
+if [ -n "$RM_ROW" ] && [ "$RM_ROW" -eq "$DECLARED" ]; then
+  pass "README test-table row ($RM_ROW) matches declared tests ($DECLARED)"
+else
+  fail "README test-table row says '${RM_ROW:-<none>}', actual test declarations: $DECLARED"
+fi
+if [ -n "$RM_RUN" ] && [ "$RM_RUN" -eq "$DECLARED" ]; then
+  pass "README run-block count ($RM_RUN) matches declared tests ($DECLARED)"
+else
+  fail "README run-block says '${RM_RUN:-<none>} tests green', actual test declarations: $DECLARED"
+fi
+if [ -n "$ST_GREEN" ] && [ "$ST_GREEN" -eq "$DECLARED" ]; then
+  pass "STATE.md test count ($ST_GREEN) matches declared tests ($DECLARED)"
+else
+  fail "STATE.md says '${ST_GREEN:-<none>}/… green', actual test declarations: $DECLARED"
+fi
+
+# --- 5. Mode drift: snapshot restores flip 100644 → 100755 -----------------
+MODE_FLIPS=$(git diff --cached --summary 2>/dev/null | grep -c 'mode change' || true)
+MODE_FLIPS_WT=$(git diff --summary 2>/dev/null | grep -c 'mode change' || true)
+if [ "$MODE_FLIPS" -eq 0 ] && [ "$MODE_FLIPS_WT" -eq 0 ]; then
+  pass "no 100644↔100755 mode flips staged or unstaged"
+else
+  fail "mode-only changes staged/working ($MODE_FLIPS/$MODE_FLIPS_WT) — normalize before committing"
+fi
+
+# --- 6. Nothing appended to memory that is not pushed -----------------------
+if git fetch -q origin 2>/dev/null; then
+  UNPUSHED="$(git rev-list --count origin/main..main 2>/dev/null || echo X)"
+  if [ -z "$UNPUSHED" ] || [ "$UNPUSHED" = "0" ]; then
+    pass "no unpushed commits (last session-log entry is archived)"
+  else
+    fail "$UNPUSHED unpushed commit(s) — the last session-log entry postdates the backup; run scripts/sandbox_backup.sh"
+  fi
+else
+  fail "could not reach origin to verify the unpushed check (CI: pass -c to skip)"
+fi
+
+echo "harness_check: $FAILURES failure(s)"
+exit $([ "$FAILURES" -eq 0 ] && echo 0 || echo 1)

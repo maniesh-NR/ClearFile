@@ -1,4 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import '../models/w2.dart';
+import '../util/money.dart';
 
 /// Result of parsing a W-2 CSV file: mapped [entries] plus human-readable
 /// [warnings] for rows that were skipped.
@@ -161,11 +163,6 @@ int? _columnFor(List<String> header, Set<String> names) {
   return null;
 }
 
-double? _parseAmount(String raw) {
-  final cleaned = raw
-      .replaceAll('\$', '')
-      .replaceAll(',', '')
-      .replaceAll(RegExp(r'\s'), '');
-  if (cleaned.isEmpty) return 0;
-  return double.tryParse(cleaned);
-}
+/// Shared tolerant parser (see [parseMoney]); null means the cell did not
+/// hold a readable number and the row is skipped with a warning.
+double? _parseAmount(String raw) => parseMoney(raw);

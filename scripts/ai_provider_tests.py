@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only
 """Validate AI provider candidates for ClearFile with the REAL task prompts.
 
 Tests (per OpenRouter candidate):

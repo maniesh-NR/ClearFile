@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only
 """Diagnose empty-content responses on OpenRouter reasoning models.
 
 Checks finish_reason, reasoning field, and token usage; then retries with

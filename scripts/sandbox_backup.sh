@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-only
 # ---------------------------------------------------------------------------
 # ClearFile sandbox backup — event-driven, NEVER scheduled (no cron).
 # Per harness/WORKFLOW.md §1 this runs as the LAST step of every execution

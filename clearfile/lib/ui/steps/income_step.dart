@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -24,7 +25,11 @@ class IncomeStep extends StatelessWidget {
         Text('W-2 wages', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         for (final w2 in r.w2s)
-          _W2Card(key: ValueKey(w2), state: state, w2: w2),
+          // ObjectKey, not ValueKey (Stage-1 D6): W2Entry is value-equal, so
+          // two freshly added blank W-2s would collide as duplicate ValueKeys
+          // and crash the build. Identity keys stay unique for value-equal
+          // mutable models.
+          _W2Card(key: ObjectKey(w2), state: state, w2: w2),
         if (r.w2s.isEmpty)
           Card(
             margin: const EdgeInsets.only(bottom: 8),
@@ -136,7 +141,10 @@ class _W2Card extends StatelessWidget {
                 IconButton(
                   tooltip: 'Remove this W-2',
                   icon: const Icon(Icons.delete_outline),
-                  onPressed: () => state.update((x) => x.w2s.remove(w2)),
+                  // Identity removal (D6): value-equal W-2s are distinct
+                  // cards; List.remove would drop the first equal entry.
+                  onPressed: () => state.update(
+                      (x) => x.w2s.removeWhere((e) => identical(e, w2))),
                 ),
               ],
             ),

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'json_codec.dart';
 
 /// A person claimed as a dependent on the return.

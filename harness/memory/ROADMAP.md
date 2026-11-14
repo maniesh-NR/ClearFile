@@ -117,8 +117,9 @@ artifacts; decisions were ratified 2026-11-14, see CONSENSUS):**
 Android/macOS network fix, the first `SHA256SUMS.txt`, and the hardened
 CI's first full green run.
 
-**Gate status:** PENDING (full-depth gate) — convening 2026-11-14 (this
-session) after entry-condition verification (SDK + tests) completes.
+**Gate status:** PASSED (full-depth gate, 2026-11-14) — Stage 1 ENTERED;
+execution in progress (Stage-1 session); exit gate = the Stage-2 entry
+review of the execution evidence (incl. the v1.0.1 closing tag).
 
 ## Stage 2 — Format-study infrastructure (RE Phases 1–3 only)
 

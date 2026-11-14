@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only
 """Explore OpenRouter's free-model lineup and verify the provided test key.
 
 Usage:

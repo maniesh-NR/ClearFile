@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 /// JSON field helpers used by all model classes so that numbers stored as
 /// `int` or `double` (or missing) are read back safely.
 library;

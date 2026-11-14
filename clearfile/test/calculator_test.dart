@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'package:clearfile/models/dependent.dart';
 import 'package:clearfile/models/filing_status.dart';
 import 'package:clearfile/models/tax_return.dart';

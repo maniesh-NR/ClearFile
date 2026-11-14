@@ -8,10 +8,12 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  /* reactStrictMode stays off pending ADR-010 (harness/memory/DECISIONS.md):
-   * strict-mode double-mounting exercises the localStorage persist path,
-   * which has no tests yet. Flip it on with Stage 1's web smoke tests. */
-  reactStrictMode: false,
+  /* Strict mode is ON (ADR-010 closed 2026-11-14): Stage 1's web smoke
+   * test exists (scripts/web_smoke.py — boots the standalone build in
+   * headless Chromium, drives the sample return, and reloads mid-flow to
+   * exercise the localStorage persist/rehydrate path that double-mounting
+   * stresses in dev). */
+  reactStrictMode: true,
 };
 
 export default nextConfig;

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final base = await getApplicationDocumentsDirectory();
   final state = AppState(
-    store: ReturnStore(base),
+    store: FileReturnStore(base),
     settingsStore: AiSettingsStore(File('${base.path}/ai_settings.json')),
   );
   await state.bootstrap();

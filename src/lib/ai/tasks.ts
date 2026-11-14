@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 /**
  * ClearFile AI — task prompts and response parsing.
  *

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'package:flutter/material.dart';
 
 import '../../../models/filing_status.dart';

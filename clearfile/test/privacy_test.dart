@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'package:clearfile/ai/assistant.dart';
 import 'package:clearfile/ai/cascade.dart';
 import 'package:clearfile/ai/settings.dart';

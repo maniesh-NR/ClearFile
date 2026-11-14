@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only
 """ClearFile Engineering Blueprint - body PDF generator (ReportLab, Report route).
 
 Chapter numbering plan (cover/TOC are NOT chapters; body starts at 1):

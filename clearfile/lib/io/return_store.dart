@@ -1,16 +1,32 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'dart:convert';
 import 'dart:io';
 
 import '../models/tax_return.dart';
 
-/// Local storage for returns: one JSON file per return inside a
-/// `returns/` folder of the app's private data directory.
+/// Persistence seam for saved returns (Stage-1 debt D4).
+///
+/// [AppState] and the widget tests talk to this interface. The production
+/// implementation is [FileReturnStore]; tests inject in-memory fakes
+/// (`test/fakes.dart`) so widget tests escape the `tester.runAsync`
+/// filesystem tax (ADR-006) — store futures then resolve inside the
+/// binding's test zone and `pumpAndSettle` is safe to use again.
+abstract class ReturnStore {
+  Future<List<TaxReturnData>> listReturns();
+
+  Future<void> save(TaxReturnData r);
+
+  Future<void> delete(String id);
+}
+
+/// File-backed [ReturnStore]: one JSON file per return inside a `returns/`
+/// folder of the app's private data directory.
 ///
 /// Nothing leaves the device. The same JSON layout is used by the
 /// export/import file picker flow, so an exported file can be dropped back
 /// in at any time.
-class ReturnStore {
-  ReturnStore(this.baseDirectory);
+class FileReturnStore implements ReturnStore {
+  FileReturnStore(this.baseDirectory);
 
   final Directory baseDirectory;
 
@@ -22,6 +38,7 @@ class ReturnStore {
     }
   }
 
+  @override
   Future<List<TaxReturnData>> listReturns() async {
     await ensureReady();
     final returns = <TaxReturnData>[];
@@ -45,6 +62,7 @@ class ReturnStore {
     return returns;
   }
 
+  @override
   Future<File> save(TaxReturnData r) async {
     await ensureReady();
     r.modified = DateTime.now();
@@ -53,6 +71,7 @@ class ReturnStore {
         const JsonEncoder.withIndent('  ').convert(r.toJson()));
   }
 
+  @override
   Future<void> delete(String id) async {
     final file = File('${_returnsDir.path}/${_safeName(id)}.json');
     if (await file.exists()) {

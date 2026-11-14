@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import '../models/tax_return.dart';
 
 /// One row of the Form-1040-style summary shown on the Results screen.

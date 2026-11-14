@@ -1,7 +1,30 @@
+// SPDX-License-Identifier: GPL-3.0-only
 /// Money and percent formatting helpers shared by the UI and the review
 /// rules. Locale-independent on purpose so tests and every platform render
 /// identical strings.
 library;
+
+/// Tolerant money parsing shared by the money field and the W-2 CSV
+/// importer (Stage-1 debt D2: the two parsers had drifted apart).
+///
+/// Behaviour, pinned by `test/money_parse_test.dart`:
+/// - Empty or whitespace-only input parses as 0 — a blank cell or cleared
+///   field means "no amount", not an error.
+/// - `$`, thousands commas and whitespace are stripped anywhere.
+/// - Text that still does not parse returns null; callers decide whether
+///   that means a skipped CSV row with a warning or an ignored field edit.
+/// - A comma followed by only one or two trailing digits is never valid
+///   US thousands grouping, so inputs like "6,5" or "6,50" (a decimal-comma
+///   locale leaking through) are refused as null instead of silently
+///   parsing as 65 / 650. Full European formats ("1.234,56") are out of
+///   scope for this US-format prototype and are not rehabilitated.
+double? parseMoney(String raw) {
+  final stripped = raw.replaceAll('\$', '').replaceAll(RegExp(r'\s'), '');
+  if (RegExp(r'^-?\d+,\d{1,2}$').hasMatch(stripped)) return null;
+  final cleaned = stripped.replaceAll(',', '');
+  if (cleaned.isEmpty) return 0;
+  return double.tryParse(cleaned);
+}
 
 String formatMoney(double value, {bool withCents = false}) {
   final negative = value < 0;

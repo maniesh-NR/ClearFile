@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'dart:io';
 
 import 'package:clearfile/ai/settings.dart';
@@ -23,7 +24,7 @@ void main() {
     addTearDown(() => dir.delete(recursive: true));
 
     final state = AppState(
-      store: ReturnStore(dir),
+      store: FileReturnStore(dir),
       settingsStore: AiSettingsStore(File('$path/ai.json')),
     );
 
@@ -59,7 +60,7 @@ void main() {
     addTearDown(() => dir.delete(recursive: true));
 
     final state = AppState(
-      store: ReturnStore(dir),
+      store: FileReturnStore(dir),
       settingsStore: AiSettingsStore(File('$path/ai.json')),
     );
 

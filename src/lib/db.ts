@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import { PrismaClient } from '@prisma/client'
 
 const globalForPrisma = globalThis as unknown as {

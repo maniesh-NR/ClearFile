@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import 'dart:io';
 
 import 'package:clearfile/ai/settings.dart';
@@ -30,7 +31,7 @@ void main() {
             .create(recursive: true));
     final directory = dir!; // runAsync returns T? but create never returns null.
     final state = AppState(
-      store: ReturnStore(directory),
+      store: FileReturnStore(directory),
       settingsStore: AiSettingsStore(File('${directory.path}/ai.json')),
     );
     await tester.runAsync(state.bootstrap);

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 /// Federal filing statuses, each paired with the plain-language explanation
 /// style popularized by the IRS DirectFile pilot (discontinued after the 2025
 /// filing season): short, jargon-free sentences that help people pick correctly.
