@@ -19,6 +19,12 @@ Scripts in this directory fall into two groups:
      STATE freshness, stated-vs-declared test totals, mode drift, and
      unpushed memory. Runs locally at teardown and in CI
      (`.github/workflows/hygiene.yml`).
+   - `test_tag_guard.sh` — functional test of the release.yml tag guard
+     (Stage-2 entry gate ENG-1): extracts the guard body verbatim from
+     `release.yml` (never drifts from what CI runs) and exercises all four
+     branches — existing-tag-elsewhere refused, existing-tag-match passes,
+     absent tag treated as fresh, non-missing-ref fetch error refused
+     (fail-closed). Run from the repo root; needs the `origin` remote.
    - `add_spdx_headers.py` — one-shot GPL-3.0-only SPDX header application
      (D14); idempotent. Its first run had a line/character-offset bug that
      split shebang and `'use client'` first lines;

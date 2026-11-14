@@ -26,6 +26,12 @@ name: Build and release all platforms
 #   (target_commitish), never at a racing branch tip
 # - android APKs are collected under clearfile/build/ (gitignored), not
 #   the tracked clearfile/assets/ tree (D7)
+#
+# Stage-2 entry-gate fixes (2026-11-14; ADV-ENG ENG-1, SEC-1/LEGAL-1):
+# - the tag guard is fail-closed on unexpected fetch errors: only the
+#   "couldn't find remote ref" case may proceed as a fresh tag
+# - the release body carries the GPL §6 corresponding-source statement
+#   (same wording as the live-patched v1.0.0 description)
 
 on:
   push:
@@ -100,15 +106,28 @@ jobs:
           # commit would publish HEAD artifacts under an old tag's name.
           # Proceed only if the tag is absent (fresh; the release job
           # creates it at target_commitish) or points exactly at this run.
+          # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
+          # "couldn't find remote ref" case may proceed as a fresh tag; any
+          # other fetch failure refuses to build.
+          fetch_err="$(mktemp)"
           if git fetch --no-tags origin \
-              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>/dev/null; then
+              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
             if [ "$tagged" != "$GITHUB_SHA" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
                    "but this run builds $GITHUB_SHA" >&2
+              rm -f "$fetch_err"
               exit 1
             fi
+          elif grep -qi "couldn't find remote ref" "$fetch_err"; then
+            echo "tag $RELEASE_TAG not present remotely; treating as fresh tag"
+          else
+            echo "tag guard: fetch failed (not a missing-ref error); refusing to build" >&2
+            cat "$fetch_err" >&2
+            rm -f "$fetch_err"
+            exit 1
           fi
+          rm -f "$fetch_err"
       - run: flutter pub get
       - name: Build split APKs
         run: flutter build apk --split-per-abi --release
@@ -159,15 +178,28 @@ jobs:
           # commit would publish HEAD artifacts under an old tag's name.
           # Proceed only if the tag is absent (fresh; the release job
           # creates it at target_commitish) or points exactly at this run.
+          # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
+          # "couldn't find remote ref" case may proceed as a fresh tag; any
+          # other fetch failure refuses to build.
+          fetch_err="$(mktemp)"
           if git fetch --no-tags origin \
-              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>/dev/null; then
+              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
             if [ "$tagged" != "$GITHUB_SHA" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
                    "but this run builds $GITHUB_SHA" >&2
+              rm -f "$fetch_err"
               exit 1
             fi
+          elif grep -qi "couldn't find remote ref" "$fetch_err"; then
+            echo "tag $RELEASE_TAG not present remotely; treating as fresh tag"
+          else
+            echo "tag guard: fetch failed (not a missing-ref error); refusing to build" >&2
+            cat "$fetch_err" >&2
+            rm -f "$fetch_err"
+            exit 1
           fi
+          rm -f "$fetch_err"
       - name: Install Linux build deps
         run: |
           sudo apt-get update -y
@@ -211,15 +243,28 @@ jobs:
             echo "RELEASE_TAG '$RELEASE_TAG' is not a v-tag; refusing to build" >&2
             exit 1
           }
+          # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
+          # "couldn't find remote ref" case may proceed as a fresh tag; any
+          # other fetch failure refuses to build.
+          fetch_err="$(mktemp)"
           if git fetch --no-tags origin \
-              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>/dev/null; then
+              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
             if [ "$tagged" != "$GITHUB_SHA" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
                    "but this run builds $GITHUB_SHA" >&2
+              rm -f "$fetch_err"
               exit 1
             fi
+          elif grep -qi "couldn't find remote ref" "$fetch_err"; then
+            echo "tag $RELEASE_TAG not present remotely; treating as fresh tag"
+          else
+            echo "tag guard: fetch failed (not a missing-ref error); refusing to build" >&2
+            cat "$fetch_err" >&2
+            rm -f "$fetch_err"
+            exit 1
           fi
+          rm -f "$fetch_err"
       - run: flutter pub get
       - run: flutter build windows --release
       # Env-var access, not ${{ github.ref_name }} interpolation: ref names
@@ -265,15 +310,28 @@ jobs:
           # commit would publish HEAD artifacts under an old tag's name.
           # Proceed only if the tag is absent (fresh; the release job
           # creates it at target_commitish) or points exactly at this run.
+          # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
+          # "couldn't find remote ref" case may proceed as a fresh tag; any
+          # other fetch failure refuses to build.
+          fetch_err="$(mktemp)"
           if git fetch --no-tags origin \
-              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>/dev/null; then
+              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
             if [ "$tagged" != "$GITHUB_SHA" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
                    "but this run builds $GITHUB_SHA" >&2
+              rm -f "$fetch_err"
               exit 1
             fi
+          elif grep -qi "couldn't find remote ref" "$fetch_err"; then
+            echo "tag $RELEASE_TAG not present remotely; treating as fresh tag"
+          else
+            echo "tag guard: fetch failed (not a missing-ref error); refusing to build" >&2
+            cat "$fetch_err" >&2
+            rm -f "$fetch_err"
+            exit 1
           fi
+          rm -f "$fetch_err"
       - run: flutter pub get
       - run: flutter build macos --release
       - name: Zip macOS bundle
@@ -317,15 +375,28 @@ jobs:
           # commit would publish HEAD artifacts under an old tag's name.
           # Proceed only if the tag is absent (fresh; the release job
           # creates it at target_commitish) or points exactly at this run.
+          # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
+          # "couldn't find remote ref" case may proceed as a fresh tag; any
+          # other fetch failure refuses to build.
+          fetch_err="$(mktemp)"
           if git fetch --no-tags origin \
-              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>/dev/null; then
+              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
             if [ "$tagged" != "$GITHUB_SHA" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
                    "but this run builds $GITHUB_SHA" >&2
+              rm -f "$fetch_err"
               exit 1
             fi
+          elif grep -qi "couldn't find remote ref" "$fetch_err"; then
+            echo "tag $RELEASE_TAG not present remotely; treating as fresh tag"
+          else
+            echo "tag guard: fetch failed (not a missing-ref error); refusing to build" >&2
+            cat "$fetch_err" >&2
+            rm -f "$fetch_err"
+            exit 1
           fi
+          rm -f "$fetch_err"
       - run: flutter pub get
       - run: flutter build web --release
       - name: Bundle
@@ -362,15 +433,28 @@ jobs:
           # commit would publish HEAD artifacts under an old tag's name.
           # Proceed only if the tag is absent (fresh; the release job
           # creates it at target_commitish) or points exactly at this run.
+          # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
+          # "couldn't find remote ref" case may proceed as a fresh tag; any
+          # other fetch failure refuses to build.
+          fetch_err="$(mktemp)"
           if git fetch --no-tags origin \
-              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>/dev/null; then
+              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
             if [ "$tagged" != "$GITHUB_SHA" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
                    "but this run builds $GITHUB_SHA" >&2
+              rm -f "$fetch_err"
               exit 1
             fi
+          elif grep -qi "couldn't find remote ref" "$fetch_err"; then
+            echo "tag $RELEASE_TAG not present remotely; treating as fresh tag"
+          else
+            echo "tag guard: fetch failed (not a missing-ref error); refusing to build" >&2
+            cat "$fetch_err" >&2
+            rm -f "$fetch_err"
+            exit 1
           fi
+          rm -f "$fetch_err"
       - run: npm ci
       - name: Typecheck
         run: npx tsc --noEmit
@@ -412,15 +496,28 @@ jobs:
             echo "RELEASE_TAG '$RELEASE_TAG' is not a v-tag; refusing to publish" >&2
             exit 1
           }
+          # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
+          # "couldn't find remote ref" case may proceed as a fresh tag; any
+          # other fetch failure refuses to build.
+          fetch_err="$(mktemp)"
           if git fetch --no-tags origin \
-              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>/dev/null; then
+              "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
             if [ "$tagged" != "$GITHUB_SHA" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
                    "but this run builds $GITHUB_SHA" >&2
+              rm -f "$fetch_err"
               exit 1
             fi
+          elif grep -qi "couldn't find remote ref" "$fetch_err"; then
+            echo "tag $RELEASE_TAG not present remotely; treating as fresh tag"
+          else
+            echo "tag guard: fetch failed (not a missing-ref error); refusing to build" >&2
+            cat "$fetch_err" >&2
+            rm -f "$fetch_err"
+            exit 1
           fi
+          rm -f "$fetch_err"
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           path: release-assets
@@ -461,6 +558,9 @@ jobs:
 
             Binaries are **unsigned** (no code-signing certificates are held
             for this project). Verify downloads against `SHA256SUMS.txt`.
+
+            The complete corresponding source for every binary here is the
+            tagged public commit of this repository (GPL v3 s6).
 
             **Network disclosure (Android and macOS builds):** the optional
             AI assistant, if enabled with your own free API key, calls

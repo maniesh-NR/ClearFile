@@ -34,6 +34,35 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  suites:
+    # Stage-2 entry gate (2026-11-14, ADV-ENG ENG-4): push-CI coverage for
+    # the suites themselves. Before this job, analyze/flutter-test/tsc ran
+    # only inside release.yml (tag/dispatch), so a red suite could sit on
+    # main until the next release. Same hardening posture as release.yml:
+    # SHA-pinned actions, contents:read (workflow-wide), timeout, no secrets.
+    name: Test suites (flutter analyze + test, tsc)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: '3.47.9'
+          cache: true
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '20'
+          cache: npm
+      - run: flutter pub get
+        working-directory: clearfile
+      - run: flutter analyze
+        working-directory: clearfile
+      - run: flutter test
+        working-directory: clearfile
+      - run: npm ci
+      - run: npx tsc --noEmit
+
   harness-check:
     name: Harness memory self-check (D19)
     runs-on: ubuntu-latest

@@ -132,7 +132,8 @@ extraction).
 > **Note on the v1.0.0 release binaries:** the Android and macOS binaries
 > shipped with tag `v1.0.0` predate the network permission/entitlement and
 > **cannot reach AI providers** — the assistant silently fails on them.
-> Fixed in the repository; the next tagged release will carry the fix.
+> **Fixed in the v1.0.1 release** (Android INTERNET permission + macOS
+> network-client entitlement + the in-app/release network disclosure).
 
 The default chain walks the strongest free tiers top-to-bottom and
 auto-degrades on rate limits (429) and auth failures (401):
@@ -178,6 +179,12 @@ npm start          # serve the standalone build
 The standalone build plus `cp -r .next/static .next/standalone/.next/` and
 `cp -r public .next/standalone/` (already in `package.json` `build`
 script) gives a self-hostable bundle.
+
+## License
+
+GPL-3.0-only — see `LICENSE`. The vendored shadcn/ui components under
+`src/components/ui/` and `src/hooks/` are MIT-derived; their notices are in
+`THIRD-PARTY-NOTICES.md`.
 
 ## Demo disclaimer
 

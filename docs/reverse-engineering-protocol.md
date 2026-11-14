@@ -1,6 +1,6 @@
 # ClearFile — Reverse-Engineering Protocol for Legacy Tax-Software Formats
 
-**Status:** research playbook · **Last updated:** 2026-11-03
+**Status:** research playbook · **Last updated:** 2026-11-14 (§7 added; Stage-2 entry gate date audit)
 **Scope:** read-only, interoperability-oriented format study of legacy consumer
 tax-preparation file formats. ClearFile itself stores returns in its open
 `.clearfile.json` format and exports TXF; nothing in this protocol is required

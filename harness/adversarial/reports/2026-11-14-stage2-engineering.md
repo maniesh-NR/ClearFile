@@ -1,0 +1,55 @@
+# ADV-ENG — Stage-2 entry gate review (2026-11-14)
+
+*Filed near-verbatim from the independent reviewer's returned report
+(Task ID 3-c; isolated context; ran concurrently with the other three
+reviewers, none of which it saw).*
+
+Scope: full-depth review of the Stage-1 execution (commits `a0e6d34`, `0bbb564`, `7b16e12`; `git diff d9ac0bb..HEAD --stat` = 84 files, +1398/−144), current repo state, and the Stage-2 plan. Research-only: tracked tree clean at close (`git status --porcelain` = 0 lines); only gitignored build outputs were produced.
+
+## Verification log (commands run + what they showed; live checks)
+
+- **Harness docs read in order:** WORKFLOW §2, STATE, SESSION_LOG (Stage-1 execution entry incl. incidents), ROADMAP, DECISIONS (ADR-008–011), DEBT (D1–D27), CONSENSUS (Stage-0 + Stage-1 gates), prior Stage-0/Stage-1 ENG reports, `docs/reverse-engineering-protocol.md`.
+- **`flutter analyze`** — "No issues found!" (fresh run, SDK at `tools/flutter`). **`flutter test`** — **+61: All tests passed**. Per-file declaration recount matches the claimed breakdown exactly: 19 calculator / 8 cascade / 10 CSV / 3 JSON / 5 privacy / 2 autosave regressions / 5 money / 6 step+settings guards / 3 widget.
+- **`npx tsc --noEmit`** — exit 0. **`bash scripts/harness_check.sh`** — 11 checks, 0 failures (gate status, tiering, STATE freshness, 61-counts in README×2 + STATE, mode drift, unpushed).
+- **`python3 scripts/web_smoke.py`** (full run: `npm run build` + standalone serve + headless Chromium) — **6/6 assertions**, including mid-flow reload persistence, against the `reactStrictMode: true` build (`next.config.ts:16` — ADR-010 closure verified in code).
+- **`git ls-remote --tags origin`** — `v1.0.1` → `0bbb564bc16f…` exactly (lightweight; matches "tag→0bbb564"); `v1.0.0` → `13205da` (annotated).
+- **Live GitHub (api.github.com rate-limited to 0 remaining — recorded; fell back to public HTML):** run `43598726491` page title "Build and release all platforms · maniesh-NR/ClearFile@**0bbb564**", embedded JSON `COMPLETED/SUCCESS`; run `43598383213` (same commit) `COMPLETED/FAILURE` — the intentional refusal; hygiene runs `43598360301` (push `0bbb564`) and `43599541432` (push `7b16e12`) both `SUCCESS`. Release page `releases/tag/v1.0.1` carries the disclaimer, unsigned posture, and network disclosure; `expanded_assets/v1.0.1` lists **exactly 11 assets** including `SHA256SUMS.txt`.
+- **`git ls-remote` against all 7 pinned actions:** checkout v4.4.0→`11d5960a…`, flutter-action v2.23.0→`1a449444…`, upload-artifact v4.6.2→`ea165f8d…`, setup-node v4.4.0→`49933ea5…`, download-artifact v4.3.0→`d3f86a10…`, softprops v2.6.2→`3bb12739…`, gitleaks v2.3.9→`ff98106e…` — **every SHA pin resolves to its stated tag**.
+- **Code spot-checks:** `util/money.dart` + `money_parse_test.dart` (5 tests) + CSV warning test (`csv_import_test.dart:51-60`); `ReturnStore`/`FileReturnStore` (`return_store.dart`, incl. `_safeName` traversal guard) + `test/fakes.dart`; `app_state.dart:108-120` `_open` flush (D23) and `:133-147` delete-cancel; `income_step.dart:32,147` / `dependents_step.dart:39,96` ObjectKey + `identical()` removal; `settings.dart:366-368` removeAt; `ai/settings.dart:113-123` schemaVersion 2 + legacy reset (D25); `store.ts:136-145` shape checks (D24); `sample_w2.csv`/`bun.lock` untracked (D7/D26); `clearfile/build/` gitignored; 71 tracked files carry the GPL SPDX line (claim: 70 — conservative); `providers.dart:67` key-in-URL still live as registered (D11, Stage 5 — no silent shrinkage); no `ValueKey` residue in `clearfile/lib`.
+
+## Findings
+
+**ENG-1 [MINOR] — the tag-SHA guard is fail-open on fetch failure.** `release.yml:103-111` (and the 6 copies): `if git fetch --no-tags origin "refs/tags/$RELEASE_TAG…" 2>/dev/null; then …` — *any* fetch error (not just tag-absence) skips the comparison and proceeds as "fresh tag", while the release step still reaches the API via a different auth path. A transient fetch failure in a runner whose tag exists remotely would attach HEAD artifacts under an old tag — the exact vector the guard exists to close. Likelihood on a GH runner is low, and both live runs prove the happy paths, but the guarantee is conditional. Fix: distinguish "remote ref not found" from other fetch errors and fail closed on the latter.
+
+**ENG-2 [MINOR] — `harness_check.sh` promises a flag it doesn't implement.** Line 118: "CI: pass -c to skip" — the script has no argument parsing at all (no `$1`/getopts anywhere). A truth-checker with a phantom option is itself drift; additionally, check 6 turns an Actions network blip into a red hygiene run. Fix: implement `-c` or delete the comment.
+
+**ENG-3 [MINOR] — D2's DONE note overstates the empty-cell half.** Original D2: "empty CSV wages cell parses as 0" → fix direction "warning, not 0". What shipped: `parseMoney('')` → 0 (`money.dart:25`) — `A,,5` imports wages=0 silently; only the comma-shapes are warned. The blank-means-zero semantic is now *documented and pinned* (`money_parse_test.dart:13-18`), so this is a deliberate choice, not a silent bug — but DEBT.md's DONE line should say the empty-cell clause was redefined-as-documented rather than resolved, or the next reader believes a warning exists. Adjacent asymmetry: `MoneyField` silently ignores "6,5" (`money_field.dart:69-70`) while CSV warns — fold into Stage-3 parser-hardening tests.
+
+**ENG-4 [MINOR] — no push-CI coverage for the suites themselves.** `hygiene.yml` runs only gitleaks + harness_check on push; `flutter analyze/test` and `tsc` run only inside `release.yml` (tag/dispatch). A red suite can sit on `main` until the next release; harness_check's count check is declaration-based (grep), so it cannot catch this. Cheap fix: a tests job in hygiene.yml.
+
+**ENG-5 [NOTE] — the tag-PUSH path of the guard is unverified.** Both live runs were dispatches; v1.0.0-era runs predate the guard. If `github.sha` on an annotated-tag push is the tag-object SHA (a known GitHub quirk), a legit annotated-tag push is refused (fail-closed — safe, but a broken advertised trigger). Verify once at the next release or make dispatch the only supported path.
+
+**ENG-6 [NOTE] — what the 61 tests still paper over (honesty map, all ledgered):** the web engine has zero unit tests (type-level only + one smoke refund assertion); web `.tax`/TXF/CFR parsers untested; no IRS worked-example golden fixtures yet (Stage 3's first item); assistant UI untested; `settingsStore.save()` fire-and-forget (honestly documented in `steps_test.dart:29-31`). None of this is *claimed* as covered — the docs and tests agree on the boundary, which is the honest state.
+
+**Agenda 1 — Stage-1 closure: YES.** Every Stage-1-assigned condition verified with live evidence, not narrative: gitleaks/harness_check green on two push runs; all 26 `uses:` SHA-pinned and pins match their stated tags live; both dispatch paths exercised live (SUCCESS at `0bbb564` with 11 assets; FAILURE refusal); tag→built-commit identity confirmed by `ls-remote`; 61/61 + analyze + tsc + harness_check + web smoke re-run by me, all green; D2/D4/D6/D7/D10/D13/D14/D19/D23/D24/D25/D26 spot-checked in code (≥4 required). Memory records matched reality everywhere probed (counts, SHAs, run IDs). Stage 1 closes formally; ENG-1/2/3 are residuals to register, not closure blockers.
+
+**Agenda 2 — Stage-2 plan is engineering-sound with one design demand.** Read-only entropy/magic/diff tools are naturally crash-safe/write-free if resource caps (max input size, bounded output) are explicit; unit tests pinned to the tools are cheap and correct. The demand: the no-binary-blob CI assertion needs a *precise* provenance design — the tests need binary inputs, so the assertion must distinguish synthetic/owner-authored fixtures (allow-list or runtime-generated) from proprietary blobs, or the rule contradicts the test plan. RE-protocol §7 (present, applied before tooling) already requires this to be "executable, not aspirational".
+
+**Agenda 3 — ordering: Stage 3 next, from engineering value.** Golden fixtures are the reference engine's IRS-pinned regression suite — pure correctness infrastructure, zero legal exposure, benefit compounding from the day they land. D3's version guard is a precondition for *any* future format change. Parity drift grows with delay (web engine untested, per ENG-6). Stage 2 is read-only research whose value doesn't decay and doesn't depend on the engines — deferring it costs nothing. If the owner keeps Stage 2 next, hold the time-box and name N in the DoD.
+
+**Agenda 4 — parity tripwire intact.** ROADMAP ("boxed at two working sessions… golden fixtures land FIRST inside Stage 3") + DECISIONS ADR-009 ratification record the box; live harness_check confirms Stages 2–6 PENDING and no session log entry starts parity work — the clock has not begun.
+
+**Agenda 5 — no debt blocks or reshapes the next stage.** D1/D3 correctly Stage-3-owned (version guard first inside it); D5 register-only is right at demo scale; D8/D11/D12 Stage-5; D9 mitigated with the push-path verification folded into ENG-5; `providers.dart:67` still open exactly as registered.
+
+## What is sound
+
+The Stage-1 evidence chain is genuine end-to-end: real tests (61/61 re-run, breakdown exact), real CI hardening (pins verified against tags live), a guard proven by two live runs including an intentional failure, a real release with exactly the claimed 11 assets and tag→built-commit identity, a harness_check that is dogfooded and green, and memory docs that matched reality at every point I probed — the drift class prior gates kept re-discovering is mechanically pinned now. The `ReturnStore` seam is a true architecture improvement (injected store, fake store, traversal-guarded file store) and the D6 fix addresses a live crash with guard tests that fail if reverted. The incident log is honest (SPDX insertion bug recorded, repair script kept, full suite re-run after). The bug classes named in my mandate (string escaping, nullable misuse) show no new instances in the Stage-1 diff.
+
+## Verdict: PROCEED-WITH-CONDITIONS
+
+1. **Settle Stage-2-vs-Stage-3 ordering in CONSENSUS** with rationale on record; if Stage 2 proceeds, its DoD must name N and the time-box stands (Agenda 3).
+2. **If Stage 2 lands in this repo:** implement the no-binary-blob assertion in `hygiene.yml` with an explicit provenance distinction (synthetic/owner-authored allow-list or test-time generation), and give the tools resource caps with tests pinning refusal behavior.
+3. **Add push-CI for the suites** (hygiene.yml job: `flutter analyze` + `flutter test` + `npx tsc --noEmit` on push to main) — clears ENG-4.
+4. **Fix the `-c` phantom flag in `harness_check.sh`** (implement or delete the comment) — clears ENG-2.
+5. **Amend DEBT.md D2 (append-only)** to state the empty-wages-cell→0 semantic was deliberately retained as documented, not converted to a warning — clears ENG-3.
+6. **Make the release tag-guard fail-closed on unexpected fetch errors**, and either verify the tag-push path once at the next release or drop the push trigger in favor of dispatch-only — clears ENG-1/ENG-5.

@@ -291,3 +291,200 @@ findings-leak tests were added). Recorded as a correction, not an edit.
 applied in-session or explicitly assigned to Stage-1 execution with a
 named verification event). Stage-1 feature work may proceed; its exit
 gate is the Stage-2 entry gate.
+
+---
+
+## Gate: Stage 2 entry (closes Stage 1) · 2026-11-14
+
+**Reviewers (4, independent, full-depth):** ADV-SEC, ADV-LEGAL, ADV-ENG,
+ADV-PROD. Reports filed near-verbatim in
+`reports/2026-11-14-stage2-{security,legal,engineering,product}.md`.
+All four ran concurrently as isolated agent contexts with no visibility
+of each other's reports; verdicts were computed only after all four
+returned. The panel reviewed (a) the Stage-1 execution evidence (commits
+`a0e6d34`, `0bbb564`, `7b16e12`, the live v1.0.1 release and CI runs),
+(b) the full repository state (full-depth per the tiering), and (c) the
+Stage-2 plan plus this gate's agenda: Stage-2-vs-Stage-3 ordering, the
+parity tripwire clock, and the RE-tooling repo placement.
+
+**Gate input — verified facts (orchestrator; independently re-verified by
+the reviewers, including two separate re-runs of the full suite):**
+`flutter analyze` — No issues found; `flutter test` — **+61: All tests
+passed**; `npx tsc --noEmit` — exit 0; `bash scripts/harness_check.sh` —
+11 checks, 0 failures. Live checks: release 445310560 (11 assets incl.
+`SHA256SUMS.txt`; tag `v1.0.1` → exactly `0bbb564` locally and via
+`git ls-remote`), run 43598726491 (8/8 success, ~6.4 min), refusal drill
+run 43598383213 (6 build jobs fail at the guard step, publish skipped),
+hygiene runs 43598360301 and 43599541432 (both success). Two reviewers
+independently re-verified the checksum chain (one full download +
+`sha256sum -c` OK; one live-asset-vs-tagged-tree sha256 match on the RE
+protocol doc). Recorded limitation: the shared sandbox IP exhausted the
+unauthenticated api.github.com rate limit; reviewers fell back to public
+HTML pages and, sparingly and without echoing it, authenticated calls per
+WORKFLOW §5. All 7 action SHA pins were resolved live against upstream
+tags by two reviewers independently — every pin exact.
+
+### Verdicts
+
+| Reviewer | Verdict | Blocking? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (4) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (4) | no |
+| ADV-ENG | PROCEED-WITH-CONDITIONS (6) | no |
+| ADV-PROD | PROCEED-WITH-CONDITIONS (5) | no |
+
+Unanimous non-BLOCK → **consensus reached**.
+
+### Agenda settled (recorded per the gate's mandate)
+
+1. **Stage-1 closure: YES — unanimous.** All four reviewers answered the
+   closure question with live-verified evidence: the gitleaks/CI hardening
+   is real (pins resolve against upstream), the dispatch guards are proven
+   in both directions (fresh-tag publish at the exact built commit;
+   existing-tag refusal with zero build steps run), the release checksum
+   chain is correct end-to-end, and every memory-record claim probed
+   matched reality. Residuals (ENG-1/2/3, SEC-1/2/3/4, LEGAL-1/2/3,
+   PROD-4) are ledgered, not closure blockers.
+2. **Ordering: SWAP — Stage 3 (parity & bridges) is entered next; Stage 2
+   (RE tooling) is re-sequenced after it.** The panel split honestly:
+   ADV-ENG and ADV-PROD explicitly recommended the swap (PROD-2: no
+   cross-dependency either way, front-loads the owner-ratified parity
+   value against single-maintainer abandonment risk, narrative
+   coherence; ENG-3: golden fixtures are pure correctness infrastructure
+   while RE-tooling value does not decay); ADV-LEGAL found both defensible
+   with a fixtures-first lean (IRS-pinned fixtures are §105 government
+   edicts — the best clean-room derivation evidence); ADV-SEC recommended
+   keeping Stage-2 order (no security payoff to reordering; Stage 3 is
+   the shipped-attack-surface milestone). The orchestrator settles the
+   swap on the majority recommendation + the value/burnout logic; the
+   owner may overrule — if the RE stage is pulled forward instead, PROD's
+   fallback applies (define N and the time-box before its entry). SEC's
+   standing caution travels regardless: format specs must not drift into
+   parser implementation before the version guard ships (D3, inside the
+   now-first Stage 3 scope — structurally satisfied).
+3. **Parity tripwire: INTACT (all four confirm); the clock is now
+   defined** (was PROD-3's finding — "slips" had no baseline): baseline =
+   the Stage-3 entry session (2026-11-14, this gate); box = two working
+   sessions on the web parity set; slip = the Stage-3 exit gate not
+   convened within four total working sessions of entry
+   (fixtures-first included); exceed-or-slip → web-freeze returns to the
+   next gate as a mandatory item. Recorded in ROADMAP.
+4. **Repo placement (RE tooling): DEFERRED to the RE stage's own entry
+   gate** — a genuinely split panel (ADV-LEGAL default: separate research
+   repo, narrative + auto-publish denylist reasons; ADV-PROD: in this
+   repo with constraints, reversing its Stage-0 lean; ADV-SEC: mild
+   in-repo under its conditions). The gate that enters the RE stage must
+   settle it as ADR-012 with the carried conditions below.
+
+### Condition ledger — dispositions
+
+**Applied in-session (this gate's session; commit evidence is the
+closing backup):**
+
+- **SEC-1 / LEGAL-1 — GPL §6 corresponding-source sentence added to the
+  release template** (`.github/workflows/release.yml` `body:`, same
+  wording as the live-patched v1.0.0 description). Every future tagged
+  release carries it. Checkable: template grep + next release body.
+- **LEGAL-2 — vendored-code attribution:** `THIRD-PARTY-NOTICES.md`
+  created (shadcn/ui MIT attribution for `src/components/ui/**` +
+  `src/hooks/**`, MIT notice reproduced) + a README License-section
+  pointer row.
+- **ENG-1 — the release tag guard is now FAIL-CLOSED on unexpected fetch
+  errors** (all 7 copies in `release.yml`): only the "couldn't find
+  remote ref" case proceeds as a fresh tag; any other fetch failure
+  refuses to build. YAML re-validated; the guard body is functionally
+  proven by `scripts/test_tag_guard.sh`, which extracts the guard
+  VERBATIM from release.yml and exercises all four branches (4/4
+  scenarios green: existing-tag-elsewhere refused, existing-tag-match
+  passes, absent tag treated as fresh, non-missing-ref error refused).
+- **ENG-2 / SEC-3 — the phantom `-c` flag promise removed** from
+  `scripts/harness_check.sh` (the check itself stays fail-closed).
+- **ENG-3 / ENG cond 5 — DEBT.md D2 amended** (append-only note): the
+  empty-wages-cell→0 semantic was deliberately retained as documented
+  behaviour, not converted to a warning; the adjacent `MoneyField`
+  silent-ignore asymmetry is now D28 (Stage 3).
+- **ENG-4 / ENG cond 3 — push-CI for the suites:** `hygiene.yml` gains
+  the `suites` job (flutter analyze + flutter test + npm ci + tsc on
+  push to main). A red suite can no longer sit on main until the next
+  release. The job follows the repo posture (SHA-pinned actions,
+  `contents: read`, timeout) — satisfying SEC cond 1's posture rule for
+  any new job.
+- **PROD cond 1 — the swap is executed with STABLE stage IDs**
+  (re-sequencing, not renumbering — the cross-reference sweep
+  README/DECISIONS/DEBT/tripwire text stays true by construction):
+  ROADMAP carries the execution-order note (1→3→2→4→5→6), the
+  re-sequencing tiering note, and the Stage-2 entry-gate agenda; the
+  RE stage's entry remains the designated full-depth gate (and is
+  Stage 3's exit gate); `harness_check.sh` patterns updated for the
+  legitimate advance; checker re-run green after.
+- **PROD cond 3 / PROD-3 — the tripwire clock is defined at Stage-3
+  entry** (see agenda item 3; recorded in ROADMAP).
+- **PROD cond 5 / PROD-4 — README v1.0.0 AI-broken note fixed** to read
+  "Fixed in the v1.0.1 release" (was future-tense for a shipped event).
+- **LEGAL-3 — RE protocol header date bumped** to 2026-11-14 (§7 was
+  added 2026-11-14).
+
+**Assigned to the RE-tooling stage (re-sequenced after Stage 3; must be
+settled at its entry gate — which is also Stage 3's exit gate):**
+
+- **SEC cond 1 — RE tooling security contract:** permissions read,
+  timeouts, SHA-pinned actions, no `pull_request_target`/fork surface;
+  write-free + resource-bounded tools with crash-safe/refusal tests —
+  verified at that gate by reading the tool code and tests, not by
+  assertion.
+- **SEC cond 2 / ENG cond 2 / PROD-5 — the no-binary-blob assertion is
+  CI-checkable and lands with the first tooling commit:** unit-test
+  fixtures are program-synthesized bytes; an explicit synthetic vs
+  owner-authored provenance distinction (allow-list or runtime
+  generation); resource caps pinned by tests.
+- **LEGAL cond 2 — synthetic-fixture rule executable:** never real
+  proprietary files; fixture paths enumerated; nothing decrypted or
+  key-material ever committed (§7.2/§7.3).
+- **LEGAL cond 3 / PROD cond 4 — placement ADR-012 recorded BEFORE
+  tooling lands**, with the panel split above. If in-repo: enumerated
+  fixture path + assertion in `hygiene.yml` + §7.5 checklist
+  spot-verification at exit. If separate-repo: pinning,
+  least-privilege, and secret-guard/gitleaks standards replicated first
+  (SEC cond 3).
+- **PROD cond 2 / PROD-1 — the RE stage's DoD fixed:** N defined (a real
+  number matched to the owner-authored corpus actually available) + a
+  real time-box (two working sessions, same unit as the parity box);
+  checkable by counting published specs and sessions at its exit gate.
+- **ENG cond 6 (second half) / ENG-5 / D29 — the tag-PUSH trigger path**
+  verified once at the NEXT tagged release, or the push trigger is
+  dropped for dispatch-only. (The fail-closed guard half is applied
+  in-session above.)
+
+**Surfaced to the owner (owner-side actions; the standing PAT posture
+in WORKFLOW §5 is unchanged):** SEC-2 / SEC-4 — enable Dependabot alerts,
+branch protection on `main`, and PAT expiry when next rotating (tracked
+as D30). None blocks the gate; all are re-affirmed standing
+recommendations.
+
+**Orchestrator notes (recorded for honesty):** every reviewer
+independently re-ran the local suites and at least one live check; two
+found the API rate limit and said so in their reports rather than
+pretending. The ordering settlement records a split panel, not
+unanimity — the swap is the gate's reasoned decision under its mandate
+("the gate also settles Stage-2-vs-Stage-3 ordering"), with the owner
+overrule path and fallback recorded. The re-sequencing deliberately
+avoids renumbering stages (cross-references stay true; harness_check
+green). Stage-1's roadmap row for Stage 1 and the README's "Roadmap
+Stage 3" phrasing remain correct because stage IDs are stable. One extra
+full-depth gate cost is acknowledged (PROD-2's honest cost statement).
+
+### Gate outcome
+
+**Stage 1: CLOSED** (unanimous; the execution evidence held up under
+full-depth live verification on all four seats).
+
+**Stage 3: ENTERED** (under the re-sequencing settled at this gate — the
+full-depth panel reviewed the Stage-3 plan on this gate's agenda).
+Execution begins with the shared golden fixtures FIRST (fixtures-first
+per the tripwire; clock baseline 2026-11-14). The stage's exit gate is
+the RE-tooling stage's entry gate (full-depth, ADV-LEGAL weighted), which
+must also settle the placement ADR-012 and the RE stage's DoD, and review
+the parity-tripwire outcome.
+
+**Stage 2: PENDING** (re-sequenced after Stage 3; its entry-gate agenda
+is carried in the ledger above and mirrored in ROADMAP).

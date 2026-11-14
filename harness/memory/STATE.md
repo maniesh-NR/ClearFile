@@ -1,7 +1,8 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-14 (after the Stage-1 execution session — Stage 1
-complete pending its exit gate)
+**Updated:** 2026-11-14 (after the Stage-2 entry gate session — Stage 1
+closed, Stage 3 entered under the re-sequencing; this gate session's
+closing backup is the tip)
 
 ## Repository
 
@@ -23,14 +24,27 @@ complete pending its exit gate)
 ## Gate status
 
 - Stage 0: PASSED (2026-11-14).
-- **Stage 1: ENTERED + EXECUTION COMPLETE (2026-11-14)** — items 5-9 all
-  DONE (ROADMAP carries the evidence); the v1.0.1 closing tag landed.
-  Stage 1 formally closes at the Stage-2 entry gate's review of this
-  evidence.
-- Owner decisions all ratified earlier: ADR-008 accept-and-document;
-  ADR-009 feature parity (two-session tripwire + freeze fallback);
-  INTERNET add-and-disclose; PAT unchanged. ADR-010 closed (web smoke
-  tests exist; strict mode ON). ADR-011: settings schemaVersion 2.
+- Stage 1: ENTERED, executed end-to-end, and **CLOSED 2026-11-14** at the
+  Stage-2 entry gate (4 × PROCEED-WITH-CONDITIONS, no BLOCKs; unanimous
+  closure on live-verified execution evidence).
+- **Stage 2 (RE tooling): re-sequenced AFTER Stage 3** — PENDING; its
+  entry gate (full-depth, ADV-LEGAL weighted; also Stage 3's exit gate)
+  must settle: the DoD fix (define N + a two-session time-box), the
+  placement ADR-012 (panel split recorded in CONSENSUS), and the RE
+  tooling security contract. Stage IDs are stable — Stage 2 is still "RE
+  tooling", Stage 3 still "parity & bridges", everywhere.
+- **Stage 3: ENTERED 2026-11-14** (at the Stage-2 entry gate, which
+  reviewed its plan under the re-sequencing). Execution starts with the
+  shared golden fixtures FIRST. **Parity tripwire clock (defined at
+  entry):** baseline 2026-11-14; box = two working sessions on the web
+  parity set; slip = exit gate not convened within four total working
+  sessions; exceed-or-slip → web-freeze returns to the next gate as a
+  mandatory item.
+- Owner decisions all stand: ADR-008 accept-and-document; ADR-009 feature
+  parity; INTERNET add-and-disclose; PAT unchanged. ADR-010 closed. ADR-011:
+  settings schemaVersion 2. The ordering swap is the gate's settled
+  decision (split panel recorded honestly; owner overrule path in
+  CONSENSUS).
 
 ## Environment facts (sandbox)
 
@@ -41,10 +55,16 @@ complete pending its exit gate)
 - `node_modules/` present; `.next/` absent (`npm run build` when needed).
   `npx tsc --noEmit` exit 0 (tsconfig excludes untracked `examples/`,
   `skills/`).
-- Test suite: **61/61 green** (2026-11-14, Stage-1 execution additions):
-  19 calculator, 8 cascade, 10 CSV, 3 JSON, 5 privacy, 2 autosave
-  regressions, 5 money-parsing, 6 step/settings guards, 3 widget.
-  `flutter analyze` clean.
+- Test suite: **61/61 green** (re-run by the orchestrator AND two of the
+  four gate reviewers independently, 2026-11-14): 19 calculator, 8
+  cascade, 10 CSV, 3 JSON, 5 privacy, 2 autosave regressions,
+  5 money-parsing, 6 step/settings guards, 3 widget. `flutter analyze`
+  clean. `npx tsc --noEmit` exit 0.
+- Live-check quirk (2026-11-14): **unauthenticated api.github.com from this
+  sandbox is shared-rate-limited (60/hr, exhausted fast when four
+  reviewers run concurrently)** — use the public HTML pages
+  (`github.com/…/releases/tag/…`, `…/actions/runs/…`) or, sparingly and
+  never echoing it, authenticated curl per WORKFLOW §5.
 - Git identity: platform default (`z@container`). Remote auth: owner's
   fine-grained PAT in `.git/config` only (owner declined rotation —
   WORKFLOW §5).
@@ -85,9 +105,12 @@ t   text-only (`-I`): icon/bitmap pixel data legitimately trips
 
 ## Immediately next
 
-**Convene the Stage-2 entry gate** (next session's first task per
-WORKFLOW §3.4): full-depth, 4 independent reviewers over (a) the Stage-1
-execution evidence (this session's log + ROADMAP marks + the live v1.0.1
-release/hygiene runs) and (b) the Stage-2 plan. The gate also settles
-Stage-2-vs-Stage-3 ordering (ADV-PROD note 7) and re-checks the parity
-tripwire clock (ADR-009: Stage 3 not yet started, box intact).
+**Stage 3 execution, fixtures first** (WORKFLOW §3.4 is satisfied — the
+Stage-2 entry gate PASSED and entered Stage 3): build the shared golden
+fixtures (`(TaxReturnData, TaxResult)` JSON pairs pinned to IRS-published
+worked examples) as the reference engine's regression suite — the parity
+tripwire's first session. Then the web parity set (boxed at two
+sessions). Stage 3's exit gate = the RE-tooling stage's entry gate, which
+also carries the placement ADR-012 and the RE DoD fix (see CONSENSUS
+ledger). Owner-side surfacings standing: Dependabot, branch protection,
+PAT expiry (D30).

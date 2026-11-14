@@ -225,3 +225,82 @@ Stage-3 ordering per ADV-PROD note 7). Residuals: dev-mode strict-mode
 assertion deferred to Stage 4 (ADR-010 closure note); harness_check's
 per-stage patterns must be updated when a stage legitimately advances
 (self-documented in the checker).
+
+---
+
+## 2026-11-14 (Stage-2 entry gate session) · Stage 1 CLOSED, Stage 3 ENTERED (re-sequenced)
+
+Baseline at entry: tree clean at `7b16e12` (Stage-1 closing backup, pushed,
+in sync with origin); analyze clean; 61/61; tsc exit 0; harness_check 0
+failures (all re-verified by the orchestrator as gate input, then
+independently by the reviewers — two re-ran the full suite).
+
+**The gate (full-depth, 4 independent reviewers, concurrent, isolated):**
+- ADV-SEC, ADV-LEGAL, ADV-ENG, ADV-PROD — reports filed
+  `adversarial/reports/2026-11-14-stage2-*.md`; consensus in
+  `adversarial/CONSENSUS.md`. Verdicts: **4 × PROCEED-WITH-CONDITIONS, no
+  BLOCKs**. Independence held (reports written only after all four
+  returned; each was given no sight of the others).
+- Live verification highlights: all 7 action SHA pins resolved against
+  upstream; release 445310560's checksum chain re-verified twice
+  independently (download + `sha256sum -c` OK; live-asset-vs-tagged-tree
+  sha256); tag `v1.0.1` → exactly `0bbb564` (local + ls-remote); refusal
+  run 43598383213's six guard failures confirmed; whole-history +
+  all-object-store token scan clean (including unreachable objects).
+- Honest limitation recorded: the shared sandbox IP exhausted the
+  unauthenticated GitHub API rate limit (60/hr) with four reviewers
+  running concurrently — fallbacks used (public HTML; sparing authenticated
+  calls per WORKFLOW §5, token never echoed). Two reviewers recorded it in
+  their reports rather than pretending.
+
+**Gate outcomes:**
+1. **Stage 1: CLOSED** (unanimous, live-verified).
+2. **Ordering settled: Stage 3 (parity & bridges) entered next; Stage 2
+   (RE tooling) re-sequenced after it.** Split panel recorded honestly
+   (ENG+PROD swap; LEGAL fixtures-first lean; SEC keep) — the gate's
+   reasoned decision under its mandate, with the owner overrule path
+   recorded. Stage IDs deliberately kept stable (no renumbering):
+   cross-references in README/DECISIONS/DEBT stay true by construction.
+3. **Tripwire clock defined** (PROD-3): baseline 2026-11-14; box = two
+   working sessions on the web parity set; slip = exit gate not convened
+   within four total working sessions; exceed-or-slip → web-freeze returns
+   to the next gate as a mandatory item.
+4. **Placement deferred** to the RE stage's entry gate (ADR-012;
+   panel split: LEGAL separate-repo default, PROD in-repo with
+   constraints, SEC mild in-repo).
+
+**Conditions applied in-session:** GPL §6 corresponding-source sentence in
+the release `body:` (SEC-1/LEGAL-1); `THIRD-PARTY-NOTICES.md` + README
+License row for vendored shadcn/ui, MIT notice reproduced (LEGAL-2); the
+release tag guard made FAIL-CLOSED on unexpected fetch errors in all 7
+copies, with `scripts/test_tag_guard.sh` extracting the guard verbatim
+from release.yml and proving all four branches 4/4 (ENG-1); phantom `-c`
+hint removed from harness_check (ENG-2/SEC-3); DEBT D2 amended
+(append-only; empty-cell→0 was deliberate, MoneyField asymmetry → D28)
+(ENG-3); `hygiene.yml` `suites` push-CI job — analyze/test/tsc on push to
+main (ENG-4); README v1.0.0 note → "Fixed in the v1.0.1 release" (PROD-4);
+RE protocol date bumped (LEGAL-3); ROADMAP re-sequencing (execution-order
+note 1→3→2→4→5→6, tiering note, Stage-2 entry-gate agenda) +
+harness_check stage patterns updated for the legitimate advance.
+
+**Conditions assigned to the RE stage's entry gate** (see CONSENSUS
+ledger): security contract, no-binary-blob assertion + synthetic-fixture
+rules, placement ADR-012, the RE DoD fix (define N + time-box), tag-PUSH
+path verification at the next tagged release (D29).
+
+**Owner-side surfacings (standing, non-blocking):** Dependabot alerts,
+branch protection on `main`, PAT expiry when next rotating (D30;
+WORKFLOW §5 posture unchanged).
+
+**Session quirks (recorded for honesty):**
+1. The unauthenticated API rate limit above (now a STATE quirk).
+2. A MultiEdit batch reported "no replacement performed" while having
+   applied most of its edits (one old_str was non-unique); the re-run
+   duplicated three insertions, caught by `git diff` review and fixed
+   before anything was committed. Reinforces STATE quirk 11: re-verify
+   every bulk edit immediately, never trust the tool's own report alone.
+
+**Closing action:** full re-verification (harness_check green on the new
+patterns, YAML validation on both workflows, guard test 4/4, README/DEBT/
+ROADMAP/CONSENSUS/STATE consistency) + mode normalization check +
+event-driven backup (this run) — the last action before this reply.

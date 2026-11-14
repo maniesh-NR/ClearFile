@@ -18,6 +18,13 @@ survives contact with reality instead of being quietly abandoned:
   reviews.
 - Independence, evidence-based findings, and the verdict vocabulary are
   never relaxed; only the review scope is.
+- **Re-sequencing note (Stage-2 entry gate, 2026-11-14):** execution order
+  is now Stage 3 (parity & bridges) before Stage 2 (RE tooling); the stage
+  IDs stay stable for cross-references. The parity stage's entry was
+  discharged by the full-depth Stage-2 entry gate of 2026-11-14 (its agenda
+  explicitly reviewed the Stage-3 plan); the next full-depth gate is the
+  RE-tooling stage's own entry ("Stage 2 entry", RE posture, ADV-LEGAL
+  weighted), which is also Stage 3's exit gate.
 
 ## Per-stage implementation targets (amended 2026-11-14 after owner ratification)
 
@@ -35,6 +42,14 @@ as a mandatory item. Inside Stage 3, the shared golden fixtures land FIRST
 (they double as the Flutter reference engine's regression suite and keep
 producing value even if parity is deferred by the tripwire).
 
+**Tripwire clock (defined at Stage-3 entry, 2026-11-14, per ADV-PROD
+PROD-3):** baseline = the Stage-3 entry session (2026-11-14, at the
+Stage-2 entry gate); box = two working sessions spent on the web parity
+set; slip = the Stage-3 exit gate (the RE-tooling stage's entry gate) not
+convened within four total working sessions of entry, fixtures-first
+session included. Box exceeded or gate slipped → the web-freeze option
+returns to the NEXT gate agenda as a mandatory item.
+
 | Stage | Web prototype (`src/`) | Flutter app (`clearfile/`) |
 | --- | --- | --- |
 | 1 — Hardening | copy fixes (done 2026-11-14), typecheck (done), lockfile (done), release body (done) | delete-bug fix (done), privacy gating (done 2026-11-14), INTERNET + entitlements (done) |
@@ -43,6 +58,10 @@ producing value even if parity is deferred by the tripwire).
 | 4 — Pages | (hosted Flutter web build) | Flutter web deploy |
 | 5 — AI hardening | timeout parity | injection suite, fixture e2e, key header fix |
 | 6 — Freeze | docs-only, parameter corrections | parameter corrections |
+
+**Execution order (Stage-2 entry gate, 2026-11-14):** the rows run
+1 → 3 → 2 → 4 → 5 → 6 — Stage 3 (parity) executes before Stage 2 (RE
+tooling); the stage numbers above are stable identifiers, not sequence.
 
 Parity tests in Stage 3 must cover **both engines** against shared golden
 fixtures (`(TaxReturnData, TaxResult)` JSON pairs consumed by the Dart and
@@ -137,11 +156,14 @@ release 445310560 carries 11 assets including the first `SHA256SUMS.txt`
 separately by the intentional refusal run 43598383213. **Stage 1 execution is
 complete; the Stage-2 entry gate is next.**
 
-**Gate status:** PASSED (full-depth gate, 2026-11-14) — Stage 1 ENTERED;
-execution in progress (Stage-1 session); exit gate = the Stage-2 entry
-review of the execution evidence (incl. the v1.0.1 closing tag).
+**Gate status:** PASSED (full-depth gate, 2026-11-14) — **Stage 1 CLOSED
+2026-11-14**: entered, executed end-to-end (all nine ordered scope items
+plus the v1.0.1 closing tag), and formally closed at the Stage-2 entry
+gate's unanimous review of the execution evidence — all four reviewers
+verified it independently against the live release/CI; see
+`../adversarial/CONSENSUS.md` and the Stage-2 gate reports.
 
-## Stage 2 — Format-study infrastructure (RE Phases 1–3 only)
+## Stage 2 — Format-study infrastructure (RE Phases 1–3 only) — re-sequenced AFTER Stage 3
 
 Read-only analysis tooling per `docs/reverse-engineering-protocol.md`
 Phases 1–3 (entropy scan, magic scan, differential diff) + crash-safe,
@@ -149,11 +171,29 @@ write-free, resource-bounded implementation + unit tests pinned to the
 tools; a CI-checkable no-binary-blob assertion on fixture paths; first
 `docs/formats/<ext>.md` specs on owner-authored files, following §7.
 
-**Repo placement decided at its gate** (this repo vs a separate research
-repo — ADV-PROD F: keep the clean-room narrative clean). Time-boxed with
-its own definition of done: published specs for N formats.
+**Re-sequenced 2026-11-14 (Stage-2 entry gate):** this stage now executes
+AFTER Stage 3 (parity & bridges) — the settled ordering (two explicit swap
+recommendations, one keep, one neutral-lean; rationale recorded in
+`../adversarial/CONSENSUS.md`). Stage IDs stay stable for cross-references.
 
-**Gate status:** PENDING (full-depth gate; ADV-LEGAL weighted).
+**Entry-gate agenda (mandatory, carried from the Stage-2 entry gate's
+conditions — the gate that enters this stage must settle all of them):**
+- **DoD fix (PROD-1, PROD condition 2):** define N (a real number, matched
+  to the owner-authored corpus actually available) and the time-box (two
+  working sessions, same unit as the parity box) BEFORE entry.
+- **Placement ADR-012 (LEGAL-3, PROD-4):** this repo vs a separate research
+  repo — panel split recorded in CONSENSUS (ADV-LEGAL default: separate;
+  ADV-PROD: in-repo with constraints; ADV-SEC: mild in-repo). If in-repo:
+  the no-binary-blob assertion with an explicit synthetic/owner-authored
+  fixture provenance distinction runs in `hygiene.yml`; the tools carry
+  resource caps with refusal tests (SEC 2 / ENG 2).
+- **Security contract (SEC 1):** any new workflow/job follows the repo
+  posture (permissions: read, timeouts, SHA-pinned actions); tooling is
+  never wired into `release.yml` artifact paths; fixture paths stay
+  gitignored.
+
+**Gate status:** PENDING (full-depth gate; ADV-LEGAL weighted) — convenes
+after Stage 3's execution; it is ALSO Stage 3's exit gate.
 
 ## Stage 3 — Parity & clean-room bridges (highest value)
 
@@ -177,7 +217,13 @@ and the project definition of done (ADV-PROD F5: "v1.1 = a reader can
 verify every number against a cited IRS source without reading git
 history").
 
-**Gate status:** PENDING (delta-scoped gate).
+**Gate status:** **Stage 3 ENTERED 2026-11-14** — at the Stage-2 entry
+gate, under the re-sequencing: the full-depth panel reviewed this stage's
+plan on its agenda and entered it (see `../adversarial/CONSENSUS.md`).
+Execution begins with the golden fixtures FIRST (the tripwire's
+fixtures-first ordering; clock baseline = 2026-11-14). The exit gate = the
+RE-tooling stage's entry gate (full-depth), which reviews this stage's
+execution evidence and the parity-tripwire outcome.
 
 ## Stage 4 — Demo distribution
 

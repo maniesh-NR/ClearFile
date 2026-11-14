@@ -33,3 +33,21 @@ Each item carries its owner stage.
 | D25 | ADV-LEGAL Stage-1 #4 | Grandfathered `sendReturnContext` consent — **FIXED 2026-11-14** (ADR-011: schemaVersion 2 + legacy reset) | done |
 | D26 | ADV-SEC Stage-1 #4 | `bun.lock` drift — **FIXED 2026-11-14** (deleted; npm standardized) | done |
 | D27 | ADV-SEC Stage-1 #1 | Web figures toggle equivalent — deferred to Stage-3 parity scope (documented in README now) | 3 |
+| D28 | ADV-ENG Stage-2 ENG-3 | `MoneyField` silently ignores comma shapes (`money_field.dart:69-70`) while CSV import warns — fold into the Stage-3 parser-hardening tests | 3 |
+| D29 | ADV-ENG Stage-2 ENG-5 | Tag-PUSH trigger path of the release guard unverified (both live proofs were dispatches; an annotated-tag push may peel to the tag-object SHA and be refused fail-closed) — verify once at the NEXT tagged release, or drop the push trigger for dispatch-only | next tagged release |
+| D30 | ADV-SEC Stage-2 SEC-2/SEC-4 | Owner-side hardening standing recommendations: Dependabot alerts, branch protection on `main`, PAT expiry (see WORKFLOW §5) — re-affirmed by the Stage-2 entry gate | owner-side |
+
+**D2 correction (2026-11-14, Stage-2 entry gate ENG-3, append-only):** the
+DONE note above overstates the empty-cell half of the original finding. What
+shipped: `parseMoney('')` → 0 (documented and pinned by
+`money_parse_test.dart:13-18`) — the blank-means-zero semantic was
+**deliberately retained as documented behaviour**, not converted to a
+warning; only the decimal-comma shapes are refused/warned. So `A,,5` CSV
+rows still import wages=0 silently by design. The adjacent `MoneyField`
+silent-ignore asymmetry is now tracked as D28.
+
+**Stage-2 entry-gate new items (2026-11-14):** D28–D30 recorded above; the
+fail-closed tag-guard fix (ENG-1) is APPLIED with its functional test
+`scripts/test_tag_guard.sh` (4/4 scenarios green) — not debt; the GPL §6
+release-body line (SEC-1/LEGAL-1), push-CI suites job (ENG-4), and
+THIRD-PARTY-NOTICES.md (LEGAL-2) are likewise applied in-session.

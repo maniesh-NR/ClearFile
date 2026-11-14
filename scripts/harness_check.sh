@@ -36,24 +36,34 @@ else
   fail "Stage 0 gate status drift between ROADMAP and CONSENSUS"
 fi
 
-if grep -q 'Stage 1 ENTERED' "$ROADMAP" && grep -q '\*\*Stage 1: ENTERED\*\*' "$CONSENSUS"; then
-  pass "Stage 1: ROADMAP and CONSENSUS agree (ENTERED)"
+# Stage-2 entry gate (2026-11-14): Stage 1 was executed and formally closed
+# at that gate; Stage 3 was entered there under the re-sequencing (Stage 2,
+# RE tooling, deferred until after Stage 3). Patterns updated accordingly —
+# a legitimate stage advance is a checker update, not a drift.
+if grep -q 'Stage 1 CLOSED' "$ROADMAP" && grep -q '\*\*Stage 1: CLOSED\*\*' "$CONSENSUS"; then
+  pass "Stage 1: ROADMAP and CONSENSUS agree (CLOSED)"
 else
-  fail "Stage 1 gate status drift between ROADMAP and CONSENSUS (ROADMAP still PENDING?)"
+  fail "Stage 1 gate status drift between ROADMAP and CONSENSUS"
+fi
+
+if grep -q 'Stage 3 ENTERED' "$ROADMAP" && grep -q '\*\*Stage 3: ENTERED\*\*' "$CONSENSUS"; then
+  pass "Stage 3: ROADMAP and CONSENSUS agree (ENTERED)"
+else
+  fail "Stage 3 gate status drift between ROADMAP and CONSENSUS (re-sequenced entry not recorded?)"
 fi
 
 PENDING_RM=$(grep -c 'Gate status:.*PENDING' "$ROADMAP" || true)
-if [ "$PENDING_RM" -eq 5 ]; then
-  pass "Stages 2-6 remain PENDING in ROADMAP ($PENDING_RM)"
+if [ "$PENDING_RM" -eq 4 ]; then
+  pass "Stages 2, 4, 5, 6 remain PENDING in ROADMAP ($PENDING_RM)"
 else
-  fail "ROADMAP has $PENDING_RM 'Gate status: PENDING' lines; expected 5 (Stages 2-6). Update this checker if a stage legitimately advanced"
+  fail "ROADMAP has $PENDING_RM 'Gate status: PENDING' lines; expected 4 (Stages 2, 4, 5, 6 — Stage 2 re-sequenced after Stage 3). Update this checker if a stage legitimately advanced"
 fi
 
-ENTERED_CS=$(grep -cE '\*\*Stage [2-6]: (ENTERED|PASSED)\*\*' "$CONSENSUS" || true)
+ENTERED_CS=$(grep -cE '\*\*Stage (2|4|5|6): (ENTERED|PASSED|CLOSED)\*\*' "$CONSENSUS" || true)
 if [ "$ENTERED_CS" -eq 0 ]; then
-  pass "CONSENSUS records no outcome for un-gated stages 2-6"
+  pass "CONSENSUS records no outcome for un-gated stages 2, 4, 5, 6"
 else
-  fail "CONSENSUS records $ENTERED_CS outcomes for stages 2-6 that ROADMAP still lists as PENDING"
+  fail "CONSENSUS records $ENTERED_CS outcomes for stages 2/4/5/6 that ROADMAP still lists as PENDING"
 fi
 
 # --- 2. Gate-scope consistency: WORKFLOW §2 tiering ↔ ROADMAP tiering -------
@@ -115,7 +125,11 @@ if git fetch -q origin 2>/dev/null; then
     fail "$UNPUSHED unpushed commit(s) — the last session-log entry postdates the backup; run scripts/sandbox_backup.sh"
   fi
 else
-  fail "could not reach origin to verify the unpushed check (CI: pass -c to skip)"
+  # Stage-2 entry gate (ENG-2): this branch used to promise a '-c' flag the
+  # script never implemented. The phantom option is gone; the check itself
+  # stays fail-closed — a transient network failure needs a re-run, not a
+  # silent pass.
+  fail "could not reach origin to verify the unpushed check (transient network error? re-run)"
 fi
 
 echo "harness_check: $FAILURES failure(s)"
