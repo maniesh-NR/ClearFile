@@ -1,19 +1,40 @@
 name: Build and release all platforms
 
-# Triggered by pushing a tag like v1.0.0. Builds the Flutter app for every
-# target platform (Android armv7/armv8a/x86_64, Linux x64, Windows x64,
-# macOS universal, Web) plus the Next.js standalone web bundle, zips each
-# one, attaches them to a GitHub Release for that tag, and uploads the
-# blueprint PDF and RE protocol doc as additional release assets.
+# Triggered by pushing a tag like v1.0.0 (or a manual dispatch with a tag
+# input). Builds the Flutter app for every target platform (Android
+# armv7/armv8a/x86_64, Linux x64, Windows x64, macOS universal, Web) plus
+# the Next.js standalone web bundle, zips each one, attaches them with a
+# SHA256SUMS manifest and a demo-disclaimer body to a GitHub Release for
+# that tag, and uploads the blueprint PDF and RE protocol doc as additional
+# assets.
+#
+# Stage-0 gate hardening (2026-11-14; ADV-SEC #3/#4/#5/#6, ADV-ENG #4/#5):
+# - least privilege: contents:read everywhere, contents:write only on the
+#   release job
+# - RELEASE_TAG validated against ^v… so workflow_dispatch can no longer
+#   produce branch-named assets or a tagless release step
+# - no raw ${{ }} interpolation into pwsh (env-var form everywhere)
+# - timeout-minutes and a concurrency group on every job
+# - npm ci with the committed package-lock.json; tsc --noEmit typecheck
+# - SHA256SUMS generated into the release; collision guard in the flatten
 
 on:
   push:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build and publish (must match ^v[0-9]…)'
+        required: true
+        type: string
 
 permissions:
-  contents: write   # required to create the release and upload assets
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref_name }}-${{ inputs.tag }}
+  cancel-in-progress: false
 
 jobs:
   # --------------------------------------------------------------------------
@@ -22,6 +43,7 @@ jobs:
   flutter-test:
     name: Flutter analyze + test
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: clearfile
@@ -31,6 +53,7 @@ jobs:
         with:
           channel: stable
           flutter-version: '3.47.9'
+          cache: true
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
@@ -42,6 +65,9 @@ jobs:
     name: Android APK (split per ABI)
     needs: flutter-test
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
     defaults:
       run:
         working-directory: clearfile
@@ -51,15 +77,22 @@ jobs:
         with:
           channel: stable
           flutter-version: '3.47.9'
+          cache: true
+      - name: Validate release tag
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9][0-9A-Za-z._-]*$ ]] || {
+            echo "RELEASE_TAG '$RELEASE_TAG' is not a v-tag; refusing to build" >&2
+            exit 1
+          }
       - run: flutter pub get
       - name: Build split APKs
         run: flutter build apk --split-per-abi --release
       - name: Rename and collect APKs
         run: |
           mkdir -p assets
-          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk assets/clearfile-android-armv7-${GITHUB_REF_NAME}.apk
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk   assets/clearfile-android-armv8a-${GITHUB_REF_NAME}.apk
-          cp build/app/outputs/flutter-apk/app-x86_64-release.apk      assets/clearfile-android-x86_64-${GITHUB_REF_NAME}.apk
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk assets/clearfile-android-armv7-${RELEASE_TAG}.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk   assets/clearfile-android-armv8a-${RELEASE_TAG}.apk
+          cp build/app/outputs/flutter-apk/app-x86_64-release.apk      assets/clearfile-android-x86_64-${RELEASE_TAG}.apk
       - uses: actions/upload-artifact@v4
         with:
           name: android-apks
@@ -73,6 +106,9 @@ jobs:
     name: Linux x64
     needs: flutter-test
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
     defaults:
       run:
         working-directory: clearfile
@@ -82,6 +118,13 @@ jobs:
         with:
           channel: stable
           flutter-version: '3.47.9'
+          cache: true
+      - name: Validate release tag
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9][0-9A-Za-z._-]*$ ]] || {
+            echo "RELEASE_TAG '$RELEASE_TAG' is not a v-tag; refusing to build" >&2
+            exit 1
+          }
       - name: Install Linux build deps
         run: |
           sudo apt-get update -y
@@ -91,7 +134,7 @@ jobs:
       - name: Bundle
         run: |
           cd build/linux/x64/release
-          tar czf $GITHUB_WORKSPACE/clearfile-linux-x64-${GITHUB_REF_NAME}.tar.gz bundle
+          tar czf $GITHUB_WORKSPACE/clearfile-linux-x64-${RELEASE_TAG}.tar.gz bundle
       - uses: actions/upload-artifact@v4
         with:
           name: linux-x64
@@ -105,6 +148,9 @@ jobs:
     name: Windows x64
     needs: flutter-test
     runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
     defaults:
       run:
         working-directory: clearfile
@@ -114,12 +160,22 @@ jobs:
         with:
           channel: stable
           flutter-version: '3.47.9'
+          cache: true
+      - name: Validate release tag
+        shell: bash
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9][0-9A-Za-z._-]*$ ]] || {
+            echo "RELEASE_TAG '$RELEASE_TAG' is not a v-tag; refusing to build" >&2
+            exit 1
+          }
       - run: flutter pub get
       - run: flutter build windows --release
+      # Env-var access, not ${{ github.ref_name }} interpolation: ref names
+      # may legally contain shell-significant characters (ADV-SEC #5).
       - name: Zip Windows bundle
         shell: pwsh
         run: |
-          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath clearfile-windows-x64-${{ github.ref_name }}.zip
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath "clearfile-windows-x64-$($env:RELEASE_TAG).zip"
       - uses: actions/upload-artifact@v4
         with:
           name: windows-x64
@@ -133,6 +189,9 @@ jobs:
     name: macOS universal
     needs: flutter-test
     runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
     defaults:
       run:
         working-directory: clearfile
@@ -142,12 +201,19 @@ jobs:
         with:
           channel: stable
           flutter-version: '3.47.9'
+          cache: true
+      - name: Validate release tag
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9][0-9A-Za-z._-]*$ ]] || {
+            echo "RELEASE_TAG '$RELEASE_TAG' is not a v-tag; refusing to build" >&2
+            exit 1
+          }
       - run: flutter pub get
       - run: flutter build macos --release
       - name: Zip macOS bundle
         run: |
           cd build/macos/Build/Products/Release
-          ditto -c -k --keepParent clearfile.app clearfile-macos-${GITHUB_REF_NAME}.zip
+          ditto -c -k --keepParent clearfile.app clearfile-macos-${RELEASE_TAG}.zip
       - uses: actions/upload-artifact@v4
         with:
           name: macos
@@ -161,6 +227,9 @@ jobs:
     name: Flutter Web
     needs: flutter-test
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
     defaults:
       run:
         working-directory: clearfile
@@ -170,10 +239,17 @@ jobs:
         with:
           channel: stable
           flutter-version: '3.47.9'
+          cache: true
+      - name: Validate release tag
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9][0-9A-Za-z._-]*$ ]] || {
+            echo "RELEASE_TAG '$RELEASE_TAG' is not a v-tag; refusing to build" >&2
+            exit 1
+          }
       - run: flutter pub get
       - run: flutter build web --release
       - name: Bundle
-        run: tar czf ../clearfile-flutter-web-${GITHUB_REF_NAME}.tar.gz -C build web
+        run: tar czf ../clearfile-flutter-web-${RELEASE_TAG}.tar.gz -C build web
       - uses: actions/upload-artifact@v4
         with:
           name: flutter-web
@@ -186,18 +262,30 @@ jobs:
   nextjs-web:
     name: Next.js standalone web
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install
+          cache: npm
+      - name: Validate release tag
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9][0-9A-Za-z._-]*$ ]] || {
+            echo "RELEASE_TAG '$RELEASE_TAG' is not a v-tag; refusing to build" >&2
+            exit 1
+          }
+      - run: npm ci
+      - name: Typecheck
+        run: npx tsc --noEmit
       - run: npm run build
       - name: Bundle standalone
         run: |
           cp -r .next/static .next/standalone/.next/
           cp -r public .next/standalone/
-          tar czf clearfile-web-standalone-${GITHUB_REF_NAME}.tar.gz -C .next standalone
+          tar czf clearfile-web-standalone-${RELEASE_TAG}.tar.gz -C .next standalone
       - uses: actions/upload-artifact@v4
         with:
           name: nextjs-standalone
@@ -217,22 +305,57 @@ jobs:
       - flutter-web
       - nextjs-web
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write   # only this job needs to create the release
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
+      - name: Validate release tag
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9][0-9A-Za-z._-]*$ ]] || {
+            echo "RELEASE_TAG '$RELEASE_TAG' is not a v-tag; refusing to publish" >&2
+            exit 1
+          }
       - uses: actions/download-artifact@v4
         with:
           path: release-assets
-      - name: Flatten artifact tree
+      - name: Flatten artifact tree (collision-guarded)
         run: |
           mkdir -p flat
+          found=$(find release-assets -type f \( -name '*.apk' -o -name '*.tar.gz' -o -name '*.zip' \) | wc -l)
           find release-assets -type f \( -name '*.apk' -o -name '*.tar.gz' -o -name '*.zip' \) -exec cp {} flat/ \;
+          flattened=$(ls -1 flat | wc -l)
+          if [ "$found" -ne "$flattened" ]; then
+            echo "artifact name collision: found $found files, flattened $flattened" >&2
+            exit 1
+          fi
           ls -lh flat
       - name: Copy docs
         run: |
           cp docs/reverse-engineering-protocol.md flat/
           cp docs/blueprint.pdf flat/ 2>/dev/null || true
+      - name: Generate SHA256SUMS
+        run: |
+          cd flat
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
       - uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.RELEASE_TAG }}
           generate_release_notes: true
+          body: |
+            ClearFile — clean-room demonstration software.
+
+            **This is demonstration software. It is not IRS-authorized, it
+            cannot e-file, and it must not be used to prepare a real tax
+            return.** Nothing here is tax, legal, or professional advice.
+
+            Binaries are **unsigned** (no code-signing certificates are held
+            for this project). Verify downloads against `SHA256SUMS.txt`.
+
+            See the repository README for the engine scope, the per-engine
+            limitations, and the demo disclaimer.
           files: flat/*
           fail_on_unmatched_files: true

@@ -57,13 +57,15 @@ server.log
 /skills/
 
 # ---------------------------------------------------------------------------
-# Sandbox backup scope (harness/WORKFLOW.md section 3).
+# Sandbox backup scope (harness/WORKFLOW.md §1 — "Backup scope").
 # The event-driven backup (scripts/sandbox_backup.sh) snapshots PROJECT state
 # to GitHub. These are sandbox-local scaffolding / user data / big binaries
 # and are NEVER backed up to the public repo:
 #   .env, db/            - local Prisma config and dev database
 #   .zscripts/ Caddyfile tests/ examples/ mini-services/ tool-results/
 #                         - platform runtime scaffolding and agent artifacts
+#   upload/              - platform drop-zone for user uploads (empty now,
+#                          but present on disk; never auto-publish it)
 #   download/            - local deliverables (release binaries live on
 #                          GitHub Releases; nitro_nissi is an unrelated app)
 #   tools/                - SDKs (Flutter toolchain, gitlink)
@@ -76,5 +78,6 @@ server.log
 /examples/
 /mini-services/
 /tool-results/
+/upload/
 /download/
 /tools/

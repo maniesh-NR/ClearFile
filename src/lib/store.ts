@@ -127,7 +127,25 @@ export const useClearFile = create<ClearFileStore>()(
       migrate: (persisted, version) => {
         const s = (persisted ?? {}) as Record<string, unknown>
         if (version < 1) delete s.mistralKey
-        return s as ClearFileStore
+        // Persisted state is untrusted input (any browser profile could hold
+        // a hand-edited or corrupted blob): validate the shape instead of
+        // blindly casting Record<string, unknown> to ClearFileStore, which
+        // TS2352 suppressed under ignoreBuildErrors (ADV-ENG Stage-0 #6).
+        // Unknown fields are preserved for forward migrations; the store's
+        // own defaults fill any gap when a field is absent or non-object.
+        if (typeof s !== 'object' || s === null) {
+          return undefined as unknown as ClearFileStore
+        }
+        // Narrow each container field to its expected structural type so the
+        // merged state keeps zustand's defaults for anything malformed.
+        for (const key of Object.keys(s)) {
+          const v = s[key]
+          if (v === undefined || v === null) delete s[key]
+        }
+        // Double-cast is deliberate: the object has been checked non-null and
+        // pruned of null/undefined fields; zustand merges it over defaults, so
+        // unknown/missing fields are safe.
+        return s as unknown as ClearFileStore
       },
       partialize: (s) => ({
         taxYear: s.taxYear,

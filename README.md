@@ -15,12 +15,12 @@ Licensed under [GPL-3.0](LICENSE).
 
 | Path | What it is |
 | --- | --- |
-| `src/` | The original **Next.js 16 web prototype**: a seven-step Material 3 tax interview (status → income → deductions → dependents → payments → review → results) with a deterministic TY2025 calculation engine, deterministic review findings, and an optional bring-your-own-key AI assistant. |
-| `clearfile/` | The **Flutter 3.47 app**: the same interview, engine and AI cascade compiled to Android, iOS, macOS, Windows, Linux and Web from one Dart codebase. |
-| `clearfile/test/` | 42 Dart tests — 20 calculator, 8 AI cascade, 9 CSV import, 3 JSON roundtrip, 3 widget — that pin the engine and UI behaviour. `flutter analyze` is clean and `flutter test` is 42/42 green. |
+| `src/` | The original **Next.js 16 web prototype**: a seven-step Material 3 tax interview (status → income → deductions → dependents → payments → review → results) with a **simplified** TY2025/TY2026 calculation engine (see [Engine limitations](#engine-limitations)), deterministic review findings, and an optional bring-your-own-key AI assistant. |
+| `clearfile/` | The **Flutter 3.47 app** — the full-featured implementation: the five-step interview, the complete TY2025 engine and the AI cascade, compiled to Android, iOS, macOS, Windows, Linux and Web from one Dart codebase. The two codebases share no code; the web prototype is the earlier, simplified model. |
+| `clearfile/test/` | 43 Dart tests — 19 calculator, 8 AI cascade, 9 CSV import, 3 JSON roundtrip, 3 widget, 1 delete-regression — that pin the engine and UI behaviour. `flutter analyze` is clean and `flutter test` is green. |
 | `docs/reverse-engineering-protocol.md` | The **clean-room RE playbook** for studying legacy proprietary tax-file formats (`.tax`, `.tax[YYYY]`, `.LIF`, `.FIL`, `.RCD`, `.1PE`, `.3ME`, `.3PE`, `.DGC`, `.SCD`, `.THP`, `.TVL`, `.1PH`, `.TT[YYYY]STATE`). Read §2 before any RE session. |
 | `docs/blueprint.pdf` | 17-page design blueprint for the prototype (interview flow, MD3 system, engine, AI cascade). |
-| `download/` | Pre-built release bundles (web standalone, Flutter web build) for the current tag. |
+| [GitHub Releases](https://github.com/maniesh-NR/ClearFile/releases) | Pre-built binaries for every target platform. Release assets live on GitHub Releases, not in the repository tree. |
 | `.github/workflows/` | CI: multi-platform release pipeline (Android APK armv7/armv8a, Linux, Windows, macOS, Web) triggered on tag push. |
 
 ## Clean-room line
@@ -48,25 +48,62 @@ exemption and the AES-layer handling of modern `.tax` files, is in
 [`docs/reverse-engineering-protocol.md`](docs/reverse-engineering-protocol.md)
 §2.
 
-## TY2025 calculation engine
+## Calculation engines
 
-The engine in `clearfile/lib/tax/calculator.dart` (and `src/lib/tax/` for
-the web prototype) implements:
+The repository contains **two independent implementations** (no shared
+code). They intentionally disagree on scope — read this section and
+[Engine limitations](#engine-limitations) before comparing their outputs.
+
+### Flutter engine — `clearfile/lib/tax/calculator.dart` (TY2025)
+
+The complete model. Implements:
 
 - Five filing statuses with the MFJ / MFS / QSS / Single schedules.
 - Standard deduction with the **OBBBA senior deduction** (age 65+).
 - Itemized deduction with **SALT 30% phase-down** above the MFJ $550k /
   MFS $275k thresholds (verified against the IRS's published example).
 - Qualified-dividends tax bands (0% / 15%) with NIIT.
-- **Child Tax Credit** with the $400k MFJ phase-out and the refundable
-  ACTC.
+- **Child Tax Credit** with the $400k MFJ phase-out (exact 5%-of-excess)
+  and the refundable ACTC.
 - **Other Dependent Credit**.
 - Student loan interest deduction with the MAGI phase-out (and the MFS
   exclusion).
 - Charitable deduction capped at 60% of AGI.
 
 Every parameter is a named constant with its source cited; every parameter
-is pinned by a calculator test that hand-verifies the math.
+is pinned by a calculator test that hand-verifies the math. Cross-engine
+parity tests pinned to official IRS worked examples are Roadmap Stage 3
+(`harness/memory/ROADMAP.md`).
+
+### Web prototype engine — `src/lib/tax/engine.ts` (simplified)
+
+The earlier, smaller model used by the Next.js prototype: **no**
+qualified-dividend/LTCG preferential stacking, **no** NIIT, **no** SALT
+cap, **no** OBBBA senior deduction, no student-loan-interest deduction;
+itemized deductions are medical + other with no AGI ceilings; whole-dollar
+rounding. It supports TY2025 and TY2026 year configs (TY2026 default), and
+models the CTC phase-out in $50-per-$1,000 units rather than the Flutter
+engine's exact 5%-of-excess. The same inputs can produce different refunds
+between the two engines.
+
+## Engine limitations
+
+Both engines are demonstration-grade simplifications; neither is a
+form-for-form 1040 implementation. In particular:
+
+- **Flutter (TY2025)**: some parameters and phase-outs are modelled at a
+  summary level rather than form-by-form (for example, no AMT, no
+  Schedule SE/self-employment tax, no state returns, no estate/trust
+  schedules); phase-outs apply the published formulas but do not replicate
+  every worksheet's intermediate rounding.
+- **Web prototype**: the gap list above — no QDI stacking, no NIIT, no SALT
+  cap, no OBBBA senior deduction, no student-loan-interest deduction;
+  whole-dollar rounding.
+- **Neither engine** is validated against official IRS worked examples by
+  automated parity tests yet (Roadmap Stage 3).
+- The deterministic review layer flags missing or inconsistent entries
+  but is not a substitute for review by a qualified preparer or
+  IRS-authorized software.
 
 ## AI assistant (bring your own free key)
 

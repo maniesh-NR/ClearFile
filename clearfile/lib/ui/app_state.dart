@@ -124,6 +124,11 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> deleteReturn(TaxReturnData r) async {
+    // Cancel any pending autosave FIRST: a debounce timer armed by update()
+    // captures this return object and would rewrite the JSON file after the
+    // delete below, resurrecting a "deleted" return on next launch
+    // (ADV-ENG Stage-0 finding 1).
+    _saveDebounce?.cancel();
     await store.delete(r.id);
     if (current?.id == r.id) {
       current = null;
@@ -144,7 +149,10 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     _saveDebounce?.cancel();
     _saveDebounce = Timer(const Duration(milliseconds: 600), () {
-      store.save(r);
+      // Identity guard: this timer captures [r]; if the user deleted or
+      // closed the return inside the debounce window, a bare save would
+      // resurrect a deleted return on disk (ADV-ENG Stage-0 finding 1).
+      if (current?.id == r.id) store.save(r);
     });
   }
 

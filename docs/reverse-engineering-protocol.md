@@ -179,3 +179,34 @@ exist here. Findings flow back as PRs to `docs/`.
   never "someone said".
 - No key material, no copyrighted form text, no bulk proprietary binary
   content in the repo. Links to primary sources instead.
+
+## 7. Publication guardrails (added 2026-11-14, Stage-0 gate condition)
+
+Binding rules for every RE finding that leaves a private workstation —
+adopted before any Phase-1–3 tooling exists, because tooling makes
+accidental publication mechanical (ADV-LEGAL Stage-0 finding 10):
+
+1. **Owner-authored corpus only.** Differential analysis (Phase 3) runs
+   only on file pairs that the owner created in their own licensed
+   installation — never on files obtained from anyone else.
+2. **Decrypted content is never committed or published.** Not in specs,
+   not in fixtures, not in samples, not in test data. Record the
+   *existence* and *shape* of encrypted regions; never their plaintext.
+3. **Crypto constants by existence, never by value.** A spec may say
+   "a per-year 16-byte AES key is embedded in the binary (see the public
+   write-up §1)" — the repo never records the key bytes, IVs, or derived
+   material. Linking a public write-up is describing; reproducing is
+   trafficking.
+4. **No expression lifts.** No verbatim strings longer than a few
+   identifier bytes, and no screenshots, from proprietary binaries.
+   Offsets, dtypes, counts and field structure are unprotectable
+   function (§2); quoted text and images are not.
+5. **Per-spec pre-commit checklist.** Before committing any
+   `docs/formats/*.md`: no key material (§7.3), no decrypted content
+   (§7.2), no expression (§7.4), corpus provenance stated (§7.1), claims
+   cite bytes or function names (§6). The sandbox backup's secret guard
+   (hex-blob heuristic) is the mechanical backstop, not the policy.
+
+A CI-checkable assertion (a test that fails if any binary blob appears
+under a fixtures path) should accompany Stage 2's tooling — the rule must
+be executable, not aspirational.
