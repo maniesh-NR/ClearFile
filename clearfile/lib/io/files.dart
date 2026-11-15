@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 
@@ -11,6 +12,42 @@ import '../models/tax_return.dart';
 /// `format: "clearfile.return"` marker.
 class ReturnFileIO {
   static const String fileExtension = 'clearfile.json';
+
+  /// Picks any file and returns its bytes, or null when the user
+  /// cancelled or the file could not be read.
+  static Future<Uint8List?> pickAnyFileBytes(String dialogTitle) async {
+    final files = await FilePicker.pickFiles(
+      dialogTitle: dialogTitle,
+      type: FileType.any,
+    );
+    if (files.isEmpty) return null;
+    final path = files.first.path;
+    if (path == null) return null;
+    try {
+      return await File(path).readAsBytes();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Picks any file and returns its UTF-8 text (a leading BOM is
+  /// tolerated), or null when the user cancelled or reading failed.
+  static Future<String?> pickAnyFileText(String dialogTitle) async {
+    final files = await FilePicker.pickFiles(
+      dialogTitle: dialogTitle,
+      type: FileType.any,
+    );
+    if (files.isEmpty) return null;
+    final path = files.first.path;
+    if (path == null) return null;
+    try {
+      var text = await File(path).readAsString(encoding: utf8);
+      if (text.startsWith('﻿')) text = text.substring(1);
+      return text;
+    } catch (_) {
+      return null;
+    }
+  }
 
   /// Returns the path written, or null when the user cancelled.
   static Future<String?> exportReturn(TaxReturnData r) async {

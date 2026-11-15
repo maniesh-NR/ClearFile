@@ -54,7 +54,7 @@ returns to the NEXT gate agenda as a mandatory item.
 | --- | --- | --- |
 | 1 — Hardening | copy fixes (done 2026-11-14), typecheck (done), lockfile (done), release body (done) | delete-bug fix (done), privacy gating (done 2026-11-14), INTERNET + entitlements (done) |
 | 2 — RE tooling | — | — (tooling is repo-level; placement decided at its gate) |
-| 3 — Parity & bridges | **engine parity features** (QDI/LTCG stacking, NIIT, SALT cap, OBBBA senior deduction, student-loan interest, exact 5%-of-excess CTC phase-out, cents-not-whole-dollars — **done 2026-11-15**, parity suite 16/16), TXF exporter verification, `.cfr`→`.clearfile.json` migration decision | TXF import, schema versioning + guards |
+| 3 — Parity & bridges | **engine parity features** (QDI/LTCG stacking, NIIT, SALT cap, OBBBA senior deduction, student-loan interest, exact 5%-of-excess CTC phase-out, cents-not-whole-dollars — **done 2026-11-15**, parity suite 16/16), TXF exporter verification (**done 2026-11-15**: spec v042 codes fixed + `txf_taxfile_test.mjs` in CI), `.cfr`→`.clearfile.json` migration decision | TXF import (**done 2026-11-15**: spec v042, W-2 copy grouping, hardening caps, 11 tests), `.tax` read-only inspection (**done 2026-11-15**: Intuit shape + entropy, 7 tests), schema versioning + guards |
 | 4 — Pages | (hosted Flutter web build) | Flutter web deploy |
 | 5 — AI hardening | timeout parity | injection suite, fixture e2e, key header fix |
 | 6 — Freeze | docs-only, parameter corrections | parameter corrections |
@@ -256,11 +256,33 @@ interview steps, `.cfr` schema v2 with v1 file migration, TXF/`.tax`
 exporters, AI prompt summaries); `tsc --noEmit` clean and the web smoke
 suite 6/6 against the new build. TY2026 support on the web side was
 dropped rather than half-supported (D32: the reference has no TY2026
-parameter set to mirror). **Remaining inside Stage 3:** the bridges (TXF
-import + exporter verification suite, `.clearfile.json` versioning +
-guards + the `.cfr`→`.clearfile.json` unification decision, parser-
-hardening tests, `docs/engine.md`, repo guided tour, discrepancy-report
-templates, project definition of done).
+parameter set to mirror).
+
+**Bridges progress (2026-11-15, same session — owner-directed, ADR-013):
+TXF import + exporter verification + `.tax` inspection DONE.** Flutter
+gains `io/txf_import.dart` (published TXF spec v042: `^`-terminated
+records, W-2 copies grouped by the C field with spouse codes in their own
+copy space, income/deduction/payment refnums, spec sign convention →
+magnitudes, unknown refnums reported not guessed, 5 MB/10k-record/4096-char
+hardening caps — 11 tests) and `io/tax_inspect.dart` (read-only ZIP
+central-directory scan, STORE extraction, per-entry Shannon entropy with
+likely-encrypted flags, modern-Intuit-shape recognition naming the safe
+bridges and stating it does not decrypt, ClearFile exchange-container
+import — 7 tests; wired into Welcome + AppState). The web TXF exporter
+was rewritten to spec-true codes (460/461/466 per W-2 copy, 287, 636,
+negative money-paid signs — the previous 425/426 were the 4952
+investment-interest family) and `taxfile.ts` gained the same Intuit-shape
++ entropy analysis; both pinned by the new CI bridge suite
+`scripts/txf_taxfile_test.mjs` (compiles `src/lib/files/` via
+`scripts/tsconfig.files.json`, CommonJS emit so Node resolves the
+extensionless intra-module imports). Dart suite 95/95; `tsc --noEmit`
+clean. The Ghidra sandbox feasibility study that accompanied this
+work is recorded in `docs/ghidra-sandbox-feasibility.md` + protocol §4.E
+(pre-gate research for THIS stage's exit gate). **Remaining inside
+Stage 3:** `.clearfile.json` schema versioning + guards + the
+`.cfr`→`.clearfile.json` unification decision, `docs/engine.md`, repo
+guided tour, discrepancy-report templates, project definition of done
+(ADV-PROD F5).
 
 **Gate status:** **Stage 3 ENTERED 2026-11-14** — at the Stage-2 entry
 gate, under the re-sequencing: the full-depth panel reviewed this stage's

@@ -46,6 +46,18 @@ Scripts in this directory fall into two groups:
      branches — existing-tag-elsewhere refused, existing-tag-match passes,
      absent tag treated as fresh, non-missing-ref fetch error refused
      (fail-closed). Run from the repo root; needs the `origin` remote.
+   - `txf_taxfile_test.mjs` + `tsconfig.files.json` — the Stage-3 bridge
+     suite (2026-11-15): compiles `src/lib/files/` (CommonJS emit to the
+     gitignored `.files-build/` so Node resolves the extensionless
+     intra-module imports) and verifies the TXF exporter against the
+     published Tax Exchange Format spec v042 (header V/A/D, `^`-records,
+     T/N/C/L/$/P fields, refnums 460/461/466/287/636, negative money-paid
+     signs — a mini spec-shaped importer reads the export all the way
+     back) plus the `.tax` analyzer on synthetic containers (ClearFile
+     exchange round-trip, Intuit `manifest.xml`+`tax:<uuid>` shape flagged
+     encrypted and never decrypted, honest non-ZIP/empty paths). Runs in
+     CI (hygiene `suites`) right after the parity suite; run locally with
+     `node scripts/txf_taxfile_test.mjs` from the repo root.
    - `add_spdx_headers.py` — one-shot GPL-3.0-only SPDX header application
      (D14); idempotent. Its first run had a line/character-offset bug that
      split shebang and `'use client'` first lines;

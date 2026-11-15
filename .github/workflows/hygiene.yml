@@ -71,6 +71,12 @@ jobs:
       # engine to .parity-build via scripts/tsconfig.parity.json, then asserts
       # every expected field within tolerance).
       - run: node scripts/web_parity_test.mjs
+      # Stage-3 bridges (2026-11-15): the TXF exporter verification suite +
+      # .tax container-analysis tests (compiles src/lib/files to .files-build
+      # via scripts/tsconfig.files.json, CommonJS emit, then asserts the
+      # exporter against the published TXF spec v042 structure and the
+      # .tax analyzer against synthetic containers).
+      - run: node scripts/txf_taxfile_test.mjs
 
   harness-check:
     name: Harness memory self-check (D19)

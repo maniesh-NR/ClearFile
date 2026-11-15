@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "lib": ["es2020", "dom"],
+    "strict": true,
+    "noEmitOnError": true,
+    "declaration": false,
+    "skipLibCheck": true,
+    "outDir": "../.files-build",
+    "rootDir": "../src/lib"
+  },
+  "files": [
+    "../src/lib/tax/config.ts",
+    "../src/lib/tax/engine.ts",
+    "../src/lib/files/cfr.ts",
+    "../src/lib/files/txf.ts",
+    "../src/lib/files/taxfile.ts"
+  ]
+}

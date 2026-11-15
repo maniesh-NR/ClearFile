@@ -29,12 +29,36 @@ export interface ZipEntry {
   data: Uint8Array
 }
 
+export interface ZipEntryMeta {
+  name: string
+  /** ZIP compression method (0 stored / 8 deflate / other). */
+  method: number
+  /** Uncompressed size from the central directory. */
+  uncompressedSize: number
+  /** Extracted data — present only for STORE-method entries. */
+  data: Uint8Array | null
+}
+
 export interface TaxAnalysis {
   isZip: boolean
   clearfileContainer: boolean
+  /** True when the entries match the modern Intuit container shape
+   * (`manifest.xml` + a `tax:<uuid>` data entry — public write-up, RE
+   * protocol §5). Nothing is decrypted; the summary says so. */
+  intuitModernContainer: boolean
   filing?: TaxReturnData
   warnings: string[]
-  entries: { name: string; size: number; preview?: string }[]
+  entries: {
+    name: string
+    size: number
+    method?: number
+    /** Shannon entropy in bits/byte over stored data (stored entries
+     * with ≥128 bytes only). */
+    entropy?: number
+    /** Entropy ≥ 7.5 — the signature of encrypted/compressed content. */
+    likelyEncrypted?: boolean
+    preview?: string
+  }[]
   summary: string
 }
 
@@ -154,14 +178,20 @@ export function makeZip(entries: ZipEntry[]): Uint8Array {
 
 /* ---------------- ZIP reader (central-directory scan) ---------------- */
 
-export function readZip(buf: Uint8Array): { entries: ZipEntry[]; notes: string[] } {
+export function readZip(buf: Uint8Array): {
+  entries: ZipEntryMeta[]
+  notes: string[]
+} {
   const notes: string[] = []
-  const entries: ZipEntry[] = []
+  const entries: ZipEntryMeta[] = []
   const view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength)
 
-  // Locate End of Central Directory from the tail.
+  // Locate End of Central Directory from the tail (bounded to the last
+  // 64 KiB — the spec's maximum comment length — with a whole-buffer
+  // fallback for tiny malformed inputs).
   let eocd = -1
-  for (let i = buf.length - 22; i >= 0; i--) {
+  const scanFrom = buf.length >= 66000 ? buf.length - 66000 : 0
+  for (let i = buf.length - 22; i >= scanFrom; i--) {
     if (view.getUint32(i, true) === 0x06054b50) {
       eocd = i
       break
@@ -173,41 +203,64 @@ export function readZip(buf: Uint8Array): { entries: ZipEntry[]; notes: string[]
   }
 
   const count = view.getUint16(eocd + 10, true)
+  const maxEntries = 4096 // parser-hardening cap (untrusted input)
   let ptr = view.getUint32(eocd + 16, true)
 
-  for (let n = 0; n < count; n++) {
+  for (let n = 0; n < count && entries.length < maxEntries; n++) {
     if (ptr + 46 > buf.length || view.getUint32(ptr, true) !== 0x02014b50) {
       notes.push('Central directory truncated or corrupt; stopped early.')
       break
     }
     const method = view.getUint16(ptr + 10, true)
     const compSize = view.getUint32(ptr + 20, true)
+    const uncompSize = view.getUint32(ptr + 24, true)
     const nameLen = view.getUint16(ptr + 28, true)
     const extraLen = view.getUint16(ptr + 30, true)
     const commentLen = view.getUint16(ptr + 32, true)
     const localOffset = view.getUint32(ptr + 42, true)
     const name = dec.decode(buf.slice(ptr + 46, ptr + 46 + nameLen))
 
+    let data: Uint8Array | null = null
     if (method === 0 && localOffset + 30 <= buf.length) {
       const lNameLen = view.getUint16(localOffset + 26, true)
       const lExtraLen = view.getUint16(localOffset + 28, true)
       const dataStart = localOffset + 30 + lNameLen + lExtraLen
       const dataEnd = dataStart + compSize
       if (dataEnd <= buf.length) {
-        entries.push({ name, data: buf.slice(dataStart, dataEnd) })
+        data = buf.slice(dataStart, dataEnd)
       } else {
         notes.push(`Entry "${name}" extends past end of file; skipped.`)
       }
     } else if (method === 8) {
-      notes.push(`Entry "${name}" is deflate-compressed; not extracted (shown only).`)
-    } else {
-      notes.push(`Entry "${name}" uses unsupported compression method ${method}; skipped.`)
+      notes.push(
+        `Entry "${name}" is deflate-compressed; not extracted (shown only).`,
+      )
+    } else if (method !== 0) {
+      notes.push(
+        `Entry "${name}" uses unsupported compression method ${method}; skipped.`,
+      )
     }
 
+    entries.push({ name, method, uncompressedSize: uncompSize, data })
     ptr += 46 + nameLen + extraLen + commentLen
   }
 
   return { entries, notes }
+}
+
+/* ---------------- entropy (RE protocol Phase 1) ------------------------ */
+
+export function shannonEntropy(data: Uint8Array): number {
+  if (data.length === 0) return 0
+  const counts = new Uint32Array(256)
+  for (let i = 0; i < data.length; i++) counts[data[i]]++
+  let h = 0
+  for (let i = 0; i < 256; i++) {
+    if (counts[i] === 0) continue
+    const p = counts[i] / data.length
+    h -= p * Math.log2(p)
+  }
+  return h
 }
 
 /* ---------------- .tax analysis & container ---------------- */
@@ -220,43 +273,81 @@ function looksTextual(name: string): boolean {
   return /\.(json|txt|xml|csv|md)$/i.test(name)
 }
 
+/** Entropy threshold (bits/byte) for flagging encrypted/compressed content. */
+const LIKELY_ENCRYPTED_ENTROPY = 7.5
+const ENTROPY_MIN_BYTES = 128
+
 export function analyzeTaxFile(buf: Uint8Array): TaxAnalysis {
   const warnings: string[] = []
 
   if (!isZip(buf)) {
+    const entropy = shannonEntropy(buf)
     return {
       isZip: false,
       clearfileContainer: false,
+      intuitModernContainer: false,
       warnings,
       entries: [],
       summary:
-        'Unrecognized container. The proprietary TurboTax .tax format is undocumented, and this file does not match any container ClearFile can inspect (ZIP). Import of Intuit .tax files requires the separately-scoped reverse-engineering workstream described in the engineering blueprint.',
+        buf.length === 0
+          ? 'The file is empty.'
+          : `Unrecognized container (no ZIP signature). Whole-file entropy is ${entropy.toFixed(2)} bits/byte (${entropy >= LIKELY_ENCRYPTED_ENTROPY ? 'encrypted/compressed-looking' : 'not high-entropy'}) — either a legacy binary tax format or an unknown container. The proprietary TurboTax .tax format is undocumented; ClearFile imports TurboTax data through the documented TXF export and printed PDFs (the safe bridges; see the reverse-engineering protocol).`,
     }
   }
 
-  const { entries, notes } = readZip(buf)
-  const listed = entries.map((e) => {
-    const item: { name: string; size: number; preview?: string } = { name: e.name, size: e.data.length }
-    if (looksTextual(e.name) && e.data.length < 200_000) {
+  const { entries: dir, notes } = readZip(buf)
+  const listed = dir.map((e) => {
+    const item: TaxAnalysis['entries'][number] = {
+      name: e.name,
+      size: e.data ? e.data.length : e.uncompressedSize,
+      method: e.method,
+    }
+    if (e.data && e.data.length >= ENTROPY_MIN_BYTES) {
+      const entropy = shannonEntropy(e.data)
+      item.entropy = entropy
+      item.likelyEncrypted = entropy >= LIKELY_ENCRYPTED_ENTROPY
+    }
+    if (e.data && looksTextual(e.name) && e.data.length < 200_000) {
       item.preview = dec.decode(e.data.slice(0, 300))
     }
     return item
   })
 
-  const clearfileEntry = entries.find((e) => e.name === 'clearfile.json')
-  if (clearfileEntry) {
+  const clearfileEntry = dir.find((e) => e.name === 'clearfile.json' && e.data)
+  if (clearfileEntry && clearfileEntry.data) {
     try {
       const { filing } = parseCfr(dec.decode(clearfileEntry.data))
       return {
         isZip: true,
         clearfileContainer: true,
+        intuitModernContainer: false,
         filing,
         warnings: notes,
         entries: listed,
-        summary: 'This is a ClearFile exchange container (.tax extension, open ZIP format). The full return can be imported.',
+        summary:
+          'This is a ClearFile exchange container (.tax extension, open ZIP format). The full return can be imported.',
       }
     } catch (err) {
-      warnings.push(`clearfile.json could not be parsed: ${err instanceof CfrParseError ? err.message : String(err)}`)
+      warnings.push(
+        `clearfile.json could not be parsed: ${err instanceof CfrParseError ? err.message : String(err)}`,
+      )
+    }
+  }
+
+  // Modern Intuit container shape: manifest.xml + a tax:<uuid> data entry
+  // (public write-up, RE protocol §5). Report the shape; decrypt nothing
+  // (protocol §2.2/§7 — no keys, no ready-made decryptors).
+  const hasManifest = dir.some((e) => e.name === 'manifest.xml')
+  const hasTaxData = dir.some((e) => e.name.startsWith('tax:'))
+  if (hasManifest && hasTaxData) {
+    return {
+      isZip: true,
+      clearfileContainer: false,
+      intuitModernContainer: true,
+      warnings: notes,
+      entries: listed,
+      summary:
+        'This matches the modern TurboTax .tax container shape (ZIP with a manifest.xml plus a tax:<uuid> data entry). The entries are AES-encrypted with per-year key/IV constants embedded in the TurboTax binary (public write-up; RE protocol §5). ClearFile does not decrypt Intuit files and ships no key material (protocol §2.2/§7) — import this return via TurboTax\'s own TXF export or the printed PDF, both of which are the documented safe bridges.',
     }
   }
 
@@ -264,6 +355,7 @@ export function analyzeTaxFile(buf: Uint8Array): TaxAnalysis {
   return {
     isZip: true,
     clearfileContainer: false,
+    intuitModernContainer: false,
     warnings: notes,
     entries: listed,
     summary: deflateCount

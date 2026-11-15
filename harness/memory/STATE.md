@@ -1,8 +1,8 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-15 (after the Stage-3 web-parity session — the TS
-engine is a line-for-line port of the reference, 16/16 on the shared
-golden fixtures; this session's closing backup is the tip)
+**Updated:** 2026-11-15 (after the owner-directed bridges session: TXF
+import + `.tax` inspection + TXF exporter verification landed with the
+Ghidra sandbox feasibility study; this session's closing backup is the tip)
 
 ## Repository
 
@@ -37,40 +37,43 @@ golden fixtures; this session's closing backup is the tip)
   placement ADR-012 (panel split recorded in CONSENSUS), and the RE
   tooling security contract. Stage IDs are stable.
 - **Stage 3: ENTERED 2026-11-14. Fixtures-first: DONE 2026-11-14. Web
-  parity set: DONE 2026-11-15** (tripwire clock: working session 2 of the
-  four-session total; the two-session parity box closed in session 1 of 2,
-  UNDER BUDGET). The web engine is a line-for-line port of the reference
-  (QDI/LTCG stacking, NIIT, SALT phase-down, OBBBA senior deduction,
-  student-loan interest, 8812-exact CTC phase-out, cents precision),
-  validated against `fixtures/tax/` from the TS side — 16/16, zero field
-  failures, in CI. TY2026 on the web side was dropped, not half-supported
-  (D32). Remaining inside Stage 3: the bridges (TXF import + exporter
-  verification, `.clearfile.json` versioning + guards + save-format
-  unification decision, parser-hardening tests, `docs/engine.md`, guided
-  tour, discrepancy templates, project DoD).
+  parity set: DONE 2026-11-15. Bridges: TXF import (Flutter) + TXF
+  exporter verification (web, spec v042 codes fixed) + `.tax` read-only
+  inspection (both codebases): DONE 2026-11-15** (owner-directed,
+  ADR-013; the parity-tripwire box stayed closed under budget). Dart
+  suite **95/95**; web parity 16/16; web bridge suite green (new in CI);
+  `tsc --noEmit` clean. Remaining inside Stage 3: `.clearfile.json`
+  versioning + guards + the `.cfr`→`.clearfile.json` unification
+  decision, `docs/engine.md`, repo guided tour, discrepancy templates,
+  project DoD. The Ghidra sandbox feasibility verdict (12.1.4 + JDK 21
+  headless works, 11 s / 417 MiB measured) is recorded in
+  `docs/ghidra-sandbox-feasibility.md` + RE protocol §4.E — pre-gate
+  research for the Stage-2 entry gate (ADR-012 agenda).
 - Owner decisions all stand: ADR-008 accept-and-document; ADR-009 feature
   parity; INTERNET add-and-disclose; PAT unchanged. ADR-010 closed. ADR-011:
-  settings schemaVersion 2.
+  settings schemaVersion 2. ADR-013 (2026-11-15): bridges + Ghidra
+  feasibility + Material You (dynamic_color 2.1.0 retry failed — ADR-007
+  revisit closed with evidence).
 
 ## Environment facts (sandbox)
 
-- **Sandbox recycled again before this session** (fourth observed recycle):
-  same shape as the third — history INTACT (HEAD = origin/main = the
-  fixtures-first closing backup `99d6823`), content intact, 174 mode-only
-  flips (zero content changes; `git restore .` per WORKFLOW §4),
-  `node_modules/` survived, Flutter SDK (`tools/`) gone — NOT reinstalled
-  this session (the parity work is TS-side; reinstall when Dart work
-  resumes, per the WORKFLOW §4 resuming-loop runbook).
-- **Flutter SDK 3.47.9 ABSENT at `tools/flutter`** (reinstallable; last
-  verified sha256 `25ed8c3c…` against `releases_linux.json` — the
-  guard-safe truncated form per quirk 8; revision c197ca5199, Dart 3.13.7).
-- Test suite: **77/77 green** (Dart suite; re-verified state at this
-  session's teardown via the CI-pinned declarations) — 61 hand-written + 16
-  golden fixtures via `golden_fixtures_test.dart`; plus, since 2026-11-15,
-  the web parity suite: `node scripts/web_parity_test.mjs` — 16/16
-  fixtures, 0 field failures — and the independent Decimal oracle 16/16.
-  `npx tsc --noEmit` exit 0. Web smoke suite (`scripts/web_smoke.py`, incl.
-  the persist v2 migration rehydrate path) 6/6 against the parity build.
+- **Sandbox recycled again before this session** (fifth observed recycle):
+  history intact (HEAD = origin/main = the web-parity closing backup
+  `769e57b`), content intact, `node_modules/` survived BUT its typescript
+  bin did not (see quirk 18), Flutter SDK (`tools/`) gone — reinstalled.
+- **`tools/` now carries**: Flutter SDK 3.47.9 (sha256 `25ed8c3c…`
+  re-verified against `releases_linux.json`), **Ghidra 12.1.4** (the
+  JDK-21 line; current-latest 12.2 requires JDK 25 and refuses this
+  box), **Temurin JDK 21.0.13** (full JDK incl. `javac`), and the
+  **`tools/re/` bench harness** (gen_demo.py, FindCryptoConstants.java,
+  bench_poll.py, run_bench.sh) — all gitignored, all reinstallable via
+  the documented fetchers.
+- Test suite: **95/95 green** (Dart suite; 79 hand-written + 16 golden
+  fixtures) — re-verified at teardown with `flutter analyze` clean. Web
+  parity suite 16/16; **web bridge suite (`scripts/txf_taxfile_test.mjs`)
+  6/6, first run, now wired into the hygiene `suites` job after the
+  parity suite**; `npx tsc --noEmit` exit 0 (after restoring the local
+  typescript bin, quirk 18).
 - Live-check quirk (unchanged): unauthenticated api.github.com is
   shared-rate-limited from this sandbox — use public HTML pages or
   sparing authenticated curl per WORKFLOW §5.
@@ -120,20 +123,31 @@ golden fixtures; this session's closing backup is the tip)
     own directory, not the invoking cwd** — `scripts/tsconfig.parity.json`
     needs `../src/...` prefixes even when tsc is run from the repo root
     (2026-11-15, parity suite first run failed on `scripts/src/...`).
+17. **Background processes die when the Bash tool call ends** — a `nohup
+    … &` fetcher survives only INSIDE the call that launched it (with its
+    sleep/timeout window); across calls it is silently reaped. Long
+    downloads must run foreground within one call (up to 10 min) or be
+    relaunched per call; the `--speed-limit/--speed-time` resuming loop
+    still applies (2026-11-15, Flutter tarball fetcher died with an empty
+    log).
+18. **Recycles can hollow `node_modules` selectively** — the directory
+    survived the fifth recycle but `node_modules/.bin/tsc` did not, so
+    `npx tsc` fetched the npm "tsc" squatter package and every
+    compile-then-run suite failed locally; `npm install --no-save
+    typescript@5` restores the bin without touching the lockfile
+    (2026-11-15).
 
 ## Immediately next
 
-**Stage 3, the bridges** (parity set closed 2026-11-15, under the
-tripwire's two-session box; working sessions consumed: 2 of 4): TXF
-import (Flutter) + a verification suite for the existing TXF exporter
-(web); `.clearfile.json` schema versioning + migration + **version guard
-before any format change ships** (ADV-ENG #11 — the `.cfr` v2 migration
-this session is the web-local precedent); the save-format unification
-decision (`.cfr` vs `.clearfile.json`); parser-hardening tests for the
-first shipped untrusted-input parsers; `docs/engine.md` (1040 line
-mapping + limitations register), repo guided tour, discrepancy-report
-issue templates, and the project definition of done (ADV-PROD F5). Exit
-gate = the RE-tooling stage's entry gate (full-depth), which also carries
-ADR-012 + the RE DoD and reviews the parity-tripwire outcome (box was
-NOT exceeded — record that at the gate). Owner-side surfacings standing:
-Dependabot, branch protection, PAT expiry (D30).
+**Stage 3 close-out** (bridges done 2026-11-15): `.clearfile.json`
+versioning + guards + the `.cfr` vs `.clearfile.json` unification
+decision; `docs/engine.md` (1040 line mapping + limitations register);
+repo guided tour; discrepancy-report issue templates; the project
+definition of done (ADV-PROD F5). Exit gate = the RE-tooling stage's
+entry gate (full-depth, ADV-LEGAL weighted), which now has the measured
+Ghidra-sandbox feasibility answer on its agenda (`docs/ghidra-sandbox-
+feasibility.md`, protocol §4.E) alongside the DoD fix, placement
+ADR-012, and the RE tooling security contract; it also records the
+parity-tripwire outcome (box was NOT exceeded) and ADR-013's
+dynamic_color negative retry. Owner-side surfacings standing: Dependabot,
+branch protection, PAT expiry (D30).

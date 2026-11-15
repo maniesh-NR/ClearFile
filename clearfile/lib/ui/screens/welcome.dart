@@ -114,6 +114,18 @@ class WelcomeScreen extends StatelessWidget {
             icon: const Icon(Icons.file_open_outlined),
             label: const Text('Import a .clearfile.json file'),
           ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () => _importTxf(context),
+            icon: const Icon(Icons.description_outlined),
+            label: const Text('Import a TurboTax TXF export'),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () => _inspectTax(context),
+            icon: const Icon(Icons.plagiarism_outlined),
+            label: const Text('Inspect a .tax file (read-only)'),
+          ),
           const SizedBox(height: 24),
           if (state.savedReturns.isNotEmpty) ...[
             Text('Saved on this device',
@@ -183,4 +195,125 @@ class WelcomeScreen extends StatelessWidget {
 
   static String _shortDate(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  // --- TurboTax-format bridges (TXF import, .tax inspection) -------------
+
+  Future<void> _importTxf(BuildContext context) async {
+    final outcome = await state.importFromTxf();
+    if (!context.mounted) return;
+    if (outcome.error != null) {
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Could not import this file'),
+          content: Text(outcome.error!),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    final notes = outcome.result?.warnings ?? const <String>[];
+    if (notes.isNotEmpty) {
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('TXF import notes'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final note in notes)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(note, style: Theme.of(ctx).textTheme.bodySmall),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  Future<void> _inspectTax(BuildContext context) async {
+    final insp = await state.inspectTaxFile();
+    if (insp == null || !context.mounted) return;
+    final scheme = Theme.of(context).colorScheme;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Tax file inspection'),
+        content: SizedBox(
+          width: 520,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(insp.summary,
+                    style: Theme.of(ctx).textTheme.bodyMedium),
+                if (insp.entries.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Text('Entries',
+                      style: Theme.of(ctx).textTheme.titleSmall),
+                  const SizedBox(height: 4),
+                  for (final e in insp.entries)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        '${e.name} — ${e.size} B, method ${e.method}'
+                        '${e.entropy != null
+                            ? ', entropy ${e.entropy!.toStringAsFixed(2)} bits/byte'
+                            : ''}'
+                        '${e.likelyEncrypted == true
+                            ? ' — likely encrypted' : ''}',
+                        style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                              color: e.likelyEncrypted == true
+                                  ? scheme.error
+                                  : scheme.onSurfaceVariant,
+                              fontFamily: 'monospace',
+                            ),
+                      ),
+                    ),
+                ],
+                if (insp.warnings.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  for (final w in insp.warnings)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(w,
+                          style: Theme.of(ctx).textTheme.bodySmall),
+                    ),
+                ],
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Close'),
+          ),
+          if (insp.clearfileContainer && insp.filing != null)
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                state.importInspected(insp);
+              },
+              child: const Text('Import return'),
+            ),
+        ],
+      ),
+    );
+  }
 }

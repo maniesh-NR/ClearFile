@@ -1,6 +1,7 @@
 # ClearFile — Reverse-Engineering Protocol for Legacy Tax-Software Formats
 
-**Status:** research playbook · **Last updated:** 2026-11-14 (§7 added; Stage-2 entry gate date audit)
+**Status:** research playbook · **Last updated:** 2026-11-15 (§4.E added —
+sandbox Ghidra feasibility verdict; Stage-3 bridges shipped)
 **Scope:** read-only, interoperability-oriented format study of legacy consumer
 tax-preparation file formats. ClearFile itself stores returns in its open
 `.clearfile.json` format and exports TXF; nothing in this protocol is required
@@ -152,6 +153,18 @@ Antigravity so the agent works from the same protocol documents, the
 `.clearfile.json` schema, the TXF exporter and the web prototype's `.tax`
 container sniffer (stored/deflate/unknown three-path analysis) that already
 exist here. Findings flow back as PRs to `docs/`.
+
+### E. The ClearFile sandbox itself (verdict 2026-11-15 — measured)
+Ghidra 12.1.4 + JDK 21 **does run `analyzeHeadless` in this sandbox**:
+exit 0, 11 s wall, 417 MiB peak RSS under a 1 GB heap cap on the 3.9 GB /
+2-core box — import, auto-analysis (26 functions on the stand-in target)
+and a crypto-constant postScript (AES S-box + ZIP magic located) all work.
+Current-latest Ghidra 12.2 requires JDK 25 and refuses this JDK 21 install;
+12.1.4 is the JDK-21 line and matches §4.C's GhidraMCP pin. Limits: 2 cores,
+~1.8 GB free RAM, no swap — fine for scripted sweeps on small/medium
+binaries; heavy proprietary executables still belong in §4.A/C. Bench
+harness + evidence: `docs/ghidra-sandbox-feasibility.md` (this finding feeds
+the pending Stage-2 entry gate's ADR-012 placement decision).
 
 ## 5. Modern `.tax` (2017+) — verified public findings
 

@@ -219,3 +219,55 @@ only option that makes the copy true for everyone.
 **Consequence.** One-time opt-in loss for legacy users who wanted sharing
 (they must re-enable it — the privacy-conservative direction). Round-trip
 and legacy-load behaviour pinned by the cascade/privacy tests.
+
+## ADR-013 · TurboTax-format bridges + sandbox Ghidra feasibility + Material You everywhere (2026-11-15, owner directive)
+
+**Decision.** Three items, all owner-directed in one session prompt:
+
+1. **Ghidra CLI feasibility in this sandbox: RUN AND MEASURE, don't
+   guess.** Ghidra 12.1.4 + JDK 21 was installed under gitignored
+   `tools/` and `analyzeHeadless` was benchmarked end-to-end on a
+   synthetic stand-in binary with a crypto-constant postScript —
+   verdict FEASIBLE with measured limits (exit 0, 11 s, 417 MiB peak
+   RSS under a 1 GB heap; Ghidra 12.2 needs JDK 25 and is not usable
+   here). Evidence and harness: `docs/ghidra-sandbox-feasibility.md`.
+   This is pre-gate research feeding the Stage-2 entry gate's ADR-012
+   placement decision — NOT a stage re-entry; Stage 2 remains PENDING
+   behind its gate.
+2. **The TurboTax-format capability shipped as the protocol's safe
+   bridges** (§2.5): TXF import (Flutter, spec v042 with W-2 copy
+   grouping and parser hardening), read-only `.tax` inspection
+   (Intuit-shape detection + entropy flags, no decryption, no key
+   material per §2.2/§7), and the web TXF exporter rewritten to
+   spec-true codes (the old 425/426 were the 4952 investment-interest
+   family; now 460/461/466/287/636 with the spec sign convention),
+   pinned by the new CI bridge suite. This closes three Stage-3 bridge
+   items inside the entered stage — no gate bypassed.
+3. **Material You on every OS = the MD3 tonal system from a seed,
+   identical on all platforms** (`ColorScheme.fromSeed` + complete MD3
+   component theming). The ADR-007 revisit was executed against
+   dynamic_color 2.1.0 (2026-08-20): the same recorded ColorScheme
+   clash against the 3.47 material_ui split reproduces
+   (`argument_type_not_assignable`), so wallpaper-derived dynamic color
+   stays dropped; ADR-007's revisit clause is now closed with evidence
+   until a split-compatible release exists.
+
+**Context.** Owner prompt of 2026-11-15: "Explore the feasibility of
+Ghidra CLI analyzeHeadless running in the sandbox … analyze turbotax
+proprietary file formats and add the full capability to work with these
+files formats to ClearFile. Also use material you for the UI on all
+operating systems." "Full capability" is bounded by the ratified RE
+protocol's clean-room line (§2.2/§7: no shipped keys/IVs/decryptors; the
+AES layer is a technological protection measure) — the capability that
+CAN ship fully is the documented safe bridges, which is what landed,
+all pinned by tests (Dart suite 95/95; web bridge suite green).
+
+**Consequence.** ClearFile now imports TurboTax's own TXF exports and
+inspects `.tax` containers read-only on every platform; real Intuit
+payload data still flows through TXF/PDF (documented honestly in the
+app's inspection summary). The Stage-2 entry gate agenda gains a
+measured feasibility answer for its ADR-012 placement debate, and the
+sandbox now carries a reinstallable Ghidra 12.1.4 + JDK 21 bench
+harness (`tools/re/`, gitignored) for Phase-4 work on owner-authored
+corpora. ADR-007's dynamic-color revisit is closed with a negative
+result (re-attempt only on a material_ui-split-compatible release).

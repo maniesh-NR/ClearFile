@@ -9,6 +9,8 @@ import '../ai/providers.dart';
 import '../ai/settings.dart';
 import '../io/files.dart';
 import '../io/return_store.dart';
+import '../io/tax_inspect.dart';
+import '../io/txf_import.dart';
 import '../models/tax_return.dart';
 import '../tax/calculator.dart';
 import '../tax/results.dart';
@@ -93,6 +95,45 @@ class AppState extends ChangeNotifier {
 
   Future<void> importFromFile() async {
     final r = await ReturnFileIO.importReturn();
+    if (r == null) return;
+    await store.save(r);
+    savedReturns = await store.listReturns();
+    _open(r);
+  }
+
+  /// Outcome of a TXF import: either a parsed result (with warnings) or
+  /// a user-facing error string. Null result + null error = cancelled.
+  Future<TxfImportOutcome> importFromTxf() async {
+    final text = await ReturnFileIO.pickAnyFileText(
+        'Open a TXF (Tax Exchange Format) export');
+    if (text == null) return const TxfImportOutcome.cancelled();
+    try {
+      final parsed = parseTxf(text);
+      final r = parsed.returnData;
+      await store.save(r);
+      savedReturns = await store.listReturns();
+      _open(r);
+      return TxfImportOutcome(result: parsed);
+    } on TxfParseException catch (e) {
+      return TxfImportOutcome(error: e.message);
+    } on FormatException catch (e) {
+      return TxfImportOutcome(error: e.message);
+    }
+  }
+
+  /// Read-only inspection of a `.tax` file (never decrypts, protocol
+  /// §2.2/§7). Returns null when the user cancelled.
+  Future<TaxInspection?> inspectTaxFile() async {
+    final bytes = await ReturnFileIO.pickAnyFileBytes(
+        'Inspect a .tax file (read-only analysis)');
+    if (bytes == null) return null;
+    return analyzeTaxFile(bytes);
+  }
+
+  /// Imports the return inside an inspected ClearFile exchange container
+  /// (the one case where inspection yields an importable payload).
+  Future<void> importInspected(TaxInspection insp) async {
+    final r = insp.filing;
     if (r == null) return;
     await store.save(r);
     savedReturns = await store.listReturns();

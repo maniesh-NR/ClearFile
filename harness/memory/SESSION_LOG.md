@@ -466,3 +466,92 @@ re-ran after every batch, never trusting a single tool's success report).
 tsc exit 0, YAML validation on both workflows, web smoke 6/6, harness_check)
 + mode normalization check + event-driven backup (this run) — the last
 action before this reply.
+
+## 2026-11-15 · Owner-directed bridges session — TXF import + .tax inspection + Ghidra sandbox feasibility
+
+**Session task (owner prompt, verbatim intent):** explore the feasibility
+of Ghidra CLI `analyzeHeadless` running in the sandbox for TurboTax
+proprietary-file analysis; add the full capability to work with these
+formats to ClearFile; use Material You for the UI on all OSes.
+
+**Bootstrap:** fifth observed recycle — history intact (HEAD = origin/main
+= `769e57b`), node_modules survived minus its typescript bin (quirk 18),
+tools/ gone. Restored per WORKFLOW §4: Flutter 3.47.9 (sha `25ed8c3c…`
+verified), plus NEW Ghidra 12.1.4 + Temurin JDK 21 + bench harness
+(`tools/re/`, all gitignored). Recorded as ADR-013.
+
+**Ghidra feasibility verdict (measured, not guessed):** Ghidra 12.1.4 +
+JDK 21 runs analyzeHeadless end-to-end in this sandbox — exit 0, 11 s
+wall, 416.9 MiB peak RSS under a 1 GB heap (`GHIDRA_HEADLESS_MAXMEM`),
+26 functions auto-identified on a 16 KB synthetic stand-in binary, and a
+Java postScript located the embedded AES S-box (computed from the
+Rijndael definition — zero proprietary material) at `00102060` and the
+ZIP magic at `00102040`. Ghidra 12.2 (latest) requires JDK 25 and
+refuses this JDK 21 box — 12.1.4 is the JDK-21 line and matches the
+protocol's GhidraMCP pin. Limits: 2 cores / ~1.8 GB free / no swap —
+fine for scripted sweeps, heavy proprietary executables belong in
+§4.A/C. Evidence: `docs/ghidra-sandbox-feasibility.md` + protocol §4.E;
+this is pre-gate research feeding the Stage-2 entry gate (ADR-012), NOT
+a stage re-entry.
+
+**Bridges (Stage-3 scope, done):**
+- Flutter `io/txf_import.dart` — TXF spec v042 import: `^`-terminated
+  records, W-2 copies grouped by C (460/461/466 + spouse 506/507/513 in
+  their own copy space), income 287/286/683/488/257, deductions
+  275/544/276/283/545/280/485, payments 268/521, adjustment 636; spec
+  sign convention (expenses negative) → magnitudes; unknown refnums
+  reported not guessed; hardening caps 5 MB / 10k records / 4096-char
+  lines; 11 tests.
+- Flutter `io/tax_inspect.dart` — read-only `.tax` inspection: ZIP
+  central-directory scan (STORE extraction, deflate listed), per-entry
+  Shannon entropy + likely-encrypted flag (≥7.5 bits/byte), modern
+  Intuit-shape recognition (`manifest.xml` + `tax:<uuid>`) with copy
+  that names the safe bridges and states it does not decrypt (§2.2/§7),
+  ClearFile exchange-container import; 7 tests. Wired into
+  Welcome/AppState (import TXF + inspect .tax buttons + dialogs).
+- Web TXF exporter rewritten to spec-true codes — the old 425/426 are
+  the 4952 investment-interest family; now 460/461/466 per W-2 copy +
+  287 + 636 with negative money-paid signs; `taxfile.ts` gained the same
+  Intuit-shape + entropy analysis (additive API). New CI bridge suite
+  `scripts/txf_taxfile_test.mjs` (+ `scripts/tsconfig.files.json`,
+  CommonJS emit so Node resolves extensionless intra-module imports),
+  wired into the hygiene `suites` job after the parity suite.
+
+**Material You:** main.dart upgraded to complete MD3-from-seed theming
+(flat surfaces, floating snackbars, filled-button comfort, dialog/app-bar
+surface tones) — identical on all six platforms; the ADR-007 revisit
+was executed against dynamic_color 2.1.0 (2026-08-20) and the recorded
+ColorScheme clash reproduced verbatim (`argument_type_not_assignable`
+against the 3.47 material_ui split) → reverted; revisit closed with
+evidence.
+
+**Verification:** flutter analyze clean; flutter test 95/95 (77 + 18
+new); tsc --noEmit exit 0; web parity 16/16 (regression); bridge suite
+6/6; Ghidra bench exit 0. Quirks 17 (background processes die between
+tool calls) and 18 (selectively hollowed node_modules / tsc squatter)
+recorded in STATE.
+
+**Decisions:** ADR-013 (this session's scope: feasibility-run-and-measure,
+bridges-as-safe-bridges, Material-You-as-MD3-seed + negative dynamic_color
+retry).
+
+**Honest limits carried forward:** no TurboTax binary was analyzed (none
+owned here), no `.tax` file was decrypted, no key material exists
+anywhere (protocol §2.2/§7); the AES layer remains gated behind the
+Stage-2 entry gate's placement decision.
+
+**Closing action:** re-verification (analyze + 95/95 + tsc + parity +
+bridge suite + harness_check) + this event-driven backup — the last
+action before the reply.
+
+### Correction note (append-only, same session)
+
+The bridges-session entry above predates two teardown facts worth recording:
+(1) the web smoke suite also ran against the new build — 6/6, including the
+localStorage persist/rehydrate path — completing the re-verification set
+(analyze + 95/95 Dart + tsc + parity 16/16 + bridge suite + smoke + Ghidra
+bench + harness_check); (2) the user-facing deliverable was produced as
+`download/ghidra-sandbox-feasibility.pdf` (6 pages, cover Template 01 +
+ReportLab body, QA pass) alongside the in-repo
+`docs/ghidra-sandbox-feasibility.md`, with the cover HTML source kept next
+to it per the delivery convention.
