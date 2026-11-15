@@ -1,13 +1,15 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-15 (after the owner-directed bridges session: TXF
-import + `.tax` inspection + TXF exporter verification landed with the
-Ghidra sandbox feasibility study; this session's closing backup is the tip)
+**Updated:** 2026-11-15 (UI-stack directive session: ADR-014 recorded —
+per-OS native UI stacks over a shared Rust core, Material You with
+OS-specific elements; inherited state verified complete — nothing to
+patch; this session's closing backup is the tip)
 
 ## Repository
 
-- GitHub: `maniesh-NR/ClearFile` (public), branch `main`. The Stage-3
-  web-parity session's closing backup is the tip.
+- GitHub: `maniesh-NR/ClearFile` (public), branch `main`. Tip at this
+  session's start: the bridges closing backup `74a1286`; this session's
+  closing backup supersedes it.
 - Tag `v1.0.1` (release 445310560): published 2026-11-14 via the fresh-tag
   dispatch path — 11 assets including the first `SHA256SUMS.txt`, the
   Android INTERNET + macOS network-client fix, the network disclosure, and
@@ -34,8 +36,10 @@ Ghidra sandbox feasibility study; this session's closing backup is the tip)
 - **Stage 2 (RE tooling): re-sequenced AFTER Stage 3** — PENDING; its
   entry gate (full-depth, ADV-LEGAL weighted; also Stage 3's exit gate)
   must settle: the DoD fix (define N + a two-session time-box), the
-  placement ADR-012 (panel split recorded in CONSENSUS), and the RE
-  tooling security contract. Stage IDs are stable.
+  placement ADR-012 (panel split recorded in CONSENSUS), the RE
+  tooling security contract, and the native re-platforming settlement
+  (ADR-014: scope, sequencing, budget for the per-OS stacks + shared
+  Rust core — see ROADMAP's Stage-2 agenda). Stage IDs are stable.
 - **Stage 3: ENTERED 2026-11-14. Fixtures-first: DONE 2026-11-14. Web
   parity set: DONE 2026-11-15. Bridges: TXF import (Flutter) + TXF
   exporter verification (web, spec v042 codes fixed) + `.tax` read-only
@@ -53,23 +57,35 @@ Ghidra sandbox feasibility study; this session's closing backup is the tip)
   parity; INTERNET add-and-disclose; PAT unchanged. ADR-010 closed. ADR-011:
   settings schemaVersion 2. ADR-013 (2026-11-15): bridges + Ghidra
   feasibility + Material You (dynamic_color 2.1.0 retry failed — ADR-007
-  revisit closed with evidence).
+  revisit closed with evidence). ADR-014 (2026-11-15, second directive of
+  that day): per-OS native UI stacks (Win32+Direct2D / Swift+AppKit /
+  gtk-rs·gtk3-rs·Slint·Qt / Android Views+KMP) over a shared Rust core,
+  Material You with OS-specific elements — direction recorded, execution
+  gated (settlement assigned to the Stage-2 entry gate's agenda).
 
 ## Environment facts (sandbox)
 
-- **Sandbox recycled again before this session** (fifth observed recycle):
-  history intact (HEAD = origin/main = the web-parity closing backup
-  `769e57b`), content intact, `node_modules/` survived BUT its typescript
-  bin did not (see quirk 18), Flutter SDK (`tools/`) gone — reinstalled.
-- **`tools/` now carries**: Flutter SDK 3.47.9 (sha256 `25ed8c3c…`
-  re-verified against `releases_linux.json`), **Ghidra 12.1.4** (the
-  JDK-21 line; current-latest 12.2 requires JDK 25 and refuses this
-  box), **Temurin JDK 21.0.13** (full JDK incl. `javac`), and the
-  **`tools/re/` bench harness** (gen_demo.py, FindCryptoConstants.java,
-  bench_poll.py, run_bench.sh) — all gitignored, all reinstallable via
-  the documented fetchers.
+- **Sandbox recycled again before this session** (sixth observed
+  recycle): history intact (HEAD = origin/main = the bridges closing
+  backup `74a1286`), content intact (183 files mode-flipped to 755 —
+  normalized with `git restore .`), `node_modules/` survived WITH its
+  typescript bin, `tools/` (Flutter SDK + Ghidra 12.1.4 + JDK 21 +
+  bench harness) gone — not reinstalled this session
+  (documentation-only work; suites carried from `74a1286`, whose tree
+  is content-identical).
+- **`tools/` (gone again after the sixth recycle) last carried**: Flutter
+  SDK 3.47.9 (sha256 `25ed8c3c…` verified against
+  `releases_linux.json`), **Ghidra 12.1.4** (the JDK-21 line;
+  current-latest 12.2 requires JDK 25 and refuses this box), **Temurin
+  JDK 21.0.13** (full JDK incl. `javac`), and the **`tools/re/` bench
+  harness** (gen_demo.py, FindCryptoConstants.java, bench_poll.py,
+  run_bench.sh) — all gitignored, all reinstallable via the documented
+  fetchers (`tools/re/run_bench.sh` is the one-command benchmark
+  rerun after a reinstall).
 - Test suite: **95/95 green** (Dart suite; 79 hand-written + 16 golden
-  fixtures) — re-verified at teardown with `flutter analyze` clean. Web
+  fixtures) — verified at the bridges session's teardown (`flutter
+  analyze` clean); carried forward this session (content-identical
+  tree, no re-run — see the recycle note above). Web
   parity suite 16/16; **web bridge suite (`scripts/txf_taxfile_test.mjs`)
   6/6, first run, now wired into the hygiene `suites` job after the
   parity suite**; `npx tsc --noEmit` exit 0 (after restoring the local
@@ -136,6 +152,13 @@ Ghidra sandbox feasibility study; this session's closing backup is the tip)
     compile-then-run suite failed locally; `npm install --no-save
     typescript@5` restores the bin without touching the lockfile
     (2026-11-15).
+19. **`git restore .` reverts unstaged CONTENT edits too, not just
+    mode flips** — running it after making working-tree edits (the
+    post-recycle mode normalization) silently deletes those edits; it
+    reverts the working tree to the INDEX, and the index still holds
+    HEAD. Normalize modes FIRST (or stage edits, or scope the restore
+    to the mode-flipped paths only) before editing (2026-11-15, this
+    session: the four ADR-014 doc edits were wiped once and redone).
 
 ## Immediately next
 
@@ -147,7 +170,11 @@ definition of done (ADV-PROD F5). Exit gate = the RE-tooling stage's
 entry gate (full-depth, ADV-LEGAL weighted), which now has the measured
 Ghidra-sandbox feasibility answer on its agenda (`docs/ghidra-sandbox-
 feasibility.md`, protocol §4.E) alongside the DoD fix, placement
-ADR-012, and the RE tooling security contract; it also records the
+ADR-012, the RE tooling security contract, and the native
+re-platforming settlement (ADR-014: scope, sequencing, budget —
+migration shape, the Flutter app's transition fate, the ADR-009 parity
+disposition once one Rust core can serve all platforms, the
+macOS/Linux version tiering, the v2.0.0 call); it also records the
 parity-tripwire outcome (box was NOT exceeded) and ADR-013's
 dynamic_color negative retry. Owner-side surfacings standing: Dependabot,
 branch protection, PAT expiry (D30).

@@ -50,6 +50,20 @@ convened within four total working sessions of entry, fixtures-first
 session included. Box exceeded or gate slipped → the web-freeze option
 returns to the NEXT gate agenda as a mandatory item.
 
+**Amended 2026-11-15 (ADR-014, owner directive): native re-platforming
+direction — recorded, not yet entered.** The forward implementation
+targets one native UI stack per OS (Windows raw Win32 + Direct2D;
+macOS Swift + AppKit; Linux Rust via gtk-rs/gtk3-rs and Slint/Qt;
+Android Views + Kotlin Multiplatform) over a **shared Rust core**,
+themed **Material You** on every OS for consistency with OS-specific
+elements kept (`memory/DECISIONS.md` ADR-014). The matrix below still
+describes the CURRENT codebases and stays accurate for all in-flight
+work: no native stack exists yet, and the Flutter app + web prototype
+remain the live implementation. The re-platforming's scope, sequencing,
+and budget are a mandatory settlement item at the next full-depth
+gate (the RE stage's entry / Stage 3's exit) — see the Stage-2 agenda
+below.
+
 | Stage | Web prototype (`src/`) | Flutter app (`clearfile/`) |
 | --- | --- | --- |
 | 1 — Hardening | copy fixes (done 2026-11-14), typecheck (done), lockfile (done), release body (done) | delete-bug fix (done), privacy gating (done 2026-11-14), INTERNET + entitlements (done) |
@@ -191,6 +205,15 @@ conditions — the gate that enters this stage must settle all of them):**
   posture (permissions: read, timeouts, SHA-pinned actions); tooling is
   never wired into `release.yml` artifact paths; fixture paths stay
   gitignored.
+- **Native re-platforming settlement (ADR-014, 2026-11-15):** scope,
+  sequencing, and budget for the per-OS native UI stacks over the
+  shared Rust core — which stages absorb the work, the migration shape
+  (staged per-OS vs big-bang; the Flutter app's transition fate), the
+  ADR-009 parity policy's disposition once one Rust core can serve
+  every platform (web via WASM included), the Rust core's scope
+  boundary and FFI seams, the macOS/Linux version-tiering definitions,
+  and the versioning call (v2.0.0?) — settled BEFORE any native-stack
+  code lands.
 
 **Gate status:** PENDING (full-depth gate; ADV-LEGAL weighted) — convenes
 after Stage 3's execution; it is ALSO Stage 3's exit gate.

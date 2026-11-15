@@ -555,3 +555,62 @@ bench + harness_check); (2) the user-facing deliverable was produced as
 ReportLab body, QA pass) alongside the in-repo
 `docs/ghidra-sandbox-feasibility.md`, with the cover HTML source kept next
 to it per the delivery convention.
+
+## 2026-11-15 (later) · UI-stack directive session — ADR-014 recorded + inherited-state verification
+
+**Session task (owner prompt, verbatim intent):** specific UI stacks per
+OS — Windows raw Win32 + Direct2D (GPU-accelerated 2D vector drawing),
+macOS Swift (newer versions) + AppKit (older versions), Linux Rust
+(gtk-rs / gtk3-rs for older versions; Slint and Qt for modern versions),
+Android Views + Kotlin Multiplatform — over a shared Rust core; Material
+You across all OSes for consistency with OS-specific elements kept.
+
+**Inherited-state verification (the multi-session handoff debt, now
+closed):** the interrupted Stage-0-decisions MultiEdit from three
+sessions ago landed completely — all four 2026-11-14 owner decisions
+are recorded (ADR-008 accept-and-document; ADR-009 FEATURE PARITY;
+INTERNET add-and-disclose; PAT do-not-alter — the fourth decision the
+compaction summaries had lost is the PAT one, recovered from the repo
+itself), ADR-008/009 headers sync the ratifications, Stage-3 scope is
+amended for parity, and the backup chain is unbroken (bridges backup
+`74a1286` = HEAD = origin/main at session start; tree content-identical,
+183 mode-flips only). Nothing to patch.
+
+**This session's work (governance recording; no code changed):**
+
+- **ADR-014** appended to DECISIONS.md — the per-OS stack table + shared
+  Rust core + Material-You-with-OS-specific-elements, verbatim owner
+  prompt in context, analysis/open questions explicitly separated from
+  the decision (migration shape, the Rust core's scope boundary, FFI
+  seams per platform, macOS/Linux version tiering, KMP's second target,
+  the v2.0.0 call, the ADR-009 parity disposition once one Rust core can
+  serve all platforms — web via WASM included).
+- **ROADMAP amended:** an implementation-targets note ("the matrix below
+  describes the CURRENT codebases; native re-platforming recorded, not
+  entered") + the Stage-2 entry-gate agenda gains the native
+  re-platforming settlement as a mandatory item.
+- **STATE synced:** header, tip reference, decisions list, sixth-recycle
+  environment facts, quirk 19, "immediately next".
+
+**Environment:** sixth observed recycle — `tools/` gone (Flutter SDK,
+Ghidra 12.1.4, JDK 21, bench harness; all reinstallable, none needed
+this session), `node_modules` survived with its tsc bin, 183 files
+mode-flipped (normalized with `git restore .`); harness_check green
+after normalization. Suites carried from `74a1286` (content-identical
+tree): Dart 95/95, parity 16/16, bridge 6/6, smoke 6/6, tsc clean —
+not re-run this session.
+
+**Mistake + lesson (recorded as quirk 19):** mode normalization was run
+AFTER the session's four doc edits were made, and `git restore .`
+reverts unstaged working-tree content to the index (HEAD) — the four
+ADR-014 edits were silently wiped once and redone in full before the
+backup. Post-recycle mode normalization must run BEFORE editing (or
+with edits staged / restore scoped to the flipped paths only).
+
+**Decisions:** ADR-014 (this entry). No new debt items — the register
+tracks accepted adversarial findings; ADR-014 is owner direction with
+its open questions assigned to the gate agenda.
+
+**Closing action:** mode normalization (done before the redo) +
+harness_check (0 failures after redo) + this event-driven backup — the
+last action before the reply.

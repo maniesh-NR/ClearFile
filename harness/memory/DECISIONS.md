@@ -271,3 +271,66 @@ sandbox now carries a reinstallable Ghidra 12.1.4 + JDK 21 bench
 harness (`tools/re/`, gitignored) for Phase-4 work on owner-authored
 corpora. ADR-007's dynamic-color revisit is closed with a negative
 result (re-attempt only on a material_ui-split-compatible release).
+
+## ADR-014 · Per-OS native UI stacks over a shared Rust core (2026-11-15, owner directive)
+
+**Decision.** ClearFile's forward UI architecture is one native stack
+per operating system over a **shared Rust core**, with **Material You**
+theming across all OSes for consistency while keeping OS-specific
+elements. Owner-directed stack assignments (2026-11-15, second
+directive of that day's session):
+
+| OS | UI stack |
+| --- | --- |
+| Windows | Raw Win32 + Direct2D (GPU-accelerated 2D vector drawing) |
+| macOS | Swift (for newer versions) + AppKit (for older versions) |
+| Linux | Rust — gtk-rs / gtk3-rs (older versions); Slint and Qt (modern versions) |
+| Android | Android Views + Kotlin Multiplatform |
+
+- **Shared Rust core**: one core under all four native stacks.
+- **Material You everywhere, OS-specific elements kept**: extends
+  ADR-013 item 3 beyond the Flutter codebase — the MD3 tonal system
+  from a seed, identical on all platforms, with OS-idiomatic
+  menus/dialogs/title bars/accessibility preserved per platform.
+
+**Context.** Owner prompt (verbatim): "Specific UI stacks for each
+operating system. For windows, use Raw Win32 + Direct2 (with
+GPU-accelerated 2D vector drawing). For macOs, use Swift (for newer
+versions) + AppKit (for older versions). For Linux, use Rust (gtk-rs /
+gtk3-rs for older versions; Slint and Qt for modern versions). For
+Android, use android views and kotlin multiplatform. Use a shared Rust
+core. Use material you across all operating systems for consistency,
+while keeping operating system specific elements." ("Direct2" is
+recorded as **Direct2D** — the Windows GPU-accelerated 2D
+vector-drawing API, which the owner's parenthetical describes exactly;
+no such thing as "Direct2" exists to record literally.) The four named
+OSes match the existing Flutter targets (Windows, macOS, Linux,
+Android); the web prototype (`src/`) is untouched by the UI
+assignments.
+
+**Consequence.** This supersedes the Flutter-app-as-single-forward-UI
+posture for the platform layer while leaving every in-flight stage
+intact: the Flutter app and web prototype remain the live
+implementation today, and **no native stack is scaffolded yet** — per
+WORKFLOW §2 the re-platforming enters execution only through a gate
+(the settlement is a mandatory item on the Stage-2 entry gate's agenda,
+mirrored in ROADMAP). Analysis recorded for that gate — deliberately
+NOT decided by this ADR:
+
+- A single Rust core collapses the ADR-009 parity cost for native
+  platforms (four thin UIs over one engine instead of N engines). If
+  the web prototype later consumes the same core via WASM, the TS
+  engine port becomes a transition artifact — the ADR-009 parity
+  policy's disposition is therefore a gate question, not settled here.
+- Open questions for the settlement gate: migration shape (staged
+  per-OS vs big-bang; the Flutter app's fate as transition vehicle),
+  the Rust core's scope boundary (1040 engine only? + format bridges /
+  persistence / AI cascade?), the FFI seam per platform (C ABI for
+  Win32/C++; Swift interop on macOS; JNI for Kotlin; direct on
+  Linux-Rust), the macOS "newer vs older" deployment-target tiering,
+  the Linux modern-vs-older toolkit line (Slint vs Qt bindings), KMP's
+  second target, and whether the re-platform earns a v2.0.0 major bump.
+- Material You fidelity: ADR-007's dynamic-color negative result binds
+  the Flutter app only; the native stacks implement MD3 from the seed
+  directly (no `dynamic_color` dependency involved), so the seed-based
+  identical-on-all-platforms posture carries over by construction.
