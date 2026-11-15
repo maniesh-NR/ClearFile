@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import '../models/tax_return.dart';
+import 'return_format.dart';
 
 /// Read-only inspection of `.tax` files (RE protocol §1–§5, §7).
 ///
@@ -141,24 +142,26 @@ TaxInspection analyzeTaxFile(Uint8List bytes) {
   if (clearfileEntry.isNotEmpty) {
     try {
       final text = utf8.decode(clearfileEntry.first.stored!);
-      final decoded = jsonDecode(text);
-      if (decoded is Map<String, dynamic> &&
-          decoded['format'] == 'clearfile.return') {
+      try {
+        // Unified codec (ADR-015): the container's clearfile.json entry is
+        // the same envelope the web prototype writes (clearfile-return,
+        // versioned, guarded) — plus the legacy flat layout older builds
+        // wrote. Both import; migrations surface as warnings.
+        final decoded = ReturnFileCodec.decode(text);
         return TaxInspection(
           isZip: true,
           clearfileContainer: true,
           intuitModernContainer: false,
-          filing: TaxReturnData.fromJson(decoded),
+          filing: decoded.filing,
           entries: entries,
-          warnings: warnings,
+          warnings: [...warnings, ...decoded.warnings],
           summary: 'This is a ClearFile exchange container (.tax '
               'extension, open ZIP format). The full return can be '
               'imported.',
         );
+      } on ReturnFormatException catch (e) {
+        warnings.add('clearfile.json could not be parsed: ${e.message}');
       }
-      warnings.add('clearfile.json is present but has no '
-          '"format": "clearfile.return" marker; treated as an unknown '
-          'ZIP.');
     } catch (_) {
       warnings
           .add('clearfile.json could not be parsed as JSON/UTF-8.');

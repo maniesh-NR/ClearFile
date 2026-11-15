@@ -334,3 +334,56 @@ NOT decided by this ADR:
   the Flutter app only; the native stacks implement MD3 from the seed
   directly (no `dynamic_color` dependency involved), so the seed-based
   identical-on-all-platforms posture carries over by construction.
+
+## ADR-015 · Unified ClearFile return file format (2026-11-15, Stage-3 close-out)
+
+**Decision.** ClearFile's own save format is ONE versioned envelope,
+used by both codebases and all media (export file, web download, Flutter
+autosave store, and the `clearfile.json` entry inside the `.tax`-extension
+exchange container):
+
+- Extension: **`.clearfile.json`** (canonical, self-describing JSON);
+  `.cfr` remains a read-only legacy alias.
+- Envelope: `{format: "clearfile-return", version: 2, app, savedAt,
+  filing: {…TaxReturnData…}}` — version 2 is the parity filing shape
+  (ADR-009); no version bump was needed to unify (the payload shape is
+  unchanged).
+- **Version guard** (closing D3's hard rule): both readers refuse files
+  claiming a version they do not support; they never guess.
+- **Migration matrix**: v2 envelopes read directly; the web prototype's
+  v1 `.cfr` envelopes migrate conservatively (warned drops); the Flutter
+  app's pre-unification flat layout (`clearfile.return` +
+  `formatVersion`, written through v1.0.1 and by the store until now)
+  lifts losslessly; a flat `formatVersion > 1` is refused.
+- **Import outcomes are sealed** (closing D1): cancelled /
+  failed-with-reason / ok-with-migration-warnings — the Flutter import
+  never returns a silent null again, and the migration warnings mirror
+  the web parser's wording field-for-field.
+
+**Context.** Stage 3's remaining scope ("`.clearfile.json` versioning +
+guards + the `.cfr`→`.clearfile.json` unification decision"). Before
+this ADR the two codebases wrote incompatible shapes for the SAME model:
+the Flutter app exported a flat unversioned map with its marker and a
+`formatVersion` field `fromJson` ignored outright (D3), its import
+collapsed cancelled/unreadable/wrong-format into one silent null (D1),
+and its `.tax` container importer checked the flat marker — so a
+container exported by the WEB prototype (which writes the versioned
+envelope) could not be imported by the Flutter app at all. The unifying
+decision: the web's disciplined envelope wins as the file identity; the
+Flutter app's extension (`.clearfile.json`) wins as the filename; every
+existing vintage is read with migration and warnings.
+
+**Consequence.** Spec: `docs/return-format.md`. Implementation:
+`clearfile/lib/io/return_format.dart` (codec + sealed import outcome,
+wired through `files.dart`, `return_store.dart`, `app_state.dart`,
+`welcome.dart`, and the `.tax` container importer) and `src/lib/files/
+cfr.ts` (legacy-flat acceptance + guard) + `filemenu.tsx` (the web now
+downloads `.clearfile.json`). Pinned by 14 new Dart tests
+(`clearfile/test/return_format_test.dart`), 2 new container tests, and
+the extended CI bridge suite — the store writes the envelope on disk and
+migrates legacy flat store files on read, so an exported file and a
+saved return are interchangeable again. Known honest limits: the web
+model does not carry Flutter return metadata (warned on import), and
+`TaxReturnData.fromJson` still defaults an unparseable date to
+1970-01-01 (tolerant-read behaviour, now documented in
+`docs/return-format.md` §2 — the D3 guard half is what shipped).

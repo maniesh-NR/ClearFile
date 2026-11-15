@@ -8,6 +8,7 @@ import '../ai/cascade.dart';
 import '../ai/providers.dart';
 import '../ai/settings.dart';
 import '../io/files.dart';
+import '../io/return_format.dart';
 import '../io/return_store.dart';
 import '../io/tax_inspect.dart';
 import '../io/txf_import.dart';
@@ -93,12 +94,18 @@ class AppState extends ChangeNotifier {
     _open(r);
   }
 
-  Future<void> importFromFile() async {
-    final r = await ReturnFileIO.importReturn();
-    if (r == null) return;
-    await store.save(r);
-    savedReturns = await store.listReturns();
-    _open(r);
+  /// Imports a ClearFile return file (`.clearfile.json` envelope, legacy
+  /// flat layout, or a `.cfr` save from the web prototype). Returns the
+  /// outcome so the caller can give feedback: ok-with-warnings,
+  /// failed-with-reason, or cancelled (DEBT D1 — never a silent null).
+  Future<ReturnImport> importFromFile() async {
+    final outcome = await ReturnFileIO.importReturn();
+    if (outcome is ReturnImportOk) {
+      await store.save(outcome.filing);
+      savedReturns = await store.listReturns();
+      _open(outcome.filing);
+    }
+    return outcome;
   }
 
   /// Outcome of a TXF import: either a parsed result (with warnings) or

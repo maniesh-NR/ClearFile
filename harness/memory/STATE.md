@@ -1,14 +1,15 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-15 (UI-stack directive session: ADR-014 recorded —
-per-OS native UI stacks over a shared Rust core, Material You with
-OS-specific elements; inherited state verified complete — nothing to
-patch; this session's closing backup is the tip)
+**Updated:** 2026-11-15 (Stage-3 close-out session: ADR-015 — unified
+return format with version guard + migration + sealed import outcomes;
+`docs/engine.md`, `docs/tour.md`, discrepancy templates, the project DoD
+adopted; Stage 3 execution COMPLETE, exit gate is next; this session's
+closing backup is the tip)
 
 ## Repository
 
 - GitHub: `maniesh-NR/ClearFile` (public), branch `main`. Tip at this
-  session's start: the bridges closing backup `74a1286`; this session's
+  session's start: the UI-stack closing backup `935f782`; this session's
   closing backup supersedes it.
 - Tag `v1.0.1` (release 445310560): published 2026-11-14 via the fresh-tag
   dispatch path — 11 assets including the first `SHA256SUMS.txt`, the
@@ -41,15 +42,16 @@ patch; this session's closing backup is the tip)
   (ADR-014: scope, sequencing, budget for the per-OS stacks + shared
   Rust core — see ROADMAP's Stage-2 agenda). Stage IDs are stable.
 - **Stage 3: ENTERED 2026-11-14. Fixtures-first: DONE 2026-11-14. Web
-  parity set: DONE 2026-11-15. Bridges: TXF import (Flutter) + TXF
-  exporter verification (web, spec v042 codes fixed) + `.tax` read-only
-  inspection (both codebases): DONE 2026-11-15** (owner-directed,
-  ADR-013; the parity-tripwire box stayed closed under budget). Dart
-  suite **95/95**; web parity 16/16; web bridge suite green (new in CI);
-  `tsc --noEmit` clean. Remaining inside Stage 3: `.clearfile.json`
-  versioning + guards + the `.cfr`→`.clearfile.json` unification
-  decision, `docs/engine.md`, repo guided tour, discrepancy templates,
-  project DoD. The Ghidra sandbox feasibility verdict (12.1.4 + JDK 21
+  parity set: DONE 2026-11-15. Bridges: DONE 2026-11-15. Close-out:
+  DONE 2026-11-15 (ADR-015) — unified return format + engine.md + tour
+  + discrepancy templates + project DoD — EXECUTION COMPLETE; the exit
+  gate (the RE stage's entry gate) is the next event.** Tripwire: box
+  NOT exceeded; slip FIRED (gate not convened within the four working
+  sessions) → web-freeze returns to the gate agenda as a mandatory item.
+  Dart suite **111/111** (95 hand-written + 16 golden); web parity
+  16/16; bridge suite 10 groups (now includes the unified-format cfr
+  section); oracle 16/16; smoke 6/6; `tsc --noEmit` clean.
+  The Ghidra sandbox feasibility verdict (12.1.4 + JDK 21
   headless works, 11 s / 417 MiB measured) is recorded in
   `docs/ghidra-sandbox-feasibility.md` + RE protocol §4.E — pre-gate
   research for the Stage-2 entry gate (ADR-012 agenda).
@@ -61,35 +63,39 @@ patch; this session's closing backup is the tip)
   that day): per-OS native UI stacks (Win32+Direct2D / Swift+AppKit /
   gtk-rs·gtk3-rs·Slint·Qt / Android Views+KMP) over a shared Rust core,
   Material You with OS-specific elements — direction recorded, execution
-  gated (settlement assigned to the Stage-2 entry gate's agenda).
+  gated (settlement assigned to the Stage-2 entry gate's agenda). ADR-015
+  (2026-11-15): unified ClearFile return file (`.clearfile.json` envelope,
+  version guard, migration matrix, sealed import outcomes) — D1 closed,
+  D3's guard rule closed.
 
 ## Environment facts (sandbox)
 
-- **Sandbox recycled again before this session** (sixth observed
-  recycle): history intact (HEAD = origin/main = the bridges closing
-  backup `74a1286`), content intact (183 files mode-flipped to 755 —
-  normalized with `git restore .`), `node_modules/` survived WITH its
-  typescript bin, `tools/` (Flutter SDK + Ghidra 12.1.4 + JDK 21 +
-  bench harness) gone — not reinstalled this session
-  (documentation-only work; suites carried from `74a1286`, whose tree
-  is content-identical).
-- **`tools/` (gone again after the sixth recycle) last carried**: Flutter
-  SDK 3.47.9 (sha256 `25ed8c3c…` verified against
-  `releases_linux.json`), **Ghidra 12.1.4** (the JDK-21 line;
+- **Sandbox recycled again before this session** (seventh observed
+  recycle): history intact (HEAD = origin/main = the UI-stack closing
+  backup `935f782`), content intact (183 files mode-flipped to 755 —
+  normalized with `git restore .` BEFORE any edits, quirk 19),
+  `node_modules/` survived WITH its typescript bin, `tools/` gone —
+  **Flutter SDK 3.47.9 reinstalled via the new durable
+  `scripts/fetch_flutter_sdk.sh`** (sha256 `25ed8c3c…` verified against
+  `releases_linux.json`; one call, 81 s download). Ghidra/JDK remain
+  uninstalled this session (not needed; reinstallable via the documented
+  fetchers).
+- **`tools/` now carries**: Flutter SDK 3.47.9 (sha256 `25ed8c3c…`
+  verified against `releases_linux.json` via
+  `scripts/fetch_flutter_sdk.sh`). Gone again after the seventh recycle
+  and NOT reinstalled: **Ghidra 12.1.4** (the JDK-21 line;
   current-latest 12.2 requires JDK 25 and refuses this box), **Temurin
   JDK 21.0.13** (full JDK incl. `javac`), and the **`tools/re/` bench
   harness** (gen_demo.py, FindCryptoConstants.java, bench_poll.py,
   run_bench.sh) — all gitignored, all reinstallable via the documented
   fetchers (`tools/re/run_bench.sh` is the one-command benchmark
   rerun after a reinstall).
-- Test suite: **95/95 green** (Dart suite; 79 hand-written + 16 golden
-  fixtures) — verified at the bridges session's teardown (`flutter
-  analyze` clean); carried forward this session (content-identical
-  tree, no re-run — see the recycle note above). Web
+- Test suite: **111/111 green** (Dart suite; 95 hand-written + 16 golden
+  fixtures) — re-verified at THIS session's teardown (`flutter analyze`
+  clean; the 16 new tests: 14 return-format + 2 container). Web
   parity suite 16/16; **web bridge suite (`scripts/txf_taxfile_test.mjs`)
-  6/6, first run, now wired into the hygiene `suites` job after the
-  parity suite**; `npx tsc --noEmit` exit 0 (after restoring the local
-  typescript bin, quirk 18).
+  10 groups (6 prior + 4 new cfr groups)**; oracle 16/16; web smoke 6/6;
+  `npx tsc --noEmit` exit 0 — all re-run this session.
 - Live-check quirk (unchanged): unauthenticated api.github.com is
   shared-rate-limited from this sandbox — use public HTML pages or
   sparing authenticated curl per WORKFLOW §5.
@@ -162,19 +168,13 @@ patch; this session's closing backup is the tip)
 
 ## Immediately next
 
-**Stage 3 close-out** (bridges done 2026-11-15): `.clearfile.json`
-versioning + guards + the `.cfr` vs `.clearfile.json` unification
-decision; `docs/engine.md` (1040 line mapping + limitations register);
-repo guided tour; discrepancy-report issue templates; the project
-definition of done (ADV-PROD F5). Exit gate = the RE-tooling stage's
-entry gate (full-depth, ADV-LEGAL weighted), which now has the measured
-Ghidra-sandbox feasibility answer on its agenda (`docs/ghidra-sandbox-
-feasibility.md`, protocol §4.E) alongside the DoD fix, placement
-ADR-012, the RE tooling security contract, and the native
-re-platforming settlement (ADR-014: scope, sequencing, budget —
-migration shape, the Flutter app's transition fate, the ADR-009 parity
-disposition once one Rust core can serve all platforms, the
-macOS/Linux version tiering, the v2.0.0 call); it also records the
-parity-tripwire outcome (box was NOT exceeded) and ADR-013's
-dynamic_color negative retry. Owner-side surfacings standing: Dependabot,
-branch protection, PAT expiry (D30).
+**Convene the Stage-2 entry gate (= Stage 3's exit gate)** — full-depth,
+ADV-LEGAL weighted. Its agenda (ROADMAP Stage-2): the DoD fix (define N
++ two-session time-box), placement ADR-012 (panel split recorded), the
+RE tooling security contract, the native re-platforming settlement
+(ADR-014), and — mandatory, the tripwire slip FIRED 2026-11-15 — the
+web-freeze question must be argued explicitly (owner may keep parity
+via a recorded decision, not silence). The gate also reviews Stage 3's
+execution evidence (this session's close-out included) and the
+parity-tripwire outcome (box NOT exceeded). Owner-side surfacings
+standing: Dependabot, branch protection, PAT expiry (D30).

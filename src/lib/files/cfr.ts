@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 /**
- * ClearFile Return (.cfr) — open, documented JSON save format.
+ * ClearFile Return — open, documented JSON save format (ADR-015).
+ *
+ * The unified envelope (also what the Flutter app writes and what rides
+ * inside a ClearFile exchange container's clearfile.json entry):
+ *
+ *   { "format": "clearfile-return", "version": 2, "app": …,
+ *     "savedAt": …, "filing": { …TaxReturnData shape… } }
  *
  * Schema v2 (Stage-3 parity, 2026-11-15): `filing` holds the reference
  * engine's TaxReturnData shape (the same fields clearfile/lib/models/
@@ -13,6 +19,11 @@
  * uses — see migrateV1 below. Version guard: files claiming a version
  * higher than CFR_VERSION are refused (no format change ships before a
  * version guard, DEBT D3).
+ *
+ * The legacy flat layout the Flutter app wrote through v1.0.1
+ * (`format: "clearfile.return"`, filing fields at the top level, flat
+ * `formatVersion`) is accepted on load and lifted losslessly into the
+ * envelope shape — the fields are the same model (ADR-015 unification).
  */
 
 import type { Dependent, TaxReturnData, W2Entry } from '../tax/engine'
@@ -20,6 +31,7 @@ import type { DeductionMethod, FilingStatus } from '../tax/config'
 
 export const CFR_FORMAT = 'clearfile-return'
 export const CFR_VERSION = 2
+export const LEGACY_FLAT_FORMAT = 'clearfile.return'
 export const APP_LABEL = 'ClearFile prototype 0.2'
 
 export interface CfrFile {
@@ -106,17 +118,34 @@ export function parseCfr(text: string): { filing: TaxReturnData; warnings: strin
   }
   if (!parsed || typeof parsed !== 'object') throw new CfrParseError('The file does not contain a ClearFile return.')
   const obj = parsed as Record<string, unknown>
-  if (obj.format !== CFR_FORMAT) {
-    throw new CfrParseError(
-      `Unrecognized format "${String(obj.format)}" — expected "${CFR_FORMAT}". This is not a ClearFile .cfr return.`
-    )
-  }
-  if (typeof obj.version !== 'number' || obj.version > CFR_VERSION) {
-    throw new CfrParseError(`Unsupported version ${String(obj.version)} (this build supports up to ${CFR_VERSION}).`)
-  }
-  let f = (obj.filing ?? {}) as Record<string, unknown>
+
+  let f: Record<string, unknown>
   const warnings: string[] = []
-  if (obj.version < 2) f = migrateV1(f, warnings)
+  if (obj.format === LEGACY_FLAT_FORMAT) {
+    // Legacy flat layout (the Flutter app through v1.0.1, and its autosave
+    // store): the same filing fields at the top level beside the marker.
+    // Guard, then lift losslessly (ADR-015).
+    if (typeof obj.formatVersion === 'number' && obj.formatVersion > 1) {
+      throw new CfrParseError(`Unsupported version ${obj.formatVersion} (this build supports up to ${CFR_VERSION}).`)
+    }
+    f = { ...obj }
+    delete f.format
+    delete f.formatVersion
+    if (typeof f.displayName === 'string' || typeof f.id === 'string') {
+      warnings.push('Return metadata (name, dates) from the Flutter app is kept in the file but not carried by the web prototype.')
+    }
+  } else {
+    if (obj.format !== CFR_FORMAT) {
+      throw new CfrParseError(
+        `Unrecognized format "${String(obj.format)}" — expected "${CFR_FORMAT}". This is not a ClearFile return.`
+      )
+    }
+    if (typeof obj.version !== 'number' || obj.version > CFR_VERSION) {
+      throw new CfrParseError(`Unsupported version ${String(obj.version)} (this build supports up to ${CFR_VERSION}).`)
+    }
+    f = (obj.filing ?? {}) as Record<string, unknown>
+    if (obj.version < 2) f = migrateV1(f, warnings)
+  }
   if (!f || typeof f !== 'object' || Array.isArray(f)) {
     throw new CfrParseError('The file has no return payload.')
   }

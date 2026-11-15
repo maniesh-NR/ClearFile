@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import 'package:flutter/material.dart';
 
+import '../../io/return_format.dart';
 import '../app_state.dart';
 
 /// Welcome / home screen: what ClearFile is, the demo disclaimer, actions to
@@ -110,7 +111,7 @@ class WelcomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
-            onPressed: state.importFromFile,
+            onPressed: () => _importReturnFile(context),
             icon: const Icon(Icons.file_open_outlined),
             label: const Text('Import a .clearfile.json file'),
           ),
@@ -197,6 +198,61 @@ class WelcomeScreen extends StatelessWidget {
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   // --- TurboTax-format bridges (TXF import, .tax inspection) -------------
+
+  /// Import a ClearFile return file and report the outcome precisely
+  /// (D1: cancelled is silent, failures say why, migrations list their
+  /// notes) — the same dialog treatment the TXF import gives.
+  Future<void> _importReturnFile(BuildContext context) async {
+    final outcome = await state.importFromFile();
+    if (!context.mounted) return;
+    switch (outcome) {
+      case ReturnImportCancelled():
+        return;
+      case ReturnImportFailed():
+        await showDialog<void>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Could not import this file'),
+            content: Text(outcome.reason),
+            actions: [
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        );
+      case ReturnImportOk():
+        if (outcome.warnings.isNotEmpty) {
+          await showDialog<void>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Import notes'),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (final note in outcome.warnings)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(note,
+                            style:
+                                Theme.of(ctx).textTheme.bodySmall),
+                      ),
+                  ],
+                ),
+              ),
+              actions: [
+                FilledButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          );
+        }
+    }
+  }
 
   Future<void> _importTxf(BuildContext context) async {
     final outcome = await state.importFromTxf();

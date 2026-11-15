@@ -34,8 +34,8 @@ export function FileMenu() {
 
   function saveReturn() {
     const { filing, year } = snapshot()
-    downloadText(`clearfile-${year}-return.cfr`, serializeCfr(filing))
-    toast({ title: 'Return saved', description: `clearfile-${year}-return.cfr — open JSON format (.cfr)` })
+    downloadText(`clearfile-${year}-return.clearfile.json`, serializeCfr(filing))
+    toast({ title: 'Return saved', description: `clearfile-${year}-return.clearfile.json — open JSON format (.clearfile.json, unified with the Flutter app)` })
   }
 
   async function openCfr(e: React.ChangeEvent<HTMLInputElement>) {
@@ -105,7 +105,7 @@ export function FileMenu() {
         <DropdownMenuContent align="end" className="rounded-2xl w-64">
           <DropdownMenuLabel>Return file</DropdownMenuLabel>
           <DropdownMenuItem onClick={saveReturn}>
-            <Save className="size-4" aria-hidden /> Save return (.cfr)
+            <Save className="size-4" aria-hidden /> Save return (.clearfile.json)
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => cfrInputRef.current?.click()}>
             <FileUp className="size-4" aria-hidden /> Open return…
@@ -226,8 +226,8 @@ export function FileMenu() {
           <AlertDialogHeader>
             <AlertDialogTitle>Clear this return and start over?</AlertDialogTitle>
             <AlertDialogDescription>
-              Every entry in the current interview will be removed (your AI keys in Settings are kept). Save a .cfr file
-              first if you want a copy.
+              Every entry in the current interview will be removed (your AI keys in Settings are kept). Save a .clearfile.json
+              file first if you want a copy.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

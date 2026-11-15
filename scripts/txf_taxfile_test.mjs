@@ -17,6 +17,11 @@
  *    round-trip, the modern Intuit container shape (manifest.xml +
  *    tax:<uuid>) flagged encrypted-and-not-decrypted, and the
  *    non-ZIP/empty honest paths.
+ * 3. Unified ClearFile return format (ADR-015) — `serializeCfr`/`parseCfr`
+ *    round-trip, the legacy flat layout (`clearfile.return`) the Flutter
+ *    app wrote through v1.0.1 accepted and lifted, the version guard
+ *    refusing future files (D3), and the v1 (pre-parity web) envelope
+ *    migration with its warnings.
  *
  * This script compiles the file modules first:
  *   npx tsc -p scripts/tsconfig.files.json  (emits to .files-build/, gitignored)
@@ -46,7 +51,7 @@ const { exportTxf } = require(path.join(root, '.files-build', 'files', 'txf.js')
 const { analyzeTaxFile, makeZip } = require(
   path.join(root, '.files-build', 'files', 'taxfile.js'),
 )
-const { serializeCfr } = require(path.join(root, '.files-build', 'files', 'cfr.js'))
+const { serializeCfr, parseCfr, CfrParseError } = require(path.join(root, '.files-build', 'files', 'cfr.js'))
 
 const enc = new TextEncoder()
 let passed = 0
@@ -232,4 +237,114 @@ function readTxf(text) {
   console.log('[tax] non-ZIP and empty honest paths: OK')
 }
 
-console.log(`\n[txf_taxfile] ${passed}/5 groups passed`)
+/* ---------------- 3. unified return format (ADR-015) -------------------- */
+
+{
+  // Envelope round-trip: what the app writes, the app reads back.
+  const filing = {
+    taxYear: 2025,
+    filingStatus: 'marriedJoint',
+    w2s: [{ employer: 'Acme Corp', wages: 52500.5, withholding: 6200 }],
+    interestIncome: 120.25,
+    qualifiedDividends: 400,
+    studentLoanInterest: 900,
+  }
+  const text = serializeCfr(filing)
+  const envelope = JSON.parse(text)
+  assert.equal(envelope.format, 'clearfile-return')
+  assert.equal(envelope.version, 2)
+  const { filing: back, warnings } = parseCfr(text)
+  assert.deepEqual(warnings, [])
+  assert.equal(back.filingStatus, 'marriedJoint')
+  assert.equal(back.w2s[0].wages, 52500.5)
+  assert.equal(back.interestIncome, 120.25)
+  assert.equal(back.qualifiedDividends, 400)
+  assert.equal(back.studentLoanInterest, 900)
+  passed += 1
+  console.log('[cfr] envelope v2 round-trip: OK')
+}
+
+{
+  // Legacy flat layout (Flutter app <= v1.0.1): fields at the top level
+  // beside the marker — accepted, lifted, metadata honestly noted.
+  const flat = JSON.stringify({
+    format: 'clearfile.return',
+    formatVersion: 1,
+    displayName: 'From the Flutter app',
+    id: 'abc123',
+    taxYear: 2025,
+    filingStatus: 'single',
+    interestIncome: 42,
+    w2s: [{ employer: 'Initech', wages: 60000, withholding: 6000 }],
+    dependents: [{ name: 'Kid', age: 8, relationship: 'daughter', qualifyingChild: true, otherDependentCredit: false }],
+  })
+  const { filing, warnings } = parseCfr(flat)
+  assert.equal(filing.interestIncome, 42)
+  assert.equal(filing.w2s[0].employer, 'Initech')
+  assert.equal(filing.dependents.length, 1)
+  assert.ok(warnings.some((w) => w.includes('not carried by the web prototype')))
+  // flat guard: a future formatVersion is refused, not guessed at (D3)
+  assert.throws(
+    () => parseCfr(JSON.stringify({ format: 'clearfile.return', formatVersion: 7 })),
+    (e) => e instanceof CfrParseError && e.message.includes('Unsupported version 7'),
+  )
+  passed += 1
+  console.log('[cfr] legacy flat layout accepted + guarded: OK')
+}
+
+{
+  // Version guard: future envelopes are refused with a readable error.
+  assert.throws(
+    () => parseCfr(JSON.stringify({ format: 'clearfile-return', version: 3, filing: {} })),
+    (e) => e instanceof CfrParseError && e.message.includes('Unsupported version 3'),
+  )
+  assert.throws(
+    () => parseCfr('not json at all'),
+    (e) => e instanceof CfrParseError && e.message.includes('not valid JSON'),
+  )
+  assert.throws(
+    () => parseCfr(JSON.stringify({ hello: 'world' })),
+    (e) => e instanceof CfrParseError && e.message.includes('Unrecognized format'),
+  )
+  passed += 1
+  console.log('[cfr] version guard + honest failures: OK')
+}
+
+{
+  // v1 (pre-parity web) envelope: conservative migration + warnings.
+  const v1 = JSON.stringify({
+    format: 'clearfile-return',
+    version: 1,
+    app: 'ClearFile prototype 0.1',
+    savedAt: '2026-11-03T00:00:00.000Z',
+    filing: {
+      status: 'mfj',
+      taxYear: 2026,
+      interest: 500,
+      dividends: 300,
+      adjustments: 120,
+      itemized: { taxesPaid: 8000, mortgageInterest: 9000, charity: 1000, medical: 200, other: 50 },
+      qualifyingChildren: 2,
+      otherDependents: 1,
+      w2s: [{ employer: 'Acme', wages: 90000, withholding: 9000 }],
+    },
+  })
+  const { filing, warnings } = parseCfr(v1)
+  assert.equal(filing.filingStatus, 'marriedJoint')
+  assert.equal(filing.taxYear, 2025)
+  assert.equal(filing.interestIncome, 500)
+  assert.equal(filing.ordinaryDividends, 300)
+  assert.equal(filing.stateLocalIncomeOrSalesTax, 8000)
+  assert.equal(filing.mortgageInterest, 9000)
+  assert.equal(filing.charitableCash, 1000)
+  assert.equal(filing.dependents.length, 3)
+  assert.equal(filing.dependents.filter((d) => d.qualifyingChild).length, 2)
+  assert.ok(warnings.some((w) => w.includes('older prototype')))
+  assert.ok(warnings.some((w) => w.includes('Adjustments to income')))
+  assert.ok(warnings.some((w) => w.includes('Medical and "other"')))
+  assert.ok(warnings.some((w) => w.includes('Dependent counts')))
+  passed += 1
+  console.log('[cfr] v1 envelope migrated with warnings: OK')
+}
+
+console.log(`\n[txf_taxfile] ${passed}/10 groups passed`)

@@ -614,3 +614,79 @@ its open questions assigned to the gate agenda.
 **Closing action:** mode normalization (done before the redo) +
 harness_check (0 failures after redo) + this event-driven backup — the
 last action before the reply.
+
+## 2026-11-15 (final Stage-3 session) · Stage-3 close-out — unified return format (ADR-015) + engine.md + tour + DoD
+
+**Session task:** "Continue" — the STATE's "Immediately next" list:
+Stage-3 close-out (`.clearfile.json` versioning + guards + the
+`.cfr`→`.clearfile.json` unification decision, `docs/engine.md`, repo
+guided tour, discrepancy-report issue templates, project definition of
+done).
+
+**Bootstrap:** seventh observed recycle — 183 mode-flips (normalized
+FIRST, quirk 19 applied), `tools/` gone again (Flutter SDK reinstalled
+via the NEW durable `scripts/fetch_flutter_sdk.sh`: manifest-verified
+sha256, resumable, 81 s), `node_modules`+tsc survived.
+
+**Unified return format (ADR-015, the engineering core):**
+- New `clearfile/lib/io/return_format.dart` — `ReturnFileCodec`
+  (encode/decode of the `{format: "clearfile-return", version: 2, app,
+  savedAt, filing}` envelope; version guard refuses future files;
+  v1-web-envelope conservative migration with the web parser's warning
+  wording; legacy flat `clearfile.return` lift) + the sealed
+  `ReturnImport` outcome (cancelled / failed-reason / ok-warnings).
+- Wired: `files.dart` (import accepts json+cfr, returns the sealed
+  outcome), `return_store.dart` (autosave writes the envelope; reads
+  migrate legacy flat store files; corrupt files still skipped),
+  `app_state.dart` + `welcome.dart` (failure dialogs + migration-notes
+  dialogs, mirroring the TXF treatment — D1 closed), and
+  `tax_inspect.dart` (container import via the codec — FIXES a real
+  cross-codebase bug: web-exported exchange containers could not
+  import into the Flutter app because the marker check only accepted
+  the flat layout).
+- Web: `cfr.ts` accepts the legacy flat layout (guard on
+  formatVersion) with an honest metadata-not-carried warning;
+  `filemenu.tsx` saves `.clearfile.json` (menu label, toast, reset
+  copy).
+- Spec: `docs/return-format.md` (envelope, payload contract, migration
+  matrix, warning parity list, extension policy, versioning policy).
+- Tests: `clearfile/test/return_format_test.dart` (14: round-trip,
+  encode shape, future/missing/flat guards, flat lift, v1 migration
+  parity incl. warning wording, missing-filing defaults, year forcing,
+  non-JSON/foreign failures, outcome mapping, store envelope + legacy
+  store migration) + 2 new container tests (web-envelope container
+  import, unreadable fall-through) + 4 new bridge-suite groups
+  (envelope round-trip, flat lift + guard, version guard + honest
+  failures, v1 migration). D3's guard rule closed (the `readDate`
+  epoch default is documented tolerant-read behaviour).
+
+**Docs close-out:** `docs/engine.md` (1040/Schedule A/8812/8960 line
+map with parameter sources, verification pyramid, limitations
+register incl. D31); `docs/tour.md` (15-minute guided tour + the
+adopted project DoD: "v1.1 = a reader can verify every number against
+a cited IRS source without reading git history");
+`.github/ISSUE_TEMPLATE/` engine- + format-discrepancy templates
+(citation + derivation required); README + scripts/README updated
+(format paragraphs, table rows, 111-test count, fetcher entry).
+
+**Tripwire, recorded honestly:** the parity BOX was not exceeded
+(closed under budget in one of its two sessions) but the SLIP fired —
+the exit gate was not convened within the four working sessions
+(fixtures, parity, bridges, this close-out; the governance-only
+ADR-014 session is not counted). Per the tripwire the web-freeze
+option returns to the gate agenda as a MANDATORY item (ROADMAP +
+STATE carry it; the owner's ADR-009 prerogative may still keep parity,
+but as a recorded decision at the gate, not by silence).
+
+**Verification (all re-run this session):** flutter analyze clean;
+flutter test 111/111 (95 hand-written + 16 golden); tsc --noEmit 0;
+bridge suite 10/10 groups; parity 16/16; oracle 16/16; web smoke 6/6;
+harness_check 0 failures.
+
+**Decisions:** ADR-015; D1 closed; D3 guard-rule closed; project DoD
+adopted (ADV-PROD F5); no new debt items (all new work pinned by
+tests).
+
+**Closing action:** re-verification set + this event-driven backup —
+the last action before the reply. **Stage 3 execution is COMPLETE;
+the next event is the Stage-2 entry gate (= Stage 3's exit gate).**

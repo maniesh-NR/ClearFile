@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:clearfile/io/tax_inspect.dart';
 import 'package:clearfile/models/tax_return.dart';
+import 'package:clearfile/models/w2.dart';
 
 /// .tax container inspection tests. Containers are built in-test with a
 /// minimal STORE-only ZIP writer (the same shape the web prototype's
@@ -31,6 +32,49 @@ void main() {
     expect(insp.filing, isNotNull);
     expect(insp.filing!.interestIncome, 120);
     expect(insp.summary, contains('ClearFile exchange container'));
+  });
+
+  test('web-written envelope container imports (cross-codebase shape, '
+      'ADR-015)', () {
+    // The web prototype's exportTaxContainer writes the VERSIONED envelope
+    // (clearfile-return v2) into clearfile.json — the unified codec accepts
+    // it, where the pre-unification marker check did not.
+    final filing = TaxReturnData(
+      displayName: 'Web container',
+      w2s: [W2Entry(employer: 'Initech', wages: 60000, withholding: 6000)],
+    );
+    final envelope = jsonEncode({
+      'format': 'clearfile-return',
+      'version': 2,
+      'app': 'ClearFile prototype 0.2',
+      'savedAt': '2026-11-15T02:00:00.000Z',
+      'filing': filing.toJson()
+        ..remove('format')
+        ..remove('formatVersion'),
+    });
+    final bytes = _makeZip([
+      _ZipEntry('clearfile.json', utf8.encode(envelope)),
+      _ZipEntry('README.txt', utf8.encode('ClearFile exchange container')),
+    ]);
+
+    final insp = analyzeTaxFile(bytes);
+    expect(insp.clearfileContainer, isTrue);
+    expect(insp.filing, isNotNull);
+    expect(insp.filing!.displayName, 'Web container');
+    expect(insp.filing!.w2s.single.employer, 'Initech');
+  });
+
+  test('container with an unreadable clearfile.json falls through with a '
+      'warning', () {
+    final bytes = _makeZip([
+      _ZipEntry('clearfile.json', utf8.encode('this is not json')),
+      _ZipEntry('README.txt', utf8.encode('ClearFile exchange container')),
+    ]);
+    final insp = analyzeTaxFile(bytes);
+    expect(insp.clearfileContainer, isFalse);
+    expect(insp.filing, isNull);
+    expect(insp.warnings.any((w) => w.contains('could not be parsed')),
+        isTrue);
   });
 
   test('modern Intuit container shape is detected, flagged encrypted, '

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import 'dart:convert';
 import 'dart:io';
 
 import '../models/tax_return.dart';
+import 'return_format.dart';
 
 /// Persistence seam for saved returns (Stage-1 debt D4).
 ///
@@ -22,9 +22,10 @@ abstract class ReturnStore {
 /// File-backed [ReturnStore]: one JSON file per return inside a `returns/`
 /// folder of the app's private data directory.
 ///
-/// Nothing leaves the device. The same JSON layout is used by the
-/// export/import file picker flow, so an exported file can be dropped back
-/// in at any time.
+/// Nothing leaves the device. Files use the SAME unified envelope as the
+/// export/import picker flow (`ReturnFileCodec`, ADR-015), so an exported
+/// `.clearfile.json` can be dropped back in at any time; files written by
+/// older builds (flat layout) are migrated on read.
 class FileReturnStore implements ReturnStore {
   FileReturnStore(this.baseDirectory);
 
@@ -50,10 +51,10 @@ class FileReturnStore implements ReturnStore {
     for (final file in files) {
       try {
         final text = await file.readAsString();
-        final decoded = jsonDecode(text);
-        if (decoded is Map<String, dynamic>) {
-          returns.add(TaxReturnData.fromJson(decoded));
-        }
+        // Unified envelope + legacy layouts, with the version guard
+        // (ReturnFileCodec). Corrupt or future-version files are skipped
+        // rather than crashing the home screen.
+        returns.add(ReturnFileCodec.decode(text).filing);
       } catch (_) {
         // Unreadable files are skipped rather than crashing the home screen.
       }
@@ -67,8 +68,7 @@ class FileReturnStore implements ReturnStore {
     await ensureReady();
     r.modified = DateTime.now();
     final file = File('${_returnsDir.path}/${_safeName(r.id)}.json');
-    return file.writeAsString(
-        const JsonEncoder.withIndent('  ').convert(r.toJson()));
+    return file.writeAsString(ReturnFileCodec.encode(r));
   }
 
   @override

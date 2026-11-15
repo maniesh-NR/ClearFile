@@ -68,7 +68,7 @@ below.
 | --- | --- | --- |
 | 1 — Hardening | copy fixes (done 2026-11-14), typecheck (done), lockfile (done), release body (done) | delete-bug fix (done), privacy gating (done 2026-11-14), INTERNET + entitlements (done) |
 | 2 — RE tooling | — | — (tooling is repo-level; placement decided at its gate) |
-| 3 — Parity & bridges | **engine parity features** (QDI/LTCG stacking, NIIT, SALT cap, OBBBA senior deduction, student-loan interest, exact 5%-of-excess CTC phase-out, cents-not-whole-dollars — **done 2026-11-15**, parity suite 16/16), TXF exporter verification (**done 2026-11-15**: spec v042 codes fixed + `txf_taxfile_test.mjs` in CI), `.cfr`→`.clearfile.json` migration decision | TXF import (**done 2026-11-15**: spec v042, W-2 copy grouping, hardening caps, 11 tests), `.tax` read-only inspection (**done 2026-11-15**: Intuit shape + entropy, 7 tests), schema versioning + guards |
+| 3 — Parity & bridges | **engine parity features** (QDI/LTCG stacking, NIIT, SALT cap, OBBBA senior deduction, student-loan interest, exact 5%-of-excess CTC phase-out, cents-not-whole-dollars — **done 2026-11-15**, parity suite 16/16), TXF exporter verification (**done 2026-11-15**: spec v042 codes fixed + `txf_taxfile_test.mjs` in CI), **unified return format done 2026-11-15 (ADR-015: `.clearfile.json` envelope + version guard + migration matrix + `.cfr` unification)** | TXF import (**done 2026-11-15**: spec v042, W-2 copy grouping, hardening caps, 11 tests), `.tax` read-only inspection (**done 2026-11-15**: Intuit shape + entropy, 7 tests), **schema versioning + guards done 2026-11-15 (ADR-015: store + export write the envelope; legacy layouts migrate on read)** |
 | 4 — Pages | (hosted Flutter web build) | Flutter web deploy |
 | 5 — AI hardening | timeout parity | injection suite, fixture e2e, key header fix |
 | 6 — Freeze | docs-only, parameter corrections | parameter corrections |
@@ -214,6 +214,13 @@ conditions — the gate that enters this stage must settle all of them):**
   boundary and FFI seams, the macOS/Linux version-tiering definitions,
   and the versioning call (v2.0.0?) — settled BEFORE any native-stack
   code lands.
+- **Parity tripwire outcome (MANDATORY, slip fired 2026-11-15):** the
+  web-freeze option returns to this gate's agenda. The box was not
+  exceeded (parity set closed under budget in one of its two sessions)
+  but the gate was not convened within the four-session window, so the
+  freeze/parity question must be argued explicitly here — the owner's
+  ADR-009 prerogative may still keep parity, but only as a recorded,
+  reasoned decision at this gate, not by silence.
 
 **Gate status:** PENDING (full-depth gate; ADV-LEGAL weighted) — convenes
 after Stage 3's execution; it is ALSO Stage 3's exit gate.
@@ -301,11 +308,32 @@ investment-interest family) and `taxfile.ts` gained the same Intuit-shape
 extensionless intra-module imports). Dart suite 95/95; `tsc --noEmit`
 clean. The Ghidra sandbox feasibility study that accompanied this
 work is recorded in `docs/ghidra-sandbox-feasibility.md` + protocol §4.E
-(pre-gate research for THIS stage's exit gate). **Remaining inside
-Stage 3:** `.clearfile.json` schema versioning + guards + the
-`.cfr`→`.clearfile.json` unification decision, `docs/engine.md`, repo
-guided tour, discrepancy-report templates, project definition of done
-(ADV-PROD F5).
+(pre-gate research for THIS stage's exit gate).
+
+**Close-out progress (2026-11-15, final Stage-3 session — owner-directed,
+ADR-015): ALL REMAINING ITEMS DONE; Stage 3 execution COMPLETE.** The
+unified return format (`.clearfile.json` envelope, version guard,
+migration matrix, sealed import outcomes; closes D1 and the D3 guard
+rule; spec `docs/return-format.md`; 14 new Dart tests + 2 container
+tests + the extended bridge suite — the store now writes the envelope
+and migrates legacy layouts on read). `docs/engine.md` (1040 line
+mapping + parameter sources + verification pyramid + limitations
+register). `docs/tour.md` (repo guided tour). Discrepancy-report issue
+templates (`.github/ISSUE_TEMPLATE/`: engine + format). The project
+definition of done (ADV-PROD F5, adopted): **v1.1 = a reader can verify
+every number against a cited IRS source without reading git history** —
+recorded in `docs/tour.md` and satisfied by the inline-citation docs
+(engine.md, fixtures, return-format). **The exit gate (the RE-tooling
+stage's entry gate) is the next event.** Tripwire outcome, recorded
+honestly: the **box** was NOT exceeded (the web parity set consumed one
+of its two box sessions and closed under budget), but the **slip**
+condition FIRED — the exit gate was not convened within the four-session
+window (the four working sessions since entry: fixtures, parity,
+bridges, this close-out; the governance-only ADR-014 session is not
+counted as Stage-3 execution). Per the tripwire, the **web-freeze
+option returns to the gate agenda as a mandatory item**; the owner's
+ADR-009 parity prerogative may still decline it, but the gate must argue
+it explicitly, not skip it.
 
 **Gate status:** **Stage 3 ENTERED 2026-11-14** — at the Stage-2 entry
 gate, under the re-sequencing: the full-depth panel reviewed this stage's

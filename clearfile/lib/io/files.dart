@@ -6,10 +6,12 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 
 import '../models/tax_return.dart';
+import 'return_format.dart';
 
 /// Export/import of the open ClearFile return format through the platform
-/// file picker. Files carry the `.clearfile.json` extension and a
-/// `format: "clearfile.return"` marker.
+/// file picker. Files carry the `.clearfile.json` extension and the unified
+/// envelope (`format: "clearfile-return"`, `version`, `filing`) — see
+/// [ReturnFileCodec] (ADR-015).
 class ReturnFileIO {
   static const String fileExtension = 'clearfile.json';
 
@@ -51,9 +53,7 @@ class ReturnFileIO {
 
   /// Returns the path written, or null when the user cancelled.
   static Future<String?> exportReturn(TaxReturnData r) async {
-    final bytes = utf8.encode(
-      const JsonEncoder.withIndent('  ').convert(r.toJson()),
-    );
+    final bytes = utf8.encode(ReturnFileCodec.encode(r));
     final uri = await FilePicker.saveFile(
       fileName: '${_safeFileName(r.displayName)}.$fileExtension',
       bytes: bytes,
@@ -64,26 +64,24 @@ class ReturnFileIO {
     return uri.scheme == 'file' ? uri.toFilePath() : uri.toString();
   }
 
-  /// Returns the parsed return, or null when cancelled or unreadable.
-  static Future<TaxReturnData?> importReturn() async {
+  /// Opens a return file and reports the outcome precisely (DEBT D1):
+  /// cancelled / failed-with-reason / ok-with-migration-warnings — never a
+  /// silent null. Accepts `.clearfile.json` envelopes (any version ≤ the
+  /// guard), legacy flat files, and the web prototype's `.cfr` saves.
+  static Future<ReturnImport> importReturn() async {
     final files = await FilePicker.pickFiles(
       dialogTitle: 'Open a ClearFile return',
       type: FileType.custom,
-      allowedExtensions: ['json'],
+      allowedExtensions: ['json', 'cfr'],
     );
-    if (files.isEmpty) return null;
+    if (files.isEmpty) return const ReturnImportCancelled();
     final path = files.first.path;
-    if (path == null) return null;
+    if (path == null) return const ReturnImportCancelled();
     try {
       final text = await File(path).readAsString();
-      final decoded = jsonDecode(text);
-      if (decoded is Map<String, dynamic> &&
-          decoded['format'] == 'clearfile.return') {
-        return TaxReturnData.fromJson(decoded);
-      }
-      return null;
+      return decodeReturnImport(text);
     } catch (_) {
-      return null;
+      return const ReturnImportFailed('The file could not be read.');
     }
   }
 
