@@ -176,7 +176,11 @@ in platform scaffolding; the `origin` remote, the Flutter SDK (`tools/`),
      sha256; then `export PATH="$PWD/tools/flutter/bin:$PATH"`).
    - Web prototype → `npm install` (and `npm run build` when needed).
 5. Verify: `git status --porcelain` shows nothing but ignored/untracked
-   scaffolding; `git log --oneline -5` shows the full project history.
+   scaffolding; `git log --oneline -5` shows the full project history; and
+   `bash scripts/harness_check.sh` exits 0 — its unpushed-commit check
+   catches a stale local amend before it can diverge from origin
+   (Stage-2 entry gate, 2026-11-17, ENG-7: an unlogged 2026-11-16 session
+   left exactly such an amend, found two days later).
 
 ---
 

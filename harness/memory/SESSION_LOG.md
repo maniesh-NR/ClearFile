@@ -690,3 +690,141 @@ tests).
 **Closing action:** re-verification set + this event-driven backup —
 the last action before the reply. **Stage 3 execution is COMPLETE;
 the next event is the Stage-2 entry gate (= Stage 3's exit gate).**
+
+## 2026-11-16 · Unlogged-session anomaly, recorded retrospectively (SEC-2, Stage-2 entry gate)
+
+**Why this entry exists:** a brief session on 2026-11-16 (between the
+Stage-3 close-out push and the gate session) left the repository in a
+state no memory file recorded: it amended the pushed tip's backup
+commit — `git commit --amend` producing `4d4e1d6` from `a18b160` —
+folding in 191 **mode-only** file changes (644→755, zero content delta;
+the eighth recycle's mode flips), and never pushed and never logged.
+Discovered by the 2026-11-17 gate session's bootstrap
+(`git rev-list --count origin/main..main` = 1 via harness_check's
+unpushed pass; reflog `commit (amend)` at 2026-11-16 10:46:43Z).
+
+**Resolution (applied BEFORE any edits, quirk 19's ordering):**
+`git reset --hard a18b160` — the pushed tip; contents were verified
+identical (`git diff a18b160 4d4e1d6 --stat`: 191 files, 0 insertions,
+0 deletions — mode-only), so nothing was lost, canonical 644 modes were
+restored, and the backup chain stays fast-forward. Two gate reviewers
+independently verified the resolution sound (ADV-SEC's blob-level audit;
+ADV-ENG's diff analysis).
+
+**Lesson (folded into quirk 9's norm + WORKFLOW §4 step 5):** a session
+that only touches modes must still normalize-or-push-and-log; the
+WORKFLOW recycle-verification step now explicitly requires
+`bash scripts/harness_check.sh`, whose unpushed-commit check would have
+flagged the stale amend in-session. Never commit mode flips into
+history — normalize them.
+
+## 2026-11-17 · Stage-2 entry gate (= Stage 3's exit gate): Stage 3 CLOSED, Stage 2 ENTERED, the full settlement
+
+**Session task:** owner instruction "proceed with the next step" — per
+STATE's "Immediately next" (unchanged since the close-out): convene the
+Stage-2 entry gate, full-depth, ADV-LEGAL weighted.
+
+**Bootstrap + inherited-state verification:** ninth-recycle era —
+`tools/` gone (Flutter SDK reinstalled via `scripts/fetch_flutter_sdk.sh`
+after hardening it — quirk 20: this snapshot FS now fails tar's trailing
+directory-status restore benignly; the fetcher's smoke test is the
+authority; verified end-to-end twice), `node_modules`+tsc bin survived,
+history intact. The 2026-11-16 unlogged amend found and resolved (see
+the entry above). Orchestrator verification set run fresh before the
+panel: analyze clean, Dart 111/111, tsc 0, bridge 10/10, parity 16/16,
+oracle 16/16, smoke 6/6, harness_check 12/12; live: main = a18b160 =
+local HEAD, v1.0.1 → exactly 0bbb564, hygiene green on a18b160 (runs
+43713252346 + 43872210841).
+
+**The gate (WORKFLOW §2, full-depth):** four reviewers — ADV-SEC,
+ADV-LEGAL, ADV-ENG, ADV-PROD — ran concurrently as isolated agent
+contexts with no visibility of each other's reports (one disclosed
+incident: LEGAL's early `git grep` printed ~15 lines of *archived
+2026-11-14* report text incidentally — not opened, path excluded
+thereafter, disclosed in its verification log). Reports filed near
+verbatim: `adversarial/reports/2026-11-17-stage2-{security,legal,
+engineering,product}.md`. **Verdicts: 4 × PROCEED-WITH-CONDITIONS, no
+BLOCKs — consensus reached.** Every reviewer re-ran the suites with its
+own runs (four full Dart-suite runs) and at least one live check; the
+PAT was avoided by all four (one hit the shared-IP rate limit and said
+so).
+
+**Agenda settled (the gate record in CONSENSUS.md carries the full
+reasoning; memory/DECISIONS.md carries the ADRs):**
+1. **Stage 3: CLOSED, unanimously** — every scope item survived
+   adversarial verification (the parity suite genuinely runs the TS
+   engine on the same fixtures; the store writes the envelope on disk;
+   the bridges are spec-true and hardened; the docs are legible without
+   git history).
+2. **Parity tripwire (mandatory, slip fired): DISPOSED as ADR-016** —
+   TS-engine maintenance freeze (no NEW web-engine features; bug/
+   security fixes + the Stage-5 hardening halves + format-guard
+   compliance + reference-mirrored corrections via the shared fixtures)
+   with retire-on-replacement when the Rust core serves the web (WASM);
+   owner-overrule path recorded (reversal ADR, never silence). Split
+   3–1 with convergent substance (SEC/LEGAL/ENG freeze; PROD
+   maintenance + retire-on-replacement — ADR-016's scope IS the
+   convergence).
+3. **ADR-014 settlement: ADR-017** — staged per-OS over the shared Rust
+   core as a **finite post-Stage-6 epilogue program** (N1 core → N2
+   Linux → N3 Android → N4 Windows → N5 macOS → N6 web-WASM + freeze;
+   the Rust core alone may run parallel to Stage 4+ behind its own
+   gate); core = engine + parameter tables + format codecs + MD3
+   palette (AI cascade, filesystem I/O, UI excluded — the envelope is
+   the ABI); one flat C ABI (cbindgen; Linux links direct); macOS = one
+   Swift+AppKit app, floor 13; Linux = gtk3-rs (older tier) / Slint
+   (modern tier), Qt only under GPL-3.0 terms; KMP Android-only;
+   **iOS dropped explicitly** (PROD-1); **v2.0.0 at first native GA**
+   (envelope stays v2); ADR-009 superseded by single-core parity when
+   the core serves every platform. Verification annex (fixtures +
+   differential harness vs Dart + ported bridge suites + f64-first) and
+   licensing annex (GPL-3.0-only core, cargo-deny, system-library
+   carve-outs, per-platform LICENSES manifests). v1.1 does not wait —
+   it becomes Stage 5's closing tag (discharges D29).
+4. **Placement ADR-012: IN-REPO, unanimous** (LEGAL updated its
+   2026-11-14 separate-repo default on the measured facts) with six
+   binding mechanics landing with the first tooling commit, else revert
+   to a separate research repo.
+5. **DoD fix: N = 4 named `docs/formats/` specs in a two-working-session
+   hard box** (clearfile-json family; exchange container; TXF profile;
+   modern `.tax` shape) with the hard rules recorded (no spec without
+   samples; owner states the corpus at kickoff; owner-corpus specs are
+   bonus; the box never silently grows).
+6. **Security contract recorded verbatim** (posture rules; write-free;
+   resource-bounded with refusal tests; crash-safe battery; never in
+   release.yml; enumerated gitignored fixture paths; the tool-header
+   posture line) — Stage-2 execution implements it; the exit gate
+   verifies by reading code and tests.
+
+**In-session condition fixes (applied at the gate):** **ENG-1** — a
+REAL bug found by ADV-ENG: the Dart `.tax` inspector crashed with
+`RangeError` on a crafted truncated central-directory entry
+(`tax_inspect.dart` `_readZipDirectory`, uncaught at
+`welcome.dart`'s call site) violating the never-throws contract —
+bounds-checked + the reviewer's crafted file is now a regression test.
+**ENG-2** — the untested TXF 10,000-record cap refusal test. Suite
+111→113, analyze clean. **SEC-1** — `npm audit fix` (non-breaking,
+lockfile-only; 0 criticals remain from 32 advisories/2 critical) + the
+fail-closed `npm audit --omit=dev --audit-level=critical` CI gate in
+`hygiene.yml` (verified green locally); all four web suites re-run
+green against the fixed tree. **SEC-3/ENG-5** — the fetcher
+tar-tolerance hardening (quirk 20). **SEC-2** — the 2026-11-16
+unlogged-session record (the entry above). **ENG-7** — WORKFLOW §4
+step 5 now requires harness_check at recycle verification. **LEGAL-5**
+— README "targets" clarification + test-count sync (111→113).
+
+**Decisions:** ADR-012, ADR-016, ADR-017 (DECISIONS.md; ADR-012 inserted
+at its reserved number); the DoD + security contract + entry conditions
+recorded in ROADMAP (Stage 2 ENTERED; Stage 3 CLOSED; the epilogue
+N1–N6 PENDING/unfunded; Stage-5's closing event = the v1.1 tag);
+harness_check patterns updated for the legitimate advance; DEBT D33–D35
+recorded (ENG-3 QSS fixture → first execution session; ENG-4 migration
+triple-implementation; ENG-8 store warnings).
+
+**Verification (re-run after the fixes, final):** flutter analyze clean;
+flutter test **113/113**; tsc 0; bridge 10/10; parity 16/16; oracle
+16/16; smoke 6/6; audit gate green; harness_check 0 failures.
+
+**Closing action:** this event-driven backup — the last action before
+the reply. **Stage 2 (RE tooling) execution is next; the epilogue native
+program (ADR-017) moves only when the owner funds it.**

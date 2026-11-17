@@ -61,6 +61,14 @@ jobs:
       - run: flutter test
         working-directory: clearfile
       - run: npm ci
+      # Stage-2 entry gate (2026-11-17, ADV-SEC SEC-1): dependency-
+      # vulnerability gate at CRITICAL level over the production tree
+      # (the web-standalone tarball is a self-hostable release asset).
+      # Fail-closed: a new critical advisory in the shipped dependency
+      # tree reds this job on every push/weekly run. Dev-level
+      # moderate/high advisories stay visible via `npm audit` without
+      # gating CI (the scaffold-heavy dev list is trimmable later).
+      - run: npm audit --omit=dev --audit-level=critical
       - run: npx tsc --noEmit
       # Stage-3 fixtures-first (2026-11-14): the independent golden-fixture
       # oracle (Decimal arithmetic written from the IRS form text, not from

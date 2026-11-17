@@ -167,6 +167,36 @@ void main() {
     expect(insp.warnings.any((w) => w.contains('end-of-central-directory')),
         isTrue);
   });
+
+  test('crafted central-directory name running past EOF never throws '
+      '(ENG-1 regression, Stage-2 entry gate)', () {
+    // A valid single-entry ZIP, then the central entry's name-length field
+    // is forged to 0xFFFF: the 46-byte header still fits at EOF but the
+    // claimed name field runs far past it — the exact shape that crashed
+    // _readZipDirectory with a RangeError before the 2026-11-17 bounds
+    // check. The contract under test: never throws on malformed input.
+    final valid = _makeZip([_ZipEntry('a.txt', utf8.encode('x'))]);
+    final forged = Uint8List.fromList(valid);
+    final view = ByteData.view(forged.buffer);
+
+    // Locate the EOCD from the tail, then the first central entry, using
+    // the same scan the inspector uses.
+    var eocd = -1;
+    for (var i = forged.length - 22; i >= 0; i--) {
+      if (view.getUint32(i, Endian.little) == 0x06054b50) {
+        eocd = i;
+        break;
+      }
+    }
+    final ptr = view.getUint32(eocd + 16, Endian.little);
+    expect(view.getUint32(ptr, Endian.little), 0x02014b50);
+    view.setUint16(ptr + 28, 0xFFFF, Endian.little); // nameLen past EOF
+
+    final insp = analyzeTaxFile(forged);
+    expect(insp.isZip, isTrue);
+    expect(insp.warnings.any(
+        (w) => w.contains('name extends past end of file')), isTrue);
+  });
 }
 
 /* ---------------- minimal STORE-only ZIP writer (test fixture) ----------- */

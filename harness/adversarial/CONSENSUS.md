@@ -488,3 +488,279 @@ the parity-tripwire outcome.
 
 **Stage 2: PENDING** (re-sequenced after Stage 3; its entry-gate agenda
 is carried in the ledger above and mirrored in ROADMAP).
+
+---
+
+## Gate: Stage 2 entry (closes Stage 3) · 2026-11-17
+
+**Reviewers (4, independent, full-depth):** ADV-SEC, ADV-LEGAL, ADV-ENG,
+ADV-PROD. Reports filed near-verbatim in
+`reports/2026-11-17-stage2-{security,legal,engineering,product}.md`.
+All four ran concurrently as isolated agent contexts with no visibility
+of each other's reports; verdicts were computed only after all four
+returned. The panel reviewed (a) the Stage-3 execution evidence (commits
+`99d6823`, `769e57b`, `74a1286`, `935f782`, `a18b160`), (b) the full
+repository state (full-depth per the tiering), and (c) the Stage-2 plan
+plus this gate's agenda: the Stage-3 closure question, the parity
+tripwire outcome (slip fired — mandatory item), the ADR-014 native
+re-platforming settlement, placement ADR-012, the RE stage's DoD fix,
+and the RE tooling security contract. Convened 2026-11-17 — two days
+after the close-out commit scheduled it (the slip already recorded); the
+agenda therefore carried the mandatory web-freeze argument.
+
+**Gate input — verified facts (orchestrator; independently re-verified by
+all four reviewers with their own runs, including four separate full
+Dart-suite runs and a fifth from the orchestrator):** `flutter analyze`
+— No issues found; `flutter test` — **+111: All tests passed** (pre-gate;
+113/113 after the in-session ENG-1/ENG-2 condition fixes below);
+`npx tsc --noEmit` — exit 0; `scripts/txf_taxfile_test.mjs` — 10/10
+groups; `scripts/web_parity_test.mjs` — 16/16 fixtures, 0 field
+failures; `scripts/verify_golden_fixtures.py` — 16/16;
+`scripts/web_smoke.py` — 6/6; `scripts/harness_check.sh` — 12 checks,
+0 failures. Live: `main` = `a18b160` (local HEAD = origin/main; the
+ninth-recycle era); tags `v1.0.1` → exactly `0bbb564`, `v1.0.0` →
+`a121f11` (via `git ls-remote`); hygiene CI green on `a18b160` (push run
+43713252346, weekly run 43872210841). One adversarial repro was
+contributed by a reviewer and is now a regression test (ENG-1). One
+independence incident, disclosed: ADV-LEGAL's early tree-wide `git grep`
+printed ~15 matching lines from *archived 2026-11-14* reports
+incidentally; the reviewer did not open any reports file, excluded the
+path from every subsequent scan, and disclosed it in its verification
+log. ADV-PROD noted an untracked 2026-11-17 report file appearing on
+disk mid-session (a concurrent reviewer's own output — not opened). No
+reviewer saw another's report.
+
+### Verdicts
+
+| Reviewer | Verdict | Blocking? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (6) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (5) | no |
+| ADV-ENG | PROCEED-WITH-CONDITIONS (5) | no |
+| ADV-PROD | PROCEED-WITH-CONDITIONS (5) | no |
+
+Unanimous non-BLOCK → **consensus reached**.
+
+### Agenda settled (recorded per the gate's mandate)
+
+1. **Stage-3 closure: YES — unanimous (4/4).** Every reviewer verified
+   the execution evidence against the ROADMAP scope with their own
+   runs: the parity suite genuinely runs the TS engine on the same 16
+   fixtures (ENG read the harness code); the store writes the envelope
+   on disk (test-asserted); TXF import is spec-true and hardened;
+   `.tax` inspection is read-only with no key material (SEC/LEGAL full
+   tree+history scans, zero hits); the unified format genuinely fixed
+   the cross-codebase container-import bug; the docs make the study
+   legible without git history. Stage 3 is **CLOSED 2026-11-17**.
+   Residuals ledgered (ENG-1..5 — ENG-1 fixed in-session below; SEC-1
+   applied in-session below), none blocking.
+2. **Parity tripwire (the mandatory item): DISPOSED — recorded, not by
+   silence.** Argued explicitly by all four. ADV-SEC, ADV-LEGAL, and
+   ADV-ENG recommended a freeze in substance (parity value banked in
+   the CI fixture contract; ×2 cost per engine change with zero
+   mechanical linkage; ADR-014's Rust core makes the TS engine a
+   transition artifact). ADV-PROD recommended continued parity narrowed
+   to maintenance with retire-on-replacement (a pre-emptive full freeze
+   recreates the D32 divergence shape). The positions converge in
+   practice; the gate settles **ADR-016: TS-engine maintenance freeze**
+   (no NEW web-engine features; bug/security fixes + the staged
+   Stage-5 hardening halves + format-guard compliance +
+   reference-mirrored corrections via the shared-fixture contract) with
+   retire-on-replacement and the owner-overrule path recorded (the
+   owner may reinstate full parity or order a hard freeze by a
+   recorded reversal ADR — never by silence).
+3. **Native re-platforming settlement (ADR-014 → ADR-017): SETTLED
+   before any native-stack code lands.** Unanimous: staged per-OS (never
+   big-bang; the Flutter app is the transition vehicle; each native GA
+   retires that Flutter target; conservative planning assumes v1.0.1
+   binaries may be in real users' hands); a **finite post-Stage-6
+   epilogue program** (N1 Rust core → N2 Linux → N3 Android → N4 Windows
+   → N5 macOS → N6 web-WASM + terminal freeze), with the recorded
+   variant that the Rust core alone may run parallel to Stage 4+ behind
+   its own gate; core scope = engine + parameter tables + format codecs
+   + MD3-from-seed palette (AI cascade, filesystem I/O, and UI excluded
+   — the envelope is the ABI); one flat C ABI (cbindgen) with Linux
+   linking the crate directly; macOS = ONE Swift+AppKit app tiered by
+   deployment floor 13 (the owner's "Swift newer / AppKit older"
+   resolves to a deployment-target tier, not two UIs); Linux = the
+   owner's two-tier assignment with one toolkit per tier (gtk3-rs
+   older / Slint modern; Qt only under GPL-3.0 terms as recorded
+   fallback; consolidatable at N2); KMP Android-only; **iOS dropped
+   from the native end-state — decided explicitly per PROD-1** (the
+   owner may add an iOS row by recorded ADR); **v2.0.0 at the first
+   native GA** (envelope version stays 2; app semver ≠ envelope schema ≠
+   web package.json); ADR-009 superseded by single-core parity when the
+   core serves every platform (TS frozen per ADR-016, retires on WASM;
+   Dart stays reference until the core's fixture parity is green).
+   Verification annex (ENG): the 16 golden fixtures become the Rust
+   regression contract PLUS a differential/property harness vs the Dart
+   reference, the bridge suites ported (warning strings live in the
+   core), f64-matching-first arithmetic, and the fixture-authoring
+   discipline carried over. Licensing annex (LEGAL): GPL-3.0-only core,
+   cargo-deny in CI, GPL-2.0-only crates barred, gtk/Slint/Qt terms as
+   above, Win32/Direct2D + AppKit as system libraries under GPLv3 §1,
+   per-platform LICENSES manifests, Material You as unprotectable
+   functional design. Recorded split points: the parity disposition
+   (3–1, settled above); the Linux primary toolkit (2–2 — settled by
+   the owner's literal tier assignment + one-toolkit-per-tier + the
+   licensing constraints); the Android/Windows order (re-settable at
+   the epilogue's own gates). v1.1 does not wait (PROD): the project
+   DoD is reachable on the current codebases — the v1.1 tag is
+   Stage 5's closing event and discharges D29.
+4. **Placement ADR-012: IN-REPO — unanimous (ADV-LEGAL updated its
+   2026-11-14 separate-repo default on the measured facts; ADV-SEC
+   upgraded from mild; ADV-PROD and ADV-ENG held in-repo).** Recorded as
+   `memory/DECISIONS.md` ADR-012 with the six binding mechanics
+   (enumerated gitignored fixture path; allow-listed CI binary
+   assertion with the synthetic/owner-authored provenance distinction;
+   the same allow-list in the backup script; §7.5 per spec; tooling
+   never in `release.yml`; no tracked Phase-4 binaries) — which land
+   with the FIRST tooling commit, else ADV-LEGAL's recorded fallback
+   reverts the placement to a separate research repo.
+5. **DoD fix (PROD-1): FIXED — N = 4 published `docs/formats/` specs**
+   (`clearfile-json.md`, `tax-exchange-container.md`, `txf.md`,
+   `tax-modern.md` at shape level) **in a two-working-session hard
+   time-box**, matched to the corpus the repo fully controls. Hard
+   rules recorded (no spec for any extension with zero samples; the
+   owner states the owned corpus at kickoff; owner-corpus specs are
+   §7.1 bonus, never required; deposited families add one spec or
+   declared backlog — the box never silently grows; the differential
+   tool exercised on a synthesized pair). N differs across reviewers
+   only as a counting convention (SEC/ENG counted 4; LEGAL 6 by
+   finer-grained vintages; PROD 3 + conditional) over the same
+   mandatory set — the settlement records 4 with the content unioned
+   explicitly. Checkable at the exit gate by counting files and
+   sessions.
+6. **Security contract (carried SEC-1): RECORDED in full** (see
+   ROADMAP's Stage-2 entry conditions — posture rules; write-free and
+   resource-bounded with operational definitions; crash-safe with the
+   malformed-input battery; never wired into `release.yml`; fixture
+   paths enumerated + gitignored; the tool-header posture line). Stage-2
+   execution implements it verbatim; the exit gate verifies by reading
+   the tool code and tests, not by assertion.
+
+### Condition ledger — dispositions
+
+**Applied in-session (2026-11-17, this gate's session; commit evidence is
+the closing backup):**
+
+- **ENG-1 (MAJOR) — the Dart `.tax` inspector's crafted-input crash:**
+  ADV-ENG reproduced a `RangeError` in `_readZipDirectory`
+  (`tax_inspect.dart` — a central-directory entry whose name field runs
+  past EOF; uncaught at `welcome.dart`'s call site), violating the
+  "never throws on malformed input" contract. FIXED: the name slice is
+  bounds-checked (mirroring the truncated-header branch) and the
+  reviewer's crafted file is now a regression test
+  (`tax_inspect_test.dart`). Suite 111→112, then 113 with ENG-2.
+- **ENG-2 — the untested TXF 10,000-record cap:** refusal test added
+  (`txf_import_test.dart`, 10,001 well-formed records → clean refusal).
+- **SEC-1 (MAJOR) — live dependency criticals (32 advisories, 2
+  critical: `next`, `next-auth`):** `npm audit fix` applied
+  (non-breaking — `package.json` untouched, `package-lock.json`
+  refreshed; 0 criticals remain; 6 moderate/high remain visible,
+  needing breaking changes, non-gating) AND the failing CI gate
+  `npm audit --omit=dev --audit-level=critical` added to `hygiene.yml`'s
+  suites job (verified exit-0 locally; fail-closed on any future
+  critical). All four web suites re-run green against the fixed tree
+  (tsc 0, bridge 10/10, parity 16/16, smoke 6/6).
+- **SEC-2 — the unlogged 2026-11-16 session:** recorded as a dated,
+  append-only SESSION_LOG entry (the mode-only amend `4d4e1d6` and its
+  reset-to-pushed-tip resolution; the resolution itself verified sound
+  by two reviewers — 191 files, zero content delta).
+- **SEC-3 / ENG-5 — `fetch_flutter_sdk.sh` aborting on the sandbox's
+  benign tar failure:** hardened — tar's nonzero exit is tolerated with
+  an explanatory note while the sha256 check stays strict and the
+  SMOKE TEST is the authority; verified end-to-end (reinstall → OK
+  line). Recorded as quirk 20 in STATE.
+- **SEC-5 / LEGAL conditions 1/4/5 / PROD conditions 1–4 / ENG
+  conditions 4–5 — the settlements recorded:** ADR-012 (placement),
+  ADR-016 (tripwire disposition), ADR-017 (re-platforming settlement
+  with both annexes) appended to DECISIONS.md; the Stage-2 DoD and the
+  security contract recorded in ROADMAP; the ROADMAP/WORKFLOW tiering
+  updated for the epilogue N1 full-depth gate; `harness_check.sh`
+  patterns updated for the legitimate advance (Stage 3 CLOSED, Stage 2
+  ENTERED, the epilogue's six PENDING stages).
+- **ENG-7 — the WORKFLOW §4 recycle-runbook verification step** now
+  explicitly includes `harness_check.sh` (its unpushed-commit check
+  would have caught the stale amend in-session).
+- **LEGAL-5 — README capability phrasing:** "compiled to … and Web" →
+  "compiled to the … targets" (one-word clarification, applied while
+  updating the test counts).
+
+**Assigned to Stage-2 execution (must land with the FIRST tooling
+commit; verified at the Stage-2 exit gate by reading code and tests):**
+
+- **ADR-012 mechanics (a)–(f)** (enumerated gitignored fixture path;
+  allow-listed CI binary assertion + provenance distinction; the same
+  allow-list in the backup script; §7.5 per spec; no `release.yml`
+  wiring; no tracked Phase-4 binaries) — else placement reverts to a
+  separate research repo.
+- **LEGAL-1 mechanics:** synthetic-only unit fixtures; the
+  differential tool's provenance-manifest refusal (§7.1 made
+  checkable); the backup hex guard widened from 64- to ≥32-hex on
+  RE-adjacent paths with a UUID/known-hash allow-list (a 16-byte AES
+  key as 32 hex characters passes today's 64-hex-only guard); a
+  `docs/formats/*.md` lint (provenance field present, no hex runs
+  ≥32).
+- **SEC condition 3 / the recorded security contract, verbatim** (the
+  operational definitions: read-only opens, no disk-writing shell-outs,
+  a read-only-fixture-dir test, every cap refusal-tested with a clean
+  message + non-zero exit, the malformed-input crash battery with
+  ENG-1's crafted file as the template, `git check-ignore` on fixture
+  paths in harness_check, the release.yml tooling grep).
+- **ENG-3 — one survivingSpouse golden fixture** consumed by all three
+  runners (Dart, `web_parity_test.mjs`, the Decimal oracle) — assigned
+  to the FIRST Stage-2 execution session (it requires IRS-pinned
+  citation work; the parameter-table equivalence is currently pinned
+  only by an internal Dart test and nothing on the TS/oracle sides).
+- **PROD-5 watch-item:** Stage 4's public Pages deploy must keep the
+  welcome disclaimer prominent under a public URL (already in Stage 4's
+  scope; carried as a named check).
+
+**Surfaced to the owner (owner-side actions; the standing PAT posture
+in WORKFLOW §5 is unchanged):** SEC-4/D30 — enable Dependabot alerts,
+branch protection on `main`, and PAT expiry when next rotating
+(re-affirmed; the audit CI gate added in-session covers the
+repo-side half). The owner-overrule paths recorded at this gate:
+ADR-016 (reinstate full parity or hard-freeze the TS engine), any
+ADR-017 sub-item (including re-adding iOS), and the placement (ADR-012)
+— each by a recorded ADR, never by silence.
+
+### Orchestrator notes (recorded for honesty)
+
+The gate convened two days after its scheduled date (the slip the
+tripwire recorded); the agenda honored the mandatory web-freeze item.
+Every reviewer independently re-ran the suites (four full Dart runs
+total) and at least one live check; all four avoided the GitHub PAT
+and the shared-IP api.github.com rate limit hit one reviewer (PROD),
+recorded honestly in its report. The ADV-LEGAL weighting was
+operationalized as: on RE-posture settlements where the panel splits,
+ADV-LEGAL's position is the default unless rebutted in writing with
+acceptable rationale — it was exercised at this gate only on the
+placement question, where the panel was unanimous in-repo anyway
+(LEGAL itself updated its own prior default on the measured facts);
+the toolkit split was settled on the owner's literal tier assignment
+plus LEGAL's licensing constraints (no rebuttal was needed — the
+concerns were incorporated, not outvoted). The 3–1 parity disposition
+was settled on the majority with the substance convergence recorded
+(ADR-016's maintenance scope IS PROD's recommendation at one year's
+distance). One extra full-depth gate cost acknowledged (the epilogue
+program's own gates are delta-scoped except N1).
+
+### Gate outcome
+
+**Stage 3: CLOSED** (unanimous; the execution evidence held up under
+full-depth live verification on all four seats — including one real
+bug found and fixed at the gate itself).
+
+**Stage 2: ENTERED** (unanimous PROCEED-WITH-CONDITIONS; every
+condition applied in-session or assigned with a named verification
+event — the ADR-012/LEGAL-1 mechanics and the security contract land
+with the first tooling commit; ENG-3 lands with the first execution
+session). Execution begins with the first Stage-2 tooling commit
+carrying those entry conditions; its exit gate counts the DoD (4 specs,
+≤2 sessions).
+
+**The epilogue native program (N1–N6): recorded as PENDING/unfunded**
+(ADR-017 settled, entered only behind its own gates when the owner
+funds it).

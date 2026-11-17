@@ -60,8 +60,14 @@ fi
 # 3. Verify against the manifest before unpacking.
 echo "$EXPECTED_SHA  $TARBALL" | sha256sum -c -
 
-# 4. Unpack and smoke-test.
-tar -xJf "$TARBALL" -C tools
+# 4. Unpack and smoke-test. Quirk 20 (2026-11-17, Stage-2 entry gate
+#    SEC-3/ENG-5): this snapshot filesystem makes tar's trailing
+#    directory-status-restore pass fail benignly ("Directory renamed
+#    before its status could be extracted") AFTER every file has
+#    extracted. The tarball is already sha256-verified above, so the
+#    SMOKE TEST below is the authority on whether the SDK works — never
+#    abort before it runs.
+tar -xJf "$TARBALL" -C tools || echo "fetch_flutter: tar exited nonzero (known-benign directory-status restore on this FS; contents extracted — the smoke test below is the authority)" >&2
 tools/flutter/bin/flutter --version --suppress-analytics
 
 echo "fetch_flutter: OK (tools/flutter ${VERSION} stable, sha256 verified)"

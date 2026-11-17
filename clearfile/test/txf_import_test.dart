@@ -236,6 +236,16 @@ void main() {
         throwsA(isA<TxfParseException>()));
   });
 
+  test('parser hardening: the 10,000-record cap throws (ENG-2, Stage-2 '
+      'entry gate)', () {
+    // 10,001 well-formed summary records (~180 KB, far under the 5 MB
+    // cap): the record-count cap is the only limit this input trips —
+    // the previously untested third advertised cap.
+    final record = 'TS\nN460\nC1\n\$ 1\n^\n';
+    final txf = 'V042\n^\n${record * 10001}';
+    expect(() => parseTxf(txf), throwsA(isA<TxfParseException>()));
+  });
+
   test('empty-file edge: no records at all throws', () {
     expect(() => parseTxf(''), throwsA(isA<TxfParseException>()));
   });

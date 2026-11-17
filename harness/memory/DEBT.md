@@ -38,6 +38,9 @@ Each item carries its owner stage.
 | D30 | ADV-SEC Stage-2 SEC-2/SEC-4 | Owner-side hardening standing recommendations: Dependabot alerts, branch protection on `main`, PAT expiry (see WORKFLOW §5) — re-affirmed by the Stage-2 entry gate | owner-side |
 | D31 | Stage-3 fixtures-first (2026-11-14) | Engine simplifications deliberately NOT pinned by the golden fixtures: (a) ACTC allocation between CTC and ODC in the partial-absorption zone (engine subtracts the whole non-refundable credit from the CTC portion; Schedule 8812's Part II-A has its own allocation) — fixtures avoid the ambiguous zone; (b) the student-loan worksheet's "rounded to at least three places" is read as exact precision (existing calculator test pins 1,333.33 at MAGI 92k where a 3-place worksheet gives 1,332.50) — the SLI fixture uses the unambiguous 0.500 midpoint; (c) marginal rate is computed on ordinary taxable only (QDI-heavy returns report the ordinary schedule's rate) — no fixture asserts marginalRate | Stage-3 parity set (**shared by both engines since the 2026-11-15 port**) |
 | D32 | Stage-3 web parity (2026-11-15) | The web engine's previously projected TY2026 parameters were **dropped**: the reference engine (the parity truth per ADR-009) has no TY2026 parameter set, and inventing one would re-open the silent-divergence gap ADR-009 closed. Web store + `.cfr` v1 loader migrate old saves to TY2025 (conservative field mapping; adjustments/medical/other dropped — warnings shown; counts → placeholder dependents). Reinstate when the reference gains verified TY2026 parameters. | whenever the reference gains TY2026 |
+| D33 | Stage-2 entry gate ENG-3 (2026-11-17) | No golden fixture exercises **survivingSpouse (QSS)** — the parity contract's only completely unpinned filing status (currently pinned only by an internal Dart equivalence test; the TS/oracle sides by nothing). One QSS fixture (pins the MFJ-column table lookup + sd 31,500 + CTC 400k + QDI 96,700/600,050 + NIIT 250k) consumed by ALL THREE runners (Dart, `web_parity_test.mjs`, `verify_golden_fixtures.py`), cited to the IRS publication carrying the QSS→MFJ-column rule. | **first Stage-2 execution session** (gate condition, assigned with a named verification event) |
+| D34 | Stage-2 entry gate ENG-4 (2026-11-17) | The v1→v2 conservative migration is triple-implemented (`cfr.ts:73`, `store.ts:140`, `return_format.dart:172`) with fragment-level warning pinning and edge drift (Dart clamps child counts at 100; warning lists pinned only by `contains` fragments; `store.ts:155` reads the v1 *store* W-2 shape vs the file readers' v1 *file* shape — legitimate vintages, documented nowhere). Fix: lift the identical v1 sample into a shared fixture, assert exact warning lists in both suites, document the store-vs-file W-2 shape difference in `docs/return-format.md` §3. | Stage-2 execution window |
+| D35 | Stage-2 entry gate ENG-8 (2026-11-17) | `listReturns` drops decode warnings silently (`return_store.dart:57` uses only `.filing`). Harmless today (store-origin legacy files produce no warnings) but a future envelope bump would make store-dir warnings invisible. Register, don't fix. | register |
 
 **D2 correction (2026-11-14, Stage-2 entry gate ENG-3, append-only):** the
 DONE note above overstates the empty-cell half of the original finding. What
@@ -62,3 +65,18 @@ deduction ineligibility (Schedule 1-A Part V caution), and the 8812
 phase-out (next-$1,000 ceiling + combined CTC+ODC floor, form lines
 9-12). These are fixed, not debt; recorded here so the correction
 trail exists. D31 above holds what was deliberately left simplified.
+
+**Stage-2 entry-gate new items (2026-11-17):** D33–D35 recorded above.
+Applied in-session, NOT debt: ENG-1 (the Dart `.tax` inspector's
+crafted-input `RangeError` — bounds-checked + regression test, suite
+111→113 with ENG-2), ENG-2 (the TXF 10,000-record cap refusal test),
+SEC-1 (dependency criticals cleared via non-breaking `npm audit fix` +
+the fail-closed `npm audit --omit=dev --audit-level=critical` CI gate in
+hygiene.yml), SEC-3/ENG-5 (the fetcher tar-tolerance hardening, quirk
+20), and SEC-2 (the unlogged 2026-11-16 session recorded in
+SESSION_LOG). ENG-6 (the two parameter tables' zero mechanical linkage)
+becomes structurally fixable only by the epilogue Rust core — the
+ADR-017 verification annex (the differential harness) is the recorded
+fix, at N1; until then the shared fixtures + oracle remain the
+enforcement. D30 re-affirmed (owner-side: Dependabot, branch
+protection, PAT expiry).

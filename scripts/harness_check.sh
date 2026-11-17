@@ -46,24 +46,36 @@ else
   fail "Stage 1 gate status drift between ROADMAP and CONSENSUS"
 fi
 
-if grep -q 'Stage 3 ENTERED' "$ROADMAP" && grep -q '\*\*Stage 3: ENTERED\*\*' "$CONSENSUS"; then
-  pass "Stage 3: ROADMAP and CONSENSUS agree (ENTERED)"
+# Stage-3 closure + Stage-2 entry (2026-11-17 full-depth gate): Stage 3
+# was executed and formally closed at the gate; Stage 2 (RE tooling) was
+# entered there. Patterns updated accordingly — a legitimate stage
+# advance is a checker update, not a drift.
+if grep -q 'Stage 3 CLOSED' "$ROADMAP" && grep -q '\*\*Stage 3: CLOSED\*\*' "$CONSENSUS"; then
+  pass "Stage 3: ROADMAP and CONSENSUS agree (CLOSED 2026-11-17)"
 else
-  fail "Stage 3 gate status drift between ROADMAP and CONSENSUS (re-sequenced entry not recorded?)"
+  fail "Stage 3 gate status drift between ROADMAP and CONSENSUS (closure not recorded?)"
+fi
+
+if grep -q 'Stage 2: ENTERED' "$ROADMAP" && grep -q '\*\*Stage 2: ENTERED\*\*' "$CONSENSUS"; then
+  pass "Stage 2: ROADMAP and CONSENSUS agree (ENTERED 2026-11-17)"
+else
+  fail "Stage 2 gate status drift between ROADMAP and CONSENSUS (entry not recorded?)"
 fi
 
 PENDING_RM=$(grep -c 'Gate status:.*PENDING' "$ROADMAP" || true)
-if [ "$PENDING_RM" -eq 4 ]; then
-  pass "Stages 2, 4, 5, 6 remain PENDING in ROADMAP ($PENDING_RM)"
+if [ "$PENDING_RM" -eq 9 ]; then
+  pass "Stages 4, 5, 6 remain PENDING in ROADMAP plus the six unfunded epilogue stages N1–N6 ($PENDING_RM)"
 else
-  fail "ROADMAP has $PENDING_RM 'Gate status: PENDING' lines; expected 4 (Stages 2, 4, 5, 6 — Stage 2 re-sequenced after Stage 3). Update this checker if a stage legitimately advanced"
+  fail "ROADMAP has $PENDING_RM 'Gate status: PENDING' lines; expected 9 (Stages 4, 5, 6 + epilogue N1–N6, ADR-017). Update this checker if a stage legitimately advanced"
 fi
 
-ENTERED_CS=$(grep -cE '\*\*Stage (2|4|5|6): (ENTERED|PASSED|CLOSED)\*\*' "$CONSENSUS" || true)
-if [ "$ENTERED_CS" -eq 0 ]; then
-  pass "CONSENSUS records no outcome for un-gated stages 2, 4, 5, 6"
+S2_ENTERED_CS=$(grep -c '\*\*Stage 2: ENTERED\*\*' "$CONSENSUS" || true)
+ENTERED_CS=$(grep -cE '\*\*Stage (4|5|6): (ENTERED|PASSED|CLOSED)\*\*' "$CONSENSUS" || true)
+ENTERED_N_CS=$(grep -cE '\*\*N[1-6]: (ENTERED|PASSED|CLOSED)\*\*' "$CONSENSUS" || true)
+if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 0 ] && [ "$ENTERED_N_CS" -eq 0 ]; then
+  pass "CONSENSUS records Stage 2's entry and no outcome for un-gated stages 4, 5, 6 or the epilogue N1–N6"
 else
-  fail "CONSENSUS records $ENTERED_CS outcomes for stages 2/4/5/6 that ROADMAP still lists as PENDING"
+  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; un-gated outcomes: $ENTERED_CS/$ENTERED_N_CS) — ROADMAP still lists those stages as PENDING"
 fi
 
 # --- 2. Gate-scope consistency: WORKFLOW §2 tiering ↔ ROADMAP tiering -------

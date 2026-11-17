@@ -258,6 +258,14 @@ List<_ZipDirEntry> _readZipDirectory(Uint8List bytes, List<String> notes) {
     final extraLen = view.getUint16(ptr + 30, Endian.little);
     final commentLen = view.getUint16(ptr + 32, Endian.little);
     final localOffset = view.getUint32(ptr + 42, Endian.little);
+    // ENG-1 (Stage-2 entry gate, 2026-11-17): the 46-byte header may fit
+    // while the claimed name length runs past EOF — bounds-check before
+    // the sublist, mirroring the truncated-header branch above.
+    if (ptr + 46 + nameLen > bytes.length) {
+      notes.add('Central directory entry name extends past end of file; '
+          'stopped early.');
+      break;
+    }
     final name = String.fromCharCodes(bytes.sublist(ptr + 46, ptr + 46 + nameLen));
 
     List<int>? stored;

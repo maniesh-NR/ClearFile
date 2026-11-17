@@ -11,8 +11,9 @@ survives contact with reality instead of being quietly abandoned:
 
 - **Full-depth gates** (all four roles, whole-repository review): Stage 1
   entry (it carries the history and two-codebase decisions), Stage 2 entry
-  (RE posture — ADV-LEGAL carries extra weight), and any history-rewrite
-  execution.
+  (RE posture — ADV-LEGAL carries extra weight), any history-rewrite
+  execution, and the epilogue native program's entry (N1 — it carries the
+  Rust-core verification annex of ADR-017).
 - **Delta-scoped gates** (all four roles, but scope = "delta since the
   last gate + named risk surfaces for the stage"): Stages 3–6 and spot
   reviews.
@@ -32,6 +33,11 @@ survives contact with reality instead of being quietly abandoned:
 over the panel's recommended web-freeze — owner prerogative, recorded in
 `memory/DECISIONS.md`). The web prototype is a live implementation target;
 the Flutter engine is the reference model the web engine must match.
+**Narrowed to maintenance parity 2026-11-17 (ADR-016, the tripwire
+settlement at the Stage-2 entry gate): no NEW web-engine features — bug
+and security fixes, the Stage-5 hardening halves, format-guard compliance,
+and reference-mirrored corrections via the shared-fixture contract still
+flow; the TS engine retires when the Rust core serves the web (WASM).**
 
 **Cost statement + tripwire (Stage-1 gate, ADV-PROD condition 3):** parity
 roughly doubles per-stage engine cost for a single maintainer — risk
@@ -50,19 +56,22 @@ convened within four total working sessions of entry, fixtures-first
 session included. Box exceeded or gate slipped → the web-freeze option
 returns to the NEXT gate agenda as a mandatory item.
 
-**Amended 2026-11-15 (ADR-014, owner directive): native re-platforming
-direction — recorded, not yet entered.** The forward implementation
-targets one native UI stack per OS (Windows raw Win32 + Direct2D;
-macOS Swift + AppKit; Linux Rust via gtk-rs/gtk3-rs and Slint/Qt;
+**Amended 2026-11-15 (ADR-014, owner directive) and SETTLED 2026-11-17
+(ADR-017, Stage-2 entry gate): native re-platforming — recorded and
+settled, not yet entered.** The forward implementation targets one
+native UI stack per OS (Windows raw Win32 + Direct2D; macOS Swift +
+AppKit; Linux Rust via gtk3-rs (older tier) and Slint (modern tier);
 Android Views + Kotlin Multiplatform) over a **shared Rust core**,
 themed **Material You** on every OS for consistency with OS-specific
-elements kept (`memory/DECISIONS.md` ADR-014). The matrix below still
-describes the CURRENT codebases and stays accurate for all in-flight
-work: no native stack exists yet, and the Flutter app + web prototype
-remain the live implementation. The re-platforming's scope, sequencing,
-and budget are a mandatory settlement item at the next full-depth
-gate (the RE stage's entry / Stage 3's exit) — see the Stage-2 agenda
-below.
+elements kept (`memory/DECISIONS.md` ADR-014, settled by ADR-017). The
+matrix below still describes the CURRENT codebases and stays accurate
+for all in-flight work: no native stack exists yet, and the Flutter app
++ web prototype remain the live implementation. The re-platforming
+executes as a **finite post-Stage-6 epilogue program** (see "Epilogue
+stages" below), entered only behind its own gates — settlement ADR-017
+(placement, sequencing, budget, migration shape, core boundary, FFI,
+version tiering, the v2.0.0 rule, the ADR-009 disposition, the
+verification + licensing annexes).
 
 | Stage | Web prototype (`src/`) | Flutter app (`clearfile/`) |
 | --- | --- | --- |
@@ -190,40 +199,85 @@ AFTER Stage 3 (parity & bridges) — the settled ordering (two explicit swap
 recommendations, one keep, one neutral-lean; rationale recorded in
 `../adversarial/CONSENSUS.md`). Stage IDs stay stable for cross-references.
 
-**Entry-gate agenda (mandatory, carried from the Stage-2 entry gate's
-conditions — the gate that enters this stage must settle all of them):**
-- **DoD fix (PROD-1, PROD condition 2):** define N (a real number, matched
-  to the owner-authored corpus actually available) and the time-box (two
-  working sessions, same unit as the parity box) BEFORE entry.
-- **Placement ADR-012 (LEGAL-3, PROD-4):** this repo vs a separate research
-  repo — panel split recorded in CONSENSUS (ADV-LEGAL default: separate;
-  ADV-PROD: in-repo with constraints; ADV-SEC: mild in-repo). If in-repo:
-  the no-binary-blob assertion with an explicit synthetic/owner-authored
-  fixture provenance distinction runs in `hygiene.yml`; the tools carry
-  resource caps with refusal tests (SEC 2 / ENG 2).
-- **Security contract (SEC 1):** any new workflow/job follows the repo
-  posture (permissions: read, timeouts, SHA-pinned actions); tooling is
-  never wired into `release.yml` artifact paths; fixture paths stay
-  gitignored.
-- **Native re-platforming settlement (ADR-014, 2026-11-15):** scope,
-  sequencing, and budget for the per-OS native UI stacks over the
-  shared Rust core — which stages absorb the work, the migration shape
-  (staged per-OS vs big-bang; the Flutter app's transition fate), the
-  ADR-009 parity policy's disposition once one Rust core can serve
-  every platform (web via WASM included), the Rust core's scope
-  boundary and FFI seams, the macOS/Linux version-tiering definitions,
-  and the versioning call (v2.0.0?) — settled BEFORE any native-stack
-  code lands.
-- **Parity tripwire outcome (MANDATORY, slip fired 2026-11-15):** the
-  web-freeze option returns to this gate's agenda. The box was not
-  exceeded (parity set closed under budget in one of its two sessions)
-  but the gate was not convened within the four-session window, so the
-  freeze/parity question must be argued explicitly here — the owner's
-  ADR-009 prerogative may still keep parity, but only as a recorded,
-  reasoned decision at this gate, not by silence.
+**Entry-gate agenda — SETTLED 2026-11-17 at the Stage-2 entry gate (=
+Stage 3's exit gate; every mandatory item was settled there — see
+`../adversarial/CONSENSUS.md` and `memory/DECISIONS.md` ADR-012/016/017):**
+- **DoD (PROD-1, PROD condition 2) — FIXED:** **N = 4 published
+  `docs/formats/` specs** — (1) `clearfile-json.md` (the unified envelope
+  family: v2 + web v1 + legacy flat + `.cfr` alias); (2)
+  `tax-exchange-container.md` (this repo's own `.tax`-extension exchange
+  container); (3) `txf.md` (ClearFile's TXF v042 profile, verified by the
+  shipped round-trip bridges); (4) `tax-modern.md` (the modern `.tax`
+  container at shape level — crypto by existence only, §7.3) — in a
+  **two-working-session hard time-box** (the parity-box unit, counted per
+  SESSION_LOG). Hard rules: no spec for any extension with zero available
+  samples; the owner states the owned corpus (product/version/year/count)
+  at Stage-2 kickoff so N is real; specs on the owner's own licensed
+  `.tax` files are §7.1-compliant bonus, never required for the DoD; each
+  additional deposited owner-authored family adds one spec inside the box
+  or is declared backlog at box-end (the box never silently grows); the
+  differential tool must be exercised on a synthesized pair inside the
+  mandatory set. Checkable at the exit gate: `ls docs/formats/*.md` ≥ 4
+  with the named files present, each §7.5-clean, ≤ 2 Stage-2 execution
+  sessions in SESSION_LOG, refusal/cap tests green, no-binary-blob
+  assertion green.
+- **Placement ADR-012 — RECORDED (in-repo with six binding mechanics):**
+  `memory/DECISIONS.md` ADR-012; the mechanics (enumerated gitignored
+  fixture path; allow-listed CI binary assertion with the
+  synthetic/owner-authored provenance distinction; the same allow-list in
+  the backup script; §7.5 per spec; tooling never in `release.yml`; no
+  tracked Phase-4 binaries) land with the FIRST tooling commit, else the
+  placement reverts to a separate research repo.
+- **Security contract (SEC 1) — RECORDED as the binding spec Stage-2
+  execution implements:** any new workflow/job follows the repo posture
+  (`permissions: contents: read`, `timeout-minutes`, SHA-pinned actions,
+  no `pull_request_target`/fork surface, no secrets); tools are
+  **write-free** (read-only opens; no disk-writing shell-outs; no writes
+  outside gitignored build dirs; a read-only-fixture-dir test) and
+  **resource-bounded** (up-front size refusal; entry/record/line caps
+  each with a refusal-on-oversize test — clean refusal message + non-zero
+  exit, never a crash; bounded extraction buffers; per-file wall-clock
+  timeout; CI timeout as backstop); **crash-safe** (a malformed-input
+  battery — truncated headers, fields past EOF, adversarial lengths —
+  asserting "reports what it could not establish", never a throw; ENG-1's
+  crafted file is the template); tooling **never wired into `release.yml`
+  artifact paths**; fixture paths enumerated + gitignored; each tool's
+  header/`--help` states the read-only + caps + refusal posture. Verified
+  at the exit gate by reading the tool code and tests, not by assertion.
+- **Native re-platforming settlement (ADR-014) — SETTLED as ADR-017**
+  (staged per-OS over the Rust core as a finite post-Stage-6 epilogue
+  program; every open question answered — see `memory/DECISIONS.md`).
+- **Parity tripwire outcome — DISPOSED (mandatory):** the box was not
+  exceeded; the slip fired; the web-freeze question was argued explicitly
+  by all four reviewers and settled as **ADR-016** (TS-engine maintenance
+  freeze + retire-on-replacement; owner-overrule path recorded — never
+  silence).
+- **Stage-3 execution evidence — REVIEWED and accepted:** all four
+  reviewers re-verified the suites with their own runs (113/113 Dart, tsc
+  0, bridge 10/10, parity 16/16, oracle 16/16, smoke 6/6,
+  harness_check 12/12) — see the gate record. In-session condition fixes
+  applied at the gate: ENG-1 (the Dart `.tax` inspector's crafted-file
+  RangeError — bounds-checked + regression test), ENG-2 (the TXF
+  10,000-record cap refusal test), the dependency criticals cleared +
+  the `npm audit --omit=dev --audit-level=critical` CI gate (SEC-1),
+  the fetcher tar-tolerance hardening (SEC-3/ENG-5), and the 2026-11-16
+  unlogged-session record (SEC-2).
 
-**Gate status:** PENDING (full-depth gate; ADV-LEGAL weighted) — convenes
-after Stage 3's execution; it is ALSO Stage 3's exit gate.
+**Entry conditions carried into execution (must land with the FIRST
+Stage-2 tooling commit):** the ADR-012 mechanics (a)–(f); the LEGAL-1
+mechanics (synthetic-only unit fixtures; differential-tool
+provenance-manifest refusal; the backup hex guard widened to ≥32-hex on
+RE-adjacent paths with a UUID/known-hash allow-list; the
+`docs/formats/*.md` provenance lint); ENG-3 (one survivingSpouse golden
+fixture consumed by all three runners — assigned to the first Stage-2
+execution session) and the TXF/`.tax` crash-battery template applied to
+the new tools. The Ghidra sandbox feasibility verdict (ADR-013) is the
+pre-gate research record for Phase-4-adjacent decisions.
+
+**Gate status:** **Stage 2: ENTERED 2026-11-17** (full-depth gate,
+ADV-LEGAL weighted; 4 × PROCEED-WITH-CONDITIONS, unanimous — see
+`../adversarial/CONSENSUS.md`). Execution begins with the first tooling
+commit carrying the entry conditions above.
 
 ## Stage 3 — Parity & clean-room bridges (highest value)
 
@@ -335,13 +389,15 @@ option returns to the gate agenda as a mandatory item**; the owner's
 ADR-009 parity prerogative may still decline it, but the gate must argue
 it explicitly, not skip it.
 
-**Gate status:** **Stage 3 ENTERED 2026-11-14** — at the Stage-2 entry
-gate, under the re-sequencing: the full-depth panel reviewed this stage's
-plan on its agenda and entered it (see `../adversarial/CONSENSUS.md`).
-Execution begins with the golden fixtures FIRST (the tripwire's
-fixtures-first ordering; clock baseline = 2026-11-14). The exit gate = the
-RE-tooling stage's entry gate (full-depth), which reviews this stage's
-execution evidence and the parity-tripwire outcome.
+**Gate status:** **Stage 3 CLOSED 2026-11-17** — entered 2026-11-14 at
+the Stage-2 entry gate under the re-sequencing, executed end-to-end
+(fixtures-first → web parity set → bridges → close-out, ADR-015), and
+formally closed at the Stage-2 entry gate of 2026-11-17 (= this stage's
+exit gate): the full-depth panel reviewed the execution evidence — every
+reviewer re-verified the suites with their own runs — and closed it
+unanimously (see `../adversarial/CONSENSUS.md`). The parity-tripwire
+outcome (box NOT exceeded; slip fired) was reviewed and disposed at the
+closing gate as ADR-016.
 
 ## Stage 4 — Demo distribution
 
@@ -362,6 +418,13 @@ timeout parity + Google key via `x-goog-api-key` header; in-app privacy
 disclosure generated from actual transmission behaviour; plaintext
 key-at-rest disclosure (file + format named in-app).
 
+**Closing event (added 2026-11-17, Stage-2 entry gate, ADV-PROD):**
+Stage 5 ends with the **v1.1 tag** — the adopted project DoD ("a reader
+can verify every number against a cited IRS source without reading git
+history") is reachable on the CURRENT codebases and must not wait for
+the epilogue re-platforming; the tag also discharges D29 (the tag-PUSH
+trigger verification) as the next tagged release.
+
 **Gate status:** PENDING (delta-scoped gate).
 
 ## Stage 6 — Freeze & codify (terminal)
@@ -372,3 +435,48 @@ roadmap ends here deliberately (ADV-PROD F11: a demo project without a
 "done" invites an infinite roadmap).
 
 **Gate status:** PENDING (delta-scoped gate).
+
+---
+
+## Epilogue stages N1–N6 — native re-platforming (post-Stage-6; ADR-017, 2026-11-17)
+
+A **separate, finite program** — not part of the roadmap above, which
+still ends at Stage 6 — entered only behind its own gates when the owner
+funds it with sessions. Full settlement: `memory/DECISIONS.md` ADR-017
+(migration shape, sequencing, Rust-core boundary, FFI seam, macOS/Linux
+tiering, KMP, the explicit iOS drop, the v2.0.0 rule, the ADR-009
+disposition, the verification + licensing annexes). Recorded variant:
+the Rust core alone (N1, no UI stacks) may be entered parallel to Stage
+4+ behind its own gate, provided no shipped artifact depends on it and
+v1's stages still close first.
+
+- **N1 — Rust core**: the 1040 engine + parameter tables + format codecs
+  (TXF import/export, read-only `.tax` inspection, envelope codec incl.
+  migrations, exchange container) + MD3-from-seed palette generation;
+  pure, offline, fixture-verifiable; validated against the 16 shared
+  golden fixtures PLUS the differential/property harness against the Dart
+  reference (the verification annex — fixtures pin breakpoints, not the
+  continuum). **Gate status: PENDING (unfunded; full-depth entry gate
+  under the tiering above).**
+- **N2 — Linux native UI**: the owner's two-tier assignment with one
+  toolkit per tier — gtk3-rs (older tier) / Slint (modern tier);
+  consolidatable at this gate if single-maintainer reality demands it.
+  **Gate status: PENDING (unfunded; delta-scoped gate).**
+- **N3 — Android native UI**: Android Views + Kotlin Multiplatform
+  (Android-only) over the core via a thin JNI shim. **Gate status: PENDING
+  (unfunded; delta-scoped gate).**
+- **N4 — Windows native UI**: raw Win32 + Direct2D consuming the
+  cbindgen C header. **Gate status: PENDING (unfunded; delta-scoped
+  gate).**
+- **N5 — macOS native UI**: one Swift+AppKit app, deployment floor
+  macOS 13 (confirmable here); requires the `macos-latest` CI runner or
+  owner-side builds — this Linux sandbox cannot build or verify AppKit.
+  **Gate status: PENDING (unfunded; delta-scoped gate).**
+- **N6 — web via WASM + terminal freeze**: the Rust core serves the
+  web; the TS engine retires per ADR-016; the epilogue program declares
+  its own freeze (v2.0.0 territory per the settlement's rule).
+  **Gate status: PENDING (unfunded; delta-scoped gate).**
+
+The per-OS order after N1 (Android before Windows, macOS last) is
+re-settable at the epilogue's own gates without reopening the ADR-017
+settlement.
