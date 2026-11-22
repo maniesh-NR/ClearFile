@@ -17,8 +17,8 @@ Licensed under [GPL-3.0](LICENSE).
 | --- | --- |
 | `src/` | The **Next.js 16 web prototype**: a seven-step Material 3 tax interview (status → income → deductions → dependents → payments → review → results) with the **same TY2025 calculation engine as the Flutter app** (ADR-009 parity, 2026-11-15: line-for-line port validated against the shared golden fixtures), deterministic review findings, and an optional bring-your-own-key AI assistant. |
 | `clearfile/` | The **Flutter 3.47 app** — the full-featured implementation: the five-step interview, the complete TY2025 engine and the AI cascade, compiled to the Android, iOS, macOS, Windows, Linux and Web targets from one Dart codebase. The two codebases share no code; the web engine is a line-for-line TypeScript port of this one (Stage-3 parity). |
-| `clearfile/test/` | 113 Dart tests — 97 hand-written (19 calculator, 8 AI cascade, 10 CSV import, 3 JSON roundtrip, 5 privacy (incl. the findings-path leak guard), 2 autosave regressions (delete + switch), 5 money-parsing edges, 6 step/settings widget guards (incl. the duplicate-row guards), 3 app-flow widget, 12 TXF import (spec v042 structure, W-2 copy grouping, sign convention, hardening caps incl. the 10,000-record refusal), 10 `.tax` container inspection (Intuit shape + entropy flags, ClearFile container import incl. the web envelope + honest failures incl. the crafted truncated-central-directory never-throws guard), **14 unified return-format tests (envelope round-trip, version guard, legacy flat lift, web-v1 migration, sealed import outcomes, store envelope on disk)**) plus 16 IRS-pinned golden fixtures (repo-level `fixtures/tax/`, shared with the web engine's parity tests and re-derived independently by `scripts/verify_golden_fixtures.py`) — that pin the engine, the UI behaviour and the AI-privacy contract. `flutter analyze` is clean and `flutter test` is green. |
-| `fixtures/tax/` | The **shared golden fixtures**: 16 `(TaxReturnData, TaxResult)` JSON pairs, each pinned to an IRS-published TY2025 worked example or worksheet (Tax Table, QDIVCG worksheet, Schedule 1-A Part V, Schedule A SALT worksheet, Schedule 8812, Form 8960) with its citation, derivation and tolerance in the file. The single source of truth **both** engines are held to: `clearfile/test/golden_fixtures_test.dart` (Dart) and `scripts/web_parity_test.mjs` (TypeScript) run the same files in CI. |
+| `clearfile/test/` | 114 Dart tests — 97 hand-written (19 calculator, 8 AI cascade, 10 CSV import, 3 JSON roundtrip, 5 privacy (incl. the findings-path leak guard), 2 autosave regressions (delete + switch), 5 money-parsing edges, 6 step/settings widget guards (incl. the duplicate-row guards), 3 app-flow widget, 12 TXF import (spec v042 structure, W-2 copy grouping, sign convention, hardening caps incl. the 10,000-record refusal), 10 `.tax` container inspection (Intuit shape + entropy flags, ClearFile container import incl. the web envelope + honest failures incl. the crafted truncated-central-directory never-throws guard), **14 unified return-format tests (envelope round-trip, version guard, legacy flat lift, web-v1 migration, sealed import outcomes, store envelope on disk)**) plus 17 IRS-pinned golden fixtures (repo-level `fixtures/tax/`, shared with the web engine's parity tests and re-derived independently by `scripts/verify_golden_fixtures.py` — the 17th pins the qualifying-surviving-spouse column mappings incl. the $200,000 CTC threshold it forced in both engines) — that pin the engine, the UI behaviour and the AI-privacy contract. `flutter analyze` is clean and `flutter test` is green. |
+| `fixtures/tax/` | The **shared golden fixtures**: 17 `(TaxReturnData, TaxResult)` JSON pairs, each pinned to an IRS-published TY2025 worked example or worksheet (Tax Table, QDIVCG worksheet, Schedule 1-A Part V, Schedule A SALT worksheet, Schedule 8812, Form 8960, Pub 501) with its citation, derivation and tolerance in the file. The single source of truth **both** engines are held to: `clearfile/test/golden_fixtures_test.dart` (Dart) and `scripts/web_parity_test.mjs` (TypeScript) run the same files in CI. |
 | `docs/reverse-engineering-protocol.md` | The **clean-room RE playbook** for studying legacy proprietary tax-file formats (`.tax`, `.tax[YYYY]`, `.LIF`, `.FIL`, `.RCD`, `.1PE`, `.3ME`, `.3PE`, `.DGC`, `.SCD`, `.THP`, `.TVL`, `.1PH`, `.TT[YYYY]STATE`). Read §2 before any RE session. |
 | `docs/ghidra-sandbox-feasibility.md` | The **Ghidra headless feasibility verdict** for this sandbox (2026-11-15): measured benchmark, environment setup, scale limits — feeds the pending Stage-2 entry gate. |
 | `docs/return-format.md` | The **unified ClearFile return file spec** (ADR-015, 2026-11-15): `.clearfile.json` envelope schema, version guard, migration matrix for the older layouts (`.cfr` v1, legacy flat). |
@@ -89,8 +89,8 @@ A line-for-line TypeScript port of the Flutter reference engine
 computation order — including the QDIVCG stacking, the SALT phase-down,
 the OBBBA senior deduction, the student-loan phase-out, NIIT, and the
 Schedule-8812 exact 5%-of-excess CTC phase-out with next-$1,000 rounding,
-all at cent precision). It runs the same 16 shared golden fixtures in CI
-(`scripts/web_parity_test.mjs`) — 16/16, zero field failures — and the two
+all at cent precision). It runs the same 17 shared golden fixtures in CI
+(`scripts/web_parity_test.mjs`) — 17/17, zero field failures — and the two
 engines read and write the **same unified return file format**: the
 versioned `.clearfile.json` envelope (ADR-015), whose `filing` payload is
 identical in both codebases, so saved files round-trip across the Flutter
@@ -205,7 +205,7 @@ git clone https://github.com/maniesh-NR/ClearFile.git
 cd ClearFile/clearfile
 flutter pub get
 flutter run                       # picks the active device
-flutter test                      # 113 tests green (97 + 16 golden fixtures)
+flutter test                      # 114 tests green (97 + 17 golden fixtures)
 flutter build apk --split-per-abi # Android armv7 / armv8a / x86_64
 flutter build linux               # Linux x64
 flutter build macos               # macOS universal

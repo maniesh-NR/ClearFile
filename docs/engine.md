@@ -74,7 +74,7 @@ NIIT thresholds (Form 8960 instructions): 200k single/HoH, 250k MFJ/QSS,
 | Engine step | Value | Form location |
 | --- | --- | --- |
 | CTC $2,200 per qualifying child + ODC $500 per other dependent | gross credits | Schedule 8812 |
-| phase-out: 5% of the excess MAGI over 200k (400k MFJ/QSS), **excess rounded UP to the next $1,000 first** (8812 line 10 wording; the engine cents-normalizes before the ceiling so float dust cannot bump a multiple) | phase-out | Schedule 8812 line 10 |
+| phase-out: 5% of the excess MAGI over 200k (**400k MFJ only — a qualifying surviving spouse is an "other filing status" per Form 8812 line 9; corrected by the QSS golden fixture 2026-11-22, it was wrongly 400k QSS before**), **excess rounded UP to the next $1,000 first** (8812 line 10 wording; the engine cents-normalizes before the ceiling so float dust cannot bump a multiple) | phase-out | Schedule 8812 line 10 |
 | the phase-out reduces the **combined CTC+ODC amount, floored at zero** (not each credit separately) | phased credits | Schedule 8812 line 12 |
 | `min(phasedTotal, taxBeforeCredits)` | non-refundable credits | 1040 line 19 area (Schedule 8812 → credits) |
 | ACTC (refundable): 15% of earned income above a $2,500 floor, capped $1,700 per child; only the CTC portion (ODC is strictly non-refundable) | refundable credit | 1040 payments section, additional-child-tax-credit line (line 27 on the 2024 form) |

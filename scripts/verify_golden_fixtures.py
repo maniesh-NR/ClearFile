@@ -105,7 +105,12 @@ ACTC_EARNED_FLOOR = D("2500")
 CTC_PHASEOUT_START = {"single": D("200000"), "marriedSeparate": D("200000"),
                       "headOfHousehold": D("200000"),
                       "marriedJoint": D("400000"),
-                      "survivingSpouse": D("400000")}
+                      # Schedule 8812 (2025) line 9: "All other filing
+                      # statuses—$200,000" — a qualifying surviving spouse is
+                      # an other filing status (Pub 501: "doesn't entitle you
+                      # to file a joint return"); corrected by the QSS golden
+                      # fixture 2026-11-22 (was wrongly the MFJ $400,000).
+                      "survivingSpouse": D("200000")}
 CTC_PHASEOUT_RATE = D("0.05")
 SLI_MAX = D("2500")
 SLI_START = {"single": D("85000"), "headOfHousehold": D("85000"),

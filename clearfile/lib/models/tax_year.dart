@@ -274,7 +274,12 @@ class TaxYearParameters {
       FilingStatus.marriedSeparate: 200000,
       FilingStatus.headOfHousehold: 200000,
       FilingStatus.marriedJoint: 400000,
-      FilingStatus.survivingSpouse: 400000,
+      // Schedule 8812 (2025) line 9: "Married filing jointly—$400,000 /
+      // All other filing statuses—$200,000" — a qualifying surviving spouse
+      // is an other filing status (Pub 501: the status "doesn't entitle you
+      // to file a joint return"). Corrected by the QSS golden fixture
+      // 2026-11-22 (it was wrongly the MFJ $400,000 before).
+      FilingStatus.survivingSpouse: 200000,
     },
     odcPerDependent: 500,
     studentLoanMax: 2500,

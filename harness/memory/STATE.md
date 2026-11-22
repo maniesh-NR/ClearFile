@@ -1,20 +1,15 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-22 (later — T2 session 2: the USA container
-format COMPLETED byte-end-to-end — entry fields A/B resolved [attributes
-bitmask / first-chunk compressed size], the chunk grammar proven [raw-Deflate
-chunks + 0x80000000-flagged stored segments + u32-0 terminator + type-0
-end-entry + ~10 KB trailing PKCS#7 SignedData], FUN_0041e5e0 corrected to
-the parent-dir preparer; CAN-Personal's inner layer mapped [plain ZIP → the
-same 2022-07-05 bootstrapper family + InstallShield ISSetupStream v7];
-CAN-Business's InstallShield manifest table mapped [header fields incl.
-the INI-block size; text→compressed entropy boundary] — all four targets
-converge on the InstallShield payload layer, where the app modules live;
-ZERO derived bytes written to disk this session [all decodes bounded,
-in-memory]; no app code touched — suites carried, the local tsc bench
-still memory-ceiling-bound [CI authoritative on this push];
-DEBT D36 closed, D40 opened; the PROD-2 tripwire clock stands at 1 of 2
-working sessions elapsed)
+**Updated:** 2026-11-22 (final — Stage-2 EXECUTION session 1: the first
+tooling commit landed with every entry condition — the QSS golden fixture
+#17 + the $200,000 CTC-threshold engine fix it forced in BOTH engines, the
+Phase 1–3 RE tools under the security contract, the ADR-012 mechanics
+(a)–(f), the LEGAL-1 mechanics, and docs/formats/clearfile-json.md (spec 1
+of 4); PROD-2 DISCHARGED (2 of 2 — convened exactly at the tripwire's
+boundary); the fourteenth recycle hollowed node_modules MID-SESSION
+(quirk 18 re-confirmed; npm ci restored it) and disk pressure cost the
+Ghidra bench (tools/ghidra+jdk+rea deleted — rebuildable in minutes at
+the next T2/Phase-4 session; corpus + T2 artifacts intact))
 
 ## Repository
 
@@ -39,36 +34,24 @@ working sessions elapsed)
   checkpoint re-established). T2 chase artifacts under tools/re/.
   Notes: `docs/re-research/2026-11-22-tt-{targets-phase1,tt-t2-reader,
   tt-t2-session2}.md`.
-- **ADR-020 + the TT program's entry gate + T2 sessions 1–2 (2026-11-22):**
-  ADR-020 and the gate record stand as recorded (see DECISIONS.md /
-  CONSENSUS.md). **T2 session 2 (this session):** the USA container format
-  is now COMPLETE and byte-proven end-to-end — the entry fields resolved
-  (A = Win32 attributes bitmask: `A & 2` alternate-create dispatch +
-  set-attributes-when-≠0x20 post-extraction; B = the FIRST deflate
-  chunk's compressed size — the stream self-terminates at exactly B
-  bytes), the payload chunk grammar proven ([deflate, B bytes] then
-  ([u32 csize][raw Deflate] | [u32 0x80000000|size][stored]) repeated,
-  [u32 0] terminator, next entry; observed output granularities 90,000 B
-  and exactly 1 MiB; 0x80/0xc0/0x100 selector semantics unresolved but
-  reader-irrelevant), end-of-archive = a type-0 entry, followed by a
-  ~10 KB DER PKCS#7 SignedData trailing signature (existence recorded);
-  FUN_0041e5e0 CORRECTED to the entry parent-directory preparer (the
-  session-1 'codec chain' label was wrong — the pump is the indirect
-  vtable call at 0x4191a9); a Thumbs.db create-failure special case +
-  SetFileTime application recorded from FUN_00418c60. CAN-Personal: the
-  WinZip SFX inner layer is a PLAIN ZIP (6 entries; setup.exe = PE32,
-  7 sections, link 2025-12-22, the MSI bootstrapper) and the payload
-  installer is the same 2022-07-05 bootstrapper code family + InstallShield
-  ISSetupStream v7 (USA: v8; header fields [u32 0x36][u32 6][u32
-  ≈0x17580000]). CAN-Business: InstallShield-classic — overlay [u32 19]
-  + 4 UTF-16z header fields (lang INI tag, Disk1 path, version,
-  22480 = the INI block size — entropy boundary lands exactly at
-  overlay+20,480) + a BOM'd UTF-16 INI message table (~20 KiB, text not
-  quoted per §7.4) + compressed file-group records from ≈0xefa00.
-  All four targets converge on the InstallShield payload layer (the app
-  modules — the file-format/password routines — live there: D40, the
-  next walk). Bench discipline this session: ZERO derived bytes written
-  to disk (all decodes bounded in-memory) — stricter than ENG-3 required.
+- **Stage-2 EXECUTION session 1 (2026-11-22, this session):** the first
+  tooling commit landed with every entry condition recorded at the
+  2026-11-17 entry gate. ENG-3/D33: the survivingSpouse (QSS) golden
+  fixture #17 (`fixtures/tax/16-surviving-spouse-qss-mapped-thresholds
+  .json`, pins verified from Pub 501 / QDIVCG worksheet lines 6+13 /
+  Topic 559 / Form 8812 line 9) **found and forced a live bug: the QSS
+  CTC phase-out start is $200,000 (“All other filing statuses”,
+  8812 line 9 — QSS “doesn't entitle you to file a joint return”
+  per Pub 501), not the MFJ $400,000 both engines carried** — fixed in
+  tax_year.dart + config.ts + the oracle (+ docs/engine.md). Phase 1–3
+  RE tools (re_entropy / re_magic / re_diff — write-free, capped with
+  refusal tests, crash-safe, §7.1 provenance-manifest gate) + the 22-test
+  unit suite (synthetic fixtures under gitignored fixtures/re/) + the
+  ADR-012 mechanics (a)–(f) (blob assertion + allow-list in CI AND in
+  sandbox_backup.sh; fixtures/re/ gitignored; release.yml RE-free —
+  harness_check family 7) + the LEGAL-1 mechanics (manifest refusal,
+  lint_format_specs) + `docs/formats/clearfile-json.md` (DoD spec 1 of
+  4, §7.5-clean). PROD-2 DISCHARGED.
 - **Root `PROJECT_MEMORY.md` + `update_memory.py` (ADR-018, 2026-11-22):**
   the engineering memory layer (stack rules / playbook / verification
   contracts / rolling git-activity window; stat-mode, idempotent,
@@ -143,16 +126,19 @@ working sessions elapsed)
 
 ## Environment facts (sandbox)
 
-- **Thirteenth recycle observed at this session's start: `tools/` was
-  WIPED** (the twelfth's survival was the exception, not the rule — the
-  quirk register's "recycles can empty tools/" is RE-CONFIRMED as the
-  standing expectation; the bootstrap check stays mandatory). Rebuilt
-  this session: corpus via the fetcher (4/4 sha256-verified against the
-  manifest — SEC-4's mechanic held on a real re-acquisition), Ghidra
-  12.2 + Temurin 25.0.5.1 re-downloaded, REA re-cloned + built
-  (~19 s). The root `node_modules` (outside tools/) SURVIVED incl.
-  `.bin/tsc`. Disk watch: ~2.9 GB free with the rebuilt bench (tools/
-  ≈ 3.7 GB) — the watch item stands.
+- **No recycle at this session's bootstrap** (clean tree, no mode flips,
+  no unpushed amends; tools/ intact — the TT bench + corpus survived), but
+  **the FOURTEENTH recycle hollowed `node_modules` MID-SESSION** (between
+  verification commands; the npm "tsc" squatter banner re-appeared —
+  quirk 18 re-confirmed even mid-session; restored with `npm ci`). Disk
+  pressure at the Flutter SDK install forced a deliberate trade: the
+  Ghidra bench (**tools/ghidra 885 MB + tools/jdk 303 MB + tools/rea
+  248 MB — all REBUILDABLE**, the recorded ~19 s clone/build + a Ghidra
+  re-download) was deleted to fit the verified SDK extraction; **the
+  corpus + T2 chase artifacts + re-env survived; the next T2/Phase-4
+  session rebuilds the bench first**. Disk ~3.6 GB free at close (the
+  watch item improved; the SDK tarball deleted after the verified
+  extraction).
 - The 2026-11-20 mode-flip evidence (195 files 755 after the tenth
   recycle) was folded into an unpushed amend by a brief unlogged session
   instead of being normalized — the SECOND such incident (first:
@@ -164,17 +150,19 @@ working sessions elapsed)
   **thirteenth-recycle mode flips (205 files 644→755, zero content
   delta, no unpushed amend)** — normalized with `git restore .` BEFORE
   any edits (quirk 19 held).
-- Test suite: **113/113 green** (Dart; 97 hand-written + 16 golden) —
-  CARRIED again this session (the delta since `e03c589` provably
-  touches zero code paths under `clearfile/` or `src/`: gitignored
-  bench scripts + docs + governance only; `git status` verified before
-  commit). The local tsc bench REMAINS degraded (the root
-  `node_modules` survived this recycle incl. `.bin/tsc`, but the
-  box's memory ceiling cannot fit tsc's heap — OOM at both the default
-  and a raised 2.8 GB limit; no dev server running, so this is the
-  box ceiling itself); CI's `npm ci` + tsc is authoritative and runs
-  on this push. Web parity 16/16; bridge 10/10; oracle 16/16; web
-  smoke 6/6 — carried with the same evidence.
+- Test suite: **114/114 green** (Dart; 97 hand-written + 17 golden) —
+  RE-RUN this session, not carried: the session TOUCHED the engines
+  (`tax_year.dart` + `config.ts` + the oracle: the QSS CTC threshold
+  fix). The full local battery is green this session: flutter analyze
+  clean; flutter test 114/114; **tsc --noEmit exit 0** (locally green —
+  fresh `npm ci`, no dev server; the box ceiling recurred only for the
+  mid-session hollowing, restored); web parity **17/17**; bridge **10/10**;
+  oracle **17/17**; web smoke **6/6**; `npm audit --omit=dev
+  --audit-level=critical` exit 0 (6 mod/high advisories visible, 0
+  criticals — the recorded posture); RE tool tests **22/22**;
+  `check_binary_blobs` clean (315 tracked / 28 allow-listed);
+  `lint_format_specs` 1/1 clean; harness_check 0 failures. CI runs on
+  this push.
 - Live-check quirk (unchanged): unauthenticated api.github.com is
   shared-rate-limited from this sandbox — use public HTML pages or
   sparing authenticated curl per WORKFLOW §5. CI on `52e2c68` was not
@@ -259,34 +247,34 @@ working sessions elapsed)
 
 ## Immediately next
 
+**Stage-2 execution session 2 (the box's second and FINAL session):** the
+remaining three DoD specs — `tax-exchange-container.md` (this repo's own
+`.tax`-extension ZIP container; owner-authored), `txf.md` (the TXF v042
+profile the shipped bridges verify; owner-authored), `tax-modern.md` (the
+modern `.tax` container at shape level — **waits on T3's format-family
+findings incl. the password layer, §7.3-clean**) — plus **D34** (the v1
+migration triple-implementation: shared fixture, exact warning lists in
+both suites, the store-vs-file W-2 shape note) and the exit-gate
+checklist: `ls docs/formats/*.md` ≥ 4 named files, each §7.5-clean; ≤ 2
+Stage-2 execution sessions in SESSION_LOG (1 elapsed); refusal/cap tests
+green; no-binary-blob assertion green. **The owner's corpus statement for
+N is already on record** (ADR-019 + `docs/re-research/corpus-manifest.md`:
+Personal USA 2026, Personal CAN 2025, Business USA 2026, Business CAN
+2025 — four targets, the TT program's own corpus; Stage-2's N=4 remains
+the named owner-authored set and TT specs never count toward it).
+
 **T2 session 3 (the TT program's next working session):** the
 InstallShield-layer record walk (D40) — the ISSetupStream v7/v8 payload
 record format (USA + CAN-Personal inner installers) + the CAN-Business
 classic file-group record framing (from ≈0xefa00); then the app-module
 inventory where the file-format/password routines live, and the UI
-functional-layout study (text-only IA records, §7.4).
-**Stage-2 execution session 1 remains standing — with the TT gate's
-starvation tripwire (PROD-2) at 1 of 2 working sessions elapsed: it
-convenes at the NEXT working session, else the slippage is a mandatory
-agenda item at the next convened gate.** The first tooling commit carries the
-entry conditions recorded at the gate (ROADMAP Stage-2; the
-ADR-012/LEGAL-1 mechanics, ENG-3's QSS fixture):
-- the **ADR-012 mechanics (a)–(f)**: the enumerated gitignored
-  `fixtures/re/` synthetic fixture path; the allow-listed no-binary-blob
-  CI assertion with the synthetic/owner-authored provenance distinction;
-  the same allow-list wired into `scripts/sandbox_backup.sh`; the
-  `git check-ignore` and release.yml-tooling greps in harness_check;
-- the **LEGAL-1 mechanics**: synthetic-only unit fixtures, the
-  differential tool's provenance-manifest refusal, the backup hex guard
-  widened to ≥32-hex on RE-adjacent paths (UUID/known-hash allow-list),
-  the `docs/formats/*.md` provenance lint;
-- the tools themselves per the recorded security contract (write-free,
-  resource-bounded, crash-safe — ENG-1's crafted file is the
-  crash-battery template);
-- **ENG-3: the survivingSpouse golden fixture** (all three runners);
-- and the first `docs/formats/` spec toward the DoD (N = 4, two-session
-  box). The owner states the owned corpus (product/version/year/count)
-  at kickoff so N is real.
+functional-layout study (text-only IA records, §7.4). **The Ghidra bench
+was deleted for disk at this session's SDK install — rebuild first
+(Ghidra 12.2 + Temurin 25 re-download; REA clone/build ≈ 19 s; the
+corpus + checkpoints survived).** PROD-2: DISCHARGED this session
+(Stage-2 execution session 1 convened at the tripwire's 2-of-2 boundary);
+the clock resets only if the TT program starves Stage-2 again past a
+convened gate.
 
 Owner-side surfacings standing: Dependabot alerts, branch protection on
 `main`, PAT expiry (D30). The epilogue native program (ADR-017) is

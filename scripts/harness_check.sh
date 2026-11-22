@@ -151,5 +151,27 @@ else
   fail "could not reach origin to verify the unpushed check (transient network error? re-run)"
 fi
 
+# --- 7. Stage-2 RE-tooling placement mechanics (ADR-012 (a)/(e), 2026-11-22) -
+# (a) the enumerated synthetic-fixture path must be gitignored (nothing may
+# land there by accident), and (e) the RE tooling must never be wired into
+# release.yml artifact paths (checkouts of both rules; the CI binary-blob
+# assertion itself lives in hygiene.yml's re-tooling job).
+if git check-ignore -q fixtures/re 2>/dev/null; then
+  pass "fixtures/re/ (the enumerated synthetic-fixture path) is gitignored (ADR-012 (a))"
+else
+  fail "fixtures/re/ is NOT gitignored — the ADR-012 (a) fixture path must stay ignored"
+fi
+if git ls-files --error-unmatch fixtures/re >/dev/null 2>&1; then
+  fail "files are TRACKED under fixtures/re/ — the synthetic path must stay untracked (ADR-012 (a))"
+else
+  pass "nothing tracked under fixtures/re/ (ADR-012 (a))"
+fi
+RE_TOOL_REFS="$(grep -cE 're_entropy|re_magic|re_diff|check_binary_blobs|lint_format_specs|test_re_tools|fixtures/re' .github/workflows/release.yml 2>/dev/null || true)"
+if [ "$RE_TOOL_REFS" -eq 0 ]; then
+  pass "release.yml references no RE tooling or fixture path (ADR-012 (e))"
+else
+  fail "release.yml references RE tooling ($RE_TOOL_REFS line(s)) — tooling never wires into artifact paths (ADR-012 (e))"
+fi
+
 echo "harness_check: $FAILURES failure(s)"
 exit $([ "$FAILURES" -eq 0 ] && echo 0 || echo 1)

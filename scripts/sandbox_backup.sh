@@ -72,6 +72,22 @@ check_unpushed() {
 # --- stage everything allowed by .gitignore --------------------------------
 git add -A
 
+# --- binary-blob allow-list guard (ADR-012 mechanic (c), Stage-2 session 1)
+# The same allow-list as the CI assertion (scripts/check_binary_blobs.py —
+# hygiene re-tooling job): tracked binaries are legal ONLY on the
+# enumerated own-asset paths (own icons + blueprint PDFs, 28 entries).
+# After `git add -A` the working tree equals the index, so the tree scan
+# is exactly the staged-content scan. The auto-publish denylist is
+# mechanical, not aspirational. The synthetic fixture path (fixtures/re/)
+# is gitignored and additionally refused if ever tracked.
+if ! python3 scripts/check_binary_blobs.py >/dev/null 2>&1; then
+  echo "backup: REFUSING — binary blobs outside the own-asset allow-list staged:" >&2
+  python3 scripts/check_binary_blobs.py >&2 || true
+  echo "  Own-authored binaries go on the list with a provenance note;" >&2
+  echo "  anything else is removed, never listed (ADR-012 mechanic (b)/(c))." >&2
+  exit 2
+fi
+
 if git diff --cached --quiet; then
   check_unpushed
   echo "backup: nothing to archive (tree clean)"

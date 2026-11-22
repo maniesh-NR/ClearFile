@@ -276,8 +276,42 @@ pre-gate research record for Phase-4-adjacent decisions.
 
 **Gate status:** **Stage 2: ENTERED 2026-11-17** (full-depth gate,
 ADV-LEGAL weighted; 4 × PROCEED-WITH-CONDITIONS, unanimous — see
-`../adversarial/CONSENSUS.md`). Execution begins with the first tooling
-commit carrying the entry conditions above.
+`../adversarial/CONSENSUS.md`). Execution began 2026-11-22 with the first
+tooling commit carrying every entry condition (execution session 1 of the
+two-session box):
+
+- **Execution session 1 (2026-11-22):** the ADR-012 mechanics (a)–(f)
+  landed (`fixtures/re/` enumerated + gitignored; the allow-listed
+  no-binary-blob assertion in hygiene's new `re-tooling` job AND wired
+  into `sandbox_backup.sh`; §7.5 checklist + provenance field per spec;
+  release.yml RE-tooling-free, asserted by harness_check family 7; no
+  tracked Phase-4 binaries); the LEGAL-1 mechanics landed (synthetic-only
+  unit fixtures; the differential tool's provenance-manifest refusal per
+  §7.1, unit-tested on all four refusal shapes; the ≥32-hex backup guard
+  already applied at the TT gate; the `docs/formats/*.md` provenance lint
+  in CI); ENG-3/D33 CLOSED — the QSS golden fixture #17 consumed by all
+  three runners, **and it found + forced a live engine bug: the QSS CTC
+  phase-out start is $200,000 (Form 8812 line 9 + Pub 501's "doesn't
+  entitle you to file a joint return"), not the MFJ $400,000 both engines
+  carried** — fixed in `tax_year.dart` + `config.ts` + the oracle; the
+  Phase 1–3 tools (`re_entropy`/`re_magic`/`re_diff`) landed under the
+  binding security contract with the 22-test suite (every cap
+  refusal-tested, ENG-1-shaped crash battery, read-only-fixture-dir
+  proof, differential exercised on a synthesized pair inside mandatory
+  family #1); **spec 1 of 4 published** (`docs/formats/clearfile-json.md`,
+  §7.5-clean, lint-clean). **PROD-2 DISCHARGED** (the starvation tripwire:
+  convened at 2 of 2). Full suite evidence: flutter 114/114 (97 + 17
+  golden), tsc 0, parity 17/17, bridge 10/10, oracle 17/17, smoke 6/6,
+  audit gate 0, RE tools 22/22, blob assertion clean, formats lint clean.
+- **Remaining for the exit gate (execution session 2, the box's final
+  one):** the three DoD specs (`tax-exchange-container.md`,
+  `txf.md` — both owner-authored with shipped code + tests as their
+  verification anchors; `tax-modern.md` awaits T3's format-family
+  findings), D34, then the exit-gate checklist (≥4 named specs each
+  §7.5-clean, ≤2 execution sessions, refusal/cap tests green, blob
+  assertion green). The owner's corpus statement is on record
+  (ADR-019 + `docs/re-research/corpus-manifest.md` — the four TT
+  targets; TT specs never count toward N=4 per the namespace rule).
 
 ## Stage 3 — Parity & clean-room bridges (highest value)
 

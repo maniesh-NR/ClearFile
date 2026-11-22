@@ -1146,3 +1146,146 @@ code paths; CI runs on this push).
 InstallShield-layer record walk → the app-module inventory + the UI
 functional-layout study) — and Stage-2 execution session 1 at the next
 working session under the PROD-2 tripwire.**
+
+---
+
+## 2026-11-22 (final) · Stage-2 execution session 1: the first tooling commit + the QSS golden fixture that found a live engine bug
+
+**Session task:** Stage-2 execution session 1 — convened exactly as the
+PROD-2 starvation tripwire demanded (1 of 2 working sessions elapsed after
+T2 session 1; this is the second, so convening here discharges it). The
+first Stage-2 tooling commit carries every entry condition recorded at the
+Stage-2 entry gate: the ADR-012 mechanics (a)–(f), the LEGAL-1 mechanics,
+ENG-3's survivingSpouse golden fixture, the Phase 1–3 tools under the
+binding security contract, and the first `docs/formats/` spec toward N=4.
+
+**Bootstrap (WORKFLOW §3 + ADR-018):** clean tree at tip `c9ec840`, no
+mode flips, no unpushed amends, tools/ intact (the TT bench + corpus
+survived — no recycle at bootstrap), `update_memory.py` refreshed the
+window pre-edit; disk 2.9 GB free (watch item standing).
+
+**Executed:**
+- **ENG-3 / D33 — the survivingSpouse (QSS) golden fixture #17 landed
+  (`fixtures/tax/16-surviving-spouse-qss-mapped-thresholds.json`), and it
+  FOUND A LIVE BUG:** every pin verified against the primary sources
+  fetched to the bench (Pub 501 (2025): "Use the Married filing jointly
+  column of the Tax Table, or Section B of the Tax Computation Worksheet"
+  + "This filing status entitles you to use joint return tax rates and the
+  highest standard deduction amount … It doesn't entitle you to file a
+  joint return" + the QSS-under-65 sd row $31,500; the QDIVCG worksheet
+  lines 6/13: "$96,700 if married filing jointly or qualifying surviving
+  spouse" / "$600,050 if … or qualifying surviving spouse"; Topic no. 559:
+  "$250,000 for married filing jointly or qualifying surviving spouse";
+  Schedule 8812 (2025) line 9: "Married filing jointly—$400,000 / All other
+  filing statuses—$200,000"). **Form 8812 line 9 + Pub 501's "doesn't
+  entitle you to file a joint return" ⇒ the QSS CTC phase-out start is
+  $200,000, NOT the MFJ $400,000 both engines carried** (the QSS→MFJ
+  column equivalence had been over-applied to a threshold keyed to joint
+  RETURNS; the internal Dart equivalence test sat at $90,000 wages — below
+  both thresholds — which is exactly why the bug survived). Fixed in all
+  THREE parameter tables: `clearfile/lib/models/tax_year.dart`,
+  `src/lib/tax/config.ts`, `scripts/verify_golden_fixtures.py` (with the
+  8812-line-9 citation comment); `docs/engine.md`'s 8812 row corrected the
+  same way. D33's recorded premise ("CTC 400k") is corrected by the form
+  text — noted in DEBT.
+- **The fixture** (QSS, two qualifying children, wages $240,000 + $20,000
+  qualified dividends ⇒ MAGI $260,000): pins the MFJ rate column
+  (ordinary $35,734 on the 208,500 slice), sd $31,500, the QDI 15% band
+  ($3,000), the NIIT $250,000 threshold (MAGI excess $10,000 < NII
+  $20,000 ⇒ $380), and the CTC $200,000 threshold (line 10 = $60,000
+  exact multiple; line 11 = $3,000; line 12 = $1,400) ⇒ totalTax
+  $37,714.00 — an engine at the old 400k QSS mapping would return $4,400
+  of CTC and $36,114 total.
+- **The Phase 1–3 RE tools landed (tracked, per the binding security
+  contract):** `scripts/re_entropy.py` (per-block Shannon entropy),
+  `scripts/re_magic.py` (magic-byte scan at any offset — `MZ` pinned to
+  offset 0 to avoid the two-byte flood — + text/JSON/XML sniff),
+  `scripts/re_diff.py` (differential: offsets/lengths/entropy only, never
+  bytes). All three: write-free (read-only opens, no shell-outs, no
+  network), resource-bounded (size/block/hits/region caps + per-file
+  signal-based wall-clock timeouts, EVERY cap refusing cleanly with exit
+  3), crash-safe (empty/truncated/adversarial inputs reported, never
+  thrown), posture stated in each header + `--help` (D38's registration
+  for the Phase 1–3 set).
+- **`scripts/test_re_tools.py` — 22 unit tests, synthetic-only fixtures
+  runtime-generated under the gitignored `fixtures/re/` path (ADR-012
+  (a)); includes the read-only-fixture-dir write-freedom proof (chmod 0555)
+  and the differential run on a SYNTHESIZED pair inside the mandatory
+  spec family #1 (two clearfile.json v2 envelopes differing in one W-2
+  wage digit ⇒ exactly one 1-byte region localized).**
+- **ADR-012 mechanics (a)–(f) all landed with this first tooling commit:
+  (a)** `fixtures/re/` enumerated + gitignored in `.gitignore` (the only
+  synthetic path; committed fixtures would be text-with-provenance only);
+  **(b)** `scripts/check_binary_blobs.py` — the allow-listed no-binary-blob
+  assertion (measured 28 own assets: 8 blueprint PNGs + cover.pdf, 17
+  Flutter-tooling icons, app_icon.ico, docs/blueprint.pdf; any new binary
+  under fixtures/, tools/, docs/, src/, scripts/, or harness/ fails CI)
+  wired into hygiene.yml's new `re-tooling` job; **(c)** the same
+  allow-list wired into `scripts/sandbox_backup.sh` after `git add -A`
+  (auto-publish denylist mechanical, exit 2 refusal); **(d)** §7.5
+  checklist applied + recorded per spec (see the spec's checklist section)
+  + `scripts/lint_format_specs.py` enforcing the provenance field, no
+  ≥32-hex runs, no image embeds, no placeholders; **(e)** release.yml
+  references zero RE tooling (asserted by harness_check's new check);
+  **(f)** no tracked Phase-4 binaries (the blob assertion is the
+  mechanical proof; Ghidra benches stay under gitignored `tools/re/`).
+- **LEGAL-1 mechanics landed:** synthetic-only unit fixtures ✓ (by
+  construction); the differential tool's provenance-manifest refusal ✓
+  (§7.1: no `--manifest` = usage refusal; entry missing = exit-3 refusal
+  naming the file + §7.1; provenance ∉ {owner-authored, synthetic} =
+  refusal; malformed manifest = clean refusal) — all four shapes
+  unit-tested; the ≥32-hex backup guard + allow-list was already applied
+  at the TT gate (LEGAL-2/SEC-1) and covers the new docs; the
+  `docs/formats/*.md` lint ✓ (runs in CI).
+- **The first spec toward N=4: `docs/formats/clearfile-json.md`** — the
+  owner-authored family (v2 envelope + v1 + legacy flat + `.cfr` alias):
+  Provenance section (§7.1 — owner-authored, zero third-party samples),
+  identification/sniff, envelope field table with per-field "verified by"
+  experiments (§6), the filing payload record layout, the vintage
+  migration matrix, the reader warning contract, code anchors, the
+  differential note, and the applied §7.5 checklist.
+- harness_check grew check family 7 (ADR-012 (a)/(e) assertions:
+  fixtures/re ignored + nothing tracked under it + release.yml
+  RE-tooling-free).
+
+**Decisions:** none new (execution inside the entered stage; PROD-2
+DISCHARGED by convening here — 2 of 2). DEBT: **D33 closed** (with the
+$200,000 correction note); **D38's registration discharged for the
+Phase 1–3 tools** (the first tracked EXTRACTION tool at T4 still owes the
+same contract); D34 (the v1 migration triple-implementation) remains the
+Stage-2 window's known item.
+
+**Environment:** no recycle at bootstrap, but **the fourteenth recycle
+hollowed node_modules MID-SESSION** (between verification commands; the
+npm "tsc" squatter banner reappeared — quirk 18 re-confirmed): restored
+with `npm ci` (repo standard). Disk pressure forced a trade at the Flutter
+SDK install: the SDK tarball (1.5 GB, sha256-verified before extraction)
++ partial extraction exceeded the ~2.2 GB ceiling, so the RECONSTRUCTABLE
+Ghidra bench was deleted (tools/ghidra 885 MB + tools/jdk 303 MB +
+tools/rea 248 MB) — **rebuild at the next T2/Phase-4 session via the
+recorded ~19 s clone/build + Ghidra re-download**; the corpus + T2 chase
+artifacts + re-env survived. The tarball was deleted after the verified
+extraction. Disk ~3.6 GB free at close (watch item improved).
+
+**Suites (this session TOUCHED the engines — full local re-run, not
+carried):** flutter analyze clean; **flutter test 114/114** (97 + 17
+golden — the QSS fixture green against the fixed engine; the QSS/MFJ
+equivalence test still passes at its $90,000 wages, correctly: both
+thresholds un-phased there); **tsc --noEmit exit 0** (locally green this
+time — fresh npm ci, no dev server); **web parity 17/17** (zero field
+failures — the TS engine agrees); **bridge 10/10; oracle 17/17; web
+smoke 6/6** (full standalone build + headless Chromium); **npm audit
+--omit=dev --audit-level=critical exit 0** (6 mod/high advisories visible,
+0 criticals — the recorded posture); **RE tool tests 22/22;
+check_binary_blobs clean (315 tracked files / 28 allow-listed);
+lint_format_specs 1/1 clean; harness_check 0 failures** (after the
+README/STATE count updates).
+
+**Closing action:** this event-driven backup — the last action before
+the reply. **Next: Stage-2 execution session 2 (the box's second and
+final session): the remaining three DoD specs (tax-exchange-container,
+txf, tax-modern — the last one awaits T3's password-layer findings), D34,
+and the exit-gate checklist (≥4 named specs, ≤2 execution sessions,
+refusal/cap tests green, blob assertion green). T2 session 3 (D40) follows
+the TT program's own lane; PROD-2 reset (satisfied this session).**
+

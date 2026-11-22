@@ -86,6 +86,27 @@ jobs:
       # .tax analyzer against synthetic containers).
       - run: node scripts/txf_taxfile_test.mjs
 
+  re-tooling:
+    # Stage-2 execution session 1 (2026-11-22, ADR-012 mechanics (b)/(e) +
+    # the LEGAL-1 lint + the tools' security contract): the no-binary-blob
+    # assertion (tracked binaries are legal only on the enumerated
+    # own-asset allow-list — 28 entries; any new binary under fixtures/,
+    # tools/, docs/, src/, scripts/, or harness/ fails here), the RE
+    # Phase 1-3 tools' synthetic-fixture unit suite (write-free, caps with
+    # refusal tests, crash battery, §7.1 provenance-manifest refusal —
+    # fixtures generated at runtime under the gitignored fixtures/re/
+    # path), and the docs/formats provenance lint. Same repo posture:
+    # SHA-pinned actions, contents: read, timeout, no secrets; and this
+    # tooling is never wired into release.yml artifact paths (ADR-012 (e)).
+    name: RE tooling (blob assertion + tool tests + formats lint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - run: python3 scripts/check_binary_blobs.py
+      - run: python3 scripts/test_re_tools.py
+      - run: python3 scripts/lint_format_specs.py
+
   harness-check:
     name: Harness memory self-check (D19)
     runs-on: ubuntu-latest

@@ -3,6 +3,47 @@
 Scripts in this directory fall into two groups:
 
 1. **Project infrastructure** — part of the product:
+
+   **Stage-2 RE tooling (2026-11-22, execution session 1 — ADR-012
+   placement mechanics + the binding security contract; D38 registered):**
+
+   - `re_entropy.py` — protocol Phase-1 per-block Shannon entropy scan
+     (write-free, size/block/timeout caps with clean exit-3 refusals,
+     crash-safe on empty/truncated inputs).
+   - `re_magic.py` — protocol Phase-1 magic-byte scan at any offset
+     (ZIP/CAB/RAR/7z/OLE2/SQLite/ELF/gzip/bzip2/xz/zstd/PDF; `MZ` at
+     offset 0 only — the short magic floods otherwise) + text/JSON/XML
+     sniff. Same posture.
+   - `re_diff.py` — protocol Phase-3 differential comparison
+     (offsets/lengths/entropy only — never bytes). Carries the §7.1
+     provenance gate: both inputs must hash-match entries in a
+     `--manifest` JSON (`{entries: [{sha256, path, provenance
+     (owner-authored|synthetic), origin}]}`); pairs lacking an entry are
+     refused. Same posture.
+   - `test_re_tools.py` — the tools' unit suite (22 tests): every cap
+     has a refusal-on-oversize test, the ENG-1-shaped crash battery runs
+     empty/truncated/adversarial shapes, the read-only-fixture-dir test
+     proves write-freedom, and the differential tool is exercised on a
+     SYNTHESIZED pair inside the mandatory spec family #1
+     (clearfile.json envelopes differing in one W-2 wage digit). Runs in
+     CI (hygiene `re-tooling`); fixtures are runtime-generated under the
+     gitignored `fixtures/re/` path (ADR-012 mechanic (a) — synthetic
+     only, provenance-headed).
+   - `check_binary_blobs.py` — the ADR-012 mechanic (b)/(c) no-binary-blob
+     assertion: tracked binaries are legal only on the enumerated
+     own-asset allow-list (28 entries; any new binary under `fixtures/`,
+     `tools/`, `docs/`, `src/`, `scripts/`, or `harness/` fails CI).
+     Runs in CI (hygiene `re-tooling`) and inside
+     `scripts/sandbox_backup.sh` after `git add -A` (the auto-publish
+     denylist is mechanical).
+   - `lint_format_specs.py` — the LEGAL-1 `docs/formats/*.md` lint
+     (Provenance section required, no ≥32-hex runs, no image embeds, no
+     placeholders); `--scope all` extends to `docs/re-research/` with
+     the corpus-manifest known-hash exemption (T3's SEC-6 extension
+     point). Runs in CI (hygiene `re-tooling`).
+
+   **Long-standing infrastructure:**
+
    - `../update_memory.py` (repo root, ADR-018) — refreshes
      `PROJECT_MEMORY.md`'s rolling git-activity window (last 3 commits,
      stat-mode with noise excludes; run `python3 update_memory.py` from

@@ -1,0 +1,71 @@
+{
+  "format": "clearfile.golden",
+  "formatVersion": 1,
+  "name": "surviving-spouse-qss-mapped-thresholds",
+  "description": "Qualifying surviving spouse, two qualifying children, wages $240,000 plus $20,000 qualified dividends (MAGI $260,000): pins the QSS status's column mapping across every threshold it touches — the MFJ rate column and $31,500 standard deduction (Pub 501), the MFJ QDI breakpoints (96,700/600,050), the $250,000 NIIT threshold — AND the $200,000 CTC phase-out start, which is NOT the MFJ $400,000: Pub 501 says the status 'doesn't entitle you to file a joint return' and Form 8812 line 9 puts everything except married filing jointly at $200,000. This fixture found and forced the correction of a live bug: both engines had mapped QSS to the $400,000 MFJ CTC threshold.",
+  "taxYear": 2025,
+  "source": {
+    "publication": "Pub. 501 (2025), 'Qualifying Surviving Spouse' + standard deduction table; Instructions for Form 1040 (2025), Qualified Dividends and Capital Gain Tax Worksheet lines 6 and 13; Schedule 8812 (Form 1040) (2025) line 9; IRS Topic no. 559 (Form 8960 thresholds)",
+    "urls": [
+      "https://www.irs.gov/pub/irs-pdf/p501.pdf",
+      "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf",
+      "https://www.irs.gov/pub/irs-pdf/f1040s8.pdf",
+      "https://www.irs.gov/taxtopics/tc559"
+    ],
+    "pin": "Pub 501: 'Use the Married filing jointly column of the Tax Table, or Section B of the Tax Computation Worksheet, to figure your tax.' 'This filing status entitles you to use joint return tax rates and the highest standard deduction amount (if you don't itemize deductions). It doesn't entitle you to file a joint return.' Standard deduction table: 'Qualifying surviving spouse ... under 65 ... $31,500.' QDIVCG worksheet line 6: '$96,700 if married filing jointly or qualifying surviving spouse'; line 13: '$600,050 if married filing jointly or qualifying surviving spouse.' Schedule 8812 line 9: 'Married filing jointly—$400,000 / All other filing statuses—$200,000.' Topic no. 559: '$250,000 for married filing jointly or qualifying surviving spouse.'"
+  },
+  "input": {
+    "taxYear": 2025,
+    "filingStatus": "survivingSpouse",
+    "taxpayer65OrOlder": false,
+    "spouse65OrOlder": false,
+    "taxpayerBlind": false,
+    "spouseBlind": false,
+    "w2s": [{"employer": "Example W-2", "wages": 240000, "withholding": 0}],
+    "interestIncome": 0,
+    "ordinaryDividends": 0,
+    "qualifiedDividends": 20000,
+    "longTermCapitalGains": 0,
+    "otherIncome": 0,
+    "studentLoanInterest": 0,
+    "deductionMethod": "auto",
+    "stateLocalIncomeOrSalesTax": 0,
+    "realEstateTax": 0,
+    "mortgageInterest": 0,
+    "charitableCash": 0,
+    "charitableNonCash": 0,
+    "estimatedPayments": 0,
+    "dependents": [
+      {"name": "Child", "age": 9, "relationship": "child", "qualifyingChild": true, "otherDependentCredit": false},
+      {"name": "Second child", "age": 7, "relationship": "child", "qualifyingChild": true, "otherDependentCredit": false}
+    ]
+  },
+  "expected": {
+    "totalIncome": 260000,
+    "agi": 260000,
+    "basicStandardDeduction": 31500,
+    "additionalStandardDeduction": 0,
+    "seniorDeduction": 0,
+    "standardDeductionTotal": 31500,
+    "taxableIncome": 228500,
+    "preferentialIncome": 20000,
+    "ordinaryTax": 35734,
+    "preferentialTax": 3000,
+    "niit": 380,
+    "qualifyingChildren": 2,
+    "nonRefundableCredits": 1400,
+    "refundableCredits": 0,
+    "totalTax": 37714,
+    "amountOwed": 37714
+  },
+  "tolerance": 0.005,
+  "derivation": [
+    "Wages $240,000 + qualified dividends $20,000 = $260,000 MAGI and AGI (no adjustments).",
+    "Pub 501 standard deduction table: qualifying surviving spouse, under 65 = $31,500 (the MFJ amount). Taxable income = 260,000 - 31,500 = $228,500.",
+    "Pub 501: 'Use the Married filing jointly column of the Tax Table, or Section B of the Tax Computation Worksheet' — MFJ schedule on ordinary taxable income 228,500 - 20,000 = $208,500: 10% x 23,850 = 2,385.00; 12% x 73,100 = 8,772.00; 22% x 109,750 = 24,145.00; 24% x 1,800 = 432.00. Ordinary tax = $35,734.00.",
+    "QDIVCG worksheet lines 6 and 13 (both name 'married filing jointly or qualifying surviving spouse'): the $20,000 of qualified dividends stacks above ordinary taxable $208,500 — past the $96,700 zero-rate breakpoint and under the $600,050 top of the 15% band — so it is all taxed at 15%: preferential tax = $3,000.00.",
+    "Form 8960 threshold for MFJ/QSS is $250,000 (Topic no. 559): MAGI exceeds it by $10,000, which is less than net investment income $20,000, so NIIT = 3.8% x 10,000 = $380.00. (An engine using the $200,000 single threshold would compute 3.8% x 20,000 = $760.00 and fail here.)",
+    "Schedule 8812 lines 9-12: line 9 for a qualifying surviving spouse falls under 'All other filing statuses—$200,000' (Pub 501: the status 'doesn't entitle you to file a joint return'); line 10 = 260,000 - 200,000 = $60,000, an exact multiple of $1,000; line 11 = 5% x 60,000 = $3,000; line 12 = (2 x $2,200) - 3,000 = $1,400. (An engine mapping QSS to the $400,000 MFJ threshold skips the phase-out entirely and returns $4,400 — the live bug this fixture found in both engines 2026-11-22.)",
+    "Tax before credits = 35,734.00 + 3,000.00 = $38,734.00; non-refundable credit $1,400; total tax = 38,734.00 - 1,400.00 + 380.00 = $37,714.00; amount owed (no withholding or estimated payments) = $37,714.00."
+  ]
+}
