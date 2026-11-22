@@ -1,12 +1,15 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-22 (TT-compatibility program session, ADR-019: the
-two-target directive executed — four TurboTax installer targets acquired
-+ Phase-1 surveyed + the REA-over-Ghidra-12.2 first pass decompiled the
-proprietary container's reader pipeline; boundaries recorded
-(password-based path = the shipped target; fixed-key layer = recorded
-NO pending an owner risk-acceptance ADR; UI = functional parity, own
-expression); no app code touched — suites carried)
+**Updated:** 2026-11-22 (ADR-020 + the TT program's own gate + T2
+session 1: the owner's explicit risk acceptance recorded for the
+shipped decryptor — fixed-key transport layer included, boundary
+conditions binding; the TT gate PASSED 4 × PROCEED-WITH-CONDITIONS
+with every in-session condition applied (the ≥32-hex guard widening +
+canary test, the fetcher's mechanical sha256 verification, the NOTE
+scan, protocol §6/§7.4 amendments, the ADR-020 clarification, the
+phase-1 erratum); T2 ENTERED — the reader pipeline chased to the
+archive-entry format, payload codec byte-proven raw Deflate; no app
+code touched — suites carried)
 
 ## Repository
 
@@ -20,11 +23,34 @@ expression); no app code touched — suites carried)
   SESSION_LOG note and in PROJECT_MEMORY.md's quirk shortlist.
 - **TT RE bench + corpus (ADR-019, 2026-11-22, gitignored tools/):** the
   four installer targets (tools/re-corpus/, ~1.4 GB; manifest +
-  `scripts/fetch_tt_corpus.sh` re-acquire after recycles), REA 6.10.1
+  `scripts/fetch_tt_corpus.sh` re-acquire after recycles — now with
+  mechanical sha256 verification against the manifest), REA 6.10.1
   (tools/rea) over Ghidra 12.2 + Temurin 25 (REA hard-requires ≥12.2 →
   JDK 25), with the protocol-pinned Ghidra 12.1.4 + JDK 21 kept as
-  fallback; carved stubs + decompile artifacts under tools/re/. Notes:
-  `docs/re-research/2026-11-22-tt-targets-phase1.md`.
+  fallback; carved stubs + decompile artifacts under tools/re/ (incl.
+  the T2 chase artifacts + the REA checkpoint dir). Notes:
+  `docs/re-research/2026-11-22-tt-{targets-phase1,tt-t2-reader}.md`.
+- **ADR-020 + the TT program's entry gate + T2 session 1 (2026-11-22):**
+  the owner's explicit risk acceptance for the shipped decryptor
+  (fixed-key transport layer included; boundary conditions:
+  password-gated surface, one quarantined key module, §7.2/§7.4
+  unchanged, the enforcement-response plan) recorded in DECISIONS.md
+  with dated protocol §2.2/§6/§7.3 amendments; the TT gate (four
+  isolated concurrent reviewers) PASSED 4 × PROCEED-WITH-CONDITIONS —
+  reports `adversarial/reports/2026-11-22-tt-*.md`, consensus + the
+  full condition ledger in `adversarial/CONSENSUS.md` (the fixed-key
+  re-argument with the acceptance on record + the Canadian-law
+  assessment delivered); in-session applications: the backup secret
+  guard widened to ≥32-hex on RE-adjacent paths with a measured
+  allow-list (canary-tested exit 2) + the NOTE scan,
+  `fetch_tt_corpus.sh` sha256 enforcement (4/4 live-verified), the
+  phase-1 erratum (container head 0x99000), DEBT D36–D39; T2 ENTERED —
+  session 1 chased the reader pipeline to the archive-entry format
+  (record magic 0x6d27e59b, name/FILETIME/size fields; payload codec
+  byte-proven raw Deflate → the inner SetUp.exe PE; bounded extraction
+  deleted per ENG-3) — `docs/re-research/2026-11-22-tt-t2-reader.md`.
+  REA checkpoint mode ON (84 s first import → ~11 s per command;
+  ENG-4 outcome in DEBT).
 - **Root `PROJECT_MEMORY.md` + `update_memory.py` (ADR-018, 2026-11-22):**
   the engineering memory layer (stack rules / playbook / verification
   contracts / rolling git-activity window; stat-mode, idempotent,
@@ -82,6 +108,11 @@ expression); no app code touched — suites carried)
   Stage 4+ behind its own gate). **No native-stack code exists**; the
   Flutter app and web prototype remain the live implementation, exactly
   as the ROADMAP matrix says.
+- **TT-compatibility program (ADR-019 + ADR-020): T2 ENTERED 2026-11-22**
+  at its own gate (4 × PROCEED-WITH-CONDITIONS, unanimous; T1 complete
+  and verified at the gate). Stage-2's DoD box is NOT grown — TT specs
+  never count toward N=4 (the namespace rule is in ROADMAP's TT
+  section).
 - Owner decisions all stand: ADR-008 accept-and-document; ADR-009 feature
   parity — **narrowed to maintenance parity by ADR-016 (2026-11-17, the
   tripwire settlement; owner-overrule path recorded)**; INTERNET
@@ -94,13 +125,15 @@ expression); no app code touched — suites carried)
 
 ## Environment facts (sandbox)
 
-- **Eleventh-recycle era observed before this session**: 197 mode flips
-  (normalized with `git restore .` BEFORE any edits, quirk 19), tools/
-  was empty → REBUILT this session per ADR-019 (Ghidra 12.1.4 + 12.2,
-  JDK 21 + 25, REA, the corpus; archive zips deleted after extraction —
-  all re-downloadable from recorded URLs); `node_modules/` survived WITH
-  its tsc bin. Disk headroom is the constraint to watch (~2.5 GB free
-  at session end incl. the 1.4 GB corpus).
+- **Twelfth recycle observed at this session's start: `tools/` SURVIVED
+  intact** (4.0 GB: the corpus, REA, Ghidra 12.1.4/12.2, JDK 21/25 —
+  contrary to the standing expectation; the quirk register's
+  "recycles can empty tools/" is revised to "can, not must"; the
+  check at bootstrap stays mandatory). REA's compiled runtime alone
+  was hollowed → rebuilt in-place (`npm ci && npm run build:cached`,
+  ~20 s; the gitignored node_modules under tools/rea). Disk watch:
+  ~1.6 GB free after the rebuild + the REA checkpoint state; the
+  extraction discipline (ENG-3) applied — bounded sample deleted.
 - The 2026-11-20 mode-flip evidence (195 files 755 after the tenth
   recycle) was folded into an unpushed amend by a brief unlogged session
   instead of being normalized — the SECOND such incident (first:
@@ -108,19 +141,22 @@ expression); no app code touched — suites carried)
   normalize-first practice is reaffirmed; WORKFLOW §4 step 5 already
   requires `harness_check.sh` at recycle verification (ENG-7), and
   PROJECT_MEMORY.md's quirk shortlist now carries the pattern for
-  protocol-layer sessions.
+  protocol-layer sessions. This session's bootstrap found the tree
+  clean with zero mode flips.
 - Test suite: **113/113 green** (Dart; 97 hand-written + 16 golden) —
-  CARRIED this session from `c4982d1` (CI hygiene run 44044419879 green
-  on the pushed tip; this session adds only markdown + a Python memory
-  script — zero code paths touched; `update_memory.py` itself compiled,
-  run twice, verified idempotent, 16 KB output; `npx tsc --noEmit`
-  re-verified locally exit 0). Web parity 16/16; bridge 10/10; oracle
-  16/16; web smoke 6/6 — carried with the same CI evidence.
+  CARRIED again this session (the delta since `c4982d1` provably
+  touches zero code paths under `clearfile/` or `src/`: scripts +
+  docs + governance only; verified by the TT gate's reviewers). The
+  local tsc bench remains degraded (the eleventh recycle hollowed
+  `node_modules/.bin/tsc` and a partial npm install OOMs under the
+  concurrent dev server) — CI's `npm ci` + tsc is authoritative and
+  runs on this push. Web parity 16/16; bridge 10/10; oracle 16/16; web
+  smoke 6/6 — carried with the same evidence.
 - Live-check quirk (unchanged): unauthenticated api.github.com is
   shared-rate-limited from this sandbox — use public HTML pages or
-  sparing authenticated curl per WORKFLOW §5. The gate's four reviewers
-  all avoided the PAT (one hit the rate limit and said so in its
-  report).
+  sparing authenticated curl per WORKFLOW §5. CI on `52e2c68` was not
+  re-verified this session for that reason (the TT gate's orchestrator
+  note records it); CI runs on this gate's own push.
 - Git identity: platform default (`z@container`). Remote auth: owner's
   fine-grained PAT in `.git/config` only (owner declined rotation —
   WORKFLOW §5).
@@ -200,16 +236,16 @@ expression); no app code touched — suites carried)
 
 ## Immediately next
 
-**The TT program's T2 (behind its own gate per ADR-019 — convene when
-owner-funded):** the reader-vtable chase (marker construction, record
-layout, decompression path), payload extraction per target, the
-app-module inventory where the file-format/password routines live.
-**Owner decision requested (surfaced by ADR-019):** the fixed-key
-transport layer — shipping keys/decryptors stays the recorded NO unless
-the owner records an explicit risk-acceptance ADR. Meanwhile **Stage-2
-execution session 1** remains the standing next item (the first tooling
-commit carrying the entry conditions recorded at the gate — ROADMAP
-Stage-2; the ADR-012/LEGAL-1 mechanics, ENG-3's QSS fixture):
+**T2 session 2 (the TT program's next working session):** the entry
+field semantics (A/B) + the chunked payload-stream layout + the
+FUN_0041e5e0 codec chain (D36); the CAN-Personal inner ZIP + the
+CAN-Business InstallShield layers; then the app-module inventory.
+**Stage-2 execution session 1 remains standing — with the TT gate's
+starvation tripwire (PROD-2): it convenes within two working sessions
+of T2 session 1 (2026-11-22), else the slippage is a mandatory agenda
+item at the next convened gate.** The first tooling commit carries the
+entry conditions recorded at the gate (ROADMAP Stage-2; the
+ADR-012/LEGAL-1 mechanics, ENG-3's QSS fixture):
 - the **ADR-012 mechanics (a)–(f)**: the enumerated gitignored
   `fixtures/re/` synthetic fixture path; the allow-listed no-binary-blob
   CI assertion with the synthetic/owner-authored provenance distinction;

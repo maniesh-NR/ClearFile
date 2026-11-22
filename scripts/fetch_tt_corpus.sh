@@ -38,25 +38,42 @@ TARGETS=(
 
 for row in "${TARGETS[@]}"; do
   IFS='|' read -r name url bytes <<<"$row"
-  if [ -f "$DEST/$name" ] && [ "$(stat -c%s "$DEST/$name")" = "$bytes" ]; then
-    echo "fetch_tt_corpus: $name already present ($bytes bytes)"
-    continue
-  fi
-  echo "fetch_tt_corpus: $name <- $url ($bytes bytes)"
-  for attempt in $(seq 1 12); do
-    if curl -fL --speed-limit 4096 --speed-time 60 -C - -o "$DEST/$name" "$url"; then
-      break
-    fi
-    echo "fetch_tt_corpus: retry ${attempt} (resumed)"
-    sleep 3
-  done
-  actual="$(stat -c%s "$DEST/$name")"
-  if [ "$actual" != "$bytes" ]; then
-    echo "fetch_tt_corpus: SIZE MISMATCH for $name ($actual != $bytes) — delete and re-run" >&2
+  # Mechanical sha256 verification against the tracked provenance
+  # manifest (2026-11-22 TT gate, SEC-4): the manifest is the
+  # known-hash allow-list; this fetcher refuses on any mismatch, so a
+  # re-acquisition after a recycle can never silently substitute bytes.
+  expected_sha="$(
+    awk -F'|' -v u="$url" 'index($0, u) {
+      cell=$5; gsub(/[`[:space:]]/, "", cell); print cell
+    }' docs/re-research/corpus-manifest.md
+  )"
+  if [ -z "$expected_sha" ]; then
+    echo "fetch_tt_corpus: no sha256 row for $name in docs/re-research/corpus-manifest.md — refusing (manifest drift?)" >&2
     exit 1
   fi
+  if [ -f "$DEST/$name" ] && [ "$(stat -c%s "$DEST/$name")" = "$bytes" ]; then
+    echo "fetch_tt_corpus: $name already present ($bytes bytes); verifying sha256"
+  else
+    echo "fetch_tt_corpus: $name <- $url ($bytes bytes)"
+    for attempt in $(seq 1 12); do
+      if curl -fL --speed-limit 4096 --speed-time 60 -C - -o "$DEST/$name" "$url"; then
+        break
+      fi
+      echo "fetch_tt_corpus: retry ${attempt} (resumed)"
+      sleep 3
+    done
+    actual="$(stat -c%s "$DEST/$name")"
+    if [ "$actual" != "$bytes" ]; then
+      echo "fetch_tt_corpus: SIZE MISMATCH for $name ($actual != $bytes) — delete and re-run" >&2
+      exit 1
+    fi
+  fi
+  actual_sha="$(sha256sum "$DEST/$name" | cut -d' ' -f1)"
+  if [ "$actual_sha" != "$expected_sha" ]; then
+    echo "fetch_tt_corpus: SHA256 MISMATCH for $name — corpus not authentic to the manifest; delete and re-run" >&2
+    exit 1
+  fi
+  echo "fetch_tt_corpus: $name sha256 verified"
 done
 
-echo "fetch_tt_corpus: all four targets present; sha256 (compare against docs/re-research/corpus-manifest.md):"
-sha256sum "$DEST"/*.exe
-echo "fetch_tt_corpus: OK"
+echo "fetch_tt_corpus: all four targets present AND sha256-verified against docs/re-research/corpus-manifest.md"

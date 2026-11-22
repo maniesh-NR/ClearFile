@@ -764,3 +764,187 @@ carrying those entry conditions; its exit gate counts the DoD (4 specs,
 **The epilogue native program (N1–N6): recorded as PENDING/unfunded**
 (ADR-017 settled, entered only behind its own gates when the owner
 funds it).
+
+---
+
+## Gate: TT-compatibility program entry (T2–T4) · 2026-11-22
+
+*Convened on the owner's ADR-020 instruction ("Record an explicit
+risk-acceptance ADR for the shipped decryptor and proceed", trace
+`1a2023899589beed`) — the TT program's own gate per ADR-019, carrying
+its recorded agenda. Four reviewers ran concurrently in isolated
+contexts (Task IDs 4-a…4-d); none saw another's report or any prior
+gate record; consensus computed only after all reports were in.
+Review scope: the delta since the 2026-11-17 gate (ADR-018 protocol
+layer; ADR-019/T1 program start; this session's ADR-020, on disk
+before the reviewers ran) plus the named risk surfaces (RE
+deliverables, the secret guard, the bench). Reports:
+`reports/2026-11-22-tt-{legal,security,engineering,product}.md`.*
+
+### Verdicts
+
+- **ADV-LEGAL: PROCEED-WITH-CONDITIONS** — ADR-020 is coherent AS a
+  risk acceptance (not a clearance; it says so itself): both sides of
+  the fixed-key argument recorded (*321 Studios* + §1201(a)(2)/(b)
+  trafficking theories contra; §1201(f) interoperability texture incl.
+  the means-sharing provision, the keys' public documentation since
+  2024, the password-authorization frame, the *Lexmark/Chamberlain*
+  TPM nexus pro). The Canadian-law assessment delivered in full (its
+  finding 2): the 2012 C-11 regime's civil circumvention ban plus a
+  providing-services prohibition textually at least as broad as
+  §1201(a)(2), enumerated exceptions including interoperability but no
+  means-sharing text and no fair-dealing override — exposure
+  comparable in principle to the US analysis, lower in practice
+  (civil-only, capped remedies, thin enforcement history); T1/T2
+  private study sits inside the interoperability/encryption-research
+  exceptions (public CDN acquisition — no access control circumvented).
+- **ADV-SEC: PROCEED-WITH-CONDITIONS** — tree/history/CI verified
+  clean (no tokens anywhere in history; no hex beyond the manifest;
+  corpus + bench fully gitignored; RE tooling absent from CI/release;
+  the flutter-test job already needs-gates all five platform builds);
+  the key-material backstop must widen before it matters (applied —
+  ledger below).
+- **ADV-ENG: PROCEED-WITH-CONDITIONS** — the T1 evidence independently
+  re-derived byte-for-byte and confirmed sound (one offset erratum
+  found and fixed at the gate); bench intact after the twelfth
+  recycle; the carve strategy confirmed; web-side T4 ruled BLOCKED
+  under ADR-016 (T4 lands Flutter-first; web reaches TT support via
+  the ADR-017 N6 WASM path).
+- **ADV-PROD: PROCEED-WITH-CONDITIONS** — the product framing survived
+  the acceptance (password-gated surface; "open without password" is
+  a reopening event, never a feature request); the serious product
+  risks attach to T4 (save-fidelity rule, disclosure replacement,
+  non-affiliation line) and Stage-2 starvation needs a tripwire
+  (recorded — ledger below).
+
+### Agenda settled (recorded per the gate's mandate)
+
+1. **The fixed-key-layer question — DISPOSED.** ADR-020 (recorded
+   before any implementation exists — verified at tip by two
+   reviewers) is the owner's explicit risk acceptance; protocol §2.2's
+   recorded NO and §7.3's by-existence rule are lifted for the shipped
+   T4 bridge scope, bound to ADR-020's boundary conditions.
+   ADV-LEGAL's re-argument is on file in its report with the full risk
+   register; the acceptance stands as the owner's disposition, not a
+   clearance.
+2. **The Canadian-law assessment — DELIVERED** (ADV-LEGAL finding 2;
+   summary in the verdicts above). Canadian notices run the identical
+   pause-and-reopen enforcement plan; no geo-filtering (GPL §7 — a
+   territorial distribution filter would be an impermissible further
+   restriction); no user-facing claim of Canadian legality.
+3. **The security-contract application — BOUND** to the program: the
+   T4 merge-gate contract (crash battery per the ENG-1 template,
+   refusal-tested resource caps, uniform clean-failure password gate
+   with no timing oracle, no network, runtime-generated fixtures,
+   README/SECURITY disclosure) plus the hex-guard widening sequenced
+   BEFORE T2's first tracked note (applied in-session — ledger below).
+
+### Condition ledger — dispositions
+
+**Applied in-session (this gate's commit):**
+
+- **LEGAL-2 / SEC-1** (≥32-hex widening + measured allow-list before
+  T2's first note commit): applied — `scripts/sandbox_backup.sh`
+  RE_HEX_PATTERNS block with the allow-list (corpus manifest,
+  `clearfile/.metadata`, lockfile classes); canary-tested end-to-end
+  (a staged 32-hex file under `docs/` → REFUSING, exit 2, then
+  cleaned).
+- **SEC-4** (mechanical corpus verification): applied —
+  `scripts/fetch_tt_corpus.sh` now greps the expected sha256 from
+  `corpus-manifest.md` and refuses on mismatch; positive test 4/4
+  verified against the live corpus; the negative path proven
+  function-level (one flipped byte ⇒ different sha ⇒ refusal).
+- **SEC-3** (the commit-message channel): applied early — the backup
+  NOTE now passes the same TOKEN / ≥32-hex scan before committing.
+- **LEGAL-3** (protocol §6 consistency): applied — the dated ADR-020
+  note in §6 (the quarantined module = the single sanctioned
+  exception; form-text and binary prohibitions absolute).
+- **PROD-1** (§7.4 UI-screenshot extension): applied — no runtime
+  screenshots of the proprietary UI anywhere; text-only
+  information-architecture records.
+- **PROD-6** (ADR-020 wording clarification + exit-ramp artifact
+  classes): applied — the orchestrator annotation on ADR-020.
+- **ENG-1** (phase-1 offset erratum): applied — the note carries the
+  0x99000 correction.
+- **PROD-2** (Stage-2 starvation tripwire): recorded — Stage-2
+  execution session 1 convenes within two working sessions of T2
+  session 1 (2026-11-22, this session), else the slippage is a
+  mandatory agenda item at the next convened gate; carried in ROADMAP
+  and STATE.
+- **PROD-3 / ENG-6's placement half** (TT spec namespace/counting
+  rule): recorded in ROADMAP's TT section — TT specs are program
+  deliverables under `docs/re-research/` (or `docs/formats/` only with
+  an explicit TT/non-DoD provenance marker) and NEVER count toward
+  Stage-2's N=4; the `tax-modern.md` DoD spec and T3's deep
+  password-layer spec are distinct files or an explicit recorded
+  supersession.
+- **ENG-2** (stub-only remains the rule) and **ENG-3** (disk
+  discipline: selective extraction, intermediates deleted, one
+  target's payload resident at most): carried as binding T2 execution
+  rules (ROADMAP TT section + the T2 session note).
+- **LEGAL-1 / LEGAL-5 memory-sync halves**: applied at this session's
+  close-out (STATE / ROADMAP / PROJECT_MEMORY / SESSION_LOG all carry
+  ADR-020; "OWNER DECISION REQUESTED" retired).
+
+**Assigned with named verification events:**
+
+- **The T4 design/merge gate** (the shipped-decryptor review): SEC-2
+  (the representation-agnostic single-provenance assertion — the
+  quarantined key module's path joins the guard allow-list as exactly
+  one entry); SEC-5 (the full bridge threat model: crash battery,
+  refusal-tested resource caps, uniform clean-failure password gate,
+  no-network, runtime-generated fixtures); LEGAL-5 (refusal tests +
+  quarantined module + README/SECURITY provenance disclosure + the
+  enforcement-response plan documented in SECURITY.md or the module
+  header); LEGAL-6 / PROD-5's Canadian posture and disclosure
+  replacement (README's "does not decrypt" statement rewritten;
+  Intuit non-affiliation line; SECURITY.md disclosed-posture entry);
+  PROD-4 (save-fidelity rule: fields outside the engine's model
+  round-trip verbatim, never silently recomputed or dropped, + a
+  round-trip test); ENG-7 (T4 Flutter-first — no TT bridge code under
+  `src/` absent a recorded owner ADR per ADR-016's overrule path; the
+  codec layer stays pure/portable for the N1 Rust-core port); ENG-8
+  (full verification-contract re-run + CI run id when T4 touches
+  code; repo-wide key-shape grep outside the quarantined module
+  empty).
+- **T3 start:** SEC-6 (the docs/formats provenance lint covers
+  `docs/re-research/` notes too).
+- **T2 sessions:** ENG-4 (the REA checkpoint-mode trial, outcome
+  registered in DEBT.md/playbook) + ENG-5 (the security contract for
+  the first TRACKED extraction tool; gitignored bench scripts follow
+  the same posture voluntarily — this session's parser is bounded,
+  crash-safe, and writes only under gitignored `tools/re/`).
+- **LEGAL-4** (per-commit by-existence discipline): standing — every
+  T2/T3 note/spec commit passes a manual ≥32-hex scan until the lint
+  lands (this session's T2 note: scanned, clean).
+
+### Orchestrator notes (recorded for honesty)
+
+- The four reviewers ran as isolated concurrent agent contexts; each
+  stated its independence (ADV-ENG disclosed that harness_check's
+  output names the TT program in a pass line — counts only, no gate
+  content exposed to it).
+- ADV-ENG independently re-derived the T1 evidence and found the
+  phase-1 offset error (0x99280 → 0x99000) — a gate-quality fix in
+  the ENG-1 tradition; the erratum is applied in-session.
+- ADR-020 and the protocol amendments were on disk (uncommitted)
+  before the reviewers ran — they reviewed the actual records, not
+  summaries.
+- The ADV-LEGAL weighting was not needed: the panel was unanimous
+  PROCEED-WITH-CONDITIONS with convergent substance.
+- CI status on tip `52e2c68` was not re-verified this session (the
+  documented shared-IP api.github.com rate-limit quirk); the delta
+  since `c4982d1` provably touches zero code paths, so the carried
+  suites stand, and CI runs on this gate's own push.
+
+### Gate outcome
+
+**T2: ENTERED** (unanimous PROCEED-WITH-CONDITIONS; every condition
+applied in-session or assigned to a named verification event above) —
+the TT-compatibility program's gated execution opens under ADR-019's
+boundaries + ADR-020's acceptance and its amended §2.2/§7.3 scope. T1
+(pre-gate research: corpus + Phase-1 + the REA first pass) is
+COMPLETE and verified at this gate. **Stage-2's DoD box is unchanged**
+(N=4 named specs, ≤2 sessions; TT specs never count toward it);
+Stage-2 execution session 1 remains standing with the recorded
+starvation tripwire.

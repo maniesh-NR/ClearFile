@@ -41,6 +41,10 @@ Each item carries its owner stage.
 | D33 | Stage-2 entry gate ENG-3 (2026-11-17) | No golden fixture exercises **survivingSpouse (QSS)** — the parity contract's only completely unpinned filing status (currently pinned only by an internal Dart equivalence test; the TS/oracle sides by nothing). One QSS fixture (pins the MFJ-column table lookup + sd 31,500 + CTC 400k + QDI 96,700/600,050 + NIIT 250k) consumed by ALL THREE runners (Dart, `web_parity_test.mjs`, `verify_golden_fixtures.py`), cited to the IRS publication carrying the QSS→MFJ-column rule. | **first Stage-2 execution session** (gate condition, assigned with a named verification event) |
 | D34 | Stage-2 entry gate ENG-4 (2026-11-17) | The v1→v2 conservative migration is triple-implemented (`cfr.ts:73`, `store.ts:140`, `return_format.dart:172`) with fragment-level warning pinning and edge drift (Dart clamps child counts at 100; warning lists pinned only by `contains` fragments; `store.ts:155` reads the v1 *store* W-2 shape vs the file readers' v1 *file* shape — legitimate vintages, documented nowhere). Fix: lift the identical v1 sample into a shared fixture, assert exact warning lists in both suites, document the store-vs-file W-2 shape difference in `docs/return-format.md` §3. | Stage-2 execution window |
 | D35 | Stage-2 entry gate ENG-8 (2026-11-17) | `listReturns` drops decode warnings silently (`return_store.dart:57` uses only `.filing`). Harmless today (store-origin legacy files produce no warnings) but a future envelope bump would make store-dir warnings invisible. Register, don't fix. | register |
+| D36 | TT gate / T2 session 1 (2026-11-22) | The USA container's entry semantics are partially derived: field A (0x20) and field B (0x9e67) after the entry FILETIME are unresolved (chunk-size / compressed-size candidates); the payload stream's chunking (first bounded decode yielded 90,000 B before the 1 MiB bound) and the codec chain (FUN_0041e5e0 et al.) are un-chased; the CAN-Personal inner ZIP and CAN-Business InstallShield layers are not yet entered. Full map: `docs/re-research/2026-11-22-tt-t2-reader.md`. | T2 session 2 |
+| D37 | TT gate ENG-7 (2026-11-22) | The T4 bridge's codec layer must stay pure/portable (no Flutter I/O imports) so the ADR-017 N1 Rust-core port does not face a second unplanned migration — the TT codecs sit outside ADR-017's recorded core scope. | T4 design |
+| D38 | TT gate ENG-5 (2026-11-22) | The security contract (write-confined to gitignored dirs, resource-bounded with refusal tests, crash battery per the ENG-1 template, never wired into release.yml, posture stated in the header) must be REGISTERED before the first TRACKED extraction tool lands — gitignored bench scripts (e.g. `tools/re/t2_walk.py`) follow it voluntarily meanwhile. | first tracked RE tool (Stage-2 session 1 or T4) |
+| D39 | TT gate T4 bundle (2026-11-22) | The T4 design/merge-gate conditions carried in CONSENSUS's TT-gate ledger: save-fidelity rule (unmodeled fields round-trip verbatim), README/SECURITY disclosure replacement + the Intuit non-affiliation line, SEC-2's representation-agnostic single-provenance assertion for the quarantined key module, and the ADR-020 refusal tests. Tracked here so the debt register mirrors the gate ledger. | the T4 design gate |
 
 **D2 correction (2026-11-14, Stage-2 entry gate ENG-3, append-only):** the
 DONE note above overstates the empty-cell half of the original finding. What
@@ -80,3 +84,14 @@ ADR-017 verification annex (the differential harness) is the recorded
 fix, at N1; until then the shared fixtures + oracle remain the
 enforcement. D30 re-affirmed (owner-side: Dependabot, branch
 protection, PAT expiry).
+
+**TT-program gate new items (2026-11-22):** D36–D39 recorded above.
+Applied in-session, NOT debt: the REA checkpoint-mode trial (ENG-4 —
+works-with-config: `REA_GHIDRA_CHECKPOINT_DIR` under gitignored
+`tools/re/rea-checkpoints` restores analysis across commands; measured
+84 s first import → ~11 s per subsequent command on this 2-core box);
+the hex-guard widening + canary test (LEGAL-2/SEC-1); the fetcher's
+mechanical sha256 verification (SEC-4); the NOTE scan (SEC-3, applied
+early); the protocol §6/§7.4 amendments and the ADR-020 clarification
+annotation; the phase-1 offset erratum (0x99000). The full condition
+ledger lives in `adversarial/CONSENSUS.md`'s 2026-11-22 TT gate record.

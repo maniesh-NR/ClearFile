@@ -90,11 +90,25 @@ fi
 # are excluded from the hex check regardless.
 TOKEN_PATTERNS='github_pat_[A-Za-z0-9_]{10,}|gh[pousr]_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9]{28,}|sk-(ant|proj)-[A-Za-z0-9-]{20,}|AIza[A-Za-z0-9_-]{30,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{10,}|npm_[A-Za-z0-9]{30,}|glpat-[A-Za-z0-9-]{20,}|BEGIN [A-Z ]*PRIVATE KEY'
 HEX_PATTERNS='[0-9a-fA-F]{64}'
+# Widened for the TT program (2026-11-22 TT gate, LEGAL-2/SEC-1): a 16-byte
+# key rendered as hex is exactly 32 contiguous chars — the 64-hex-only
+# heuristic passes it. The RE-adjacent paths therefore get a >=32-hex
+# text-only scan with a MEASURED allow-list (SEC finding 5's false-positive
+# inventory: the corpus manifest's known hashes; clearfile/.metadata's
+# Flutter-tool revision ids; lockfile checksum classes). Paths outside the
+# RE-adjacent set keep the 64-hex-only heuristic (icon pixel data etc.).
+# At T4, the quarantined key module's path joins this exclude list —
+# exactly one entry, nothing else (SEC-2).
+RE_HEX_PATTERNS='[0-9a-fA-F]{32}'
 HITS="$(
   { git grep --cached -l -E "$TOKEN_PATTERNS" -- . || true
     git grep --cached -I -l -E "$HEX_PATTERNS" -- . ':(exclude)*.lock' \
       ':(exclude)package-lock.json' ':(exclude)bun.lock' ':(exclude)pnpm-lock.yaml' \
       ':(exclude)docs/re-research/corpus-manifest.md' || true
+    git grep --cached -I -l -E "$RE_HEX_PATTERNS" -- docs clearfile src scripts fixtures harness \
+      ':(exclude)docs/re-research/corpus-manifest.md' \
+      ':(exclude)clearfile/.metadata' \
+      ':(exclude)*.lock' ':(exclude)package-lock.json' ':(exclude)pnpm-lock.yaml' || true
   } | sort -u
 )"
 # The one tracked file allowed to carry 64-hex runs: the TT RE corpus
@@ -108,6 +122,15 @@ if [ -n "$HITS" ]; then
   echo "backup: REFUSING — token-shaped or hex-blob content staged in:" >&2
   echo "$HITS" >&2
   echo "  Remove the secret, then re-run. Never commit credentials." >&2
+  exit 2
+fi
+
+# --- NOTE scan (2026-11-22 TT gate, SEC-3, applied early) -------------------
+# The backup NOTE is operator-supplied text committed verbatim into history;
+# ADR-020 forbids key values in commit messages. Same guards, same refusal.
+if printf '%s' "$NOTE" | grep -qE "$TOKEN_PATTERNS" 2>/dev/null \
+   || printf '%s' "$NOTE" | grep -qE "$RE_HEX_PATTERNS" 2>/dev/null; then
+  echo "backup: REFUSING — the backup NOTE contains token-shaped or >=32-hex content (key material has no business in a commit message)." >&2
   exit 2
 fi
 

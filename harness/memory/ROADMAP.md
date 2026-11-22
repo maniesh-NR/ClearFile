@@ -483,33 +483,71 @@ settlement.
 
 ---
 
-## TT-compatibility program (T1–T4) — pre-gate research started 2026-11-22 (ADR-019)
+## TT-compatibility program (T1–T4) — T2 ENTERED 2026-11-22 at its own gate (ADR-019 + ADR-020)
 
 A separate gated program (owner directive 2026-11-22): study the four
-TurboTax installer targets with REA over Ghidra (Phase-1 done; the
-stub-carving technique makes the installers tractable in this sandbox),
-then the per-target deep Phase-4, the format-family specs including the
-**password-based** capability (the user's own password = the
-authorization; the LibreOffice/7-Zip interoperability pattern), and the
-UI functional-layout study. **Boundaries recorded in ADR-019:** the
-fixed-key transport layer stays out of shipping absent an explicit
-owner risk-acceptance ADR; UI parity is functional/informational — no
-expression/trade-dress copying; Stage-2's DoD box is not grown by this
-program. Corpus: gitignored `tools/re-corpus/` (provenance
-`docs/re-research/corpus-manifest.md`; re-fetch
-`scripts/fetch_tt_corpus.sh`). Its entry gate agenda carries: the
-fixed-key-layer question, the Canadian-law assessment (ADV-LEGAL), and
-the security-contract application to any tooling it adds.
+TurboTax installer targets with REA over Ghidra (T1 done — corpus +
+Phase-1 + the REA first pass; the stub-carving technique makes the
+installers tractable in this sandbox), then the per-target deep
+Phase-4, the format-family specs including the **password-based**
+capability (the user's own password = the authorization; the
+LibreOffice/7-Zip interoperability pattern), and the UI
+functional-layout study. **ADR-020 (2026-11-22, owner explicit risk
+acceptance, recorded before any implementation exists): the shipped
+decryptor may include the fixed-key transport layer** — protocol
+§2.2's recorded NO is lifted for the T4 bridge scope, bound to
+ADR-020's boundary conditions (password-gated surface only — no
+bypass/brute-force/recovery; ONE quarantined provenance-labeled key
+module, key values nowhere else; §7.2/§7.4 unchanged; the
+enforcement-response plan; refusal tests). UI parity stays
+functional/informational — no expression/trade-dress copying,
+ClearFile's Material You identity stands; Stage-2's DoD box is not
+grown by this program. Corpus: gitignored `tools/re-corpus/`
+(provenance `docs/re-research/corpus-manifest.md` — mechanically
+sha256-verified by `scripts/fetch_tt_corpus.sh` since the TT gate).
 
-- **T1 — corpus + Phase-1 + REA first pass: STARTED 2026-11-22** (ADR-019;
-  findings in `docs/re-research/2026-11-22-tt-targets-phase1.md`).
-- **T2 — deep per-target Phase-4** (the reader-vtable chase, record-table
-  layout, decompression path, payload extraction, the app-module
-  inventory where the file-format/password routines live).
+- **T1 — DONE 2026-11-22** (corpus + Phase-1 + REA first pass;
+  findings in `docs/re-research/2026-11-22-tt-targets-phase1.md` —
+  container head at **0x99000** per the gate's erratum; verified
+  byte-for-byte at the TT gate by ADV-ENG).
+- **T2 — deep per-target Phase-4: ENTERED 2026-11-22** (session 1:
+  the reader-vtable chase + the record-table layout + the
+  decompression path + first bounded extraction —
+  `docs/re-research/2026-11-22-tt-t2-reader.md`; remaining: payload
+  extraction per target, the app-module inventory where the
+  file-format/password routines live, the UI functional-layout study
+  [text-only IA records per protocol §7.4's extension]). Binding
+  execution rules (TT gate, ENG-2/ENG-3): stub-only analysis —
+  whole-file 333–404 MB Ghidra imports stay OUT; disk discipline —
+  selective per-record/per-module extraction into gitignored
+  `tools/re-corpus/extract/<target>/`, intermediates deleted
+  immediately, at most one target's payload resident, df watch.
 - **T3 — format-family specs** (Phase-5 template, §7.5-clean) incl. the
-  password layer's clean-room documentation.
+  password layer's clean-room documentation. **Namespace rule (TT
+  gate, PROD-3/ENG-6):** TT specs are program deliverables under
+  `docs/re-research/` (or `docs/formats/` only with an explicit
+  TT/non-DoD provenance marker) and NEVER count toward Stage-2's
+  N=4; Stage-2's `tax-modern.md` shape spec and T3's deep
+  password-layer spec are distinct files or an explicit recorded
+  supersession.
 - **T4 — the password-based bridge + UI functional-layout parity** in
-  ClearFile's own Material You expression.
+  ClearFile's own Material You expression. **Gate rulings binding T4
+  (ADV-ENG ruling + the T4 merge-gate conditions in CONSENSUS):**
+  Flutter-first — no TT bridge code under `src/` absent a recorded
+  owner ADR (ADR-016's freeze reads a new file-format bridge as a
+  new web feature, not a parity correction; web reaches TT support
+  via the ADR-017 N6 WASM path); the codec layer stays pure/portable
+  for the N1 Rust-core port; merge conditions = ADR-020's boundary
+  conditions as tests + the save-fidelity rule (fields outside the
+  engine's model round-trip verbatim) + the README/SECURITY
+  disclosure replacement incl. an Intuit non-affiliation line.
 
-**Gate status:** PENDING (pre-gate research recorded; the program enters
-execution behind its own gate — owner-funded sessions).
+**Gate status: PASSED** (2026-11-22 — 4 × PROCEED-WITH-CONDITIONS,
+unanimous; agenda settled: the fixed-key re-argument with ADR-020 on
+record, the Canadian-law assessment delivered, the security-contract
+application bound; verdicts + full condition ledger in
+`adversarial/CONSENSUS.md`, reports in
+`adversarial/reports/2026-11-22-tt-*.md`). Standing tripwire (TT gate,
+PROD-2): Stage-2 execution session 1 convenes within two working
+sessions of T2 session 1 (2026-11-22), else the slippage is a
+mandatory agenda item at the next convened gate.

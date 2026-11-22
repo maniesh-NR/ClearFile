@@ -711,3 +711,107 @@ strings). Nothing from the corpus is committed except the manifest
 (public-fact checksums) and the notes. Next: T2 behind the program's
 gate; the owner's explicit decision is requested on the fixed-key-layer
 question.
+
+---
+
+## ADR-020 · The shipped decryptor: owner explicit risk acceptance for the fixed-key transport layer (2026-11-22, owner directive)
+
+**Decision.** The owner's instruction this session — "Record an explicit
+risk-acceptance ADR for the shipped decryptor and proceed" (trace
+`1a2023899589beed`) — is the answer to the decision ADR-019 surfaced at
+its close. Recorded as the owner's explicit, deliberate risk acceptance:
+
+1. **Accepted: shipping the TT-format decryptor, fixed-key transport
+   layer included.** The distributed GPL-3.0-only product may carry the
+   password-based TT bridge (the TT program's T4) as a clean-room
+   implementation that includes the per-year fixed-key transport layer
+   (no user password in that layer) — the "recorded NO" of protocol
+   §2.2 is lifted for exactly this scope. The product's interaction
+   model stays password-gated: the user's own password is the
+   authorization (ADR-019's lawful core, unchanged); the fixed-key layer
+   is container transport beneath that gate, never a user-facing
+   bypass.
+2. **The risk accepted, on file.** Distribution of decryption means in a
+   public repository: §1201(a)(2)/(b) anti-trafficking theories (the
+   *321 Studios* analog — user-held keys did not save the shipped
+   decryptor there; contra: §1201(f)'s interoperability texture, the
+   per-year keys being publicly documented since 2024, the
+   password-authorization frame); the Canadian targets' exposure under
+   Canada's Copyright Act TPM provisions (the 2012 C-11
+   anti-circumvention regime, civil-enforced, with enumerated
+   exceptions that include program interoperability — assessed at this
+   session's TT gate); Intuit EULA-based claims against the RE
+   provenance; and the practical enforcement risk (cease-and-desist /
+   takedown attention), which acceptance does not immunize — it makes
+   the posture deliberate and recorded. This is the owner's
+   disposition, NOT an ADV-LEGAL clearance: per ADR-019, ADV-LEGAL
+   re-argues the question at the TT program's gate (convened this
+   session, after this ADR).
+3. **Boundary conditions — non-negotiable; a violation reopens the
+   acceptance:**
+   - password-gated product surface only: no bypass, no brute-force,
+     no password-recovery, no open-without-password mode; refusal
+     tests per the security contract; wrong-password = clean failure,
+     nothing logged;
+   - key material confined to ONE provenance-labeled module in the T4
+     bridge (clean-room derived); key VALUES never appear in research
+     notes, specs, docs, tests, or commit messages (§7.3 amended only
+     for the bridge's implementation scope — everything else stays
+     "by existence");
+   - §7.2 unchanged: no decrypted content is ever committed; the
+     product computes plaintext at runtime on the user's own files;
+   - §7.4 / the ADR-019 UI boundary unchanged: functional-layout
+     parity in ClearFile's own Material You expression; no
+     trademarks, no expression;
+   - the acceptance carries an enforcement-response plan: a
+     cease-and-desist or takedown demand against the bridge pauses
+     its distribution and re-opens the question at a gate — never
+     silent continuation.
+4. **Effects.** ADR-013's read-only/no-decrypt product posture is
+   superseded IN PART (the TT password-based bridge scope only — the
+   `.tax` inspector and everything else unchanged). Protocol §2.2's
+   recorded NO and §7.3's by-existence rule are amended IN PART (the
+   shipped bridge's key module only; dated amendment note in the
+   protocol). The TT program's gate convenes WITH this acceptance on
+   record; T2–T4 may execute behind it; Stage-2's DoD box is still not
+   grown by any of this.
+5. **Overturn path.** A later owner ADR may narrow or revoke this
+   acceptance (the same mechanism, never silence); a gate may add
+   conditions but not silently revoke the owner's acceptance.
+
+**Context.** ADR-019 executed T1 and recorded the boundary
+(password-based access = the shipped target; the fixed-key layer =
+recorded NO absent an explicit owner risk-acceptance ADR — "surfaced to
+the owner at this session's close"). Nothing has shipped: at tip
+`52e2c68` no decryptor exists in the tree (the `.tax` capability is the
+read-only inspector under ADR-013's posture); this acceptance governs
+the capability the TT program will build, and is recorded BEFORE any
+such implementation exists — exactly the ordering ADR-019 required.
+The owner's "proceed" opens the TT program's gate (convened this
+session: the fixed-key re-argument, the Canadian-law assessment, the
+security-contract application) and T2 behind it.
+
+**Consequence.** The acceptance is on file with its full risk register;
+the TT gate's conditions bind T2–T4 (recorded in CONSENSUS); the T4
+bridge's merge conditions include the boundary conditions above as
+refusal tests + the quarantined key module + the ship-time disclosure
+(README/SECURITY provenance statement); the protocol file carries the
+dated amendment so future sessions read one consistent rule set. The
+residual exposure is the owner's, accepted with eyes open;
+ADV-LEGAL's re-argument and the Canadian assessment are recorded at
+the gate for honesty, not as clearance.
+
+**Orchestrator annotation (2026-11-22, filed at the TT program gate —
+wording clarification, gate condition PROD-6; the decision text above
+is otherwise verbatim and unedited):** ADR-020 §3's "no
+open-without-password mode" reads on files that carry a user password:
+*no mode that opens a password-protected file without its password.*
+The modern `.tax` family's base encryption is the fixed-key layer,
+with no user password on some files (protocol §5); the bridge's
+handling of the user's own UNPROTECTED files is a deliberate T4
+design decision to record at T4 design time (possession-as-
+authorization, the TXF-import analog — not a bypass of anything).
+Exit-ramp artifact classes for the enforcement-response plan: the
+bridge's distribution pauses (plus a gate re-open); the by-existence
+specs/notes (T2/T3 outputs, no key values) are reviewed at that gate,
+not auto-removed.

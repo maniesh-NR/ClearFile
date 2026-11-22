@@ -1,7 +1,8 @@
 # ClearFile — Reverse-Engineering Protocol for Legacy Tax-Software Formats
 
-**Status:** research playbook · **Last updated:** 2026-11-15 (§4.E added —
-sandbox Ghidra feasibility verdict; Stage-3 bridges shipped)
+**Status:** research playbook · **Last updated:** 2026-11-22 (ADR-020
+amendment under §2.2/§7.3 — the shipped TT-bridge scope; §4.E added
+2026-11-15; Stage-3 bridges shipped)
 **Scope:** read-only, interoperability-oriented format study of legacy consumer
 tax-preparation file formats. ClearFile itself stores returns in its open
 `.clearfile.json` format and exports TXF; nothing in this protocol is required
@@ -38,6 +39,18 @@ table's hypotheses as facts — verify against bytes.
    decryptors in this repository is not.** This repo therefore documents the
    container's *existence and shape* and links the public write-up, but embeds
    no key material.
+
+   > **Amended 2026-11-22 (ADR-020, owner explicit risk acceptance):** for
+   > the shipped TT-format password-based bridge (the TT-compatibility
+   > program's T4 deliverable), shipping the clean-room decryptor
+   > **including the fixed-key transport layer** is sanctioned, under
+   > ADR-020's boundary conditions (password-gated product surface — no
+   > bypass/recovery features; key material confined to one
+   > provenance-labeled bridge module; §7.2/§7.4 unchanged; the
+   > enforcement-response plan; refusal tests). This rule otherwise stands
+   > unchanged for everything else: research notes and specs stay "by
+   > existence" (no key values), and no bypass/recovery tooling of any
+   > kind is ever built or shipped.
 3. **Copyright splits the formats.** Field layouts, offsets, calculation
    structure, and the *methods and ideas* embodied in a program are not
    copyrightable — 17 U.S.C. §102(b) (the Idea-Expression Dichotomy). When
@@ -194,6 +207,11 @@ the pending Stage-2 entry gate's ADR-012 placement decision).
 - No key material, no copyrighted form text, no bulk proprietary binary
   content in the repo. Links to primary sources instead.
 
+  > **Amended 2026-11-22 (ADR-020):** the single quarantined T4 key module
+  > (per the §2.2/§7.3 amendments) is the sanctioned exception to "no key
+  > material"; the other two prohibitions (no copyrighted form text, no
+  > bulk proprietary binary content) are absolute and unchanged.
+
 ## 7. Publication guardrails (added 2026-11-14, Stage-0 gate condition)
 
 Binding rules for every RE finding that leaves a private workstation —
@@ -211,10 +229,24 @@ accidental publication mechanical (ADV-LEGAL Stage-0 finding 10):
    write-up §1)" — the repo never records the key bytes, IVs, or derived
    material. Linking a public write-up is describing; reproducing is
    trafficking.
+
+   > **Amended 2026-11-22 (ADR-020):** the T4 bridge's single quarantined
+   > implementation module is the one sanctioned exception (its key table
+   > IS the shipping implementation, published only there, provenance-
+   > labeled per ADR-020). Every spec, research note, doc, test, and
+   > commit message stays by-existence — key VALUES appear nowhere else,
+   > ever.
 4. **No expression lifts.** No verbatim strings longer than a few
    identifier bytes, and no screenshots, from proprietary binaries.
    Offsets, dtypes, counts and field structure are unprotectable
    function (§2); quoted text and images are not.
+
+   > **Extended 2026-11-22 (TT program gate, PROD-1):** this includes
+   > screenshots or screen-captures of the proprietary UI captured at
+   > *runtime* — not only images extracted from binaries. The TT UI
+   > study's committed outputs are text-only information-architecture
+   > records (step/field/grouping/flow tables); no image files under
+   > `docs/re-research/`.
 5. **Per-spec pre-commit checklist.** Before committing any
    `docs/formats/*.md`: no key material (§7.3), no decrypted content
    (§7.2), no expression (§7.4), corpus provenance stated (§7.1), claims

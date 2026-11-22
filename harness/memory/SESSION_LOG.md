@@ -975,3 +975,86 @@ src/ or clearfile/ changed; `npx tsc --noEmit` re-verified exit 0).
 **Closing action:** harness_check 0 failures + this event-driven backup
 — the last action before the reply. **Next: the owner's fixed-key-layer
 decision + T2/Stage-2-Session-1 per the ROADMAP.**
+
+## 2026-11-22 (latest) · ADR-020 risk acceptance + the TT program's entry gate + T2 session 1
+
+**Session task:** owner instruction (trace `1a2023899589beed`) — "Record
+an explicit risk-acceptance ADR for the shipped decryptor and proceed":
+the answer to the decision ADR-019 surfaced at the prior session's close.
+Honest premise recorded in the ADR: nothing had shipped — the acceptance
+governs the capability the program will build and precedes any
+implementation, exactly the ordering ADR-019 required.
+
+**Bootstrap:** WORKFLOW §3 + ADR-018; tree clean at `52e2c68`, 0
+ahead/0 behind, zero mode flips; the twelfth recycle left `tools/`
+INTACT (4.0 GB bench + corpus — quirk register revised to "can empty,
+not must"); REA's compiled runtime alone was hollowed → rebuilt
+in-place (`npm ci && npm run build:cached`, ~20 s).
+
+**Executed:**
+- **ADR-020 recorded** — the owner's explicit risk acceptance for the
+  shipped decryptor (fixed-key transport layer included; boundary
+  conditions: password-gated surface only, one quarantined key module,
+  §7.2/§7.4 unchanged, the enforcement-response plan) + dated protocol
+  amendments (§2.2/§6/§7.3) + the §7.4 runtime-screenshot extension +
+  the ADR-020 clarification annotation (PROD-6).
+- **The TT program's own gate CONVENED and PASSED** (four isolated
+  concurrent reviewer contexts, Task IDs 4-a…4-d; reports filed
+  near-verbatim in `adversarial/reports/2026-11-22-tt-*.md`; consensus
+  + the full condition ledger in `adversarial/CONSENSUS.md`):
+  **4 × PROCEED-WITH-CONDITIONS, unanimous** — the fixed-key
+  re-argument with the acceptance on record (both sides: *321
+  Studios* contra; §1201(f) texture + public-keys +
+  password-authorization pro); the **Canadian-law assessment
+  delivered** (the C-11 TPM regime: a civil-only circumvention ban +
+  a providing-services prohibition textually at least as broad as
+  §1201(a)(2); an enumerated interoperability exception without a
+  means-sharing text; no fair-dealing override — exposure comparable
+  in principle, lower in practice); the security-contract application
+  bound to T2–T4 with the T4 merge-gate conditions named.
+- **In-session condition applications (each tested):** the backup
+  secret guard widened to ≥32-hex on RE-adjacent paths with a measured
+  allow-list (canary end-to-end: a staged 32-hex file → REFUSING,
+  exit 2, then cleaned); the backup NOTE scan (SEC-3, early);
+  `fetch_tt_corpus.sh` mechanical sha256 verification (positive 4/4 on
+  the live corpus; negative proven function-level — one flipped byte ⇒
+  refusal); the phase-1 offset erratum (0x99000 — found by ADV-ENG's
+  independent re-derivation, in the ENG-1 tradition); DEBT D36–D39;
+  harness_check patterns updated for the legitimate advance (PENDING
+  10→9; the TT-entry count).
+- **T2 ENTERED — session 1 (the "proceed"):** the reader pipeline
+  chased to the archive-entry format via the REA pipeline with
+  checkpoint mode ON (84 s first import → ~11 s per command — ENG-4
+  outcome registered in DEBT): FUN_004189c0 → FUN_0042a7a0 →
+  FUN_0042a850 (the name→value map at this+0x138); FUN_00418a50 IS the
+  map builder (a flat `[u16 len][blob]` stream, ≤201 iterations, a
+  zero length terminates); FUN_00418710 = the 6-byte internal header
+  (`[u32][u16]` — the low byte is a name-encryption flag; the high
+  byte selects 0x80/0xc0/0x100, semantics unresolved, no constants
+  observed); FUN_00401b2b → FUN_00418c60 = the archive-entry state
+  machine. Byte-validated on the real target: entry magic
+  0x6d27e59b, type byte, u16 name-len, name (`SetUp.exe` — plaintext:
+  flag 0), u64 FILETIME, two u32 fields (0x20 / 0x9e67 — unresolved),
+  payload **raw Deflate, byte-proven** (clean inflate to an MZ PE —
+  the inner SetUp.exe bootstrapper: i386, 5 sections, link
+  2026-10-15); bounded extraction (90,000 B) deleted per ENG-3;
+  **no encryption at this container layer** for the USA targets.
+  Notes: `docs/re-research/2026-11-22-tt-t2-reader.md` (LEGAL-4 scan
+  clean).
+
+**Decisions:** ADR-020; the TT-gate record (CONSENSUS); T2 ENTERED
+(ROADMAP synced); DEBT D36–D39.
+
+**Environment:** twelfth recycle (tools/ survived intact; REA rebuilt;
+disk ~1.6 GB free — the watch item). No app code paths touched
+(scripts + docs + governance only — verified by the gate's reviewers).
+
+**Suites:** carried from `c4982d1` (the delta provably touches zero
+code paths; the local tsc bench stays degraded — CI authoritative on
+this push).
+
+**Closing action:** harness_check 0 failures + this event-driven
+backup — the last action before the reply. **Next: T2 session 2 (D36:
+entry fields A/B, the chunked stream, the codec chain, the CAN layers)
++ Stage-2 session 1 under the PROD-2 tripwire (within two working
+sessions of 2026-11-22).**

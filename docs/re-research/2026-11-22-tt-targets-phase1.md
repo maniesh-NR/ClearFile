@@ -113,3 +113,13 @@ re-carvable from the corpus):
    information architecture) begins once the app modules are extracted;
    the expression boundary (ADR-019: functional parity, own Material
    You expression) applies throughout.
+
+## Erratum (2026-11-22, filed at the TT program gate — ADV-ENG finding 1)
+
+The Personal-USA entry above says "Container head (file offset
+0x99280 = overlay start)". The overlay start is **0x99000**
+(= 626,688 B — the carve boundary itself; byte-verified in both USA
+targets at the gate, and consistent with this note's own overlay
+arithmetic and `phase1_survey.json`). 0x99280 lies 640 B inside the
+compressed overlay. All other offsets and sizes in this note are
+unaffected (independently re-derived at the gate).
