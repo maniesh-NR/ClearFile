@@ -1,15 +1,20 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-22 (ADR-020 + the TT program's own gate + T2
-session 1: the owner's explicit risk acceptance recorded for the
-shipped decryptor — fixed-key transport layer included, boundary
-conditions binding; the TT gate PASSED 4 × PROCEED-WITH-CONDITIONS
-with every in-session condition applied (the ≥32-hex guard widening +
-canary test, the fetcher's mechanical sha256 verification, the NOTE
-scan, protocol §6/§7.4 amendments, the ADR-020 clarification, the
-phase-1 erratum); T2 ENTERED — the reader pipeline chased to the
-archive-entry format, payload codec byte-proven raw Deflate; no app
-code touched — suites carried)
+**Updated:** 2026-11-22 (later — T2 session 2: the USA container
+format COMPLETED byte-end-to-end — entry fields A/B resolved [attributes
+bitmask / first-chunk compressed size], the chunk grammar proven [raw-Deflate
+chunks + 0x80000000-flagged stored segments + u32-0 terminator + type-0
+end-entry + ~10 KB trailing PKCS#7 SignedData], FUN_0041e5e0 corrected to
+the parent-dir preparer; CAN-Personal's inner layer mapped [plain ZIP → the
+same 2022-07-05 bootstrapper family + InstallShield ISSetupStream v7];
+CAN-Business's InstallShield manifest table mapped [header fields incl.
+the INI-block size; text→compressed entropy boundary] — all four targets
+converge on the InstallShield payload layer, where the app modules live;
+ZERO derived bytes written to disk this session [all decodes bounded,
+in-memory]; no app code touched — suites carried, the local tsc bench
+still memory-ceiling-bound [CI authoritative on this push];
+DEBT D36 closed, D40 opened; the PROD-2 tripwire clock stands at 1 of 2
+working sessions elapsed)
 
 ## Repository
 
@@ -23,34 +28,47 @@ code touched — suites carried)
   SESSION_LOG note and in PROJECT_MEMORY.md's quirk shortlist.
 - **TT RE bench + corpus (ADR-019, 2026-11-22, gitignored tools/):** the
   four installer targets (tools/re-corpus/, ~1.4 GB; manifest +
-  `scripts/fetch_tt_corpus.sh` re-acquire after recycles — now with
+  `scripts/fetch_tt_corpus.sh` re-acquire after recycles — with
   mechanical sha256 verification against the manifest), REA 6.10.1
   (tools/rea) over Ghidra 12.2 + Temurin 25 (REA hard-requires ≥12.2 →
-  JDK 25), with the protocol-pinned Ghidra 12.1.4 + JDK 21 kept as
-  fallback; carved stubs + decompile artifacts under tools/re/ (incl.
-  the T2 chase artifacts + the REA checkpoint dir). Notes:
-  `docs/re-research/2026-11-22-tt-{targets-phase1,tt-t2-reader}.md`.
-- **ADR-020 + the TT program's entry gate + T2 session 1 (2026-11-22):**
-  the owner's explicit risk acceptance for the shipped decryptor
-  (fixed-key transport layer included; boundary conditions:
-  password-gated surface, one quarantined key module, §7.2/§7.4
-  unchanged, the enforcement-response plan) recorded in DECISIONS.md
-  with dated protocol §2.2/§6/§7.3 amendments; the TT gate (four
-  isolated concurrent reviewers) PASSED 4 × PROCEED-WITH-CONDITIONS —
-  reports `adversarial/reports/2026-11-22-tt-*.md`, consensus + the
-  full condition ledger in `adversarial/CONSENSUS.md` (the fixed-key
-  re-argument with the acceptance on record + the Canadian-law
-  assessment delivered); in-session applications: the backup secret
-  guard widened to ≥32-hex on RE-adjacent paths with a measured
-  allow-list (canary-tested exit 2) + the NOTE scan,
-  `fetch_tt_corpus.sh` sha256 enforcement (4/4 live-verified), the
-  phase-1 erratum (container head 0x99000), DEBT D36–D39; T2 ENTERED —
-  session 1 chased the reader pipeline to the archive-entry format
-  (record magic 0x6d27e59b, name/FILETIME/size fields; payload codec
-  byte-proven raw Deflate → the inner SetUp.exe PE; bounded extraction
-  deleted per ENG-3) — `docs/re-research/2026-11-22-tt-t2-reader.md`.
-  REA checkpoint mode ON (84 s first import → ~11 s per command;
-  ENG-4 outcome in DEBT).
+  JDK 25). **Thirteenth recycle WIPED tools/** (the twelfth's survival
+  was the exception, not the rule — the standing expectation stands);
+  re-acquired + rebuilt this session (corpus fetcher 4/4 sha256-verified;
+  Ghidra 12.2 + Temurin 25.0.5.1 + REA 6.10.1 clone/build ≈ 19 s;
+  `rea doctor --provider ghidra` healthy; the stub re-carved and the
+  checkpoint re-established). T2 chase artifacts under tools/re/.
+  Notes: `docs/re-research/2026-11-22-tt-{targets-phase1,tt-t2-reader,
+  tt-t2-session2}.md`.
+- **ADR-020 + the TT program's entry gate + T2 sessions 1–2 (2026-11-22):**
+  ADR-020 and the gate record stand as recorded (see DECISIONS.md /
+  CONSENSUS.md). **T2 session 2 (this session):** the USA container format
+  is now COMPLETE and byte-proven end-to-end — the entry fields resolved
+  (A = Win32 attributes bitmask: `A & 2` alternate-create dispatch +
+  set-attributes-when-≠0x20 post-extraction; B = the FIRST deflate
+  chunk's compressed size — the stream self-terminates at exactly B
+  bytes), the payload chunk grammar proven ([deflate, B bytes] then
+  ([u32 csize][raw Deflate] | [u32 0x80000000|size][stored]) repeated,
+  [u32 0] terminator, next entry; observed output granularities 90,000 B
+  and exactly 1 MiB; 0x80/0xc0/0x100 selector semantics unresolved but
+  reader-irrelevant), end-of-archive = a type-0 entry, followed by a
+  ~10 KB DER PKCS#7 SignedData trailing signature (existence recorded);
+  FUN_0041e5e0 CORRECTED to the entry parent-directory preparer (the
+  session-1 'codec chain' label was wrong — the pump is the indirect
+  vtable call at 0x4191a9); a Thumbs.db create-failure special case +
+  SetFileTime application recorded from FUN_00418c60. CAN-Personal: the
+  WinZip SFX inner layer is a PLAIN ZIP (6 entries; setup.exe = PE32,
+  7 sections, link 2025-12-22, the MSI bootstrapper) and the payload
+  installer is the same 2022-07-05 bootstrapper code family + InstallShield
+  ISSetupStream v7 (USA: v8; header fields [u32 0x36][u32 6][u32
+  ≈0x17580000]). CAN-Business: InstallShield-classic — overlay [u32 19]
+  + 4 UTF-16z header fields (lang INI tag, Disk1 path, version,
+  22480 = the INI block size — entropy boundary lands exactly at
+  overlay+20,480) + a BOM'd UTF-16 INI message table (~20 KiB, text not
+  quoted per §7.4) + compressed file-group records from ≈0xefa00.
+  All four targets converge on the InstallShield payload layer (the app
+  modules — the file-format/password routines — live there: D40, the
+  next walk). Bench discipline this session: ZERO derived bytes written
+  to disk (all decodes bounded in-memory) — stricter than ENG-3 required.
 - **Root `PROJECT_MEMORY.md` + `update_memory.py` (ADR-018, 2026-11-22):**
   the engineering memory layer (stack rules / playbook / verification
   contracts / rolling git-activity window; stat-mode, idempotent,
@@ -125,15 +143,16 @@ code touched — suites carried)
 
 ## Environment facts (sandbox)
 
-- **Twelfth recycle observed at this session's start: `tools/` SURVIVED
-  intact** (4.0 GB: the corpus, REA, Ghidra 12.1.4/12.2, JDK 21/25 —
-  contrary to the standing expectation; the quirk register's
-  "recycles can empty tools/" is revised to "can, not must"; the
-  check at bootstrap stays mandatory). REA's compiled runtime alone
-  was hollowed → rebuilt in-place (`npm ci && npm run build:cached`,
-  ~20 s; the gitignored node_modules under tools/rea). Disk watch:
-  ~1.6 GB free after the rebuild + the REA checkpoint state; the
-  extraction discipline (ENG-3) applied — bounded sample deleted.
+- **Thirteenth recycle observed at this session's start: `tools/` was
+  WIPED** (the twelfth's survival was the exception, not the rule — the
+  quirk register's "recycles can empty tools/" is RE-CONFIRMED as the
+  standing expectation; the bootstrap check stays mandatory). Rebuilt
+  this session: corpus via the fetcher (4/4 sha256-verified against the
+  manifest — SEC-4's mechanic held on a real re-acquisition), Ghidra
+  12.2 + Temurin 25.0.5.1 re-downloaded, REA re-cloned + built
+  (~19 s). The root `node_modules` (outside tools/) SURVIVED incl.
+  `.bin/tsc`. Disk watch: ~2.9 GB free with the rebuilt bench (tools/
+  ≈ 3.7 GB) — the watch item stands.
 - The 2026-11-20 mode-flip evidence (195 files 755 after the tenth
   recycle) was folded into an unpushed amend by a brief unlogged session
   instead of being normalized — the SECOND such incident (first:
@@ -141,16 +160,20 @@ code touched — suites carried)
   normalize-first practice is reaffirmed; WORKFLOW §4 step 5 already
   requires `harness_check.sh` at recycle verification (ENG-7), and
   PROJECT_MEMORY.md's quirk shortlist now carries the pattern for
-  protocol-layer sessions. This session's bootstrap found the tree
-  clean with zero mode flips.
+  protocol-layer sessions. This session's bootstrap found the
+  **thirteenth-recycle mode flips (205 files 644→755, zero content
+  delta, no unpushed amend)** — normalized with `git restore .` BEFORE
+  any edits (quirk 19 held).
 - Test suite: **113/113 green** (Dart; 97 hand-written + 16 golden) —
-  CARRIED again this session (the delta since `c4982d1` provably
-  touches zero code paths under `clearfile/` or `src/`: scripts +
-  docs + governance only; verified by the TT gate's reviewers). The
-  local tsc bench remains degraded (the eleventh recycle hollowed
-  `node_modules/.bin/tsc` and a partial npm install OOMs under the
-  concurrent dev server) — CI's `npm ci` + tsc is authoritative and
-  runs on this push. Web parity 16/16; bridge 10/10; oracle 16/16; web
+  CARRIED again this session (the delta since `e03c589` provably
+  touches zero code paths under `clearfile/` or `src/`: gitignored
+  bench scripts + docs + governance only; `git status` verified before
+  commit). The local tsc bench REMAINS degraded (the root
+  `node_modules` survived this recycle incl. `.bin/tsc`, but the
+  box's memory ceiling cannot fit tsc's heap — OOM at both the default
+  and a raised 2.8 GB limit; no dev server running, so this is the
+  box ceiling itself); CI's `npm ci` + tsc is authoritative and runs
+  on this push. Web parity 16/16; bridge 10/10; oracle 16/16; web
   smoke 6/6 — carried with the same evidence.
 - Live-check quirk (unchanged): unauthenticated api.github.com is
   shared-rate-limited from this sandbox — use public HTML pages or
@@ -236,14 +259,16 @@ code touched — suites carried)
 
 ## Immediately next
 
-**T2 session 2 (the TT program's next working session):** the entry
-field semantics (A/B) + the chunked payload-stream layout + the
-FUN_0041e5e0 codec chain (D36); the CAN-Personal inner ZIP + the
-CAN-Business InstallShield layers; then the app-module inventory.
+**T2 session 3 (the TT program's next working session):** the
+InstallShield-layer record walk (D40) — the ISSetupStream v7/v8 payload
+record format (USA + CAN-Personal inner installers) + the CAN-Business
+classic file-group record framing (from ≈0xefa00); then the app-module
+inventory where the file-format/password routines live, and the UI
+functional-layout study (text-only IA records, §7.4).
 **Stage-2 execution session 1 remains standing — with the TT gate's
-starvation tripwire (PROD-2): it convenes within two working sessions
-of T2 session 1 (2026-11-22), else the slippage is a mandatory agenda
-item at the next convened gate.** The first tooling commit carries the
+starvation tripwire (PROD-2) at 1 of 2 working sessions elapsed: it
+convenes at the NEXT working session, else the slippage is a mandatory
+agenda item at the next convened gate.** The first tooling commit carries the
 entry conditions recorded at the gate (ROADMAP Stage-2; the
 ADR-012/LEGAL-1 mechanics, ENG-3's QSS fixture):
 - the **ADR-012 mechanics (a)–(f)**: the enumerated gitignored

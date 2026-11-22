@@ -1058,3 +1058,91 @@ backup — the last action before the reply. **Next: T2 session 2 (D36:
 entry fields A/B, the chunked stream, the codec chain, the CAN layers)
 + Stage-2 session 1 under the PROD-2 tripwire (within two working
 sessions of 2026-11-22).**
+
+---
+
+## 2026-11-22 (latest) · TT program T2 session 2: the USA container format completed; all four targets converge on InstallShield
+
+**Session task:** the TT program's next working session per STATE's
+"Immediately next" (D36): the entry-field semantics (A/B), the chunked
+payload-stream layout, the FUN_0041e5e0 codec chain; the CAN-Personal
+inner ZIP + the CAN-Business InstallShield layers; then the app-module
+inventory.
+
+**Bootstrap (WORKFLOW §3 + ADR-018):** PROJECT_MEMORY.md read + the
+git-window refreshed at bootstrap (pre-edit); the **thirteenth recycle
+WIPED tools/** — the twelfth's survival was the exception; 205 mode
+flips (zero content delta, no unpushed amend) normalized with
+`git restore .` BEFORE edits (quirk 19 held). Bench rebuilt: corpus via
+`fetch_tt_corpus.sh` (4/4 sha256-verified — SEC-4's mechanic proven on a
+real re-acquisition), Ghidra 12.2 + Temurin 25.0.5.1 re-downloaded, REA
+6.10.1 re-cloned + built (~19 s), `rea doctor --provider ghidra`
+healthy; the stub re-carved; the checkpoint re-established (~84 s
+import).
+
+**Executed (read-only on the targets; zero derived bytes written to
+disk — every decode bounded + in-memory, stricter than ENG-3):**
+- **FUN_00418c60 fully decompiled** (the archive-entry state machine's
+  complete tail): type 1 = directory / type 2 = file / type 0 = end of
+  archive; **field A = Win32 attributes bitmask** (`A & 2` alternate
+  create path; set-attributes-when-≠0x20 post-extraction; 0x20 =
+  FILE_ATTRIBUTE_ARCHIVE default); a Thumbs.db create-failure
+  special-case; SetFileTime applies the entry FILETIME.
+- **FUN_0041e5e0 corrected**: it is the entry parent-directory preparer
+  (path → `\`-normalize → strip filename → recursive mkdir), NOT the
+  session-1 "codec chain" label. The payload pump is the indirect
+  reader-vtable call at 0x4191a9.
+- **Field B + the chunk grammar byte-proven:** B = the FIRST deflate
+  chunk's compressed size (the stream self-terminates at exactly B
+  bytes → 90,000 out for SetUp.exe — session 1's "before the bound"
+  was the natural chunk output); payload = [deflate, B bytes] then
+  ([u32 csize][raw Deflate] | [u32 0x80000000|size][stored]) repeated,
+  [u32 0] terminator, next entry; end-of-archive = a type-0 entry
+  (observed at 0x18141f55); ~10 KB trailing DER PKCS#7 SignedData
+  (SHA-384 OIDs, identifier-level; existence recorded only). Observed
+  output granularities: 90,000 B small-file chunks; exactly 1 MiB
+  big-file chunks + stored segments. The 0x80/0xc0/0x100 selector
+  stays unresolved — and reader-irrelevant (codec byte-proven).
+- **The USA entry inventory (layer 1):** 3 entries (SetUp.exe
+  1,315,096 B out; config.xml — existence + role recorded, content
+  not quoted per §7.4; the payload installer). Business-USA: the same
+  three.
+- **Inner installer layer identified:** the USA inner installer = PE32
+  GUI (link 2022-07-05) + **InstallShield ISSetupStream v8** overlay
+  (header [u32 0x36][u32 6][u32 ≈0x17580000]; H≈7.88 after). CAN-
+  Personal: the WinZip SFX inner layer is a **plain ZIP** (6 entries;
+  setup.exe = 7 sections, link 2025-12-22) and the payload installer
+  is the SAME 2022-07-05 bootstrapper family + **ISSetupStream v7**.
+  CAN-Business: InstallShield-classic — overlay [u32 19] + 4 UTF-16z
+  header fields (lang INI tag, Disk1 path, version, **22480 = the INI
+  block size — the entropy boundary lands exactly at overlay+20,480**)
+  + a BOM'd UTF-16 INI message table (~20 KiB, not quoted) + compressed
+  file-group records from ≈0xefa00. **All four targets converge on the
+  InstallShield payload layer — the app modules live there (D40).**
+- Notes: `docs/re-research/2026-11-22-tt-t2-session2.md` (§7.5-clean;
+  LEGAL-4 scan clean). Bench scripts (gitignored, D38 posture):
+  `tools/re/t2_*.py` (ten).
+
+**Decisions:** none new (no gate convened — T2 session 2 executes
+inside the entered stage). DEBT: **D36 closed** by the byte-proofs;
+**D40 opened** (the InstallShield-layer record walk + the app-module
+inventory residue). The PROD-2 tripwire clock: **1 of 2 working
+sessions elapsed** — Stage-2 execution session 1 convenes at the next
+working session or the slippage becomes mandatory at the next convened
+gate.
+
+**Environment:** thirteenth recycle (tools/ wiped — rebuilt; the root
+node_modules SURVIVED incl. .bin/tsc, but the box's memory ceiling
+cannot fit tsc's heap — OOM at default and 2.8 GB; CI authoritative).
+Disk ~2.9 GB free with the rebuilt bench (tools/ ≈ 3.7 GB) — the watch
+item. No app code paths touched (gitignored bench scripts + docs +
+harness memory only; git status verified before commit).
+
+**Suites:** carried from `e03c589` (the delta provably touches zero
+code paths; CI runs on this push).
+
+**Closing action:** harness_check 0 failures + this event-driven backup
+— the last action before the reply. **Next: T2 session 3 (D40: the
+InstallShield-layer record walk → the app-module inventory + the UI
+functional-layout study) — and Stage-2 execution session 1 at the next
+working session under the PROD-2 tripwire.**

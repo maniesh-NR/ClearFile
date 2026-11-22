@@ -513,15 +513,28 @@ sha256-verified by `scripts/fetch_tt_corpus.sh` since the TT gate).
 - **T2 — deep per-target Phase-4: ENTERED 2026-11-22** (session 1:
   the reader-vtable chase + the record-table layout + the
   decompression path + first bounded extraction —
-  `docs/re-research/2026-11-22-tt-t2-reader.md`; remaining: payload
-  extraction per target, the app-module inventory where the
-  file-format/password routines live, the UI functional-layout study
-  [text-only IA records per protocol §7.4's extension]). Binding
-  execution rules (TT gate, ENG-2/ENG-3): stub-only analysis —
-  whole-file 333–404 MB Ghidra imports stay OUT; disk discipline —
-  selective per-record/per-module extraction into gitignored
-  `tools/re-corpus/extract/<target>/`, intermediates deleted
-  immediately, at most one target's payload resident, df watch.
+  `docs/re-research/2026-11-22-tt-t2-reader.md`. Session 2, same date:
+  **the USA container format COMPLETED byte-end-to-end** — entry fields
+  resolved (A = Win32 attributes bitmask, B = first-chunk compressed
+  size), the chunk grammar proven (raw-Deflate chunks + 0x80000000-flag
+  stored segments + terminator + type-0 end-entry + trailing PKCS#7
+  SignedData), FUN_0041e5e0 corrected to the parent-dir preparer,
+  CAN-Personal's inner layer mapped (plain ZIP → the same 2022-07-05
+  bootstrapper family + InstallShield ISSetupStream v7), CAN-Business's
+  manifest table mapped (header fields incl. the INI-block size;
+  text→compressed entropy boundary) —
+  `docs/re-research/2026-11-22-tt-t2-session2.md`; all four targets
+  converge on the InstallShield payload layer, where the app modules
+  live. Remaining: the InstallShield-layer record walk (D40) → the
+  app-module inventory where the file-format/password routines live,
+  the UI functional-layout study [text-only IA records per protocol
+  §7.4's extension]. Binding execution rules (TT gate, ENG-2/ENG-3):
+  stub-only analysis — whole-file 333–404 MB Ghidra imports stay OUT;
+  disk discipline — selective per-record/per-module extraction into
+  gitignored `tools/re-corpus/extract/<target>/`, intermediates deleted
+  immediately, at most one target's payload resident, df watch
+  [session 2 ran stricter: all decodes in-memory, zero derived bytes
+  on disk].)
 - **T3 — format-family specs** (Phase-5 template, §7.5-clean) incl. the
   password layer's clean-room documentation. **Namespace rule (TT
   gate, PROD-3/ENG-6):** TT specs are program deliverables under
@@ -550,4 +563,7 @@ application bound; verdicts + full condition ledger in
 `adversarial/reports/2026-11-22-tt-*.md`). Standing tripwire (TT gate,
 PROD-2): Stage-2 execution session 1 convenes within two working
 sessions of T2 session 1 (2026-11-22), else the slippage is a
-mandatory agenda item at the next convened gate.
+mandatory agenda item at the next convened gate. **Clock after T2
+session 2 (same date): 1 of 2 working sessions elapsed** — if the next
+working session is not Stage-2 execution session 1 (or does not convene
+a gate with the slip on its agenda), the slippage becomes mandatory.
