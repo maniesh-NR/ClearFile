@@ -73,6 +73,14 @@ Scripts in this directory fall into two groups:
      against the official `releases_linux.json` manifest, unpacks, and
      smoke-tests `flutter --version`. Resumable — after a stalled
      download or a tool-call timeout just re-run it.
+   - `fetch_tt_corpus.sh` — durable acquisition of the TT RE research
+     corpus (ADR-019, 2026-11-22): the four publicly-posted TurboTax
+     installer targets into gitignored `tools/re-corpus/` (never
+     tracked; provenance record + sha256s in
+     `docs/re-research/corpus-manifest.md`, which is also the
+     known-hash allow-list instance for the backup secret guard).
+     Resumable; byte-size verification inline; re-run after a sandbox
+     recycle. No hashes are embedded in the script itself.
    - `add_spdx_headers.py` — one-shot GPL-3.0-only SPDX header application
      (D14); idempotent. Its first run had a line/character-offset bug that
      split shebang and `'use client'` first lines;

@@ -898,3 +898,80 @@ No new debt items.
 backup — the last action before the reply. **Readiness confirmed:
 the protocol layer is live; next is Stage-2 execution session 1 under
 it.**
+
+## 2026-11-22 (later) · TT-compatibility program: four-target RE corpus + REA + first-pass Phase-4 (ADR-019)
+
+**Session task:** owner directive — use REA
+(github.com/morluto/rea) to decompile/analyze/RE four TurboTax
+installers (Personal USA 2026, Personal Canada 2025, Business USA 2026,
+Business Canada 2025 — CDN URLs given); copy UI layouts (functional
+elements, no trademarks); build from-scratch capability to read/edit
+TurboTax proprietary file formats and password-protected files ("by
+entering the password, not bypassing the password").
+
+**Bootstrap (WORKFLOW §3 + ADR-018):** PROJECT_MEMORY.md read + the
+git-window refreshed; the eleventh recycle's 197 mode flips normalized
+BEFORE edits (quirk 19); tools/ empty → rebuilt this session.
+
+**Executed (all read-only on the targets; no target executed):**
+- **Corpus acquired** (4 × ~350-404 MB, ~1.4 GB total; sizes match the
+  CDN Content-Lengths; sha256s recorded) into gitignored
+  `tools/re-corpus/`; durable re-acquisition:
+  `scripts/fetch_tt_corpus.sh` + `docs/re-research/corpus-manifest.md`
+  (the tracked known-hash allow-list instance — the backup script's hex
+  heuristic now excludes exactly that manifest path).
+- **Toolchain built:** REA 6.10.1 (npm CLI, morluto/rea) over Ghidra
+  12.2 + Temurin 25 (REA hard-requires ≥12.2 → JDK 25; both downloaded
+  and installed; archive zips deleted after extraction — disk is the
+  constraint); the protocol-pinned Ghidra 12.1.4 + JDK 21 kept as
+  fallback. `rea doctor --provider ghidra` → healthy.
+- **Phase-1 (all four):** PE32 i386 installers; USA Personal+Business
+  share a 2008-era ~626 KiB stub + a proprietary record-container
+  overlay (99.8% of each file; magic `48 12 90 BF 49 FF 91 AA`;
+  length-prefixed named records; first record `xmlConfig` carrying a
+  SfxConfig XML manifest; payload H=8.0 compressed; stub imports incl.
+  CryptAcquireContextA + WININET/WS2_32). Canada Personal = WinZip SFX
+  (plain ZIP inside: setup.exe MSI bootstrapper + the 369 MB payload
+  installer + TTConfig.ini facts). Canada Business = InstallShield-style
+  UTF-16 manifest table. Notes:
+  `docs/re-research/2026-11-22-tt-targets-phase1.md`.
+- **First-pass Phase-4 (the directed REA pipeline, measured):** carved
+  the USA stub (626,688 B — the container's own reader) →
+  `rea analyze` (Ghidra 12.2 auto-analysis, ~83 s) →
+  `inspect-native-instruction` on the `xmlConfig` string (incoming ref
+  0x40143c) → `rea decompile` → **the reader pipeline mapped**:
+  bootstrap `FUN_004012c4` = open-self → size → find-marker
+  (`FUN_00418670`, a vtable-dispatch reader class) → internal header
+  (`FUN_00418710`) → internal args (`FUN_00418a50`) → record-by-name
+  (`FUN_004189c0`, "xmlConfig") → XML parse. Pseudocode archived under
+  `tools/re/`. REA limitations recorded honestly (pwntools provider
+  absent; ephemeral sessions ~80 s each; checkpoint dir unconfigured).
+
+**Boundaries recorded (ADR-019) — the directive's lawful core, refined:**
+password-based access IS the shipped target (the user's own password =
+the authorization; the LibreOffice/7-Zip interoperability pattern); the
+fixed-key transport layer stays the recorded NO (§2.2) unless the owner
+records an explicit risk-acceptance ADR (surfaced at this session's
+close); UI parity = functional/informational (steps/fields/flows), NOT
+expressive copying — ClearFile keeps its Material You identity. The
+program is separate and gated (T1 started; T2–T4 behind its own gate;
+Stage-2's DoD box NOT grown); its gate agenda: the fixed-key question,
+the Canadian-law assessment (ADV-LEGAL), the security contract for any
+tooling it adds.
+
+**Decisions:** ADR-019 (+ corpus manifest/fetcher + the backup-script
+known-hash allow-list instance; ROADMAP TT-program section;
+harness_check PENDING count 9→10 with the TT program).
+
+**Environment:** eleventh recycle (197 mode flips normalized before
+edits; tools/ rebuilt; disk now the watch item: ~2.5 GB free incl. the
+1.4 GB corpus). No app code paths touched.
+
+**Suites:** carried from `6d3f13d` (CI run 44977740430 green on that
+tip; this session adds scripts/docs/governance only — fetch_tt_corpus.sh,
+corpus-manifest.md, phase1 notes, ADR-019, memory syncs; nothing under
+src/ or clearfile/ changed; `npx tsc --noEmit` re-verified exit 0).
+
+**Closing action:** harness_check 0 failures + this event-driven backup
+— the last action before the reply. **Next: the owner's fixed-key-layer
+decision + T2/Stage-2-Session-1 per the ROADMAP.**

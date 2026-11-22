@@ -29,7 +29,8 @@ loaded whole into context).
 | Save format | `.clearfile.json` envelope v2 (ADR-015; `.cfr` = read-only legacy alias) | Version guard in every reader; migrations warned, never silent; spec = `docs/return-format.md`. |
 | AI cascade | BYO-key, opt-in, on-device keys only (Gemini → OpenRouter, ADR-005) | Keys never in repo/history; `sendReturnContext` default OFF (ADR-011); Stage-5 hardening pending (D8/D11/D12/D16 halves). |
 | CI | `.github/workflows/` — hygiene.yml + release.yml | SHA-pinned actions; `contents: read`; timeouts; no fork/PR surface; suites job = analyze + test + audit gate + tsc + oracle + parity + bridge. |
-| Tooling | `scripts/` (see `scripts/README.md`) | SDK install via `scripts/fetch_flutter_sdk.sh` (manifest-sha256; tar quirk tolerated — quirk 20). |
+| Tooling | `scripts/` (see `scripts/README.md`) | SDK install via `scripts/fetch_flutter_sdk.sh` (manifest-sha256; tar quirk tolerated — quirk 20). TT RE corpus re-acquisition via `scripts/fetch_tt_corpus.sh` (ADR-019; blobs gitignored; provenance `docs/re-research/corpus-manifest.md`). |
+| RE bench | gitignored `tools/`: REA 6.10.1 over Ghidra 12.2 + Temurin 25 (REA hard-requires ≥12.2); protocol-pinned 12.1.4 + JDK 21 fallback; corpus at `tools/re-corpus/` | Phase-4 runs under the RE protocol's guardrails (§2/§7): function facts only in notes; no key material, no decrypted content, no expression lifts. Password-based access = the shipped target; the fixed-key layer = the recorded NO (ADR-019). |
 | License | GPL-3.0-only | SPDX header on every own-code file (new scripts included); vendored shadcn stays MIT-labelled (`THIRD-PARTY-NOTICES.md`). |
 
 **Architectural boundaries:** today = two live codebases (Flutter
@@ -50,14 +51,31 @@ amends (2026-11-16, 2026-11-20) — reset to the pushed tip before edits;
 background jobs die between Bash calls; tar's trailing restore fails
 benignly on this FS.
 
-## Active playbook — current objective: Stage-2 (RE tooling) execution, session 1
+## Active playbook — TT program T1→T2 (owner's active directive) + Stage-2 standing items
 
-Stage 2 ENTERED 2026-11-17 (gate record:
-`harness/adversarial/CONSENSUS.md`; ADR-012 in-repo placement + DoD +
-security contract recorded there and mirrored in
-`harness/memory/ROADMAP.md` Stage-2 entry conditions).
-**DoD: 4 named `docs/formats/` specs in ≤ 2 working sessions.** The first
-tooling commit MUST carry the gate's entry conditions:
+**TT-compatibility program (ADR-019; T1 STARTED 2026-11-22):**
+
+- [x] T1: acquire the four-target corpus + Phase-1 survey + the REA
+      first-pass decompile (done 2026-11-22 — see
+      `docs/re-research/2026-11-22-tt-targets-phase1.md` for the container
+      map + T2 entry points).
+- [ ] T2 (behind the program's own gate): reader-vtable chase (marker
+      construction, record-table layout, decompression path); payload
+      extraction per target; app-module inventory (where the file-format
+      + password routines live); the UI functional-layout study.
+- [ ] T3: format-family specs incl. the password layer (Phase-5 template,
+      §7.5-clean).
+- [ ] T4: the password-based bridge (read/edit/save with the user's own
+      password) + UI functional-layout parity in ClearFile's own
+      Material You expression.
+- [ ] OWNER DECISION REQUESTED: the fixed-key transport layer (shipping
+      keys/decryptors stays the recorded NO unless an explicit
+      risk-acceptance ADR is recorded — ADR-019/§2.2).
+
+**Stage-2 (RE tooling) execution session 1 — standing entry conditions** (the
+first tooling commit carries: the ADR-012 mechanics; the LEGAL-1
+mechanics; ENG-3's QSS fixture; the tools per the recorded security
+contract; the first docs/formats spec):
 
 - [ ] ADR-012 mechanics: gitignored `fixtures/re/` synthetic fixture
       path; allow-listed no-binary-blob CI assertion (28 own assets
@@ -110,15 +128,24 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
   recorded; ENG-1 inspector crash fixed + ENG-2 cap test (suite → 113);
   audit criticals cleared + the CI audit gate. Backup `c4982d1`, CI
   green.
-- **2026-11-22** — THIS session: the protocol layer installed (ADR-018)
-  — `PROJECT_MEMORY.md` + `update_memory.py` at the repo root; WORKFLOW
-  §3 amended to carry both memory layers at bootstrap/teardown. The
-  2026-11-20 unlogged mode-only amend (`f1af2d4`) found and resolved
-  (reset to `c4982d1` before edits). Files changed: the two new root
-  files + `harness/{DECISIONS,WORKFLOW,STATE,SESSION_LOG}.md` +
-  `scripts/README.md`. No code paths touched; suites carried from
-  `c4982d1` (CI run 44044419879 green). Next: Stage-2 execution session
-  1 (playbook above).
+- **2026-11-22 (a)** — the protocol layer installed (ADR-018):
+  `PROJECT_MEMORY.md` + `update_memory.py` at the repo root; WORKFLOW §3
+  carries both memory layers at bootstrap/teardown; the 2026-11-20
+  unlogged mode-only amend resolved (reset to `c4982d1` before edits).
+  Backup `6d3f13d`, CI green.
+- **2026-11-22 (b)** — TT program T1 (ADR-019): four TurboTax installers
+  acquired (~1.4 GB gitignored corpus + fetcher + manifest); Phase-1
+  surveyed (USA = stub + proprietary record container w/ `48 12 90 BF…`
+  magic + xmlConfig SfxConfig manifest; CAN-Personal = WinZip SFX →
+  MSI chain; CAN-Business = InstallShield-style); REA 6.10.1 + Ghidra
+  12.2/JDK 25 installed; the USA stub carved + decompiled via the REA
+  pipeline (~83 s) — the container reader pipeline mapped
+  (`FUN_004012c4`: open→size→marker→header→args→record-by-name→XML).
+  No app code touched; suites carried. Files: tools/re/* (gitignored),
+  scripts/fetch_tt_corpus.sh, docs/re-research/{corpus-manifest,
+  2026-11-22-tt-targets-phase1}.md, harness records. Next: the owner's
+  fixed-key decision + T2 behind the program's gate; Stage-2 Session 1
+  still standing.
 
 ## Recent Progress & Git Activity
 

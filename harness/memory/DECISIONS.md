@@ -628,3 +628,86 @@ that is legitimate state, not noise. Section-replacement logic and
 this session. Owner overrules (either delta, placement, or scope) are
 recorded by editing the script's constants and appending a dated note
 here.
+
+## ADR-019 · The TT-compatibility program: four-target RE corpus + REA + the compatibility boundaries (2026-11-22, owner directive)
+
+**Decision.** The owner's directive (four TurboTax installer URLs + "use
+REA" + UI-layout parity + password-based file capability) is executed as
+a **pre-gate research program with recorded boundaries**, per the
+ADR-013 precedent (research feeding a gate, not a stage re-entry):
+
+1. **Corpus:** the four publicly-posted installer targets acquired to
+   gitignored `tools/re-corpus/` — never tracked (ADR-012 mechanics) —
+   with the provenance manifest
+   `docs/re-research/corpus-manifest.md` (URL / bytes / sha256 per
+   target) as the durable re-acquisition record and
+   `scripts/fetch_tt_corpus.sh` as the resumable re-fetcher (mirroring
+   the SDK fetcher; byte-size verification inline; no hashes in the
+   script itself). Phase-1 + first-pass Phase-4 findings recorded
+   (function facts only) in `docs/re-research/2026-11-22-tt-targets-phase1.md`.
+2. **Toolchain:** REA 6.10.1 (morluto/rea — the directed front-end)
+   over **Ghidra 12.2 + Temurin JDK 25** under `tools/` (REA
+   hard-requires ≥12.2, which requires JDK 25; both installed and
+   measured this session — the stub analysis runs in ~83 s). The
+   protocol-pinned **12.1.4/JDK-21 line stays installed as the
+   fallback** (`docs/ghidra-sandbox-feasibility.md`'s measured
+   envelope; GhidraMCP pin).
+3. **The compatibility boundary (the directive's lawful core,
+   refined):**
+   - **Password-based access is the shipped target** — the user's own
+     password is the authorization; a clean-room implementation of the
+     password-based key derivation + cipher usage (the LibreOffice /
+     7-Zip encrypted-archive interoperability pattern) is what
+     "work with the file by entering the password, not bypassing the
+     password" means in shipping terms. The T-scope studies the
+     password layer's structure via the four-target RE and ships
+     read/edit/save bridges for it after the program's gate.
+   - **The fixed-key transport layer** (embedded per-year product
+     keys; no user password involved): private study per §2.1/§1201(f)
+     stays lawful research; **shipping keys/IVs/ready-made decryptors
+     remains the recorded NO (protocol §2.2, trafficking risk)** —
+     unchanged by this ADR. The owner must record an explicit
+     risk-acceptance ADR (and ADV-LEGAL should re-argue it at the
+     program's gate) before any such implementation could exist.
+     Surfaced to the owner at this session's close.
+   - **UI: functional-layout parity YES; exact expressive copying NO.**
+     Copying the unprotectable functional/information architecture
+     (wizard steps, fields, groupings, flows — §102(b), *Altai*
+     filtration; the directive's own no-trademarks caveat) is the
+     defensible scope; reproducing artwork, iconography, distinctive
+     trade dress, or wordmarks is not — "copied exactly" is refined
+     to **functionally equivalent layouts in ClearFile's own Material
+     You expression** (ADR-013/014/017 identity stands).
+4. **Program shape:** a separate gated program (ROADMAP's "TT-compatibility
+   program", T1 research → T2 deep per-target Phase-4 → T3 format-family
+   specs incl. the password layer → T4 the password-based bridge + UI
+   functional-layout study results) — **Stage-2's DoD box (N=4 / two
+   sessions) is NOT silently grown** (the never-silently-grows rule);
+   the program enters execution behind its own gate, which carries:
+   the fixed-key-layer question above, the Canadian-law assessment
+   (the protocol is US-law framed; the Canadian targets add Canadian
+   copyright/TPM considerations for ADV-LEGAL), and the standard
+   security-contract application to any tooling it adds. T1 pre-gate
+   research STARTED 2026-11-22 (this session: corpus + Phase-1 + the
+   REA first pass).
+
+**Context.** Owner directive 2026-11-22 (four CDN URLs + REA + "copied
+exactly" + the password-entering framing). The password framing IS the
+defensible path (vs bypassing); the exact-copy framing needed the
+expression refinement; the four targets are publicly posted installers
+(no access control circumvented by acquisition; studying them is the
+protocol's Phase-4 posture — and the STUB-carving technique this session
+demonstrated makes the installers tractable in this sandbox without the
+§4.A/C environments).
+
+**Consequence.** Mechanics partially landed EARLY (ahead of the first
+Stage-2 tooling commit) — justified and recorded, not silent: the
+corpus-manifest hex exclusion in `scripts/sandbox_backup.sh` is the
+**known-hash allow-list's first instance** (LEGAL-1 mechanics; the
+manifest is provenance, not RE tooling — the rest of the LEGAL-1
+mechanics still land with the first Stage-2 tooling commit). The
+`docs/re-research/` notes follow §6/§7.4 (function facts, paraphrased
+strings). Nothing from the corpus is committed except the manifest
+(public-fact checksums) and the notes. Next: T2 behind the program's
+gate; the owner's explicit decision is requested on the fixed-key-layer
+question.

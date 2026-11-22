@@ -1,10 +1,12 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-22 (pstack protocol-layer session, ADR-018:
-`PROJECT_MEMORY.md` + `update_memory.py` installed at the repo root as
-the engineering memory layer; WORKFLOW §3 carries both layers at
-bootstrap/teardown; no code paths touched — suites carried; this
-session's closing backup is the tip)
+**Updated:** 2026-11-22 (TT-compatibility program session, ADR-019: the
+two-target directive executed — four TurboTax installer targets acquired
++ Phase-1 surveyed + the REA-over-Ghidra-12.2 first pass decompiled the
+proprietary container's reader pipeline; boundaries recorded
+(password-based path = the shipped target; fixed-key layer = recorded
+NO pending an owner risk-acceptance ADR; UI = functional parity, own
+expression); no app code touched — suites carried)
 
 ## Repository
 
@@ -16,6 +18,13 @@ session's closing backup is the tip)
   195 files 644→755, zero content delta, message identical); resolved by
   `git reset --hard` to the pushed tip `c4982d1` — recorded as a dated
   SESSION_LOG note and in PROJECT_MEMORY.md's quirk shortlist.
+- **TT RE bench + corpus (ADR-019, 2026-11-22, gitignored tools/):** the
+  four installer targets (tools/re-corpus/, ~1.4 GB; manifest +
+  `scripts/fetch_tt_corpus.sh` re-acquire after recycles), REA 6.10.1
+  (tools/rea) over Ghidra 12.2 + Temurin 25 (REA hard-requires ≥12.2 →
+  JDK 25), with the protocol-pinned Ghidra 12.1.4 + JDK 21 kept as
+  fallback; carved stubs + decompile artifacts under tools/re/. Notes:
+  `docs/re-research/2026-11-22-tt-targets-phase1.md`.
 - **Root `PROJECT_MEMORY.md` + `update_memory.py` (ADR-018, 2026-11-22):**
   the engineering memory layer (stack rules / playbook / verification
   contracts / rolling git-activity window; stat-mode, idempotent,
@@ -85,14 +94,13 @@ session's closing backup is the tip)
 
 ## Environment facts (sandbox)
 
-- **Tenth-recycle era observed before this session**: history intact,
-  content intact (working tree clean at bootstrap); `tools/` gone again
-  (Flutter SDK not reinstalled this session — no code paths touched,
-  suites carried; reinstallable via the hardened
-  `scripts/fetch_flutter_sdk.sh` when needed); `node_modules/` survived
-  WITH its typescript bin. Ghidra/JDK remain uninstalled (reinstallable
-  when RE Phase-4 work needs them; the measured feasibility verdict
-  stands in `docs/ghidra-sandbox-feasibility.md`).
+- **Eleventh-recycle era observed before this session**: 197 mode flips
+  (normalized with `git restore .` BEFORE any edits, quirk 19), tools/
+  was empty → REBUILT this session per ADR-019 (Ghidra 12.1.4 + 12.2,
+  JDK 21 + 25, REA, the corpus; archive zips deleted after extraction —
+  all re-downloadable from recorded URLs); `node_modules/` survived WITH
+  its tsc bin. Disk headroom is the constraint to watch (~2.5 GB free
+  at session end incl. the 1.4 GB corpus).
 - The 2026-11-20 mode-flip evidence (195 files 755 after the tenth
   recycle) was folded into an unpushed amend by a brief unlogged session
   instead of being normalized — the SECOND such incident (first:
@@ -192,10 +200,16 @@ session's closing backup is the tip)
 
 ## Immediately next
 
-**Stage-2 (RE tooling) execution, session 1** — under the new protocol
-layer (ADR-018; PROJECT_MEMORY.md's playbook carries the same checklist
-with the verification contracts) — the first tooling commit carries the
-entry conditions recorded at the gate (ROADMAP Stage-2):
+**The TT program's T2 (behind its own gate per ADR-019 — convene when
+owner-funded):** the reader-vtable chase (marker construction, record
+layout, decompression path), payload extraction per target, the
+app-module inventory where the file-format/password routines live.
+**Owner decision requested (surfaced by ADR-019):** the fixed-key
+transport layer — shipping keys/decryptors stays the recorded NO unless
+the owner records an explicit risk-acceptance ADR. Meanwhile **Stage-2
+execution session 1** remains the standing next item (the first tooling
+commit carrying the entry conditions recorded at the gate — ROADMAP
+Stage-2; the ADR-012/LEGAL-1 mechanics, ENG-3's QSS fixture):
 - the **ADR-012 mechanics (a)–(f)**: the enumerated gitignored
   `fixtures/re/` synthetic fixture path; the allow-listed no-binary-blob
   CI assertion with the synthetic/owner-authored provenance distinction;

@@ -93,9 +93,17 @@ HEX_PATTERNS='[0-9a-fA-F]{64}'
 HITS="$(
   { git grep --cached -l -E "$TOKEN_PATTERNS" -- . || true
     git grep --cached -I -l -E "$HEX_PATTERNS" -- . ':(exclude)*.lock' \
-      ':(exclude)package-lock.json' ':(exclude)bun.lock' ':(exclude)pnpm-lock.yaml' || true
+      ':(exclude)package-lock.json' ':(exclude)bun.lock' ':(exclude)pnpm-lock.yaml' \
+      ':(exclude)docs/re-research/corpus-manifest.md' || true
   } | sort -u
 )"
+# The one tracked file allowed to carry 64-hex runs: the TT RE corpus
+# provenance manifest (ADR-019, 2026-11-22) — sha256 checksums of
+# publicly downloadable installer URLs, the recorded known-hash
+# allow-list instance. Every other path keeps the strict heuristic.
+if [ -n "$(git grep --cached -I -l -E "$HEX_PATTERNS" -- docs/re-research/corpus-manifest.md 2>/dev/null)" ]; then
+  echo "backup: manifest allow-list active (corpus hashes are the recorded known-hash instance)" >&2
+fi
 if [ -n "$HITS" ]; then
   echo "backup: REFUSING — token-shaped or hex-blob content staged in:" >&2
   echo "$HITS" >&2

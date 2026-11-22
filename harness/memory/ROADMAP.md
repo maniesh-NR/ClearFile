@@ -480,3 +480,36 @@ v1's stages still close first.
 The per-OS order after N1 (Android before Windows, macOS last) is
 re-settable at the epilogue's own gates without reopening the ADR-017
 settlement.
+
+---
+
+## TT-compatibility program (T1–T4) — pre-gate research started 2026-11-22 (ADR-019)
+
+A separate gated program (owner directive 2026-11-22): study the four
+TurboTax installer targets with REA over Ghidra (Phase-1 done; the
+stub-carving technique makes the installers tractable in this sandbox),
+then the per-target deep Phase-4, the format-family specs including the
+**password-based** capability (the user's own password = the
+authorization; the LibreOffice/7-Zip interoperability pattern), and the
+UI functional-layout study. **Boundaries recorded in ADR-019:** the
+fixed-key transport layer stays out of shipping absent an explicit
+owner risk-acceptance ADR; UI parity is functional/informational — no
+expression/trade-dress copying; Stage-2's DoD box is not grown by this
+program. Corpus: gitignored `tools/re-corpus/` (provenance
+`docs/re-research/corpus-manifest.md`; re-fetch
+`scripts/fetch_tt_corpus.sh`). Its entry gate agenda carries: the
+fixed-key-layer question, the Canadian-law assessment (ADV-LEGAL), and
+the security-contract application to any tooling it adds.
+
+- **T1 — corpus + Phase-1 + REA first pass: STARTED 2026-11-22** (ADR-019;
+  findings in `docs/re-research/2026-11-22-tt-targets-phase1.md`).
+- **T2 — deep per-target Phase-4** (the reader-vtable chase, record-table
+  layout, decompression path, payload extraction, the app-module
+  inventory where the file-format/password routines live).
+- **T3 — format-family specs** (Phase-5 template, §7.5-clean) incl. the
+  password layer's clean-room documentation.
+- **T4 — the password-based bridge + UI functional-layout parity** in
+  ClearFile's own Material You expression.
+
+**Gate status:** PENDING (pre-gate research recorded; the program enters
+execution behind its own gate — owner-funded sessions).
