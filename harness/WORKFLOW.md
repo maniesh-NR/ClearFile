@@ -131,18 +131,34 @@ used sparingly, and never silently).
 2. Read `harness/memory/STATE.md`, the last 2–3 entries of
    `harness/memory/SESSION_LOG.md`, `harness/memory/ROADMAP.md`, and
    `harness/adversarial/CONSENSUS.md`.
-3. If the sandbox was recycled (missing `origin` remote, missing SDK, or a
+3. Read the root `PROJECT_MEMORY.md` (the engineering layer's single
+   source of truth — ADR-018: stack rules, active playbook,
+   verification contracts) and run `python3 update_memory.py` from the
+   repo root to refresh its git-activity window. Retrieve by section
+   anchor; never load the whole file into context. The refresh may be
+   the session's only tree change — that is legitimate state, not noise.
+4. If the sandbox was recycled (missing `origin` remote, missing SDK, or a
    lone "Initial commit" in `git log`), run §4 first.
-4. Confirm the next planned stage has a **passed** gate in `CONSENSUS.md`
+5. Confirm the next planned stage has a **passed** gate in `CONSENSUS.md`
    before starting stage work. If not, the session's first task is to run
    the gate.
+6. Working rules (ADR-018): investigate before code (read-only
+   root-cause work first — no surface patches); anchor every task to a
+   checkable outcome from `PROJECT_MEMORY.md`'s Verification Contracts
+   section and prove it before handoff.
 
 **Teardown (end of every execution plan):**
 
 1. Append a dated entry to `harness/memory/SESSION_LOG.md` (what was done,
    decisions, open questions, next step).
 2. Update `harness/memory/STATE.md` if environment or repo facts changed.
-3. Run `scripts/sandbox_backup.sh "<note>"` — **this is the last action**
+3. Update `PROJECT_MEMORY.md` (ADR-018): tick the playbook checkboxes,
+   add the session's zero-noise snapshot bullet (decisions / changed
+   files / next steps — prune filler, failed iterations, and raw tool
+   output), and refresh the verification-contract numbers if any
+   changed. Run `python3 update_memory.py` once more if the session's
+   commits should appear in the window.
+4. Run `scripts/sandbox_backup.sh "<note>"` — **this is the last action**
    before replying to the owner.
 
 ---

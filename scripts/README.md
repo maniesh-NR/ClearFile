@@ -3,6 +3,12 @@
 Scripts in this directory fall into two groups:
 
 1. **Project infrastructure** — part of the product:
+   - `../update_memory.py` (repo root, ADR-018) — refreshes
+     `PROJECT_MEMORY.md`'s rolling git-activity window (last 3 commits,
+     stat-mode with noise excludes; run `python3 update_memory.py` from
+     the repo root at session bootstrap or as a pre/post-commit hook;
+     `PATCH_MODE`/`NOISE_EXCLUDES` constants document the deltas from
+     the uploaded pstack template).
    - `sandbox_backup.sh` — the event-driven backup (last step of every
      execution plan; see `harness/WORKFLOW.md` §1).
    - `generate_blueprint.py` / `merge_blueprint.py` / `verify_blueprint.py` —

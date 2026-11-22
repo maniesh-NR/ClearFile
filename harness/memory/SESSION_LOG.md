@@ -828,3 +828,73 @@ flutter test **113/113**; tsc 0; bridge 10/10; parity 16/16; oracle
 **Closing action:** this event-driven backup — the last action before
 the reply. **Stage 2 (RE tooling) execution is next; the epilogue native
 program (ADR-017) moves only when the owner funds it.**
+
+## 2026-11-22 · pstack protocol layer: PROJECT_MEMORY.md + update_memory.py (ADR-018)
+
+**Session task:** owner directive — adopt the Engineering &
+Token-Efficiency Protocol (pstack principles; sources: cursor/plugins
+pstack + Google Cloud Tech): persistent root `PROJECT_MEMORY.md`
+(tech-stack rules / active playbook / verification contracts),
+zero-noise compaction, go-deep-first; save the uploaded
+`update_memory.py` at the repo root and run it at session bootstrap /
+as a hook; confirm readiness.
+
+**Bootstrap + inherited-state verification:** tenth-recycle era —
+history intact, working tree clean, `tools/` gone (SDK not reinstalled:
+no code paths touched this session), `node_modules`+tsc survived. The
+**second unlogged mode-only amend** found and resolved BEFORE any
+edits: an unlogged 2026-11-20 session had amended the gate backup
+(`f1af2d4` from `c4982d1`; reflog `commit (amend)` 2026-11-20 17:43Z);
+verified mode-only (195 files 644→755, 0 insertions/0 deletions,
+message identical) → `git reset --hard c4982d1` (the pushed tip).
+Same class as the 2026-11-16 incident — the pattern is now carried in
+PROJECT_MEMORY.md's quirk shortlist for protocol-layer visibility.
+
+**Setup executed (read-only investigation first, then the layer):**
+- `PROJECT_MEMORY.md` authored at the root — the engineering single
+  source of truth: tech-stack & architecture rules (pinned versions +
+  binding rules incl. ADR-016's maintenance-parity and ADR-017's
+  boundaries), the active playbook (Stage-2 execution session 1, the
+  gate's entry conditions as a checklist), verification contracts (the
+  full command set with expected outputs), a session-snapshot section
+  (decisions/files/next per session), and the git-activity window.
+- `update_memory.py` saved at the root (from `upload/`, which stays
+  gitignored) with the repo's GPL-3.0-only SPDX header (D14) and TWO
+  documented deltas from the uploaded template, both forced by the
+  protocol's own zero-noise rule + this repo's mega-commit granularity
+  (measured: full `-p` window = 245 KB vs stat = 19 KB):
+  `PATCH_MODE="stat"` default (patches stay in git history — the window
+  points, not duplicates; `"patch"` restores upstream behaviour = the
+  owner-overrule path) and noise excludes (lockfiles,
+  `harness/adversarial/reports/`, `fixtures/tax/`). Section-replacement
+  logic + `NUM_COMMITS` upstream-verbatim. Verified: py_compile clean,
+  run twice, idempotent (16 KB file).
+- **ADR-018** recorded (DECISIONS.md): the protocol adoption, the
+  governance-vs-engineering layering (ADR-003 stands), the deltas +
+  owner-overrule path, and the wiring decision (bootstrap-run +
+  teardown-author; NOT in sandbox_backup.sh — a post-push run would
+  dirty the tree after the closing backup; NOT in CI — local/session
+  tool).
+- **WORKFLOW §3 amended:** bootstrap now reads PROJECT_MEMORY.md and
+  runs `update_memory.py` (anchor-retrieval rule: never load the whole
+  file into context); teardown now updates the playbook/snapshot
+  (zero-noise rule) before the backup.
+- **scripts/README.md** row added for the root script.
+
+**Environment:** tenth recycle (tools/ gone — SDK not needed; tsc
+bin survived). No code paths touched.
+
+**Suites:** carried from `c4982d1` (CI hygiene run 44044419879 green on
+the pushed tip; this session adds only markdown + the Python memory
+script): Dart 113/113, tsc 0 (re-verified locally), bridge 10/10,
+parity 16/16, oracle 16/16, smoke 6/6, audit gate green. The session's
+own deliverable verified directly: `update_memory.py` compiles, runs,
+idempotent; `harness_check` 0 failures.
+
+**Decisions:** ADR-018 (+ its two documented deltas and overrule path).
+No new debt items.
+
+**Closing action:** harness_check 0 failures + this event-driven
+backup — the last action before the reply. **Readiness confirmed:
+the protocol layer is live; next is Stage-2 execution session 1 under
+it.**

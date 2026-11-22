@@ -1,22 +1,26 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-17 (Stage-2 entry gate session — the full-depth gate
-that also closed Stage 3: 4 × PROCEED-WITH-CONDITIONS, unanimous; the
-ADR-014 re-platforming settlement recorded as ADR-017, the tripwire
-disposition as ADR-016, placement as ADR-012, the Stage-2 DoD and
-security contract recorded; ENG-1/ENG-2/SEC-1/SEC-3 gate-condition fixes
-applied in-session; this session's closing backup is the tip)
+**Updated:** 2026-11-22 (pstack protocol-layer session, ADR-018:
+`PROJECT_MEMORY.md` + `update_memory.py` installed at the repo root as
+the engineering memory layer; WORKFLOW §3 carries both layers at
+bootstrap/teardown; no code paths touched — suites carried; this
+session's closing backup is the tip)
 
 ## Repository
 
 - GitHub: `maniesh-NR/ClearFile` (public), branch `main`. Tip at this
-  session's start: the Stage-3 close-out backup `a18b160`; this session's
+  session's start: the Stage-2 entry-gate backup `c4982d1`; this session's
   closing backup supersedes it. One inherited anomaly, found and resolved
-  in-session BEFORE any edits: an unlogged 2026-11-16 session had left an
-  **unpushed, mode-only amend** (`4d4e1d6` — 191 files 644→755, zero
-  content delta); resolved by `git reset --hard` to the pushed tip
-  `a18b160` (contents identical; canonical modes preserved; fast-forward
-  chain intact) — recorded as a dated SESSION_LOG note (SEC-2).
+  in-session BEFORE any edits (the SECOND of its class): an unlogged
+  2026-11-20 session had left an **unpushed, mode-only amend** (`f1af2d4` —
+  195 files 644→755, zero content delta, message identical); resolved by
+  `git reset --hard` to the pushed tip `c4982d1` — recorded as a dated
+  SESSION_LOG note and in PROJECT_MEMORY.md's quirk shortlist.
+- **Root `PROJECT_MEMORY.md` + `update_memory.py` (ADR-018, 2026-11-22):**
+  the engineering memory layer (stack rules / playbook / verification
+  contracts / rolling git-activity window; stat-mode, idempotent,
+  verified 16 KB) — the pstack token-efficiency protocol, layered over
+  `harness/` governance without contradicting it.
 - Tag `v1.0.1` (release 445310560): published 2026-11-14; 11 assets
   including the first `SHA256SUMS.txt`, the Android INTERNET + macOS
   network-client fix, the network disclosure, and the hardened CI's first
@@ -81,29 +85,29 @@ applied in-session; this session's closing backup is the tip)
 
 ## Environment facts (sandbox)
 
-- **Ninth-recycle era observed before this session**: history intact,
-  content intact; `tools/` gone again (Flutter SDK reinstalled via the
-  hardened `scripts/fetch_flutter_sdk.sh` — manifest-sha256 verified; the
-  tar quirk below now tolerated, smoke test authoritative);
-  `node_modules/` survived WITH its typescript bin. Ghidra/JDK remain
-  uninstalled (reinstallable via the documented fetchers when RE Phase-4
-  work needs them; the measured feasibility verdict stands in
-  `docs/ghidra-sandbox-feasibility.md`).
-- The 2026-11-16 mode-flip evidence (191 files 755 after the eighth
+- **Tenth-recycle era observed before this session**: history intact,
+  content intact (working tree clean at bootstrap); `tools/` gone again
+  (Flutter SDK not reinstalled this session — no code paths touched,
+  suites carried; reinstallable via the hardened
+  `scripts/fetch_flutter_sdk.sh` when needed); `node_modules/` survived
+  WITH its typescript bin. Ghidra/JDK remain uninstalled (reinstallable
+  when RE Phase-4 work needs them; the measured feasibility verdict
+  stands in `docs/ghidra-sandbox-feasibility.md`).
+- The 2026-11-20 mode-flip evidence (195 files 755 after the tenth
   recycle) was folded into an unpushed amend by a brief unlogged session
-  instead of being normalized — see the Repository section above; quirk
-  9's normalize-first practice is reaffirmed, and WORKFLOW §4 step 5 now
-  requires `harness_check.sh` at recycle verification (ENG-7).
+  instead of being normalized — the SECOND such incident (first:
+  2026-11-16, 191 files); see the Repository section above. Quirk 9's
+  normalize-first practice is reaffirmed; WORKFLOW §4 step 5 already
+  requires `harness_check.sh` at recycle verification (ENG-7), and
+  PROJECT_MEMORY.md's quirk shortlist now carries the pattern for
+  protocol-layer sessions.
 - Test suite: **113/113 green** (Dart; 97 hand-written + 16 golden) —
-  re-verified at THIS session's teardown after the gate's ENG-1/ENG-2
-  fixes (`flutter analyze` clean; the 2 new tests: the crafted
-  truncated-central-directory never-throws guard + the TXF
-  10,000-record refusal). Web parity 16/16; bridge suite 10 groups;
-  oracle 16/16; web smoke 6/6; `npx tsc --noEmit` exit 0;
-  `npm audit --omit=dev --audit-level=critical` exit 0 (0 criticals
-  after the in-session `npm audit fix`; 6 moderate/high remain
-  visible, non-gating, need breaking changes) — all re-run this session
-  against the fixed dependency tree.
+  CARRIED this session from `c4982d1` (CI hygiene run 44044419879 green
+  on the pushed tip; this session adds only markdown + a Python memory
+  script — zero code paths touched; `update_memory.py` itself compiled,
+  run twice, verified idempotent, 16 KB output; `npx tsc --noEmit`
+  re-verified locally exit 0). Web parity 16/16; bridge 10/10; oracle
+  16/16; web smoke 6/6 — carried with the same CI evidence.
 - Live-check quirk (unchanged): unauthenticated api.github.com is
   shared-rate-limited from this sandbox — use public HTML pages or
   sparing authenticated curl per WORKFLOW §5. The gate's four reviewers
@@ -188,8 +192,10 @@ applied in-session; this session's closing backup is the tip)
 
 ## Immediately next
 
-**Stage-2 (RE tooling) execution, session 1** — the first tooling commit
-carries the entry conditions recorded at the gate (ROADMAP Stage-2):
+**Stage-2 (RE tooling) execution, session 1** — under the new protocol
+layer (ADR-018; PROJECT_MEMORY.md's playbook carries the same checklist
+with the verification contracts) — the first tooling commit carries the
+entry conditions recorded at the gate (ROADMAP Stage-2):
 - the **ADR-012 mechanics (a)–(f)**: the enumerated gitignored
   `fixtures/re/` synthetic fixture path; the allow-listed no-binary-blob
   CI assertion with the synthetic/owner-authored provenance distinction;

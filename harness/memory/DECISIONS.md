@@ -571,3 +571,60 @@ the new stage counts; the current pipeline proceeds unchanged — next:
 Stage 2 (RE tooling) execution. The owner may overrule any settled
 sub-item by a recorded ADR; the epilogue's own gates remain the natural
 re-settlement points.
+
+## ADR-018 · pstack-style engineering protocol layer: PROJECT_MEMORY.md + update_memory.py (2026-11-22, owner directive)
+
+**Decision.** Adopt the Engineering & Token-Efficiency Protocol (pstack
+principles; sources: cursor/plugins pstack + Google Cloud Tech):
+a root **`PROJECT_MEMORY.md`** as the engineering layer's single source
+of truth — tech stack & architecture rules, the active playbook & todo,
+verification contracts, and a rolling git-activity window — maintained
+by root **`update_memory.py`** (run at session bootstrap or as a
+pre/post-commit hook), with **zero-noise compaction** (milestone
+summaries carry decisions, changed files, next steps only — no filler,
+no failed-debugging dumps, no raw tool output) and **go-deep-first**
+working rules (read-only investigation before code; every task anchored
+to a checkable outcome). The layering is explicit: `harness/` remains
+the GOVERNANCE memory (gates, ADRs, debt, adversarial records —
+ADR-003 stands); `PROJECT_MEMORY.md` is the ENGINEERING memory; neither
+contradicts the other, and WORKFLOW §3 carries both at bootstrap and
+teardown. Parallel agents retrieve from the memory file by its stable
+section anchors (grep/section reads — never the whole file into context)
+— that is the token-efficiency mechanism ("RAG" in the directive's
+terms).
+
+**Context.** Owner directive 2026-11-22, with the pstack
+`update_memory.py` template uploaded. The harness already implements
+evidence-based, verification-first culture (gates, verification
+contracts, event-driven backups); the protocol adds the layer the
+harness lacked: a compact, always-current engineering state file that
+survives recycles in-repo (same rationale as ADR-003 — GitHub is the
+only always-current medium) and lets sessions bootstrap with minimal
+context. This session's bootstrap found and resolved the second
+unlogged mode-only amend (2026-11-20, `f1af2d4` — same class as the
+2026-11-16 incident; reset to the pushed tip `c4982d1` before any
+edits), reinforcing the protocol's persistent-memory rationale.
+
+**Consequence.** Two documented deltas from the uploaded template, both
+forced by this repo's mega-commit backup granularity (one backup commit
+per session, whole-feature diffs) and the protocol's own zero-noise
+rule — measured 2026-11-22: a full `-p` window over the last 3 commits
+is **245 KB** (vs **19 KB** in stat mode):
+1. `PATCH_MODE = "stat"` by default (commit metadata + per-file stat
+   summaries; the patches stay in git history — the window points, it
+   does not duplicate). `PATCH_MODE = "patch"` restores the upstream
+   full-patch behaviour — the owner-overrule path.
+2. Noise excludes in either mode: lockfiles, `harness/adversarial/reports/`
+   (near-verbatim reviewer reports already archived in-repo), and
+   `fixtures/tax/` (golden data already pinned by CI suites).
+
+The script carries the repo's GPL-3.0-only SPDX header (D14 policy —
+own-code files). It is NOT wired into `sandbox_backup.sh` (a post-push
+run would dirty the tree after the closing backup — an infinite regress)
+nor into CI (it is a local/session tool): bootstrap-run + teardown-author
+covers it. A bootstrap refresh may be a session's only tree change —
+that is legitimate state, not noise. Section-replacement logic and
+`NUM_COMMITS` are upstream-verbatim; verified working and idempotent
+this session. Owner overrules (either delta, placement, or scope) are
+recorded by editing the script's constants and appending a dated note
+here.
