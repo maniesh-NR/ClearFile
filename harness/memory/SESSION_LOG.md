@@ -1403,3 +1403,113 @@ T3's findings allow `tax-modern.md` (the checklist is otherwise green:
 3 of 4 named specs §7.5-clean, ≤2 execution sessions elapsed — this was
 the second and final one, refusal/cap tests green, blob assertion
 green).**
+
+---
+
+## 2026-11-23 (later) · TT program T2 session 3: the InstallShield-layer record walk completed; the app-module inventory entered (D40 closed)
+
+**Session task:** STATE's "Immediately next" — T2 session 3 (D40): the
+ISSetupStream v7/v8 payload record format (USA + CAN-Personal inner
+installers) + the CAN-Business classic file-group record framing; then
+the app-module inventory and the UI functional-layout study entry;
+re-acquire the corpus + rebuild the Ghidra bench first (the fifteenth
+recycle's standing expectation).
+
+**Bootstrap (WORKFLOW §3 + ADR-018):** PROJECT_MEMORY.md read + the
+git-window refreshed; harness_check 0 failures; tree clean at the
+pushed tip `1ed3c88` (0 ahead/behind, no mode flips — the sixteenth
+recycle left git + the Flutter SDK + node_modules intact; only the
+corpus + Ghidra bench were wiped, per the standing expectation). Disk
+prepped: the SDK tarball residue (1.5 GB) deleted after a
+`flutter --version` smoke pass (3.47.9 OK) — 3.7 GB free.
+
+**Executed (read-only on the targets; zero derived bytes on disk):**
+- **Corpus re-acquired 4/4 sha256-verified** via `fetch_tt_corpus.sh`
+  (the CDNs ran ~70-85 MB/s — ~25 s total; SEC-4's mechanic proven a
+  third time on a live re-acquisition).
+- **Bench rebuilt:** Ghidra 12.2 (`ghidra_12.2_PUBLIC`, zip deleted
+  after extraction), Temurin 25.0.5.1+2 (adoptium API asset +
+  sha256-verified), REA 6.10.1 (tag `rea-agents-6.10.1`, `npm ci` +
+  `build:cached` ≈ 21 s), `rea doctor --provider ghidra` → healthy:true.
+  **NEW SANDBOX QUIRK (class beyond the register):** `tools/rea/node_modules`
+  AND `tools/rea/dist` are hollowed at every Bash-call boundary (the
+  root project's node_modules is unaffected; corpus/Ghidra/JDK/tools/re
+  persist fine). Workaround recorded: hardlink backups under
+  non-excluded names (`rea_nm`, `rea_dist`) + `tools/rea_restore.sh`
+  (instant `cp -ald` restore at the start of every REA call). The
+  reaper's rule was probed empirically (marker files survived in every
+  other name).
+- **D40-a (Personal/Business-USA, ISSetupStream v8):** the inner
+  installer PE carved (1,674,240 B at raw end 0x198c00 — the one
+  resident carve, stub-carving precedent) → REA checkpoint import
+  (~112 s) → the decompile chain: FUN_00452b16 (the stream open: the
+  exact 0x2e header read + the version dispatch) → FUN_00452eda (the
+  13-char magic check via the 0x4cc874/78 PTR pair) → FUN_00453675 (the
+  table walk — **the loop bound IS the u16@0x0e version label: 8
+  records**) → FUN_0045374c (the v4 record reader: 0x30-byte header +
+  name) → FUN_00452ffa → FUN_00406780 (extract: read-callback →
+  zlib inflate → WriteFile + SetFileTime from the record's three
+  FILETIMEs) → FUN_00453c70 (the reader callback: the XOR decrypt,
+  0x3ff phase) → FUN_004534d8/FUN_0042009f (the key = the record's own
+  filename in CP_UTF8 0xfde9) → FUN_0040c0a8/FUN_0040c10b/FUN_0040c1c2
+  (the byte op: nibble-swap + xor + complement; the key mask `13 35 86
+  07`) + the zlib 1.2.12 anchors (banners + the lbase/dbase tables →
+  inflate). **The full record format + payload codec byte-proven**:
+  stream header 0x2e; record [0x30 hdr][UTF-16 name][payload];
+  hdr = [u32 namelen][u32 flags=6][u16 0][u32 dsize][u32 0][u32 0]
+  [u16 1][FTTIME ×3]; payload = name-keyed XOR → zlib-wrapped deflate
+  (validated: the splash BMP inflates to a `BM` bitmap; the INI
+  string-tables and `.isc`/`.prq` records decode cleanly).
+- **The tables (existence-level):** Personal-USA 8 records incl.
+  `TurboTax 2026.msi` (383,877,541); Business-USA 8 records incl.
+  `TurboTax Business 2026.msi` (359,037,574); CAN-Personal v7 7 records
+  incl. `TurboTax 2025.msi` (246,582,748) — same grammar + cipher
+  (validated on the splash + the MSI head).
+- **The MSI layer + the app-module inventory:** the MSI record
+  stream-decrypted+inflated whole (390,117,376 B, retention-free) → OLE
+  parse (FAT block-keying CORRECTED — the k-th DIFAT entry covers
+  k·128..k·128+127; the earlier mis-keying truncated the directory at
+  4 sectors) → the full 80-entry directory incl. the embedded MSCF
+  cabinet stream (380,063,003 B at sector 0x359c) → **the cab's file
+  table parsed: 6,503 entries** — the app-module inventory (a CEF-based
+  architecture: the 241 MB libcef + the 91 MB fps engine + the 136 MB
+  interview-service converter + the 26 MB ttax engine + the 27.5 MB MEF
+  converter + a libcrypto-family DLL; 2,043 JS + 1,927 form PDFs + 711
+  JAR + 106 DLL; the `.1pe` FDI form-data packs). The UI
+  functional-layout study entry recorded (the CEF/JS surface).
+- **D40-c (CAN-Business classic):** the INI block ends exactly at
+  0xef228; followed by a 4-field UTF-16z cab manifest (`data1.cab`,
+  `Disk1\data1.cab`, `0.0.0.0`, `900437`) + the `ISc` magic at 0xef27e
+  ([u32 0xa8c28][u16 4][u32 2][u16 0x11@+0x1a]) + the compressed
+  file-group stream from 0xef47a (refining session-2's ≈0xefa00).
+- Notes: `docs/re-research/2026-11-23-tt-t2-session3.md` (§7.5-clean;
+  LEGAL-4 manual ≥32-hex scan clean; includes the session-2 erratum
+  for the misaligned header-field arithmetic). Bench scripts
+  (gitignored, D38 posture): `tools/re/t3_*.py` (eleven).
+
+**Decisions:** none new (no gate convened — T2 session 3 executes
+inside the entered stage). DEBT: **D40 closed**; **D41 opened** (the
+CAN-Business ISc internal table + classic codec; the MSI name
+encoding; the UI IA study proper). The PROD-2 tripwire: discharged
+long since (the Stage-2 box closed at exactly two sessions).
+
+**Environment:** sixteenth recycle (git/SDK/node_modules survived;
+corpus + bench rebuilt; disk 3.7 GB→~2.0 GB free with the rebuilt
+bench). Two new sandbox quirks recorded for the register: (1) the
+per-call-boundary `node_modules`/`dist` hollowing under `tools/` +
+the `rea_restore.sh` hardlink workaround; (2) one transient
+single-byte decode anomaly early in the session (an overlay byte
+differed between two identical in-memory decode runs; it did not
+reproduce across four subsequent independent reads and the corpus
+sha256 re-verified intact — byte-claims re-derived before recording).
+No app code paths touched (gitignored bench scripts + docs + harness
+memory only; git status verified before commit; suites carried from
+`1ed3c88` — the delta provably touches zero code paths; CI runs on
+this push).
+
+**Closing action:** harness_check 0 failures + this event-driven
+backup — the last action before the reply. **Next: T3's format-family
+study (the `.tax` layer + the password layer — the app-module
+inventory now identifies the engine modules it lives in) → unlocks
+`tax-modern.md` and the Stage-2 EXIT gate; or the D41 residues in the
+T2 lane first.**

@@ -1,18 +1,22 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-23 (final — Stage-2 EXECUTION session 2, the box's
-second and final session: specs 2 + 3 of the N=4 DoD published
-(`tax-exchange-container.md`, `txf.md` — both §7.5-clean/lint-clean;
-`tax-modern.md` awaits T3 exactly as planned, no stub written); D34
-CLOSED (the shared `fixtures/migration/` family consumed by BOTH suites
-asserting exact ordered warning lists; the web reader's dependent-count
-clamp aligned to the Dart reference's 0..100 bound — the recorded edge
-drift fixed, not just documented; the store-vs-file W-2 shape documented
-in return-format.md §3); the 23rd RE-tool test (the exchange-container
-differential pair inside mandatory family #2); the execution box closed
-at exactly two sessions; the fifteenth recycle wiped tools/ — the Flutter
-SDK re-fetched + sha256-verified; the TT corpus + Ghidra bench re-acquired
-at the next T2/Phase-4 session)
+**Updated:** 2026-11-23 (TT program T2 session 3 — the
+InstallShield-layer record walk COMPLETED and D40 CLOSED: the
+ISSetupStream v7/v8 record format byte-proven + decompile-anchored
+(the 0x2e stream header, the 0x30 v4 record header, and the
+name-keyed XOR→zlib payload codec — the key = the record's own UTF-8
+filename masked `13 35 86 07`, nibble-swap/complement, 1024-phase);
+the tables walked end-to-end (8/8/7 records — each target's MSI
+carried: 383.9 MB / 359.0 MB / 246.6 MB); the app-module inventory
+ENTERED via the Personal-USA MSI's embedded MSCF cabinet (6,503
+entries — a CEF architecture; the format-relevant module class
+identified at existence level); the CAN-Business classic framing
+byte-proven (the cab manifest + the ISc magic + the compressed stream
+at 0xef47a). D41 opened for the residues. The sixteenth recycle spared
+git/SDK/node_modules; the corpus re-acquired 4/4 sha256-verified + the
+Ghidra bench rebuilt (doctor healthy) + a new per-call-boundary
+node_modules/dist hollowing quirk worked around via
+`tools/rea_restore.sh`)
 
 ## Repository
 
@@ -145,16 +149,30 @@ at the next T2/Phase-4 session)
 
 ## Environment facts (sandbox)
 
-- **Fifteenth recycle at this session's bootstrap** (tools/ wiped — the
-  Flutter SDK re-fetched via the resumable fetcher + sha256-verified
-  across two tool calls; the TT corpus + Ghidra bench gone as standing
-  expectation — the next T2/Phase-4 session re-acquires the corpus via
-  `scripts/fetch_tt_corpus.sh` (sha256-verified vs the manifest) and
-  rebuilds the bench per the recorded ~19 s clone/build). Clean tree at
-  bootstrap, no mode flips, no unpushed amends; node_modules incl.
-  `.bin/tsc` SURVIVED (no mid-session hollowing this time). Disk 6.7 GB
-  free at bootstrap / ~4.1 GB at close (the SDK resident) — the watch
-  item improved.
+- **Sixteenth recycle at this session's bootstrap** (git history +
+  the Flutter SDK + root node_modules SURVIVED — only the corpus + the
+  Ghidra bench were wiped, the standing expectation; both rebuilt
+  this session: corpus 4/4 sha256-verified via the fetcher, Ghidra
+  12.2 + Temurin 25.0.5.1 + REA 6.10.1, `rea doctor --provider ghidra`
+  healthy). Clean tree at bootstrap, no mode flips, no unpushed
+  amends. Disk: the 1.5 GB SDK-tarball residue deleted after a
+  `flutter --version` smoke pass → 3.7 GB free at the bench build,
+  ~2.0 GB at close (the bench + corpus resident) — still the watch
+  item.
+- **NEW quirk (this session, register 21):** `tools/<pkg>/node_modules`
+  AND `tools/<pkg>/dist` are hollowed at every Bash-call boundary (the
+  root project's node_modules is NOT affected; corpus/Ghidra/JDK/
+  tools/re persist fine — the reaper's rule probed empirically).
+  Workaround: hardlink backups under non-excluded names (`rea_nm`,
+  `rea_dist`) + `tools/rea_restore.sh` (instant `cp -ald` restore at
+  the start of every REA call; `npm ci` re-run when the backups
+  themselves go stale).
+- **New anomaly class (this session):** ONE transient single-byte
+  difference between two identical in-memory decode runs early in the
+  session (an overlay byte); it did not reproduce across four
+  subsequent independent reads and the corpus file re-sha256-verified
+  intact — treated as a sandbox RAM-class flake; byte-claims in the
+  session note were re-derived before recording.
 - The 2026-11-20 mode-flip evidence (195 files 755 after the tenth
   recycle) was folded into an unpushed amend by a brief unlogged session
   instead of being normalized — the SECOND such incident (first:
@@ -167,17 +185,10 @@ at the next T2/Phase-4 session)
   delta, no unpushed amend)** — normalized with `git restore .` BEFORE
   any edits (quirk 19 held).
 - Test suite: **115/115 green** (Dart; 98 hand-written + 17 golden) —
-  RE-RUN this session, not carried: the session TOUCHED code paths
-  (`cfr.ts` migration clamp + `return_format_test.dart` fixture-based
-  tests + the bridge suite's fixture groups). The full local battery is
-  green this session: flutter analyze clean; flutter test 115/115;
-  **tsc --noEmit exit 0**; web parity **17/17**; bridge **11/11** (the two
-  new D34 fixture groups); oracle **17/17**; web smoke **6/6**; `npm audit
-  --omit=dev --audit-level=critical` exit 0; RE tool tests **23/23** (the
-  new container-pair differential); `check_binary_blobs` clean (323
-  tracked at tip + 5 new text files this session / 28 allow-listed);
-  `lint_format_specs` 3/3 clean; harness_check 0 failures. CI runs on
-  this push.
+  CARRIED from `1ed3c88` this session: the delta provably touches zero
+  code paths (gitignored bench scripts + `docs/re-research/` + harness
+  memory only; `git status` verified before commit). CI runs on this
+  push (the authoritative runner for carried suites).
 - Live-check quirk (unchanged): unauthenticated api.github.com is
   shared-rate-limited from this sandbox — use public HTML pages or
   sparing authenticated curl per WORKFLOW §5. CI on `52e2c68` was not
@@ -262,20 +273,17 @@ at the next T2/Phase-4 session)
 
 ## Immediately next
 
-**T2 session 3 (the TT program's next working session):** the
-InstallShield-layer record walk (D40) — the ISSetupStream v7/v8 payload
-record format (USA + CAN-Personal inner installers) + the CAN-Business
-classic file-group record framing (from ≈0xefa00); then the app-module
-inventory where the file-format/password routines live, and the UI
-functional-layout study (text-only IA records, §7.4). **Re-acquire the
-corpus + rebuild the Ghidra bench first** (the fifteenth recycle wiped
-tools/: `scripts/fetch_tt_corpus.sh` with sha256 verification vs the
-manifest; Ghidra 12.2 + Temurin 25 re-download; REA clone/build ≈ 19 s;
-the checkpoint re-established). T3's format-family findings (incl. the
+**T3's format-family study (the TT program's next major lane):** the
+`.tax` layer + the password layer — now anchored by the T2-s3
+app-module inventory (the engine modules identified at existence
+level: the `ttax` engine, `fps_engine`, the MEF/form converters, the
+libcrypto-family DLL, the `.1pe` FDI packs). T3's findings (incl. the
 password layer) then unlock `tax-modern.md` (DoD spec 4) and the
-Stage-2 EXIT gate — the checklist is otherwise green (3 of 4 named specs
-§7.5-clean, exactly 2 execution sessions elapsed, refusal/cap tests
-green, blob assertion green).
+**Stage-2 EXIT gate** — the checklist is otherwise green (3 of 4 named
+specs §7.5-clean, exactly 2 execution sessions, refusal/cap tests
+green, blob assertion green). The D41 residues (the CAN-Business ISc
+internal table + the classic codec; the MSI table-name encoding; the
+UI IA study proper) ride the T2 lane whenever convenient.
 
 Owner-side surfacings standing: Dependabot alerts, branch protection on
 `main`, PAT expiry (D30). The epilogue native program (ADR-017) is
