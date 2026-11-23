@@ -1,22 +1,23 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-23 (TT program T2 session 3 — the
-InstallShield-layer record walk COMPLETED and D40 CLOSED: the
-ISSetupStream v7/v8 record format byte-proven + decompile-anchored
-(the 0x2e stream header, the 0x30 v4 record header, and the
-name-keyed XOR→zlib payload codec — the key = the record's own UTF-8
-filename masked `13 35 86 07`, nibble-swap/complement, 1024-phase);
-the tables walked end-to-end (8/8/7 records — each target's MSI
-carried: 383.9 MB / 359.0 MB / 246.6 MB); the app-module inventory
-ENTERED via the Personal-USA MSI's embedded MSCF cabinet (6,503
-entries — a CEF architecture; the format-relevant module class
-identified at existence level); the CAN-Business classic framing
-byte-proven (the cab manifest + the ISc magic + the compressed stream
-at 0xef47a). D41 opened for the residues. The sixteenth recycle spared
-git/SDK/node_modules; the corpus re-acquired 4/4 sha256-verified + the
-Ghidra bench rebuilt (doctor healthy) + a new per-call-boundary
-node_modules/dist hollowing quirk worked around via
-`tools/rea_restore.sh`)
+**Updated:** 2026-11-23 (TT program T3 session 1 — the ttax engine
+module ENTERED: the MSI-cab codec byte-proven (the InstallShield
+MSZIP variant — every block a CK-marked complete raw-deflate stream
+whose distance codes reach into the previous block's output; decoded
+via ctypes zlib inflateReset+inflateSetDictionary with the rolling
+32-KiB window; 859/859 blocks of folder 87 → the arithmetic closure
+at exactly 28,140,152 B); the ttax engine DLL carved (26,137,680 B,
+the one resident module, gitignored) + triaged (PE32+ x64
+mixed-mode MFC/mscoree; .text 17.47 MB; 58,890 .pdata functions;
+no ole32 import, zero structured-storage constants — the .tax
+container is not OLE inside this module); the .tax-layer anchors
+identified at identifier level (the IData:: serialization family,
+embedded Crypto++, the save-dialog password surface, the z-prefixed
+bridge commands, the "legacy ttax.dll" self-identity); the REA
+entry map built (89 lea-rip xrefs → 67 .pdata-anchored functions).
+D42 opened for the construction chase. Also this session: the prior
+session's interrupted closing backup normalized + pushed as
+`8f9db50`)
 
 ## Repository
 
@@ -273,17 +274,18 @@ node_modules/dist hollowing quirk worked around via
 
 ## Immediately next
 
-**T3's format-family study (the TT program's next major lane):** the
-`.tax` layer + the password layer — now anchored by the T2-s3
-app-module inventory (the engine modules identified at existence
-level: the `ttax` engine, `fps_engine`, the MEF/form converters, the
-libcrypto-family DLL, the `.1pe` FDI packs). T3's findings (incl. the
-password layer) then unlock `tax-modern.md` (DoD spec 4) and the
-**Stage-2 EXIT gate** — the checklist is otherwise green (3 of 4 named
-specs §7.5-clean, exactly 2 execution sessions, refusal/cap tests
-green, blob assertion green). The D41 residues (the CAN-Business ISc
-internal table + the classic codec; the MSI table-name encoding; the
-UI IA study proper) ride the T2 lane whenever convenient.
+**T3 session 2 — the password-layer construction chase:** the REA
+import of the carved ttax engine DLL (26 MB, `tools/re/ttax_engine.dll`)
+attempted under the full single-call budget (checkpoint mode), or the
+.pdata-bounded targeted decode of the 67 anchored entry-map functions
+(`docs/re-research/2026-11-23-tt-t3-session1.md` — the .tax-referencing
+FUN_00121cf0/22020, the crypt/cipher band, the IData:: call-site chase);
+the password-layer construction (KDF/cipher over the embedded Crypto++
++ the password check + the ADR-020 fixed-key boundary) documented at
+function-fact level → then the T3 format-family spec drafts (the
+`.tax` layer + `tax-modern.md` unlocks the Stage-2 EXIT gate). D42
+(the .tax container's host — not OLE in this module; the export-table
+residue) + D41 (the CAN-Business ISc residues) ride their lanes.
 
 Owner-side surfacings standing: Dependabot alerts, branch protection on
 `main`, PAT expiry (D30). The epilogue native program (ADR-017) is

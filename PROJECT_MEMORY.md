@@ -109,6 +109,28 @@ of every REA call.**
 - [ ] T3: format-family specs incl. the password layer (Phase-5
       template, §7.5-clean; namespace rule: never count toward
       Stage-2's N=4).
+- [x] T3 session 1 (2026-11-23): ENTERED — the MSI-cab codec
+      byte-proven (the InstallShield MSZIP window-carry variant:
+      TComp=0x0001 everywhere; per-block CK-marked COMPLETE
+      raw-deflate streams whose distance codes reach the previous
+      block's output — the plain-MSZIP decode fails "distance too
+      far back", the empirical discriminator; the ctypes zlib
+      inflateReset+inflateSetDictionary rolling-window decoder;
+      859/859 blocks of folder 87 → the arithmetic closure at exactly
+      28,140,152 B); the ttax engine DLL carved (26,137,680 B, the
+      one resident gitignored module) + triaged (PE32+ x64
+      mixed-mode MFC/mscoree; .text 17.47 MB; 58,890 .pdata
+      functions; no ole32 import + zero structured-storage constants
+      — the .tax container is NOT OLE in this module); the .tax-layer
+      anchors identified (the IData:: serialization family = the
+      data-layer API; embedded Crypto++ = the primitives; the
+      save-dialog password surface + the read-path password service;
+      the z-prefixed bridge commands; the "legacy ttax.dll"
+      self-identity); the REA entry map built without Ghidra (the
+      lea-rip xref scan → 89 xrefs → 67 .pdata-anchored functions;
+      the password constants draw zero direct lea xrefs — indirect
+      consumption) — `docs/re-research/2026-11-23-tt-t3-session1.md`
+      (§7.5-clean); D42 opened.
 - [ ] T4: the password-based bridge (read/edit/save with the user's
       own password; **Flutter-first — web stays frozen per ADR-016**;
       codec layer pure for the N1 port) + UI functional-layout parity
@@ -320,17 +342,36 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
   layer, now anchored by the module inventory) → unlocks
   `tax-modern.md` + the Stage-2 EXIT gate; the D41 residues ride the
   T2 lane whenever convenient.
+- **2026-11-23 (latest)** — **the prior session's interrupted backup
+  normalized (the teardown backup is the fragile step at context
+  exhaustion: a UUID-message local commit sat unpushed; verified
+  against the SESSION_LOG teardown record, soft-reset + guards
+  re-run + pushed as `8f9db50`) + TT program T3 session 1:** the
+  MSI-cab codec byte-proven (the InstallShield MSZIP window-carry
+  variant + the ctypes zlib setDictionary decoder, 859/859 blocks),
+  the ttax engine DLL carved + triaged (the .tax-layer host:
+  IData::/Crypto++/password surface; no OLE), the REA entry map
+  (67 functions, no Ghidra this session — the 26 MB import exceeds
+  the single-call budget). Files:
+  `docs/re-research/2026-11-23-tt-t3-session1.md`, gitignored
+  `tools/re/tt3_*.py` + `tools/re/ttax_engine.dll`, governance syncs
+  (DEBT D42, SESSION_LOG, STATE, this file). No app code touched —
+  suites carried from `8f9db50` (CI authoritative on this push).
+  Next: T3 session 2 — the password-layer construction chase
+  (the IData:: call sites + the entry-map decompile; the REA
+  import strategy per D42) → then the format-family spec drafts;
+  D41/D42 residues ride their lanes.
 
 ## Recent Progress & Git Activity
 
 ```diff
-### Commit: 23e7f47 - 7c5a9bf7-dda4-4fc5-8cae-0b2f5dde5951 (Z User, 2026-11-23)
- PROJECT_MEMORY.md                             | 294 ++++++++------------------
+### Commit: 8f9db50 - backup(sandbox): T2 session 3 close-out pushed late: the prior session's closing backup was interrupted at context exhaustion (a UUID-message commit existed locally, unpushed; content verified against the SESSION_LOG teardown record, then normalized via soft-reset + this re-backup so the full guard battery re-ran). Carried content: D40 CLOSED - the InstallShield-layer record walk (the ISSetupStream v7/v8 0x30 record format + the name-keyed XOR-zlib payload codec, byte-proven across both targets' splash/INI/MSI records), the app-module inventory entered via the Personal-USA MSI's embedded MSCF cabinet (6,503 entries, the format-relevant module class identified at existence level), the CAN-Business classic framing byte-proven; D41 opened for the residues; the PROJECT_MEMORY git-window refreshed this session @ 2026-11-23T06:30:51Z (Z User, 2026-11-23)
+ PROJECT_MEMORY.md                             | 307 ++++++++------------------
  docs/re-research/2026-11-23-tt-t2-session3.md | 197 +++++++++++++++++
  harness/memory/DEBT.md                        |  13 +-
- harness/memory/SESSION_LOG.md                 | 110 ++++++++++
+ harness/memory/SESSION_LOG.md                 | 110 +++++++++
  harness/memory/STATE.md                       | 102 +++++----
- 5 files changed, 464 insertions(+), 252 deletions(-)
+ 5 files changed, 470 insertions(+), 259 deletions(-)
 
 ### Commit: 1ed3c88 - backup(sandbox): Stage-2 execution session 2 (the box's second and FINAL session - the execution box CLOSED at exactly two sessions): DoD specs 2+3 of the N=4 set published - docs/formats/tax-exchange-container.md (the owner-authored .tax-extension STORE-only ZIP exchange container: provenance owner-authored/zero third-party samples; ZIP local-signature identification + the reader gates; the full writer field layout (local 30B+name, central 46B, EOCD 22B; flags 0x0800 UTF-8 names; method 0 STORE; CRC-32 reflected 0xedb88320) + the two fixed entries (clearfile.json carrying the v2 envelope + README.txt with the honest not-Intuit disclosure); the reader contract both sides (EOCD tail search bounded to 66,000B, the 4,096-entry cap, STORE-only extraction with honest Deflate/method notes, the entry-past-EOF skip, the ENG-1 name-length bounds check recorded as the one intentional reader asymmetry); the analysis behavior (ClearFile import, Intuit-shape recognition by existence-only, honest fallthroughs); code anchors both sides; a differential note pinned by a NEW test) and docs/formats/txf.md (ClearFile's TXF v042 profile: provenance = a PUBLISHED interchange spec profiled, zero third-party samples, no RE touched it; the V042 grammar as implemented incl. the tolerated shapes (CRLF, padded tags, T-less records); the full refnum profile table (importer's 23-code family incl. the spouse copy space 506/507/513; exporter's 5-code subset); the reader contract (TS-only, TD ignored per spec VII.A, unknown refnums never guessed, the cross-field honesty rules) + the four hard refusals (5MB/10,000 records/4,096-char lines/zero importable); the writer profile + the bridge-suite verification mirror); both 7.5-clean + lint-clean - 3 of the 4 named specs now published, tax-modern.md awaits T3's format-family findings exactly as the box's plan recorded (no stub written: 7.5 forbids placeholder specs; the exit gate convenes when T3 delivers - the checklist is otherwise green: 3/4 named specs 7.5-clean, exactly 2 execution sessions, refusal/cap tests green, blob assertion green); D34 CLOSED: the identical v1 sample lifted into the shared fixtures (fixtures/migration/v1-web-envelope.json + the edge-clamp fixture + the provenance/contract README) consumed by BOTH suites asserting the EXACT ordered warning lists (return_format_test.dart grew to 15 tests; the bridge suite's cfr section grew to 11 groups reading the same files - drift in wording or ordering now fails a test from the other side's file); the recorded edge drift FIXED not just documented: the web file reader's dependent-count clamp aligned to the Dart reference's 0..100 bound (cfr.ts, pinned by the edge fixture asserting 101 placeholder rows + only the two applicable warnings on both sides); the store-vs-file W-2 shape difference documented in docs/return-format.md 3 (the v1 file shape {employer,wages,withholding} vs the v1 store shape {id,employer,wages,federalWithheld} - legitimate vintages, the store migration silent by design); the 23rd RE-tool test (23/23): the differential tool now exercised inside mandatory families #1 AND #2 - a synthesized 648-B exchange-container pair differing in one wage digit localizes exactly 3 regions (the local-header CRC-32 at 14, the payload byte at 282, the central-directory CRC-32 at 528 - byte-local because the writer never compresses); suites RE-RUN not carried (code paths touched): flutter analyze clean, flutter test 115/115 (98 + 17 golden), tsc --noEmit exit 0, web parity 17/17 zero field failures, bridge 11/11, oracle 17/17, web smoke 6/6 (full standalone build + headless Chromium), npm audit --omit=dev --audit-level=critical exit 0, RE tools 23/23, check_binary_blobs clean (328 tracked incl. the 5 new text files / 28 allow-listed), lint_format_specs 3/3 clean, harness_check 0 failures; count syncs everywhere (README 115/98 + the fixtures/migration row + the 15-test unified-format description; return-format.md 15 tests + the shared-fixture note); fifteenth recycle wiped tools/ (the Flutter SDK re-fetched + sha256-verified via the resumable fetcher across two tool calls; the TT corpus + Ghidra bench re-acquired at the next T2/Phase-4 session; node_modules survived end-to-end - no mid-session hollowing); the mode-flipped unpushed local duplicate of the session-1 backup (fa678f9 vs the pushed 9b5fbe6 - the mode-only incident class again) normalized BEFORE the backup (chmod normalization + git reset --soft to the pushed tip; zero mode deltas in the staged diff); next: T2 session 3 (D40: the InstallShield-layer record walk - the app-module inventory + the UI functional-layout study; re-acquire the corpus + rebuild the Ghidra bench first) in the TT program's own lane - and the Stage-2 EXIT gate when T3 unlocks tax-modern.md @ 2026-11-23T04:46:18Z (Z User, 2026-11-23)
  PROJECT_MEMORY.md                                  | 243 +++++++++++++++++++--

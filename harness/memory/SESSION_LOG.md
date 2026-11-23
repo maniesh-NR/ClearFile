@@ -1513,3 +1513,85 @@ study (the `.tax` layer + the password layer — the app-module
 inventory now identifies the engine modules it lives in) → unlocks
 `tax-modern.md` and the Stage-2 EXIT gate; or the D41 residues in the
 T2 lane first.**
+
+---
+
+## 2026-11-23 (T3 session 1) · TT program T3 ENTERED: the ttax engine module carved + the .tax-layer host identified + the REA entry map
+
+**Session task:** STATE's "Immediately next" — T3's format-family study
+(the `.tax` layer + the password layer, anchored by the T2-s3
+app-module inventory).
+
+**Bootstrap (WORKFLOW §3 + ADR-018):** the PRIOR session's closing
+backup was found interrupted at context exhaustion — a UUID-message
+local commit, unpushed, content verified against the SESSION_LOG
+teardown record; normalized BEFORE any new work (soft-reset to the
+pushed tip + `sandbox_backup.sh` re-run so the full guard battery
+re-ran + pushed as `8f9db50`; the T2-s3 content archived intact).
+PROJECT_MEMORY read + git-window refreshed; harness_check 0 failures;
+corpus sha256 re-verified; disk 1.2 GB free.
+
+**Executed (read-only on the corpus; one resident module carve):**
+- **The MSI-cab codec byte-proven (the InstallShield MSZIP variant):**
+  every CFFOLDER carries TComp=0x0001, each CFDATA block is a
+  CK-marked COMPLETE raw-deflate stream — but the distance codes reach
+  into the PREVIOUS block's output (the window carries across blocks;
+  plain per-block MSZIP decode fails "invalid distance too far back",
+  the empirical discriminator). The working decoder: ctypes against
+  system zlib 1.3.1 — per block `inflateReset` +
+  `inflateSetDictionary(rolling 32-KiB window)`. Validated 859/859
+  blocks of the Personal-USA cab's folder 87 → exactly 28,140,152 B
+  (the arithmetic closure at the folder's last file end). A
+  prerequisite codec fact for all future module-level extraction.
+- **The ttax engine module carved + triaged:** the cab's mangled
+  entry (usize 26,137,680, iFolder 87) carved via the codec →
+  `tools/re/ttax_engine.dll` (gitignored, the one resident carve —
+  the analysis input). PE32+ x64 mixed-mode (MFC+mscoree) GUI DLL;
+  .text 17.47 MB; 58,890 .pdata functions; imports ServiceBus/
+  Logger/Intuit.Ctg.CommonUtils/fps-engine/interview-service-
+  converter; **NO ole32 import, zero structured-storage constants**
+  (the .tax container is not OLE inside this module).
+- **The .tax-layer anchors (identifier-level):** the `IData::`
+  serialization family (Open/ReadString/ReadVector/WriteString/
+  WriteVector/Close/Swap/Proxy = the .tax data-layer API);
+  **Crypto++ embedded** (the crypto primitive library —
+  StreamTransformation/SHA-256 class identifiers); the password
+  surface (the save-dialog encrypt-and-password-protect label
+  .rsrc rva 0x18db028; the TransferReturnServiceImpl read-path
+  password diagnostic 0x143d4d0-class); the z-prefixed managed-native
+  bridge commands (ztfFileIO/zcmEFileCmd); the module's self-identity
+  ("legacy ttax.dll" from the managed wrapper strings).
+- **The REA entry map (no decompile this session — the 26 MB import
+  exceeds the single-call budget):** a lea-rip xref scan (87,268
+  candidates) over the keyword-string RVAs resolved through .pdata →
+  **89 xrefs, 67 distinct functions** (.tax: FUN_00121cf0/22020;
+  cipher/crypt: FUN_00190ba0/194360/198e60/199830/31b080/627310;
+  ttax: FUN_001b0140/255b60/25771e; the mef band 0x314e00..0x7e4aee).
+  The password constants themselves draw zero direct lea xrefs
+  (indirect/table-driven) — the construction chase starts from the
+  IData:: and save-path sites.
+- Notes: `docs/re-research/2026-11-23-tt-t3-session1.md` (§7.5-clean;
+  LEGAL-4 scan clean). Bench scripts (gitignored, D38 posture):
+  `tools/re/tt3_{cab_probe,carve_ttax,xref_map,pw_probe}.py`.
+
+**Decisions:** none new (no gate convened — T3 executes inside the
+entered TT program). DEBT: **D42 opened** (the .tax container's host
+module; the password-layer construction chase incl. the ADR-020
+fixed-key boundary; the REA import strategy for the 26 MB module; the
+export-table residue). D41 unchanged.
+
+**Environment:** seventeenth recycle class (git + SDK + node_modules +
+the corpus + the Ghidra bench ALL survived — only the per-call
+node_modules/dist hollowing quirk 21 applies); disk 1.2 GB → ~1.17 GB
+(the 26 MB carve). No app code paths touched (gitignored bench scripts
++ docs/re-research + harness memory only; git status verified before
+commit; suites carried from `8f9db50` — the delta provably touches
+zero code paths; CI runs on this push).
+
+**Closing action:** harness_check 0 failures + this event-driven
+backup — the last action before the reply. **Next: T3 session 2 — the
+password-layer construction chase (the IData:: call sites + the
+save-path handler decompile via the entry map; the REA import of the
+26 MB module attempted under the full call budget or the
+.pdata-bounded targeted decode) → then the format-family spec drafts;
+D41/D42 residues ride their lanes.**
