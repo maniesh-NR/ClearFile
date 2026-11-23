@@ -1289,3 +1289,117 @@ and the exit-gate checklist (≥4 named specs, ≤2 execution sessions,
 refusal/cap tests green, blob assertion green). T2 session 3 (D40) follows
 the TT program's own lane; PROD-2 reset (satisfied this session).**
 
+---
+
+## 2026-11-23 · Stage-2 execution session 2: the box's final session — specs 2 + 3 of 4 published, D34 closed
+
+**Session task:** Stage-2 execution session 2 (the box's second and final
+execution session). The two landable DoD specs —
+`docs/formats/tax-exchange-container.md` (spec 2 of 4, the owner-authored
+`.tax`-extension STORE-only ZIP exchange container) and `docs/formats/txf.md`
+(spec 3 of 4, ClearFile's TXF v042 profile verified by the shipped
+round-trip bridges) — plus D34 (the v1 migration triple-implementation
+fix). `tax-modern.md` (spec 4) awaits T3's format-family findings incl.
+the password layer, exactly as the box's plan recorded — no stub was
+written (§7.5 forbids placeholder specs; the exit gate convenes when T3
+delivers).
+
+**Bootstrap (WORKFLOW §3 + ADR-018):** clean tree at tip `fa678f9`, no
+mode flips, no unpushed amends; `update_memory.py` refreshed the window
+pre-edit. **Fifteenth recycle wiped tools/** — the Flutter SDK was
+re-fetched and sha256-verified via `scripts/fetch_flutter_sdk.sh`
+(resumable across two tool calls: the download timed out at 10 min with
+1.25 GB down, the resume completed it); disk 6.7 GB free at bootstrap
+(the watch item RESOLVED — the recycle deleted the corpus + bench), ~4.1
+GB free at close (SDK resident). node_modules incl. `.bin/tsc` survived.
+
+**Executed:**
+- **D34 CLOSED (the triple-implementation drift):** (1) the identical v1
+  sample lifted into the shared fixtures — `fixtures/migration/
+  {v1-web-envelope,v1-web-envelope-edge-clamp}.json` + the provenance
+  README (owner-authored pre-parity web v1 shape, synthesized specimens,
+  the exact-warning contract; ADR-012 (a) text-with-provenance); (2) BOTH
+  suites now assert the **exact ordered warning lists** from the same
+  files — `return_format_test.dart` (the inline sample replaced; 15
+  tests now) and the bridge suite's cfr section (11 groups now;
+  `readFileSync` of the same fixtures) — drift in wording or ordering now
+  fails a test from the other side's file; (3) the edge drift FIXED and
+  PINNED: the web file reader's dependent-count migration aligned to the
+  Dart reference's 0..100 clamp (`cfr.ts`, the D34-recorded drift; pinned
+  by the edge fixture asserting 101 placeholder rows + only the two
+  applicable warnings on both sides); (4) the store-vs-file W-2 shape
+  difference documented in `docs/return-format.md` §3 (the v1 *file*
+  shape `{employer, wages, withholding}` vs the v1 *store* shape
+  `{id?, employer, wages, federalWithheld}` — legitimate vintages, the
+  store migration silent by design).
+- **Spec 2 of 4 — `docs/formats/tax-exchange-container.md` (§7.5-clean,
+  lint-clean):** provenance (owner-authored, zero third-party samples);
+  identification (the ZIP local-signature sniff + the reader gates);
+  the full writer structure (the STORE-only local/central/EOCD field
+  layout incl. flags 0x0800 + the CRC-32 coupling; entries =
+  `clearfile.json` (the v2 envelope) + `README.txt` (the honest
+  not-Intuit disclosure, quoted as owner text)); the reader contract
+  (EOCD tail search bounded to 66,000 B; the 4,096-entry cap; STORE-only
+  extraction with the honest Deflate/methods notes; the entry-past-EOF
+  skip; the ENG-1 name-length bounds check as the one recorded
+  intentional reader asymmetry); the analysis behavior (the ClearFile
+  import, the Intuit-shape recognition by existence-only, the honest
+  fallthroughs); code anchors both sides; and a **differential note backed
+  by a NEW test** — `test_re_tools.py::test_diff_synthetic_exchange_
+  container_pair` (23 tests now): a synthesized 648-B pair differing in
+  one wage digit inside the STORE'd entry localizes **exactly 3 regions**
+  (the local-header CRC-32 @14, the payload byte @282, the
+  central-directory CRC-32 @528) — the differential tool now exercised
+  inside mandatory families #1 AND #2.
+- **Spec 3 of 4 — `docs/formats/txf.md` (§7.5-clean, lint-clean):**
+  provenance (a PUBLISHED interchange spec, profiled — no RE touched it;
+  every specimen synthesized in-repo); the V042 grammar as implemented
+  (header, `^`-terminated records, the single-letter field table, the
+  sign convention §VII.B, the tolerated shapes — CRLF, padded tags,
+  T-less records); the full refnum profile table (importer: the 23-code
+  family incl. the spouse copy space 506/507/513; exporter: the 5-code
+  subset); the reader contract (TS-only, TD ignored per §VII.A, unknown
+  refnums never guessed, the cross-field honesty rules) with the four
+  hard refusals (5 MB / 10,000 records / 4,096-char lines / zero
+  importable records); the writer profile (copies, format-2 payer
+  records, the negative-sign convention); code anchors + the
+  bridge-suite verification mirror.
+- Count syncs: README (115 Dart tests = 98 + 17 golden; the
+  fixtures/migration row; the 15-test unified-format description),
+  `docs/return-format.md` (15 tests + the shared-fixture note), DEBT
+  D34 → DONE.
+
+**Decisions:** none new (execution inside the entered stage; no gate
+convened — the Stage-2 EXIT gate still cannot convene until `tax-modern.md`
+lands behind T3's findings, so the box ends execution with 3 of 4 named
+specs published and the checklist otherwise green). DEBT: **D34 CLOSED**
+(the clamp half was a fix, not documentation — recorded in the row).
+
+**Environment:** fifteenth recycle (tools/ wiped — SDK re-fetched +
+sha256-verified; the TT corpus + Ghidra bench gone as expected; the next
+T2/Phase-4 session re-acquires via `scripts/fetch_tt_corpus.sh` +
+rebuilds the bench per the recorded ~19 s clone/build). No mid-session
+hollowing this time (node_modules survived end-to-end).
+
+**Suites (this session TOUCHED code paths — full local re-run, not
+carried):** flutter analyze clean; **flutter test 115/115** (98 + 17
+golden — the two D34 fixture tests green); **tsc --noEmit exit 0**;
+**bridge 11/11** (the two new D34 fixture groups green); **web parity
+17/17** (zero field failures — the cfr.ts clamp is migration-only,
+outside the parity surface); **oracle 17/17; web smoke 6/6** (full
+standalone build + headless Chromium); **npm audit --omit=dev
+--audit-level=critical exit 0**; **RE tools 23/23** (the new container-pair
+differential); **check_binary_blobs clean (323 tracked at tip + 5 new
+text files this session / 28 allow-listed)**; **lint_format_specs 3/3
+clean**; harness_check 0 failures (after the memory updates below). CI
+runs on this push.
+
+**Closing action:** harness_check 0 failures + this event-driven backup —
+the last action before the reply. **Next: T2 session 3 (D40: the
+InstallShield-layer record walk → the app-module inventory + the UI
+functional-layout study; rebuild the Ghidra bench + re-acquire the corpus
+first) in the TT program's own lane; the Stage-2 EXIT gate convenes when
+T3's findings allow `tax-modern.md` (the checklist is otherwise green:
+3 of 4 named specs §7.5-clean, ≤2 execution sessions elapsed — this was
+the second and final one, refusal/cap tests green, blob assertion
+green).**

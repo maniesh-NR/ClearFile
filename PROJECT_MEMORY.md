@@ -138,24 +138,30 @@ final one:**
 - [x] Owner's owned-RE-corpus statement on record (ADR-019 +
       `docs/re-research/corpus-manifest.md`: the four TT targets) so N
       is real — TT specs never count toward Stage-2's N=4.
-- [ ] **Session 2 (the box's final one):** the remaining three DoD specs
-      (`tax-exchange-container.md`, `txf.md`, `tax-modern.md` — the last
-      awaits T3's password-layer findings), D34, and the exit-gate
-      checklist (≥4 named specs, each §7.5-clean; ≤2 execution sessions;
-      refusal/cap tests green; blob assertion green).
+- [x] **Session 2 (the box's final one, 2026-11-23 — box CLOSED at
+      exactly two sessions):** specs 2 + 3 of the DoD published
+      (`tax-exchange-container.md`, `txf.md`, both §7.5-clean/lint-clean;
+      the differential tool now exercised inside mandatory families #1
+      AND #2 via the 23rd RE-tool test); `tax-modern.md` awaits T3's
+      password-layer findings exactly as planned (no stub — §7.5 forbids
+      placeholders; the exit gate convenes when T3 delivers, checklist
+      otherwise green); **D34 CLOSED** (the shared `fixtures/migration/`
+      family + exact warning lists in BOTH suites + the clamp alignment +
+      the store-vs-file W-2 note in return-format.md §3); refusal/cap
+      tests green; blob assertion green.
 
 ## Verification contracts (prove before closing ANY task)
 
 From the repo root (`export PATH="$PWD/tools/flutter/bin:$PATH"` first;
 after a recycle run `bash scripts/fetch_flutter_sdk.sh`):
 
-    cd clearfile && flutter analyze && flutter test    # 114/114 (97 + 17 golden)
+    cd clearfile && flutter analyze && flutter test    # 115/115 (98 + 17 golden)
     cd .. && npx tsc --noEmit                          # exit 0
-    node scripts/txf_taxfile_test.mjs                  # 10/10 groups
+    node scripts/txf_taxfile_test.mjs                  # 11/11 groups
     node scripts/web_parity_test.mjs                    # 17/17 fixtures
     python3 scripts/verify_golden_fixtures.py          # 17/17
     python3 scripts/web_smoke.py                       # 6/6
-    python3 scripts/test_re_tools.py                   # 22/22 (Stage-2 RE tools)
+    python3 scripts/test_re_tools.py                   # 23/23 (Stage-2 RE tools)
     python3 scripts/check_binary_blobs.py              # clean (28 allow-listed)
     python3 scripts/lint_format_specs.py               # N/N clean
     npm audit --omit=dev --audit-level=critical        # exit 0
@@ -249,10 +255,217 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
   artifacts survived). Next: Stage-2 execution session 2 (the final one:
   3 remaining DoD specs + D34 + the exit-gate checklist); T2 session 3
   (D40) in its own lane.
+- **2026-11-23** — **Stage-2 EXECUTION session 2 — the box CLOSED at
+  exactly two sessions:** specs 2 + 3 of the N=4 DoD published
+  (`docs/formats/tax-exchange-container.md` — the `.tax`-extension
+  STORE-only ZIP exchange container, writer/reader field layout, the
+  honest-labeling disclosure, the analysis behavior, code anchors both
+  sides, and a differential note pinned by a NEW test; and
+  `docs/formats/txf.md` — ClearFile's TXF v042 profile: grammar, the full
+  refnum table, the four hard refusals, the writer profile) — both
+  §7.5-clean/lint-clean; `tax-modern.md` awaits T3 as planned (no stub);
+  **D34 CLOSED** (the shared `fixtures/migration/` family consumed by
+  BOTH suites with EXACT ordered warning lists; the web reader's
+  dependent-count clamp aligned to the Dart reference's 0..100 — the
+  recorded drift fixed + pinned by the edge fixture on both sides; the
+  store-vs-file W-2 shape documented in return-format.md §3); the 23rd
+  RE-tool test (the exchange-container differential pair: one wage digit
+  ⇒ exactly 3 regions). Suites RE-RUN (code touched): analyze clean,
+  115/115, tsc 0, parity 17/17, bridge 11/11, oracle 17/17, smoke 6/6,
+  audit 0, tools 23/23, blob clean, lint 3/3, harness_check 0. Files:
+  the two specs + the three fixtures/migration files, cfr.ts,
+  return_format_test.dart, txf_taxfile_test.mjs, test_re_tools.py,
+  docs/return-format.md, README count syncs, governance syncs.
+  Fifteenth recycle wiped tools/ (SDK re-fetched + sha256-verified,
+  resumable across two calls; the TT corpus + Ghidra bench re-acquired
+  at the next T2/Phase-4 session). Next: T2 session 3 (D40) in the TT
+  lane; the Stage-2 EXIT gate convenes when T3 unlocks `tax-modern.md`
+  (checklist otherwise green).
 
 ## Recent Progress & Git Activity
 
 ```diff
+### Commit: fa678f9 - backup(sandbox): Stage-2 execution session 1 (PROD-2 DISCHARGED, the first tooling commit carries every entry condition): ENG-3/D33 the survivingSpouse (QSS) golden fixture #17 landed (all pins verified from the fetched primary sources: Pub 501's MFJ Tax Table column + Section B TCW + the QSS-under-65 sd row 31,500; the QDIVCG worksheet lines 6/13 naming 'married filing jointly or qualifying surviving spouse' at 96,700/600,050; Topic 559's 250,000 MFJ/QSS NIIT threshold; Form 8812 line 9's 'Married filing jointly-400,000 / All other filing statuses-200,000') and it FOUND A LIVE ENGINE BUG: the QSS CTC phase-out start is 200,000 not the MFJ 400,000 both engines carried (QSS is an 'other filing status' - Pub 501: the status 'doesn't entitle you to file a joint return'; the internal equivalence test sat at 90k wages, below both thresholds, which is why it never fired) - fixed in all three parameter tables (tax_year.dart + config.ts + verify_golden_fixtures.py, each carrying the 8812-line-9 citation) + docs/engine.md; the Dart internal QSS==MFJ rate/sd test still passes (correctly - those mappings stand); the Phase 1-3 RE tools landed tracked under the binding security contract (re_entropy per-block Shannon; re_magic any-offset magic scan with MZ pinned to offset 0 + text/JSON/XML sniff; re_diff differential with offsets/lengths/entropy only, never bytes) - write-free (read-only opens, no shell-outs, no network), resource-bounded (size/block/hits/region caps + signal wall-clock timeouts, EVERY cap refusal-tested: clean message + exit 3, never a crash), crash-safe (ENG-1-shaped empty/truncated/adversarial battery reports, never throws), posture in each header + --help (D38 registered for Phase 1-3; T4 extraction tools still owe it); the 22-test unit suite with synthetic-only fixtures runtime-generated under the gitignored fixtures/re/ path incl. the read-only-fixture-dir write-freedom proof (chmod 0555) and the differential exercised on a SYNTHESIZED pair inside mandatory spec family #1 (two clearfile.json v2 envelopes differing in one W-2 wage digit - exactly one 1-byte region localized); ADR-012 mechanics (a)-(f) all landed with this first tooling commit: (a) fixtures/re/ enumerated + gitignored; (b) check_binary_blobs.py - the allow-listed no-binary-blob assertion (measured 28 own assets: blueprint PNGs/PDF + Flutter-tooling icons; any new binary under fixtures/ tools/ docs/ src/ scripts/ harness/ fails CI) in hygiene.yml's new re-tooling job; (c) the same allow-list wired into sandbox_backup.sh after git add -A (mechanical auto-publish denylist, exit-2 refusal); (d) the 7.5 checklist recorded per spec + lint_format_specs.py enforcing the provenance field + no-32-hex + no image embeds + no placeholders in CI; (e) release.yml references zero RE tooling (asserted); (f) no tracked Phase-4 binaries (the blob assertion is the mechanical proof); LEGAL-1 mechanics: the differential tool's provenance-manifest refusal per 7.1 (four refusal shapes unit-tested: no manifest, missing entry, bad provenance, malformed manifest); the first spec toward N=4 published: docs/formats/clearfile-json.md (owner-authored family: v2 envelope + v1 + legacy flat + .cfr alias; provenance section; per-field verified-by experiments; the applied 7.5 checklist); harness_check grew family 7 (ADR-012 (a)/(e) assertions); suites RE-RUN not carried (the engines were touched): flutter analyze clean + flutter test 114/114 (97 + 17 golden - the QSS fixture green against the fixed engine), tsc --noEmit exit 0 (locally green this time), web parity 17/17 zero field failures, bridge 10/10, oracle 17/17, web smoke 6/6, npm audit --omit=dev --audit-level=critical exit 0 (0 criticals), RE tools 22/22, blob assertion clean (315 tracked / 28 allow-listed), formats lint 1/1 clean, harness_check 0 failures; README/engine.md count + 8812-row syncs (114/17 everywhere); fourteenth recycle hollowed node_modules MID-SESSION (the npm tsc-squatter banner re-appeared, quirk 18 re-confirmed mid-session; npm ci restored it) and disk pressure at the SDK install cost the rebuildable Ghidra bench (tools/ghidra+jdk+rea deleted for the verified Flutter SDK extraction; corpus + T2 chase artifacts + re-env survived; the next T2/Phase-4 session rebuilds it first); DEBT: D33 closed with the premise correction (200k not 400k), D38's Phase 1-3 half discharged; next: Stage-2 execution session 2 (the box's final: the remaining three DoD specs + D34 + the exit-gate checklist) and T2 session 3 (D40) in the TT program's own lane @ 2026-11-22T11:58:42Z (Z User, 2026-11-22)
+ .github/ISSUE_TEMPLATE/engine-discrepancy.md     |   0
+ .github/ISSUE_TEMPLATE/format-discrepancy.md     |   0
+ .github/workflows/hygiene.yml                    |  21 ++
+ .github/workflows/release.yml                    |   0
+ .gitignore                                       |   8 +
+ LICENSE                                          |   0
+ PROJECT_MEMORY.md                                | 129 +++++---
+ README.md                                        |  10 +-
+ SECURITY.md                                      |   0
+ THIRD-PARTY-NOTICES.md                           |   0
+ blueprint-assets/01-welcome.png                  | Bin
+ blueprint-assets/02-status.png                   | Bin
+ blueprint-assets/03-income.png                   | Bin
+ blueprint-assets/04-results.png                  | Bin
+ blueprint-assets/05-settings.png                 | Bin
+ blueprint-assets/06-results-dark.png             | Bin
+ blueprint-assets/07-mobile.png                   | Bin
+ blueprint-assets/architecture.html               |   0
+ blueprint-assets/architecture.png                | Bin
+ blueprint-assets/body.pdf                        |   0
+ blueprint-assets/cover.html                      |   0
+ blueprint-assets/cover.pdf                       | Bin
+ clearfile/lib/io/return_format.dart              |   0
+ clearfile/lib/io/tax_inspect.dart                |   0
+ clearfile/lib/io/txf_import.dart                 |   0
+ clearfile/lib/models/tax_year.dart               |   7 +-
+ clearfile/lib/ui/app_state.dart                  |   0
+ clearfile/lib/ui/screens/assistant.dart          |   0
+ clearfile/lib/ui/screens/interview.dart          |   0
+ clearfile/lib/ui/screens/results.dart            |   0
+ clearfile/lib/ui/screens/settings.dart           |   0
+ clearfile/lib/ui/screens/welcome.dart            |   0
+ clearfile/lib/ui/shell.dart                      |   0
+ clearfile/lib/ui/steps/deductions_step.dart      |   0
+ clearfile/lib/ui/steps/dependents_step.dart      |   0
+ clearfile/lib/ui/steps/income_step.dart          |   0
+ clearfile/lib/ui/steps/payments_step.dart        |   0
+ clearfile/lib/ui/steps/status_step.dart          |   0
+ clearfile/lib/ui/widgets/money_field.dart        |   0
+ clearfile/test/delete_regression_test.dart       |   0
+ clearfile/test/fakes.dart                        |   0
+ clearfile/test/golden_fixtures_test.dart         |   0
+ clearfile/test/money_parse_test.dart             |   0
+ clearfile/test/privacy_test.dart                 |   0
+ clearfile/test/return_format_test.dart           |   0
+ clearfile/test/steps_test.dart                   |   0
+ clearfile/test/tax_inspect_test.dart             |   0
+ clearfile/test/txf_import_test.dart              |   0
+ clearfile/web/favicon.png                        | Bin
+ clearfile/web/icons/Icon-192.png                 | Bin
+ clearfile/web/icons/Icon-512.png                 | Bin
+ clearfile/web/icons/Icon-maskable-192.png        | Bin
+ clearfile/web/icons/Icon-maskable-512.png        | Bin
+ clearfile/web/index.html                         |   0
+ clearfile/web/manifest.json                      |   0
+ components.json                                  |   0
+ docs/blueprint.pdf                               | Bin
+ docs/engine.md                                   |   2 +-
+ docs/formats/clearfile-json.md                   | 136 ++++++++
+ docs/ghidra-sandbox-feasibility.md               |   0
+ docs/re-research/2026-11-22-tt-t2-reader.md      |   0
+ docs/re-research/2026-11-22-tt-t2-session2.md    |   0
+ docs/re-research/2026-11-22-tt-targets-phase1.md |   0
+ docs/re-research/corpus-manifest.md              |   0
+ docs/return-format.md                            |   0
+ docs/reverse-engineering-protocol.md             |   0
+ docs/tour.md                                     |   0
+ eslint.config.mjs                                |   0
+ harness/README.md                                |   0
+ harness/WORKFLOW.md                              |   0
+ harness/adversarial/CONSENSUS.md                 |   0
+ harness/adversarial/ROLES.md                     |   0
+ harness/memory/DEBT.md                           |  14 +-
+ harness/memory/DECISIONS.md                      |   0
+ harness/memory/ROADMAP.md                        |  38 ++-
+ harness/memory/SESSION_LOG.md                    | 143 ++++++++
+ harness/memory/STATE.md                          | 166 +++++-----
+ next.config.ts                                   |   0
+ package.json                                     |   0
+ postcss.config.mjs                               |   0
+ prisma/schema.prisma                             |   0
+ public/logo.svg                                  |   0
+ public/robots.txt                                |   0
+ scripts/README.md                                |  41 +++
+ scripts/ai_provider_tests.py                     |   0
+ scripts/check_binary_blobs.py                    | 132 ++++++++
+ scripts/diag_reasoning.py                        |   0
+ scripts/fetch_flutter_sdk.sh                     |   0
+ scripts/fetch_tt_corpus.sh                       |   0
+ scripts/generate_blueprint.py                    |   0
+ scripts/harness_check.sh                         |  22 ++
+ scripts/lint_format_specs.py                     | 111 +++++++
+ scripts/merge_blueprint.py                       |   0
+ scripts/openrouter_explore.py                    |   0
+ scripts/re_diff.py                               | 260 +++++++++++++++
+ scripts/re_entropy.py                            | 178 ++++++++++
+ scripts/re_magic.py                              | 194 +++++++++++
+ scripts/repair_spdx_insertion.py                 |   0
+ scripts/sandbox_backup.sh                        |  16 +
+ scripts/test_re_tools.py                         | 394 +++++++++++++++++++++++
+ scripts/tsconfig.files.json                      |   0
+ scripts/tsconfig.parity.json                     |   0
+ scripts/txf_taxfile_test.mjs                     |   0
+ scripts/verify_blueprint.py                      |   0
+ scripts/verify_golden_fixtures.py                |   7 +-
+ scripts/web_parity_test.mjs                      |   0
+ src/app/api/route.ts                             |   0
+ src/app/globals.css                              |   0
+ src/app/layout.tsx                               |   0
+ src/app/page.tsx                                 |   0
+ src/components/clearfile/ai-ui.tsx               |   0
+ src/components/clearfile/filemenu.tsx            |   0
+ src/components/clearfile/settings.tsx            |   0
+ src/components/clearfile/shell.tsx               |   0
+ src/components/clearfile/steps.tsx               |   0
+ src/components/ui/accordion.tsx                  |   0
+ src/components/ui/alert-dialog.tsx               |   0
+ src/components/ui/alert.tsx                      |   0
+ src/components/ui/aspect-ratio.tsx               |   0
+ src/components/ui/avatar.tsx                     |   0
+ src/components/ui/badge.tsx                      |   0
+ src/components/ui/breadcrumb.tsx                 |   0
+ src/components/ui/button.tsx                     |   0
+ src/components/ui/calendar.tsx                   |   0
+ src/components/ui/card.tsx                       |   0
+ src/components/ui/carousel.tsx                   |   0
+ src/components/ui/chart.tsx                      |   0
+ src/components/ui/checkbox.tsx                   |   0
+ src/components/ui/collapsible.tsx                |   0
+ src/components/ui/command.tsx                    |   0
+ src/components/ui/context-menu.tsx               |   0
+ src/components/ui/dialog.tsx                     |   0
+ src/components/ui/drawer.tsx                     |   0
+ src/components/ui/dropdown-menu.tsx              |   0
+ src/components/ui/form.tsx                       |   0
+ src/components/ui/hover-card.tsx                 |   0
+ src/components/ui/input-otp.tsx                  |   0
+ src/components/ui/input.tsx                      |   0
+ src/components/ui/label.tsx                      |   0
+ src/components/ui/menubar.tsx                    |   0
+ src/components/ui/navigation-menu.tsx            |   0
+ src/components/ui/pagination.tsx                 |   0
+ src/components/ui/popover.tsx                    |   0
+ src/components/ui/progress.tsx                   |   0
+ src/components/ui/radio-group.tsx                |   0
+ src/components/ui/resizable.tsx                  |   0
+ src/components/ui/scroll-area.tsx                |   0
+ src/components/ui/select.tsx                     |   0
+ src/components/ui/separator.tsx                  |   0
+ src/components/ui/sheet.tsx                      |   0
+ src/components/ui/sidebar.tsx                    |   0
+ src/components/ui/skeleton.tsx                   |   0
+ src/components/ui/slider.tsx                     |   0
+ src/components/ui/sonner.tsx                     |   0
+ src/components/ui/switch.tsx                     |   0
+ src/components/ui/table.tsx                      |   0
+ src/components/ui/tabs.tsx                       |   0
+ src/components/ui/textarea.tsx                   |   0
+ src/components/ui/toast.tsx                      |   0
+ src/components/ui/toaster.tsx                    |   0
+ src/components/ui/toggle-group.tsx               |   0
+ src/components/ui/toggle.tsx                     |   0
+ src/components/ui/tooltip.tsx                    |   0
+ src/hooks/use-mobile.ts                          |   0
+ src/hooks/use-toast.ts                           |   0
+ src/lib/ai/ladder.ts                             |   0
+ src/lib/ai/tasks.ts                              |   0
+ src/lib/db.ts                                    |   0
+ src/lib/files/cfr.ts                             |   0
+ src/lib/files/taxfile.ts                         |   0
+ src/lib/files/txf.ts                             |   0
+ src/lib/store.ts                                 |   0
+ src/lib/tax/config.ts                            |   7 +-
+ src/lib/tax/engine.ts                            |   0
+ src/lib/utils.ts                                 |   0
+ tailwind.config.ts                               |   0
+ tsconfig.json                                    |   0
+ update_memory.py                                 |   0
+ 178 files changed, 1890 insertions(+), 146 deletions(-)
+
 ### Commit: c9ec840 - backup(sandbox): T2 session 2 (D36 closed): the USA container format COMPLETED byte-end-to-end - entry fields A/B resolved (A = Win32 attributes bitmask w/ bit-1 alternate-create dispatch + set-attributes-when-not-0x20 post-extraction + the 0x20 archive default; B = the FIRST deflate chunk's compressed size, stream self-terminates at exactly B bytes - session 1's 90,000-B figure was the natural chunk output, not a bound artifact); the payload chunk grammar byte-proven ([deflate, B bytes] then ([u32 csize][raw Deflate] | [u32 0x80000000|size][stored raw])* [u32 0] terminator, next entry; observed output granularities 90,000 B + exactly 1 MiB; stored segments 382x1MiB+1 partial on Personal-USA); end-of-archive = a type-0 entry (observed 0x18141f55) followed by ~10 KB trailing DER PKCS#7 SignedData (SHA-384 + Microsoft OIDs at identifier level, existence recorded only); FUN_00418c60 full decompile: type 1=dir/2=file/0=end + a Thumbs.db create-failure special case + SetFileTime application + the 2,000,000-B working value; FUN_0041e5e0 CORRECTED to the entry parent-directory preparer (the session-1 codec-chain label was wrong; the pump = the indirect vtable call at 0x4191a9); the 0x80/0xc0/0x100 selector unresolved + reader-irrelevant; USA entry inventory (layer 1) = 3 entries (SetUp.exe 1,315,096 B out / config.xml existence-recorded-only per 7.4 / the payload installer) both USA targets; inner installer layer: USA = PE32 GUI link-2022-07-05 + InstallShield ISSetupStream v8 overlay ([u32 0x36][u32 6][u32 ~0x17580000]); CAN-Personal inner layer = plain ZIP (6 entries; setup.exe 7 sections link-2025-12-22) + the SAME 2022-07-05 bootstrapper family + ISSetupStream v7 (USA v8); CAN-Business = InstallShield-classic overlay [u32 19] + 4 UTF-16z fields (lang INI tag / Disk1 path / version / 22480 = the INI block size - the entropy boundary lands exactly at overlay+20,480) + BOM'd UTF-16 INI message table (~20 KiB, not quoted per 7.4) + compressed file-group records from ~0xefa00; ALL FOUR TARGETS CONVERGE ON THE INSTALLSHIELD LAYER where the app modules (file-format/password routines) live -> D40 opened (the InstallShield-layer record walk + the app-module inventory residue); ZERO derived bytes written to disk this session (every decode bounded + in-memory - stricter than ENG-3); thirteenth recycle WIPED tools/ (the twelfth's survival was the exception - standing expectation re-confirmed; rebuilt: corpus 4/4 sha256-verified via the fetcher - SEC-4's mechanic proven on a real re-acquisition, Ghidra 12.2 + Temurin 25.0.5.1 + REA 6.10.1 rebuilt, doctor healthy, checkpoint re-established); 205 mode flips normalized before edits (quirk 19, no unpushed amend); no app code touched - suites carried (root node_modules survived but the box memory ceiling OOMs tsc at default + 2.8 GB - CI authoritative on this push); PROD-2 tripwire clock: 1 of 2 working sessions elapsed - Stage-2 session 1 convenes at the next working session; harness_check 0 failures; next: T2 session 3 (D40) + Stage-2 session 1 @ 2026-11-22T10:35:00Z @ 2026-11-22T10:00:27Z (Z User, 2026-11-22)
  PROJECT_MEMORY.md                             |  70 ++++++++----
  docs/re-research/2026-11-22-tt-t2-session2.md | 130 +++++++++++++++++++++++
@@ -277,19 +490,5 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
  scripts/harness_check.sh                         |  12 +-
  scripts/sandbox_backup.sh                        |  23 +++
  13 files changed, 807 insertions(+), 139 deletions(-)
-
-### Commit: 52e2c68 - backup(sandbox): TT-compatibility program T1 (ADR-019, owner directive): four TurboTax installer targets acquired (Personal USA 2026 403,981,944 B / Personal CAN 2025 369,125,144 B / Business USA 2026 379,141,920 B / Business CAN 2025 333,073,488 B; ~1.4 GB, gitignored tools/re-corpus/, sizes matched CDN Content-Lengths, sha256s recorded in docs/re-research/corpus-manifest.md + durable resumable scripts/fetch_tt_corpus.sh); Phase-1 passive survey of all four (PE32 i386 installers: USA pair = shared 2008-era ~626 KiB stub + proprietary record-container overlay 99.8% w/ magic 48 12 90 BF 49 FF 91 AA + length-prefixed named records, first record xmlConfig carrying a SfxConfig XML manifest, payload H=8.0 compressed, stub imports CryptAcquireContextA/WININET/WS2_32; CAN-Personal = WinZip SFX w/ plain ZIP inside -> setup.exe MSI bootstrapper + 369 MB payload installer + TTConfig.ini facts; CAN-Business = InstallShield-style UTF-16 manifest table; notes docs/re-research/2026-11-22-tt-targets-phase1.md); REA 6.10.1 (morluto/rea, the directed front-end) installed over Ghidra 12.2 + Temurin 25 (REA hard-requires >=12.2 -> JDK 25; protocol-pinned 12.1.4+JDK21 kept as fallback); first-pass Phase-4 via the REA pipeline on the CARVED USA stub (the stub IS the container reader, 626,688 B, well inside the envelope): rea analyze ~83 s, xref on the xmlConfig string -> 0x40143c -> decompiled the reader pipeline FUN_004012c4 = open-self -> size -> find-marker (FUN_00418670 vtable reader class) -> internal header -> internal args -> record-by-name xmlConfig -> XML parse; pseudocode archived tools/re/ (gitignored); BOUNDARIES RECORDED (ADR-019): password-based access IS the shipped target (user's own password = authorization; LibreOffice/7z interoperability pattern), the fixed-key transport layer stays the recorded NO (§2.2) unless the owner records an explicit risk-acceptance ADR - SURFACED FOR OWNER DECISION, UI = functional/informational layout parity only (no expression/trade-dress copying; Material You identity stands); the TT program is separate + gated (T1 started, T2-T4 behind its own gate; Stage-2 DoD box NOT grown; gate agenda: fixed-key question + Canadian-law assessment + security contract); mechanics landed early + recorded: corpus-manifest = the known-hash allow-list first instance (sandbox_backup.sh hex heuristic excludes exactly that path); ROADMAP TT section + harness_check PENDING count 9->10; PROJECT_MEMORY playbook updated (T1 done); eleventh recycle: 197 mode flips normalized BEFORE edits (quirk 19), tools/ rebuilt, archive zips deleted after extraction (disk watch: ~2.5 GB free); NO app code touched - zero TS/Dart source changes, suites carried (local bench degraded: the recycle hollowed node_modules/.bin/tsc + a partial npm install OOMd - tsc needs >2.5 GB locally under the concurrent dev server; CI npm ci+tsc is authoritative and runs on this push); harness_check 0 failures; next: owner fixed-key decision + T2 behind the program's gate + Stage-2 session 1 standing @ 2026-11-22T07:27:06Z (Z User, 2026-11-22)
- PROJECT_MEMORY.md                                |  63 +++++++++----
- docs/re-research/2026-11-22-tt-targets-phase1.md | 115 +++++++++++++++++++++++
- docs/re-research/corpus-manifest.md              |  24 +++++
- harness/memory/DECISIONS.md                      |  83 ++++++++++++++++
- harness/memory/ROADMAP.md                        |  33 +++++++
- harness/memory/SESSION_LOG.md                    |  77 +++++++++++++++
- harness/memory/STATE.md                          |  48 ++++++----
- scripts/README.md                                |   8 ++
- scripts/fetch_tt_corpus.sh                       |  62 ++++++++++++
- scripts/harness_check.sh                         |  13 +--
- scripts/sandbox_backup.sh                        |  10 +-
- 11 files changed, 494 insertions(+), 42 deletions(-)
 ```
 

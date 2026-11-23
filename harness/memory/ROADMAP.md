@@ -303,14 +303,38 @@ two-session box):
   convened at 2 of 2). Full suite evidence: flutter 114/114 (97 + 17
   golden), tsc 0, parity 17/17, bridge 10/10, oracle 17/17, smoke 6/6,
   audit gate 0, RE tools 22/22, blob assertion clean, formats lint clean.
-- **Remaining for the exit gate (execution session 2, the box's final
-  one):** the three DoD specs (`tax-exchange-container.md`,
-  `txf.md` — both owner-authored with shipped code + tests as their
-  verification anchors; `tax-modern.md` awaits T3's format-family
-  findings), D34, then the exit-gate checklist (≥4 named specs each
-  §7.5-clean, ≤2 execution sessions, refusal/cap tests green, blob
-  assertion green). The owner's corpus statement is on record
-  (ADR-019 + `docs/re-research/corpus-manifest.md` — the four TT
+- **Execution session 2 (2026-11-23, the box's final one):** **specs 2
+  and 3 of the N=4 DoD published** — `docs/formats/tax-exchange-container.md`
+  (the owner-authored `.tax`-extension STORE-only ZIP exchange container:
+  provenance, identification, the writer/reader field layout incl. the
+  CRC-32 coupling, the honest-labeling disclosure, the reader contract
+  incl. the ENG-1 name-length bounds check, the analysis behavior, code
+  anchors both sides, and a differential note pinned by a NEW test — the
+  differential tool now exercised inside mandatory families #1 AND #2;
+  `test_re_tools.py` grew to 23 tests) and `docs/formats/txf.md` (the
+  TXF v042 profile: the grammar as implemented, the full refnum table
+  incl. the spouse copy space, the reader contract with the four hard
+  refusals, the writer profile, the bridge-suite verification mirror) —
+  both §7.5-clean + lint-clean. **D34 CLOSED** (the shared
+  `fixtures/migration/` family — the identical v1 sample + the
+  edge-clamp fixture + the provenance README — consumed by BOTH suites
+  asserting the EXACT ordered warning lists; the web file reader's
+  dependent-count clamp aligned to the Dart reference's 0..100 bound,
+  the D34-recorded edge drift fixed and pinned on both sides; the
+  store-vs-file W-2 shape difference documented in
+  `docs/return-format.md` §3). Full suite evidence: flutter 115/115
+  (98 + 17 golden), tsc 0, parity 17/17, bridge 11/11, oracle 17/17,
+  smoke 6/6, audit gate 0, RE tools 23/23, blob assertion clean, formats
+  lint 3/3 clean.
+- **The execution box is CLOSED at exactly two sessions.**
+  `tax-modern.md` (the fourth named spec) was NEVER landable inside the
+  box — it awaits T3's format-family findings incl. the password layer,
+  exactly as the box's own plan recorded (no stub was written: §7.5
+  forbids placeholder specs). The **exit gate** therefore convenes when
+  T3 delivers; the checklist is otherwise green: 3 of 4 named specs
+  present + §7.5-clean, ≤2 execution sessions (exactly 2), refusal/cap
+  tests green, blob assertion green. The owner's corpus statement is on
+  record (ADR-019 + `docs/re-research/corpus-manifest.md` — the four TT
   targets; TT specs never count toward N=4 per the namespace rule).
 
 ## Stage 3 — Parity & clean-room bridges (highest value)

@@ -69,7 +69,9 @@ const num = (v: unknown, fallback = 0): number => (typeof v === 'number' && Numb
 const flag = (v: unknown): boolean => v === true
 
 /** v1 → v2 filing-shape migration (same conservative mapping as the
- * browser-store persist migration; see src/lib/store.ts). */
+ * Dart `ReturnFileCodec._migrateWebV1`; see clearfile/lib/io/return_format.dart).
+ * The exact warning wording and order are pinned by BOTH suites against the
+ * shared fixtures (fixtures/migration/, DEBT D34). */
 function migrateV1(f: Record<string, unknown>, warnings: string[]): Record<string, unknown> {
   const o: Record<string, unknown> = { ...f }
   o.taxYear = 2025
@@ -97,8 +99,12 @@ function migrateV1(f: Record<string, unknown>, warnings: string[]): Record<strin
   }
   delete o.itemized
 
-  const kids = Math.max(0, Math.round(num(o.qualifyingChildren)))
-  const otherDeps = Math.max(0, Math.round(num(o.otherDependents)))
+  // D34 parity correction (2026-11-23): the dependent-count bound is
+  // 0..100 placeholder rows on BOTH file readers — the Dart reference's
+  // historical clamp, now pinned by the shared edge fixture
+  // (fixtures/migration/v1-web-envelope-edge-clamp.json).
+  const kids = Math.min(100, Math.max(0, Math.round(num(o.qualifyingChildren))))
+  const otherDeps = Math.min(100, Math.max(0, Math.round(num(o.otherDependents))))
   delete o.qualifyingChildren
   delete o.otherDependents
   const dependents: Dependent[] = []

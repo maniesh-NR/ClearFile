@@ -2,8 +2,10 @@
 
 **Status:** unified format, in force since 2026-11-15 (ADR-015, Stage-3
 close-out) · Written by the Flutter app (export + autosave) and the web
-prototype · Pinned by `clearfile/test/return_format_test.dart` (14 tests)
-and the CI bridge suite (`scripts/txf_taxfile_test.mjs`, cfr section)
+prototype · Pinned by `clearfile/test/return_format_test.dart` (15 tests)
+and the CI bridge suite (`scripts/txf_taxfile_test.mjs`, cfr section) —
+both suites assert the exact v1 migration warning lists against the shared
+cross-suite fixtures (`fixtures/migration/`, DEBT D34)
 
 ---
 
@@ -97,8 +99,23 @@ field-for-field, warning wording included):
   `charitableCash`; `realEstateTax`/`charitableNonCash` → 0;
   `itemized.medical`/`itemized.other` **dropped** (warned).
 - `qualifyingChildren`/`otherDependents` counts → placeholder dependent
-  rows (warned: re-enter their names in the Dependents step).
+  rows (warned: re-enter their names in the Dependents step); the counts
+  clamp to **0…100 rows** on both file readers — pinned by the shared edge
+  fixture `fixtures/migration/v1-web-envelope-edge-clamp.json` (D34;
+  the web reader aligned to the Dart reference's bound, 2026-11-23).
 - `taxYear` forced to 2025.
+
+**W-2 vintages — file shape vs store shape (D34).** The v1 *file* envelope's
+`w2s` rows are `{employer, wages, withholding}` — that is what both file
+readers (`return_format.dart`, `cfr.ts`) consume. The web **store**
+(`src/lib/store.ts`) migrates a *different* legitimate vintage: its v1
+persisted shape wrote `w2s` rows as `{id?, employer, wages,
+federalWithheld}` (the pre-parity store model). Both are accepted by
+their respective readers; the store migration is silent by design (a
+persist-restore path has no dialog to warn into), while both file
+readers surface the exact warning list above on the shared fixtures
+(`fixtures/migration/README.md` records the contract both suites
+assert).
 
 ## 4. Warnings and outcomes (the reader contract)
 

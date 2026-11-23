@@ -21,7 +21,9 @@
  *    round-trip, the legacy flat layout (`clearfile.return`) the Flutter
  *    app wrote through v1.0.1 accepted and lifted, the version guard
  *    refusing future files (D3), and the v1 (pre-parity web) envelope
- *    migration with its warnings.
+ *    migration with its warnings — asserted as the EXACT ordered list
+ *    against the shared fixtures (fixtures/migration/, DEBT D34: the
+ *    identical sample the Dart suite reads from the same files).
  *
  * This script compiles the file modules first:
  *   npx tsc -p scripts/tsconfig.files.json  (emits to .files-build/, gitignored)
@@ -31,6 +33,7 @@
  */
 
 import { execFileSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
@@ -311,24 +314,14 @@ function readTxf(text) {
 }
 
 {
-  // v1 (pre-parity web) envelope: conservative migration + warnings.
-  const v1 = JSON.stringify({
-    format: 'clearfile-return',
-    version: 1,
-    app: 'ClearFile prototype 0.1',
-    savedAt: '2026-11-03T00:00:00.000Z',
-    filing: {
-      status: 'mfj',
-      taxYear: 2026,
-      interest: 500,
-      dividends: 300,
-      adjustments: 120,
-      itemized: { taxesPaid: 8000, mortgageInterest: 9000, charity: 1000, medical: 200, other: 50 },
-      qualifyingChildren: 2,
-      otherDependents: 1,
-      w2s: [{ employer: 'Acme', wages: 90000, withholding: 9000 }],
-    },
-  })
+  // v1 (pre-parity web) envelope: conservative migration + the EXACT
+  // warning list, read from the shared cross-suite fixture (DEBT D34 —
+  // the identical sample clearfile/test/return_format_test.dart asserts
+  // the same list from; drift in wording or order now fails a test).
+  const v1 = readFileSync(
+    path.join(root, 'fixtures/migration/v1-web-envelope.json'),
+    'utf8',
+  )
   const { filing, warnings } = parseCfr(v1)
   assert.equal(filing.filingStatus, 'marriedJoint')
   assert.equal(filing.taxYear, 2025)
@@ -339,12 +332,37 @@ function readTxf(text) {
   assert.equal(filing.charitableCash, 1000)
   assert.equal(filing.dependents.length, 3)
   assert.equal(filing.dependents.filter((d) => d.qualifyingChild).length, 2)
-  assert.ok(warnings.some((w) => w.includes('older prototype')))
-  assert.ok(warnings.some((w) => w.includes('Adjustments to income')))
-  assert.ok(warnings.some((w) => w.includes('Medical and "other"')))
-  assert.ok(warnings.some((w) => w.includes('Dependent counts')))
+  assert.deepEqual(warnings, [
+    'Saved with an older prototype: the return was migrated to the current engine model.',
+    '"Adjustments to income" had no equivalent in the current model and was dropped — re-enter it as student loan interest if that is what it was.',
+    'Medical and "other" itemized expenses have no equivalent in the current model and were dropped.',
+    'Dependent counts were migrated; re-enter their names in the Dependents step.',
+  ])
   passed += 1
-  console.log('[cfr] v1 envelope migrated with warnings: OK')
+  console.log('[cfr] v1 envelope migrated: exact warning list (shared fixture): OK')
 }
 
-console.log(`\n[txf_taxfile] ${passed}/10 groups passed`)
+{
+  // v1 edge fixture: the dependent-count clamp (250 → 100 placeholder
+  // rows, the Dart reference's bound now pinned on both file readers) —
+  // only the two applicable warnings surface, exactly and in order.
+  const v1 = readFileSync(
+    path.join(root, 'fixtures/migration/v1-web-envelope-edge-clamp.json'),
+    'utf8',
+  )
+  const { filing, warnings } = parseCfr(v1)
+  assert.equal(filing.filingStatus, 'headOfHousehold')
+  assert.equal(filing.stateLocalIncomeOrSalesTax, 100)
+  assert.equal(filing.w2s[0].employer, 'Edge Corp')
+  assert.equal(filing.dependents.length, 101) // 250 clamped to 100 + 1 other
+  assert.equal(filing.dependents.filter((d) => d.qualifyingChild).length, 100)
+  assert.equal(filing.dependents.filter((d) => d.otherDependentCredit).length, 1)
+  assert.deepEqual(warnings, [
+    'Saved with an older prototype: the return was migrated to the current engine model.',
+    'Dependent counts were migrated; re-enter their names in the Dependents step.',
+  ])
+  passed += 1
+  console.log('[cfr] v1 dependent-count clamp (shared edge fixture): OK')
+}
+
+console.log(`\n[txf_taxfile] ${passed}/11 groups passed`)

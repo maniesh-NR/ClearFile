@@ -1,0 +1,25 @@
+{
+  "format": "clearfile-return",
+  "version": 1,
+  "app": "ClearFile prototype 0.1",
+  "savedAt": "2026-11-03T00:00:00.000Z",
+  "filing": {
+    "status": "mfj",
+    "taxYear": 2026,
+    "interest": 500,
+    "dividends": 300,
+    "adjustments": 120,
+    "itemized": {
+      "taxesPaid": 8000,
+      "mortgageInterest": 9000,
+      "charity": 1000,
+      "medical": 200,
+      "other": 50
+    },
+    "qualifyingChildren": 2,
+    "otherDependents": 1,
+    "w2s": [
+      { "employer": "Acme", "wages": 90000, "withholding": 9000 }
+    ]
+  }
+}

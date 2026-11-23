@@ -1,0 +1,21 @@
+{
+  "format": "clearfile-return",
+  "version": 1,
+  "app": "ClearFile prototype 0.1",
+  "savedAt": "2026-11-03T00:00:00.000Z",
+  "filing": {
+    "status": "hoh",
+    "taxYear": 2025,
+    "interest": 10,
+    "dividends": 0,
+    "adjustments": 0,
+    "itemized": {
+      "taxesPaid": 100
+    },
+    "qualifyingChildren": 250,
+    "otherDependents": 1,
+    "w2s": [
+      { "employer": "Edge Corp", "wages": 1000, "withholding": 100 }
+    ]
+  }
+}

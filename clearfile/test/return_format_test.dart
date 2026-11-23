@@ -13,7 +13,10 @@ import 'package:clearfile/models/w2.dart';
 
 /// Unified ClearFile return format (ADR-015): envelope round-trip, the
 /// version guard (D3), legacy-layout migration, and the sealed import
-/// outcome (D1). Fixtures are all program-synthesized.
+/// outcome (D1). Fixtures are program-synthesized; the v1 migration
+/// samples are the shared cross-suite fixtures in `fixtures/migration/`
+/// (DEBT D34 — one identical file, exact warning lists asserted by both
+/// this suite and the web bridge suite).
 void main() {
   TaxReturnData sample() => TaxReturnData(
         displayName: 'Format test',
@@ -109,32 +112,13 @@ void main() {
     expect(decoded.warnings, isEmpty); // lossless: nothing to report
   });
 
-  test('web v1 envelope migrates with the conservative mapping', () {
-    final v1 = jsonEncode({
-      'format': 'clearfile-return',
-      'version': 1,
-      'app': 'ClearFile prototype 0.1',
-      'savedAt': '2026-11-03T00:00:00.000Z',
-      'filing': {
-        'status': 'mfj',
-        'taxYear': 2026,
-        'interest': 500,
-        'dividends': 300,
-        'adjustments': 120,
-        'itemized': {
-          'taxesPaid': 8000,
-          'mortgageInterest': 9000,
-          'charity': 1000,
-          'medical': 200,
-          'other': 50,
-        },
-        'qualifyingChildren': 2,
-        'otherDependents': 1,
-        'w2s': [
-          {'employer': 'Acme', 'wages': 90000, 'withholding': 9000},
-        ],
-      },
-    });
+  test('web v1 envelope migrates with the conservative mapping (shared '
+      'fixture, D34)', () {
+    // The identical v1 sample both suites verify (fixtures/migration/,
+    // DEBT D34): one file on disk, the exact warning list asserted on
+    // both sides — drift in wording or ordering now fails a test.
+    final v1 = File('../fixtures/migration/v1-web-envelope.json')
+        .readAsStringSync();
     final decoded = ReturnFileCodec.decode(v1);
     final f = decoded.filing;
     expect(f.filingStatus, FilingStatus.marriedJoint);
@@ -149,15 +133,42 @@ void main() {
     expect(f.dependents, hasLength(3)); // 2 children + 1 other dependent
     expect(f.dependents.where((d) => d.qualifyingChild), hasLength(2));
     expect(f.dependents.where((d) => d.otherDependentCredit), hasLength(1));
-    // The web parser's four v1 warnings, mirrored verbatim.
-    expect(
-        decoded.warnings.any((w) => w.contains('older prototype')), isTrue);
-    expect(decoded.warnings
-        .any((w) => w.contains('Adjustments to income')), isTrue);
-    expect(decoded.warnings.any((w) => w.contains('Medical and "other"')),
-        isTrue);
-    expect(decoded.warnings.any((w) => w.contains('Dependent counts')),
-        isTrue);
+    // D34: the exact warning list, in order — the bridge suite asserts
+    // the same list from the same file.
+    expect(decoded.warnings, equals(<String>[
+      'Saved with an older prototype: the return was migrated to the '
+          'current engine model.',
+      '"Adjustments to income" had no equivalent in the current model and '
+          'was dropped — re-enter it as student loan interest if that is '
+          'what it was.',
+      'Medical and "other" itemized expenses have no equivalent in the '
+          'current model and were dropped.',
+      'Dependent counts were migrated; re-enter their names in the '
+          'Dependents step.',
+    ]));
+  });
+
+  test('v1 dependent counts clamp at 100 placeholder rows (shared edge '
+      'fixture, D34)', () {
+    // qualifyingChildren: 250 → 100 (the historical Dart bound, now pinned
+    // on both file readers); only the two applicable warnings surface.
+    final v1 =
+        File('../fixtures/migration/v1-web-envelope-edge-clamp.json')
+            .readAsStringSync();
+    final decoded = ReturnFileCodec.decode(v1);
+    final f = decoded.filing;
+    expect(f.filingStatus, FilingStatus.headOfHousehold);
+    expect(f.stateLocalIncomeOrSalesTax, 100);
+    expect(f.w2s.single.employer, 'Edge Corp');
+    expect(f.dependents, hasLength(101)); // 250 clamped to 100 + 1 other
+    expect(f.dependents.where((d) => d.qualifyingChild), hasLength(100));
+    expect(f.dependents.where((d) => d.otherDependentCredit), hasLength(1));
+    expect(decoded.warnings, equals(<String>[
+      'Saved with an older prototype: the return was migrated to the '
+          'current engine model.',
+      'Dependent counts were migrated; re-enter their names in the '
+          'Dependents step.',
+    ]));
   });
 
   test('missing v2 filing defaults with warnings, matching the web reader',
