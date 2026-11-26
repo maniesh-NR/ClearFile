@@ -2141,3 +2141,29 @@ D41/D42 residues ride their lanes.**
   tooling, the harness memory check. The N2 exit gate's CI pending item
   is DISCHARGED; the gate stays open only on the ENG report (the
   subagent-deadline lane).
+
+## 2026-11-26 (N2 exit gate CLOSED) · N2: COMPLETE
+
+- **The ENG retry filed** (ADV-ENG PWC-1 — the only condition: the
+  residual duplicate-scan amplification over a max-width object, a
+  record-level item for the next session; 174/174 re-verified, the
+  caps/palette/pipeline/CI lanes spot-audited, the palette divergences
+  spot-checked against the pub-cache Dart source). All four reports
+  filed: **SEC PWC (3) / LEGAL PWC (6) / ENG PWC (1) / PROD PWC (5) —
+  no BLOCK.**
+- **The N2 exit gate CLOSED — N2: COMPLETE.** The record: two execution
+  sessions exactly (the intra-session checkpoint discipline held
+  throughout, verified twice against snapshot recycles), the
+  consolidation + topology exercised under the recorded rights, D44
+  closed (the palette + the 22,242-check corpus), the Linux app landed
+  with the live-green CI lane (run #44), the R1/R2 hardenings landed,
+  the variant preconditions held (release.yml byte-unchanged, no
+  version movement, zero clearfile/ or src/ paths in the N2 delta).
+  The remaining record-level conditions ride to the next session as the
+  recorded list (ENG's residual-amplification bound-or-record, LEGAL's
+  disclaimer/copyright/SPDX-exception notes, SEC's action-SHA↔tag
+  verification, PROD's ledger reconciliation). The Stage-2 slip
+  re-agendas at N3's gate (the three owner options standing). **Next:
+  N3's delta-scoped gate** (Android native UI — the JNI shim per the
+  FFI seam, KMP per the settlement, the measured no-Android-SDK
+  sandbox fact ruling the fetcher-class question).

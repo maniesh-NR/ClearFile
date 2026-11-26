@@ -365,6 +365,12 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
 ## Recent Progress & Git Activity
 
 ```diff
+### Commit: 8478a09 - backup(sandbox): The N2 exit gate's CI pending item DISCHARGED - hygiene run #44 GREEN on a592b06, all five jobs: gitleaks, the Linux app (the unit tests 5/5 + the headless byte-diff smoke + the window smoke under Xvfb + winit-software + the first live cargo-deny green over the committed lock), the suites, the RE tooling, the harness memory check. The four-round fix record: the build-time font stack moved before the first cargo invocation, the runner's libxkbcommon-x11-0 package name, the BSL-1.0 allow-list join (permissive + GPL-compatible, the actually-encountered rule, the comment naming the encounter), and the wildcard disposition for the clearfile-core path dep (the recorded ADR-017 Linux seam). The gate stays open ONLY on the ENG report (the subagent-deadline lane) - the re-convening is the next session's first item. 0 failures @ 2026-11-26T19:0xZ @ 2026-11-26T18:41:32Z (Z User, 2026-11-26)
+ PROJECT_MEMORY.md                | 35 +++++++++--------------------------
+ harness/adversarial/CONSENSUS.md | 13 ++++++++-----
+ harness/memory/SESSION_LOG.md    | 24 ++++++++++++++++++++++++
+ 3 files changed, 41 insertions(+), 31 deletions(-)
+
 ### Commit: a592b06 - backup(sandbox): The CI cargo-deny round 5: the wildcard ban flagged the app's ONE version-less dependency - clearfile-core, the path dependency on the workspace sibling, the recorded ADR-017 Linux seam ('Linux links the crate directly, no FFI'). The honest disposition: wildcards = warn with the comment naming the seam + the ban's purpose (unaudited * registry versions - every registry dep carries an explicit bound). The green run is the gate's pending item. 0 failures @ 2026-11-26T18:6xZ @ 2026-11-26T18:36:00Z (Z User, 2026-11-26)
  apps/linux/deny.toml | 7 ++++++-
  1 file changed, 6 insertions(+), 1 deletion(-)
@@ -372,9 +378,5 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
 ### Commit: d43034b - backup(sandbox): The CI font-stack fix, round 4: the first cargo-deny run over the committed lock rejected the tree's BSL-1.0 crates (the Boost Software License - permissive, GPL-3.0-compatible) - the closed allow-list rule is allowed ids = actually-encountered + reviewed, so BSL-1.0 joins with the comment naming the encounter (hygiene run #42, the first live cargo-deny run). The unit tests + the headless smoke + the window smoke ALL PASSED on run #42 (the font stack + the libxkbcommon-x11-0 name fixed them). The green run is the gate's pending item. 0 failures @ 2026-11-26T18:5xZ @ 2026-11-26T18:30:18Z (Z User, 2026-11-26)
  apps/linux/deny.toml | 5 +++++
  1 file changed, 5 insertions(+)
-
-### Commit: af8eff0 - backup(sandbox): The CI font-stack fix, round 3: the runner's package name is libxkbcommon-x11-0 (the runtime library winit's X11 path dlopens), not libxkbcommon-x11 - the apt step exit-100ed on the name. Fixed; the green run is the gate's pending item. 0 failures @ 2026-11-26T18:4xZ @ 2026-11-26T18:24:20Z (Z User, 2026-11-26)
- .github/workflows/hygiene.yml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 ```
 

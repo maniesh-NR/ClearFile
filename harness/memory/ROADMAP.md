@@ -609,10 +609,17 @@ v1's stages still close first.
 - **N2 — Linux native UI**: the owner's two-tier assignment with one
   toolkit per tier — gtk3-rs (older tier) / Slint (modern tier);
   consolidatable at this gate if single-maintainer reality demands it.
-  **Gate status: ENTERED 2026-11-26** (delta-scoped gate, 4 ×
-  PROCEED-WITH-CONDITIONS unanimous — reports at
-  `harness/adversarial/reports/2026-11-26-n2-*.md`; the full condition
-  ledger in CONSENSUS). **The consolidation EXERCISED:** one toolkit =
+  **Gate status: ENTERED 2026-11-26; CLOSED 2026-11-26 (exit PASSED)**
+  (the delta-scoped gate, 4 × PWC unanimous, reports at
+  `harness/adversarial/reports/2026-11-26-n2-*.md`; the exit gate, 4 ×
+  PWC unanimous — SEC 3 / LEGAL 6 / ENG 1 / PROD 5, reports at
+  `harness/adversarial/reports/2026-11-26-n2exit-*.md`; the box closed
+  at exactly two sessions: the D44 palette + corpus + the scaffold +
+  guards (session 1), the Slint window app + the shared pipeline + the
+  CI Linux-app lane + the R1/R2 hardenings (session 2); the live-green
+  hygiene run #44; cargo test 174/174 + the app 5/5; the remaining
+  record-level conditions ride to the next session as the recorded
+  list). **The consolidation EXERCISED:** one toolkit =
   Slint (the modern tier, GPL-3.0-only branch) — ADR-017's own "may
   consolidate … if single-maintainer reality demands it (revisitable,
   recorded)" clause, the demand verified live (gtk3-rs unbuildable in
