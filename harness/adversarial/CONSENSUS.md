@@ -1203,3 +1203,161 @@ ADR-017 variant holds: no shipped artifact depends on the core. The
 epilogue's next gate is N2's delta-scoped gate — the Linux native UI,
 with the two-toolkit consolidation question (PROD-3's notes) and the
 Stage-2 slip re-agenda on its agenda.)
+
+## 2026-11-26 · The N2 delta-scoped gate (the Linux native UI)
+
+**Context:** N1 CLOSED (exit PASSED) earlier this date; the epilogue's
+per-OS order proceeds to N2. The proposal under review: the toolkit
+consolidation to Slint under the roadmap's own N2 consolidation right;
+the apps/linux separate-crate-root topology; cargo-deny at the first
+external dependency; D44's palette module in the core verified by the
+differential-generator pattern; an argv-envelope MD3-themed window app
++ a --headless smoke. All four reviewers worked independently over the
+pushed tip 78a0213 (and ran their own probes: the gtk3 infeasibility
+re-measured, the slint build + the lock's 553-package license audit, the
+MCU version extraction, the workspace claim tested empirically, the
+working-tree drift caught). Reports at
+`harness/adversarial/reports/2026-11-26-n2-{security,legal,engineering,product}.md`.
+
+| Reviewer | Verdict | BLOCK? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (8) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (8) | no |
+| ADV-ENG | PROCEED-WITH-CONDITIONS (10) | no |
+| ADV-PROD | PROCEED-WITH-CONDITIONS (7) | no |
+
+**The consolidated condition ledger (binding the execution sessions;
+every one checkable; the full text in the reports):**
+1. **The consolidation is RECORDED (revisitable, recorded per ADR-017's
+   own clause):** the right quoted; the live demand evidence (gtk3-rs
+   unbuildable in this sandbox — no libgtk-3-dev, no root; re-measured);
+   the forfeit stated without overstatement (the gtk3 older tier + its
+   LGPL posture forfeited; CI runners COULD build gtk3-rs — the demand
+   is the single-maintainer dev-loop reality, not a global technical
+   impossibility); the interim consequence (the Flutter GTK app stays
+   the shipped Linux product; the native app's distro baseline is a
+   GA-gate decision); revisitability (the owner may re-split by ADR).
+2. **The topology recorded as chosen-with-rejected-alternative:** the
+   no-workspace choice is legitimate, not forced (a workspace breaks the
+   zero-dep assertion AS WRITTEN but a path-scoped rewrite preserves the
+   posture — the ENG reviewer proved it empirically with a scratch
+   workspace); separate roots chosen, the alternative named + rejected.
+3. **D44's palette verification corrected + re-scoped (ENG-1, SEC-7):**
+   the reference is material_color_utilities **0.13.0** (the version
+   clearfile/pubspec.lock resolves, pub.dev, content-hash pinned) — NOT
+   "3.47.9" (the SDK version; the mislabel is corrected in the record);
+   and the corpus must pin the **scheme roles** (~50 ARGB values per
+   seed per brightness — what ColorScheme.fromSeed's DynamicScheme +
+   MaterialDynamicColors actually produce: primary…tertiaryFixedVariant,
+   the error family, outline/s, the surface family incl. dim/bright/
+   container-lowest..highest, onSurface*, the inverse family, shadow,
+   scrim, surfaceTint) for light AND dark, in addition to the tonal
+   ladders — "tonal palette channel values" alone cannot honestly
+   support the same-visual-language claim. The generator calls the
+   reference (flutter test or the extracted MCU under the pinned SDK)
+   or its mapping is checked field-by-field against the SDK's
+   color_scheme.dart at generation time.
+4. **The reference resolution is hash-pinned, never floating (SEC-7):**
+   the tool consumes the pub-spec content-hash resolution already in
+   clearfile/pubspec.lock (0.13.0, digest-pinned) or the SDK-bundled
+   preload copy — never an unpinned pub.dev fetch; the corpus provenance
+   names package 0.13.0 + its content hash.
+5. **The execution box is TWO sessions (ENG-4, PROD-3 — the one-session
+   proposal was undersized against the N1 precedent):** session 1 = the
+   palette module + the generator + the corpus + the core tests green +
+   the apps/linux scaffold with every guard join (the intra-session
+   checkpoint: palette + corpus green BEFORE any app work — a session
+   death still closes D44); session 2 = the window UI + the headless
+   mode + the CI lane + both smokes + the bookkeeping. The slip rule:
+   the Stage-3 tripwire precedent (logged honestly, never silently
+   extended, an extension needs a recorded owner ruling); a slip
+   disposes at the N2 exit gate. **The disk plan (re-measured at the
+   gate):** the 1.5G re-fetchable tarball residue deleted (done at the
+   gate close; 5.1G→6.6G free); the probe target deleted by the
+   reviewer; the app crate declares slint with default-features = false
+   + the femtovg/software renderers (the skia-safe CDN prebuilts are
+   EXCLUDED from the lock — the probe's 553-package tree with skia is
+   not the shipped shape); the standalone sha256-pinned Dart SDK
+   fetcher (a NEW tracked fetcher in the fetch_tt_corpus pattern, ~300
+   MB, the official dart-archive manifest as the hash source) serves
+   the palette reference runtime — the full Flutter SDK does NOT fit
+   the disk plan.
+6. **The cargo-deny posture (SEC-2, LEGAL-5, ENG-9):** only two
+   acceptable mechanisms — (a) EmbarkStudios cargo-deny-action
+   SHA-pinned per D10 (the same trust class as the accepted
+   SHA-pinned gitleaks action) or (b) `cargo install cargo-deny
+   --locked --version <pinned>`; a vendored binary is FORBIDDEN (the
+   binary-blob policy) and a plain script alone is insufficient
+   (Cargo.lock carries no license metadata). A tracked deny.toml
+   (fail-closed) from apps/linux's FIRST commit: `licenses.allow` a
+   closed GPL-3.0-compatible list (GPL-3.0-only exactly — not the
+   deprecated GPL-3.0 — MIT, Apache-2.0, BSD-2/3-Clause, ISC, Zlib,
+   Unicode-3.0/DFS-2016, 0BSD, CC0-1.0), the slint triple-license
+   crates passing via their GPL-3.0-only leg with the LicenseRef ids
+   deliberately ABSENT (per-crate exceptions with recorded reasons if a
+   surprise appears), sources = crates.io-only, targets = the shipped
+   triple(s) — the CI check covers the FULL lockfile incl. the
+   target-gated packages (the 104 non-compiling-on-Linux ones), the
+   first run live-verified green.
+7. **The CI app lane (ENG-2):** the runner's rustc is guarded
+   fail-closed (parse `rustc --version`, assert ≥ 1.95 — slint 1.19.1's
+   declared MSRV) before any cargo call; every cargo invocation
+   `--locked` with apps/linux/Cargo.lock committed; slint bound to the
+   audited series (`slint = "1.19"` + the feature set) in the
+   Cargo.toml — the audited tree IS the built tree.
+8. **The smokes (ENG-5, ENG-6):** the window smoke: `--smoke` flag
+   constructing the real window, one frame, a marker, exit 0, under
+   `SLINT_BACKEND=winit-software` (GL-free), apt `libxkbcommon-x11`
+   (Xvfb preinstalled), DIRECT `Xvfb :99 &` (xvfb-run needs xauth —
+   absent), inside a `timeout` with failure asserted. The headless
+   smoke: consumes a committed fixture, diffs the FULL stdout against
+   committed expected text, and is structurally the SAME pipeline
+   function the window consumes (one `load_and_compute(path)`).
+9. **Guard joins BEFORE the closing backup, same-commit (SEC-1/3/5/6,
+   ENG-8):** the N1-exit parser-hardening risks (the O(n²) JSON
+   object-key insertion + the ZIP STORE amplification) land at N2 IN
+   SUBSTANCE (the first real consumer feeding user files to them) —
+   the session lands both hardenings (a member-count/linearity bound +
+   a cumulative extracted-bytes cap, each with a battery extension) OR
+   records the explicit re-deadline with the direct-linking rationale;
+   `.gitignore` gains the app target rule BEFORE any in-repo app build;
+   `apps/` joins the backup ≥32-hex scan path list; the palette corpus
+   ledger joins harness_check; any palette-digest file joins the backup
+   known-hash allow-list in its landing commit; the palette tool +
+   corpus live under scripts/ + fixtures/palette/ (zero clearfile/ or
+   src/ paths in the N2 delta — the PROD-5 discipline carried).
+10. **SPDX + license records (LEGAL-2/3):** every new tracked file
+    under apps/linux carries the SPDX header (incl. .slint markup —
+    `//` comments); the app crate's Cargo.toml: `license =
+    "GPL-3.0-only"` + `publish = false`; the Slint license election
+    recorded in-tree (deny.toml comment or adjacent: the GPL-3.0-only
+    branch only, the royalty-free/commercial branches NOT elected, the
+    pinned version); the palette port carries the provenance
+    doc-comment (a translation of Google's Apache-2.0 material_color_
+    utilities 0.13.0 — derived-not-vendored) + a THIRD-PARTY-NOTICES.md
+    entry (the first third-party-derived material in the core).
+11. **The app honesty surfaces (LEGAL-4, PROD-4):** in-window demo
+    disclaimer + the AI-absence/no-network note + prototype labeling;
+    the README gains the honest apps/linux row; NO downloadable CI
+    artifacts of the unreleased binary (conveyance, not tagging, is the
+    license-manifest trigger — the manifest lands with the first tagged
+    release per ADR-017); no version-plane movement (v2.0.0 discipline:
+    nothing this stage ships).
+12. **The drift disposal (ENG-10, PROD-2, LEGAL-observed):** the
+    working tree was NOT clean at the gate (a reviewer's npm install
+    pinned @types/node/typescript/@types/react versions — unauthorized;
+    three reviewers flagged it): normalized to the pushed tip
+    (`git restore package.json package-lock.json`) at the gate close —
+    the SESSION_LOG records the drift's discovery + disposition.
+13. **The Stage-2 slip re-agenda (PROD duty, restated):** the standing
+    owner options (a) fund a T3 session, (b) supersede the RE-protocol
+    namespace rule, (c) default re-agenda — no ruling received; (c)
+    continues, re-agenda'd at the N2 exit gate.
+
+**Gate outcome:**
+
+**N2: ENTERED**
+(2026-11-26 — 4 × PROCEED-WITH-CONDITIONS, unanimous, no BLOCK; the
+consolidation to Slint exercised under the roadmap's own recorded right
+with the demand verified live; the two-session box set with the disk
+plan; the conditions bind the two execution sessions.)

@@ -1942,3 +1942,47 @@ D41/D42 residues ride their lanes.**
   delta-scoped, with the two-toolkit consolidation question, the
   crate-topology decision, the C-ABI timing note, D44's palette lane,
   and the Stage-2 slip re-agenda on its agenda.
+
+## 2026-11-26 (N2 gate) · The N2 delta-scoped gate CLOSED — N2: ENTERED; the consolidation to Slint exercised; the two-session box set
+
+- **The gate:** convened on the N2 proposal (the toolkit consolidation,
+  the apps/linux topology, cargo-deny at the first dependency, D44's
+  palette plan, the argv-window + --headless app shape). Four
+  reviewers in parallel isolation, each running their own probes (the
+  gtk3 infeasibility re-measured; the slint 1.19 build + the
+  553-package lock's license audit — zero GPL-2.0-only, zero
+  unlicensed; the MCU version extraction from the SDK tarball; the
+  workspace claim tested empirically; the disk re-measured at 1.5G
+  free + the probe's 3.7G target + the 1.5G tarball residue found).
+  Verdicts: **SEC PWC (8) / LEGAL PWC (8) / ENG PWC (10) / PROD PWC
+  (7) — no BLOCK.** The consolidated 13-point condition ledger + the
+  two-session box + the disk plan live in CONSENSUS's N2 gate record.
+  The notable corrections the gate forced: the palette reference is
+  material_color_utilities **0.13.0** (not "3.47.9" — the SDK version
+  mislabel), the corpus must pin the **scheme roles** for light+dark
+  (not just tonal ladders), the one-session box was undersized (re-cut
+  to two), the audited tree must be the built tree (slint bound to
+  1.19, skia excluded via default-features=false + the femtovg/software
+  renderers), the CI rustc ≥ 1.95 guard (slint 1.19.1's MSRV), the
+  cargo-deny posture (two acceptable mechanisms only), the direct
+  Xvfb + --smoke window-smoke shape, and the R1/R2 parser-hardening
+  risks landing at N2 in substance.
+- **The working-tree drift (three reviewers caught it):** a reviewer
+  lane's `npm install` pinned @types/node/typescript/@types/react
+  versions into package.json/package-lock.json — unauthorized
+  (reviewers modify only their reports). Normalized to the pushed tip
+  (`git restore package.json package-lock.json`) at the gate close;
+  the class (reviewer lanes must not run installers against the repo)
+  joins the parallel-lane discipline notes.
+- **The disk plan executed at the gate close:** the 1.5G re-fetchable
+  Flutter tarball residue deleted (5.1G→6.6G free; the fetcher is
+  sha256-pinned + proven), the probe target already reclaimed by the
+  reviewer; the standalone pinned Dart-SDK fetcher serves the palette
+  reference runtime (session 1).
+- **Checker updates (the legitimate-advance precedent):** the FUNDED
+  counter (5→4: N2 moved to ENTERED) + the N-outcome counter (2→3:
+  N2's ENTERED joined N1's ENTERED+CLOSED).
+- **Outcome:** **N2: ENTERED.** Next: execution session 1 (the palette
+  module + the generator + the corpus + the core tests green + the
+  apps/linux scaffold with every guard join — the intra-session
+  checkpoint: palette + corpus green BEFORE app work).

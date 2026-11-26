@@ -609,8 +609,27 @@ v1's stages still close first.
 - **N2 — Linux native UI**: the owner's two-tier assignment with one
   toolkit per tier — gtk3-rs (older tier) / Slint (modern tier);
   consolidatable at this gate if single-maintainer reality demands it.
-  **Gate status: FUNDED 2026-11-26 (owner, in-conversation; the
-  delta-scoped gate convenes at its turn).**
+  **Gate status: ENTERED 2026-11-26** (delta-scoped gate, 4 ×
+  PROCEED-WITH-CONDITIONS unanimous — reports at
+  `harness/adversarial/reports/2026-11-26-n2-*.md`; the full condition
+  ledger in CONSENSUS). **The consolidation EXERCISED:** one toolkit =
+  Slint (the modern tier, GPL-3.0-only branch) — ADR-017's own "may
+  consolidate … if single-maintainer reality demands it (revisitable,
+  recorded)" clause, the demand verified live (gtk3-rs unbuildable in
+  this sandbox: no libgtk-3-dev, no root; CI could build it — the
+  demand is the single-maintainer dev-loop reality, not a global
+  impossibility); the gtk3 older tier + its LGPL posture forfeited;
+  the Flutter GTK app stays the shipped Linux product until the native
+  GA (the distro baseline is a GA-gate decision); the owner may
+  re-split by a recorded ADR. **The topology recorded as
+  chosen-with-rejected-alternative:** apps/linux is a separate crate
+  root; the core keeps its own root (a workspace would break the
+  zero-dep assertion as-written — a path-scoped rewrite exists but is
+  rejected: separate roots keep the assertion byte-identical). The
+  two-session execution box + the disk plan live in CONSENSUS's gate
+  record. D44 (the MD3 palette) lands in session 1 against
+  material_color_utilities 0.13.0 (the pubspec.lock-resolved version,
+  content-hash pinned — NOT the SDK version).
 - **N3 — Android native UI**: Android Views + Kotlin Multiplatform
   (Android-only) over the core via a thin JNI shim. **Gate status: FUNDED
   2026-11-26 (owner, in-conversation; the delta-scoped gate convenes at

@@ -1,7 +1,9 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-26 (N1 CLOSED — exit gate PASSED; earlier the same
-day: N1 session 2 executed: the annex-(a)
+**Updated:** 2026-11-26 (the N2 delta-scoped gate CLOSED — ENTERED; the
+consolidation to Slint exercised under ADR-017's own clause with the
+demand verified live; the two-session box + the disk plan set; earlier
+the same day: N1 CLOSED — exit gate PASSED; N1 session 2 executed: the annex-(a)
 differential/property harness + the annex-(b) ported bridge suites
 landed — the core's format codecs (envelope incl. the v1→v2 migration
 with verbatim warning strings IN the core, TXF import/export with the
