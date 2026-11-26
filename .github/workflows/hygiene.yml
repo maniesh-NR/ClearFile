@@ -182,6 +182,17 @@ jobs:
             exit 1
           fi
           echo "rustc guard: ok — $MAJOR.$MINOR >= 1.95 ($LINE)"
+      - name: system deps (the build-time font stack + the smoke's X11 lib)
+        run: |
+          sudo apt-get update -y
+          # The exit-gate PROD finding (hygiene runs #38/#39 RED at the
+          # unit-test step): yeslogic-fontconfig-sys needs fontconfig AT
+          # BUILD TIME (pkg-config fontconfig), so the deps install BEFORE
+          # the first cargo invocation, not in the window-smoke step.
+          # freetype beside it as insurance; libxkbcommon-x11 for the
+          # later window smoke (winit's X11 path dlopens it at runtime).
+          sudo apt-get install -y libfontconfig1-dev libfreetype6-dev \
+            libxkbcommon-x11
       - name: app unit tests
         run: cargo test --locked --manifest-path apps/linux/Cargo.toml
       # The headless smoke (ENG-6): the shared pipeline's text output,
@@ -197,13 +208,8 @@ jobs:
       # stack is compiled but not picked: SLINT_BACKEND=winit-software).
       - name: window smoke (Xvfb + the software renderer)
         run: |
-          sudo apt-get update -y
-          # The exit-gate PROD finding: the runner image lacks the font
-          # stack slint's Linux build links (yeslogic-fontconfig-sys
-          # panics without libfontconfig1-dev; freetype beside it as
-          # insurance) — hygiene runs #38/#39 caught it live.
-          sudo apt-get install -y libxkbcommon-x11 libfontconfig1-dev \
-            libfreetype6-dev
+          # The system deps (the font stack + libxkbcommon-x11) installed
+          # in the job's setup step above.
           Xvfb :99 &
           XVFB_PID=$!
           SLINT_BACKEND=winit-software DISPLAY=:99 timeout 60 cargo run --locked --manifest-path apps/linux/Cargo.toml -- --smoke > /tmp/window-smoke.out 2>&1 || (echo "window smoke: FAIL (exit $?)" && cat /tmp/window-smoke.out && kill "$XVFB_PID" 2>/dev/null || true && exit 1)
