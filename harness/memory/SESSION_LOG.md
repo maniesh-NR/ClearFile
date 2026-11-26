@@ -2117,3 +2117,27 @@ D41/D42 residues ride their lanes.**
   release.yml change, no version movement, zero clearfile/ or src/
   paths in the N2 delta). **The N2 exit gate convenes next** (the
   Stage-2 slip re-agenda rides with it).
+
+## 2026-11-26 (N2 exit gate, CI green) · The live-green hygiene run lands: the gate's second pending item discharged
+
+- **The four-round CI fix (the honest record):** runs #38–#43 were RED at
+  the Linux-app job, each round a real finding: (1) the runner lacks the
+  build-time font stack (yeslogic-fontconfig-sys needs pkg-config
+  fontconfig) — the apt deps moved to a dedicated setup step BEFORE the
+  first cargo invocation (build-time vs runtime deps, the reasoning in
+  the comment); (2) the runner's package name is libxkbcommon-x11-0
+  (the runtime lib winit dlopens), not libxkbcommon-x11; (3) the first
+  live cargo-deny run rejected the tree's BSL-1.0 crates — the Boost
+  Software License (permissive, GPL-3.0-compatible) joins the closed
+  allow-list per the actually-encountered-and-reviewed rule (the
+  comment names the encounter); (4) the wildcard ban flagged the app's
+  ONE version-less dependency — clearfile-core, the PATH dependency on
+  the workspace sibling, the recorded ADR-017 Linux seam — dispositioned
+  warn with the comment naming the seam + the ban's purpose. **Hygiene
+  run #44 GREEN on a592b06** — all five jobs: gitleaks, the Linux app
+  (the unit tests 5/5 + the headless smoke byte-diff + the window smoke
+  under Xvfb + winit-software + cargo-deny over the committed lock),
+  the suites (flutter 126/126 + tsc + the core cargo 174/174), the RE
+  tooling, the harness memory check. The N2 exit gate's CI pending item
+  is DISCHARGED; the gate stays open only on the ENG report (the
+  subagent-deadline lane).

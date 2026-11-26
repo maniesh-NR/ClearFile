@@ -1409,9 +1409,12 @@ ruling received, (c) the default).
 
 **Gate outcome:**
 
-**N2: EXIT PENDING (two items)**
+**N2: EXIT PENDING (one item)**
 (the ENG report is owed — the subagent deadline, the same class the
-gate's box-sizing condition predicted — and the live-green hygiene run
-on the font-stack fix is pending; the three filed verdicts are
-PROCEED-family unanimous with no BLOCK and every code-level finding
-fixed in-session; the gate closes when both items land.)
+gate's box-sizing condition predicted. The live-green hygiene run
+DISCHARGED: hygiene run #44 GREEN on a592b06 after the four-round CI
+fix (the font stack moved before the unit tests' build; the runner's
+package name libxkbcommon-x11-0; the BSL-1.0 allow-list join per the
+actually-encountered rule; the wildcard disposition for the clearfile-
+core path dep — the recorded ADR-017 seam); every code-level finding
+is fixed; the gate closes when the ENG report lands.)
