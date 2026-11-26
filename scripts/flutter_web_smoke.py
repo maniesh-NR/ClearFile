@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only
 # Stage 4 boot verification: serve the built Flutter web bundle and prove,
 # in headless Chromium, that the app BOOTS and renders frames. Flutter web
 # (CanvasKit) draws to a <canvas> — DOM text is empty by design, so the

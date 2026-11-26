@@ -180,11 +180,12 @@ class WelcomeScreen extends StatelessWidget {
               ),
           ],
           const SizedBox(height: 16),
-          // Stage 5 (D12): the behavior-generated disclosure — keys live in
-          // PLAINTEXT JSON in ai_settings.json and travel only as request
-          // headers directly to the provider; pinned by privacy_test.dart.
+          // Stage 5 (D12): the behavior-generated disclosure — native names
+          // the plaintext JSON ai_settings.json storage; the web variant
+          // states keys live only in this tab's memory. Pinned by
+          // privacy_test.dart so it cannot drift from the transport.
           Text(
-            aiPrivacyDisclosure,
+            kIsWeb ? aiPrivacyDisclosureWeb : aiPrivacyDisclosure,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: scheme.onSurfaceVariant,

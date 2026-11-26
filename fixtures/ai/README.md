@@ -75,3 +75,12 @@ The Dart cascade deliberately sniffs the quota wording inside 429 bodies
 so `google_429_quota.json` surfaces as `quota` on the Dart side and
 `rate-limit` on the web side. Both runners assert their own side's truth;
 the difference is recorded here so it never reads as drift.
+
+## Plain-400 classification note (2026-11-26 gate, ADV-ENG)
+
+The Dart classifier also sniffs 400 bodies (`api key`/`api_key` -> auth,
+`quota` -> quota, else other — `providers.dart`), while the web ladder maps
+any plain 400 flat to `auth` (`ladder.ts`). Both step down; the recorded
+difference is the same class as the 429 note above. The geo-block fixture
+(`google_400_geo_block.json`) pins the shared `other`/fall-through behavior
+for the location-not-supported 400 on both sides.

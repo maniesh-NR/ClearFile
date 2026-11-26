@@ -185,7 +185,7 @@ session's interrupted closing backup normalized + pushed as
   **thirteenth-recycle mode flips (205 files 644→755, zero content
   delta, no unpushed amend)** — normalized with `git restore .` BEFORE
   any edits (quirk 19 held).
-- Test suite: **124/124 green** (Dart; 107 hand-written + 17 golden) —
+- Test suite: **126/126 green** (Dart; 109 hand-written + 17 golden) —
   CARRIED from `1ed3c88` this session: the delta provably touches zero
   code paths (gitignored bench scripts + `docs/re-research/` + harness
   memory only; `git status` verified before commit). CI runs on this

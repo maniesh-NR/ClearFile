@@ -98,6 +98,12 @@ jobs:
       # object-only refusal against hostile provider payloads.
       - run: node scripts/ai_injection_test.mjs
 
+      # D29 (2026-11-26 gate condition): the release.yml tag guard is
+      # extracted VERBATIM and exercised in all six scenarios (incl. the
+      # annotated-tag push shape and the fail-closed fetch-error path) so
+      # guard drift is CI-caught. Read-only fetches against origin.
+      - run: bash scripts/test_tag_guard.sh
+
   re-tooling:
     # Stage-2 execution session 1 (2026-11-22, ADR-012 mechanics (b)/(e) +
     # the LEGAL-1 lint + the tools' security contract): the no-binary-blob

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -114,11 +115,12 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              // Stage 5 (D12): the full behavior-generated disclosure — the
-              // same text the Welcome footer renders, pinned by
-              // privacy_test.dart so it cannot drift from the transport.
+              // Stage 5 (D12): the full behavior-generated disclosure —
+              // platform-accurate (native: plaintext ai_settings.json;
+              // web: tab-memory only), pinned by privacy_test.dart so it
+              // cannot drift from the transport.
               Text(
-                aiPrivacyDisclosure,
+                kIsWeb ? aiPrivacyDisclosureWeb : aiPrivacyDisclosure,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),

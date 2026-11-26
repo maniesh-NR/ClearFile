@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import 'package:clearfile/ai/assistant.dart';
 import 'package:clearfile/ai/cascade.dart';
+import 'package:clearfile/ai/disclosure.dart';
 import 'package:clearfile/ai/settings.dart';
 import 'package:clearfile/models/dependent.dart';
 import 'package:clearfile/models/tax_return.dart';
@@ -115,5 +116,36 @@ void main() {
         reason: 'employer name leaked into the review prompt via findings');
     expect(prompt.contains('Leaky Childname'), isFalse,
         reason: 'dependent name leaked into the review prompt via findings');
+  });
+
+  // Stage 5 (D12) gate condition: the disclosure copy rendered in Welcome
+  // and Settings is pinned here so it cannot drift from the transport. The
+  // load-bearing facts must survive any rewording.
+  test('the native AI privacy disclosure carries the load-bearing facts',
+      () {
+    expect(aiPrivacyDisclosure, contains(aiSettingsFileName),
+        reason: 'the storage file must be named in-app (D12)');
+    expect(aiPrivacyDisclosure, contains('PLAINTEXT'),
+        reason: 'the plaintext-at-rest posture must be stated');
+    expect(aiPrivacyDisclosure, contains('x-goog-api-key'),
+        reason: 'the header-only Google key transport must be stated');
+    expect(aiPrivacyDisclosure, contains('Authorization'),
+        reason: 'the header-only OpenRouter key transport must be stated');
+    expect(aiPrivacyDisclosure, contains('never names, SSNs, or employer'),
+        reason: 'the de-identification rule must be stated');
+    expect(aiPrivacyDisclosure, contains('Nothing is sent until you ask'),
+        reason: 'the no-unsolicited-transmission rule must be stated');
+  });
+
+  test('the web AI privacy disclosure is platform-accurate', () {
+    // The web build has no filesystem: keys live only in tab memory.
+    expect(aiPrivacyDisclosureWeb, contains('memory'),
+        reason: 'the web variant must state the in-memory storage');
+    expect(aiPrivacyDisclosureWeb, isNot(contains(aiSettingsFileName)),
+        reason: 'no file is written on web — naming one would be false');
+    // The transport + de-identification facts are identical to native.
+    expect(aiPrivacyDisclosureWeb, contains('x-goog-api-key'));
+    expect(aiPrivacyDisclosureWeb, contains('Authorization'));
+    expect(aiPrivacyDisclosureWeb, contains('never names, SSNs, or employer'));
   });
 }

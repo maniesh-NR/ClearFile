@@ -17,7 +17,7 @@ Licensed under [GPL-3.0](LICENSE).
 | --- | --- |
 | `src/` | The **Next.js 16 web prototype**: a seven-step Material 3 tax interview (status → income → deductions → dependents → payments → review → results) with the **same TY2025 calculation engine as the Flutter app** (ADR-009 parity, 2026-11-15: line-for-line port validated against the shared golden fixtures), deterministic review findings, and an optional bring-your-own-key AI assistant. |
 | `clearfile/` | The **Flutter 3.47 app** — the full-featured implementation: the five-step interview, the complete TY2025 engine and the AI cascade, compiled to the Android, iOS, macOS, Windows, Linux and Web targets from one Dart codebase. The two codebases share no code; the web engine is a line-for-line TypeScript port of this one (Stage-3 parity). |
-| `clearfile/test/` | 124 Dart tests — 107 hand-written (19 calculator, 10 AI cascade (header-key discipline + D8 timeout parity), 5 prompt-injection (hostile provider bodies stay bounded and out of UI summaries; system instruction byte-stable), 2 recorded-fixture cascade e2e (the shared `fixtures/ai/` family, also driven by the web ladder suite), 10 CSV import, 3 JSON roundtrip, 5 privacy (incl. the findings-path leak guard), 2 autosave regressions (delete + switch), 5 money-parsing edges, 6 step/settings widget guards (incl. the duplicate-row guards), 3 app-flow widget, 12 TXF import (spec v042 structure, W-2 copy grouping, sign convention, hardening caps incl. the 10,000-record refusal), 10 `.tax` container inspection (Intuit shape + entropy flags, ClearFile container import incl. the web envelope + honest failures incl. the crafted truncated-central-directory never-throws guard), **15 unified return-format tests (envelope round-trip, version guard, legacy flat lift, web-v1 migration from the shared cross-suite fixtures with exact warning lists (D34), the dependent-count clamp edge, sealed import outcomes, store envelope on disk)**) plus 17 IRS-pinned golden fixtures (repo-level `fixtures/tax/`, shared with the web engine's parity tests and re-derived independently by `scripts/verify_golden_fixtures.py` — the 17th pins the qualifying-surviving-spouse column mappings incl. the $200,000 CTC threshold it forced in both engines) — that pin the engine, the UI behaviour and the AI-privacy contract. `flutter analyze` is clean and `flutter test` is green. |
+| `clearfile/test/` | 126 Dart tests — 109 hand-written (19 calculator, 10 AI cascade (header-key discipline + D8 timeout parity), 5 prompt-injection (hostile provider bodies stay bounded and out of UI summaries; system instruction byte-stable), 2 recorded-fixture cascade e2e (the shared `fixtures/ai/` family, also driven by the web ladder suite), 7 privacy (incl. the findings-path leak guard, the native + web disclosure-copy pins), 10 CSV import, 3 JSON roundtrip, 5 privacy (incl. the findings-path leak guard), 2 autosave regressions (delete + switch), 5 money-parsing edges, 6 step/settings widget guards (incl. the duplicate-row guards), 3 app-flow widget, 12 TXF import (spec v042 structure, W-2 copy grouping, sign convention, hardening caps incl. the 10,000-record refusal), 10 `.tax` container inspection (Intuit shape + entropy flags, ClearFile container import incl. the web envelope + honest failures incl. the crafted truncated-central-directory never-throws guard), **15 unified return-format tests (envelope round-trip, version guard, legacy flat lift, web-v1 migration from the shared cross-suite fixtures with exact warning lists (D34), the dependent-count clamp edge, sealed import outcomes, store envelope on disk)**) plus 17 IRS-pinned golden fixtures (repo-level `fixtures/tax/`, shared with the web engine's parity tests and re-derived independently by `scripts/verify_golden_fixtures.py` — the 17th pins the qualifying-surviving-spouse column mappings incl. the $200,000 CTC threshold it forced in both engines) — that pin the engine, the UI behaviour and the AI-privacy contract. `flutter analyze` is clean and `flutter test` is green. |
 | `fixtures/tax/` | The **shared golden fixtures**: 17 `(TaxReturnData, TaxResult)` JSON pairs, each pinned to an IRS-published TY2025 worked example or worksheet (Tax Table, QDIVCG worksheet, Schedule 1-A Part V, Schedule A SALT worksheet, Schedule 8812, Form 8960, Pub 501) with its citation, derivation and tolerance in the file. The single source of truth **both** engines are held to: `clearfile/test/golden_fixtures_test.dart` (Dart) and `scripts/web_parity_test.mjs` (TypeScript) run the same files in CI. |
 | `fixtures/migration/` | The **shared v1→v2 migration fixtures** (D34, 2026-11-23): the identical pre-parity web v1 envelope both suites (`clearfile/test/return_format_test.dart` + the CI bridge suite) verify — exact ordered warning lists asserted on both sides, plus the dependent-count clamp edge. `fixtures/migration/README.md` records the provenance and the warning contract. |
 | `docs/reverse-engineering-protocol.md` | The **clean-room RE playbook** for studying legacy proprietary tax-file formats (`.tax`, `.tax[YYYY]`, `.LIF`, `.FIL`, `.RCD`, `.1PE`, `.3ME`, `.3PE`, `.DGC`, `.SCD`, `.THP`, `.TVL`, `.1PH`, `.TT[YYYY]STATE`). Read §2 before any RE session. |
@@ -206,7 +206,7 @@ git clone https://github.com/maniesh-NR/ClearFile.git
 cd ClearFile/clearfile
 flutter pub get
 flutter run                       # picks the active device
-flutter test                      # 124 tests green (107 + 17 golden fixtures)
+flutter test                      # 126 tests green (109 + 17 golden fixtures)
 flutter build apk --split-per-abi # Android armv7 / armv8a / x86_64
 flutter build linux               # Linux x64
 flutter build macos               # macOS universal
@@ -226,12 +226,15 @@ this; native builds keep file-backed persistence).
 Security-headers disclosure (honest limitation): **GitHub Pages serves no
 custom HTTP response headers.** The Stage-4 "security headers pinned"
 requirement is therefore met in meta-tag form only — the Content-Security-
-Policy and `no-referrer` policy pinned in `clearfile/web/index.html`, whose
-directives allow exactly what the deployed app loads (same-origin assets,
-the CanvasKit runtime, and — only if the visitor enables the AI assistant —
-the two provider endpoints). Meta CSP cannot carry `frame-ancestors`,
-`report-uri`, or HSTS; those protections are absent on `*.github.io` and
-are not claimed.
+Policy and `no-referrer` policy pinned in `clearfile/web/index.html`. The
+CSP deliberately allows a little headroom beyond the current bundle:
+`script-src`/`connect-src` keep a `www.gstatic.com` allowance (a recorded
+choice in `pages.yml` so a future CanvasKit-CDN build needs no CSP edit;
+the current bundle ships CanvasKit locally via `--no-web-resources-cdn`)
+plus the `'unsafe-inline'`/`'wasm-unsafe-eval'` sources Flutter's bootstrap
+requires. Meta CSP cannot carry `frame-ancestors` or `report-uri`; those
+protections are absent from the meta layer (the `*.github.io` edge itself
+serves HSTS site-wide). All of this is stated, never overstated.
 
 Boot verification: `scripts/flutter_web_smoke.py` serves the built bundle
 under the `/ClearFile/` path and checks, in headless Chromium, that the app

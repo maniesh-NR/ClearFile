@@ -65,7 +65,11 @@ expect() { # $1=desc $2=want_rc $3=got_rc $4=want_grep $5=output
 # --- scenario data ----------------------------------------------------------
 SHA_HERE="$(git rev-parse HEAD)"            # not every tag's target
 SHA_V1001="$(git rev-parse 'v1.0.1^{commit}')"
-SHA_PREV="$(git rev-parse HEAD~1)"
+# A commit PROVABLY different from the v1.1 target, at any future tip
+# (the gate found the earlier HEAD~1 choice was history-fragile: at the
+# tip that landed this fix, HEAD~1 WAS the v1.1 target and the scenario
+# degenerated into a passing guard).
+SHA_OTHER="$(git rev-parse 'v1.0.1^{commit}')"
 TAGOBJ_V11="$(git rev-parse 'v1.1')"        # the ANNOTATED tag OBJECT sha
 
 # 1. existing tag at a different commit -> refuse
@@ -93,8 +97,9 @@ rm -rf "$TMP"
 out="$(run_guard v1.1 "$TAGOBJ_V11" "$ROOT" 2>&1)"; rc=$?
 expect "annotated tag push (tag-object GITHUB_SHA) passes" 0 "$rc" "" "$out"
 
-# 6. LOCAL tag vs a different run commit -> refuse
-out="$(run_guard v1.1 "$SHA_PREV" "$ROOT" 2>&1)"; rc=$?
+# 6. LOCAL tag vs a provably different run commit -> refuse (v1.1's
+#    target e099bc0 is fixed history; v1.0.1's target 0bbb564 differs).
+out="$(run_guard v1.1 "$SHA_OTHER" "$ROOT" 2>&1)"; rc=$?
 expect "local tag vs different run commit refuses" 1 "$rc" "refusing: tag v1.1 exists" "$out"
 
 rm -f /tmp/tag_guard_body.sh
