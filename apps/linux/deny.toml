@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# The N2 gate's cargo-deny config (the first-external-dependency trigger,
+# SEC-2/LEGAL-5): a closed, GPL-3.0-only-compatible allow-list.
+#
+# ## The Slint license election (LEGAL-3)
+# The slint crates carry `GPL-3.0-only OR LicenseRef-Slint-Royalty-free-2.0
+# OR LicenseRef-Slint-Software-3.0`. THIS PROJECT ELECTS THE GPL-3.0-only
+# BRANCH ONLY (the ADR-017 licensing annex: "Slint under its GPL-3.0
+# option"); the royalty-free and commercial branches (their attribution-
+# badge terms) are NOT elected. The two LicenseRef ids are deliberately
+# ABSENT from the allow-list below: the crates pass via their GPL-3.0-only
+# leg, and any crate carrying ONLY a LicenseRef (a branch we have not
+# elected) must FAIL and be routed through a per-crate exception with a
+# recorded reason.
+
+[licenses]
+version = 2
+allow = [
+  "GPL-3.0-only",
+  "MIT",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "Zlib",
+  "Unicode-3.0",
+  "Unicode-DFS-2016",
+  "0BSD",
+  "CC0-1.0",
+]
+# Exactly `GPL-3.0-only` (not the deprecated `GPL-3.0`): GNU-pedantic ids.
+# GPL-2.0-only and unlicensed crates are barred (ADR-017's licensing annex)
+# — they are simply absent from the allow-list, so they fail closed.
+confidence-threshold = 0.93
+private = { ignore = true }
+
+# Sources: the audited tree is 100% crates.io-registry-sourced (verified at
+# the N2 gate over the 553-package probe lock) — anything else fails.
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []
+
+# The full lockfile is covered — incl. the target-gated packages that never
+# compile on Linux (windows/objc2/wasm-bindgen/ndk families): the CI check
+# runs against all targets' lock entries (SEC-4).
+[advisories]
+version = 2
+yanked = "deny"
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"

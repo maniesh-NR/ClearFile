@@ -128,7 +128,7 @@ HITS="$(
       ':(exclude)scripts/palette_tool/test/generate_palette_fixtures.dart' \
       ':(exclude)harness/adversarial/reports/2026-11-26-n1exit-engineering.md' \
       ':(exclude)harness/adversarial/reports/2026-11-26-n1exit-security.md' || true
-    git grep --cached -I -l -E "$RE_HEX_PATTERNS" -- docs clearfile src scripts fixtures harness core \
+    git grep --cached -I -l -E "$RE_HEX_PATTERNS" -- docs clearfile src scripts fixtures harness core apps \
       ':(exclude)docs/re-research/corpus-manifest.md' \
       ':(exclude)scripts/rust_toolchain_manifest' \
       ':(exclude)clearfile/.metadata' \

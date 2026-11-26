@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: GPL-3.0-only
+[package]
+name = "clearfile-linux"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+description = "ClearFile Linux native UI (N2, the ADR-017 epilogue: Slint over the clearfile-core Rust core)"
+publish = false
+
+# The N2 gate's audited-tree-is-the-built-tree condition (SEC-3): slint
+# is bound to the audited 1.19 series; default features OFF — the
+# skia-safe CDN prebuilts are EXCLUDED (the renderer set is femtovg +
+# software, per the gate's ENG-3); every CI invocation is --locked with
+# the committed Cargo.lock.
+[dependencies]
+clearfile-core = { path = "../../core" }
+slint = { version = "1.19", default-features = false, features = [
+  "std",
+  "backend-winit",
+  "renderer-femtovg",
+  "renderer-software",
+  "compat-1-2",
+  "accessibility",
+] }

@@ -114,3 +114,7 @@ server.log
 # the backup blob guard caught the result, as designed).
 /scripts/palette_tool/.dart_tool/
 /scripts/palette_tool/build/
+
+# N2 (the Linux native app crate — the guard-order rule: this rule lands
+# with the scaffold, BEFORE the first cargo invocation in apps/linux).
+/apps/linux/target/

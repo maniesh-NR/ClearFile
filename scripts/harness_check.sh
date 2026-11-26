@@ -157,6 +157,45 @@ else
   fail "the differential corpus's sha256 is not the digest recorded in fixtures/differential/README.md — regenerate + re-record, or the corpus has drifted"
 fi
 
+# N2 session 1 (D44): the palette-corpus ledger — the mechanical-join
+# mirror of the differential family: the corpus's own manifest must
+# equal its array, name the tracked generator + the 0.13.0 reference,
+# and the palette module + its verification test are tracked.
+PALETTE_MANIFEST=$(python3 - <<'PYEOF' 2>/dev/null || echo MISSING
+import json
+try:
+    d = json.load(open("fixtures/palette/cases.json"))
+    cases = d.get("cases", [])
+    if (d.get("kind") == "clearfile-palette"
+            and d.get("seedCount") == len(cases)
+            and d.get("roleCount") == 34
+            and d.get("paletteCount") == 6
+            and "0.13.0" in d.get("reference", "")
+            and len(cases) >= 33):
+        print(len(cases))
+    else:
+        print("DRIFT")
+except Exception:
+    print("MISSING")
+PYEOF
+)
+if [[ "$PALETTE_MANIFEST" =~ ^[0-9]+$ ]]; then
+  PALETTE_DIGEST=$(sha256sum fixtures/palette/cases.json 2>/dev/null | cut -d' ' -f1)
+  if grep -q "$PALETTE_DIGEST" fixtures/palette/README.md 2>/dev/null; then
+    pass "the palette corpus ledger: $PALETTE_MANIFEST seeds, 34 roles x 2, 6 ladders x 101, the 0.13.0 reference named, the digest recorded ($PALETTE_MANIFEST checks green) (D44)"
+  else
+    fail "the palette corpus's sha256 is not the digest recorded in fixtures/palette/README.md — regenerate + re-record, or the corpus has drifted"
+  fi
+else
+  fail "palette corpus drift: $PALETTE_MANIFEST — the manifest must equal the array, carry the 0.13.0 reference, 34 roles, 6 palettes"
+fi
+PALETTE_FILES=$(ls core/src/palette.rs core/tests/palette_port.rs apps/linux/Cargo.toml apps/linux/deny.toml apps/linux/src/main.rs apps/linux/Cargo.lock scripts/palette_tool/test/generate_palette_fixtures.dart 2>/dev/null | wc -l)
+if [ "$PALETTE_FILES" -eq 7 ]; then
+  pass "the D44/N2-scaffold surface is fully tracked (the palette module + verification + the apps/linux scaffold + the generator)"
+else
+  fail "D44/N2-scaffold file drift ($PALETTE_FILES of 7) — a palette module/test, scaffold file, or the generator is missing"
+fi
+
 # --- 2. Gate-scope consistency: WORKFLOW §2 tiering ↔ ROADMAP tiering -------
 WF_SCOPE=$(grep -c 'Stage-2 entry' "$WORKFLOW" || true)
 RM_SCOPE=$(grep -c 'Stage 2 entry' "$ROADMAP" || true)

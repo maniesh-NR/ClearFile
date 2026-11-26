@@ -1,6 +1,8 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-26 (the N2 delta-scoped gate CLOSED — ENTERED; the
+**Updated:** 2026-11-26 (N2 session 1 CLOSED — D44 complete: the palette
+module + corpus verification green (cargo test 170/170) + the
+apps/linux scaffold with every guard joined; earlier: the N2 gate CLOSED — ENTERED; the
 consolidation to Slint exercised under ADR-017's own clause with the
 demand verified live; the two-session box + the disk plan set; earlier
 the same day: N1 CLOSED — exit gate PASSED; N1 session 2 executed: the annex-(a)

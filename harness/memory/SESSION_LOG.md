@@ -2028,3 +2028,51 @@ D41/D42 residues ride their lanes.**
   tonal/scheme + the ladder verification → the roles), each green =
   backed up. This checkpoint is the corpus + generator + guards; the
   port follows in the next chunks of the session.
+
+## 2026-11-26 (N2 session 1 close) · D44 COMPLETE + the apps/linux scaffold: session 1 of the two-session box closes
+
+- **The palette port (chunks, continued from checkpoint 3):** chunk 1
+  (ad6bce2) = the low-level color math + Hct (888 lines: ColorUtils/
+  MathUtils/the chain's needs, ViewingConditions.make defaults, the full
+  Cam16::from_int path, the exact HctSolver loop incl. the 255-entry
+  critical-planes table extracted programmatically from the Dart
+  source, the euclidean-`%` rem_euclid mapping, Dart's signum(0)=0,
+  the Newton loop + the bisect fallback) — Hct round-trip exact on all
+  33 corpus seeds + the primary/gray edges, verified against
+  17-significant-digit Dart intermediates. Chunk 2 (69c8dda) = the tonal
+  palettes + SchemeTonalSpot + the 34 MaterialDynamicColors roles
+  (palette.rs → 2037 lines; the RoleWiring structural restructure —
+  Dart's `!`-asserted nullable fields become an enum; the pair
+  resolution with the members' own contrast curves, the nearer/farther
+  polarity, the delta expansion + the T50-59 stayTogether push; the
+  highestSurface bindings; the surface-container ladder through the
+  real ContrastCurve lerp; foreground_tone incl. the
+  negligible-difference edge) + the corpus verification
+  (palette_port.rs: 33 seeds × 6 ladders × 101 tones = 19,998 + 33 × 2
+  × 34 roles = 2,244 ARGB-exact checks, mutation-sanity-proven) +
+  THIRD-PARTY-NOTICES.md's Apache-2.0 entry (the core's first
+  third-party-derived material: a translation of Google's MCU 0.13.0,
+  derived-not-vendored). **cargo test 170/170 green.**
+- **The apps/linux scaffold (the box's session-1 half):** the crate
+  root at apps/linux/ (Cargo.toml: license GPL-3.0-only, publish
+  false, slint bound 1.19 with default-features OFF — the
+  femtovg+software renderer set, skia-safe EXCLUDED — and clearfile-core
+  as the direct path dependency; the lockfile: 539 packages, committed)
+  + deny.toml (the closed GPL-3.0-only-compatible allow-list, the
+  Slint GPL-3.0-only ELECTION comment with the LicenseRef ids
+  deliberately absent, sources = crates.io-only, yanked = deny,
+  wildcards = deny) + the main.rs scaffold stub (the session-2 shape
+  documented: the shared `load_and_compute(path)` pipeline, the
+  argv-envelope window + the --headless mode).
+- **The guard joins (the gate's condition 9, all same-commit):** the
+  .gitignore `/apps/linux/target/` rule landed BEFORE the first cargo
+  invocation; `apps` joined the backup ≥32-hex scan path list; the
+  harness_check palette-corpus ledger family + the D44/scaffold
+  file-presence family (25 ok families total).
+- **Session-1 EXIT per the box:** palette + corpus + module + tests
+  green (checkpoint discipline executed throughout — the fifth
+  divergence's lesson), the scaffold + the guards landed. Session 2 =
+  the window UI + the headless mode + the CI lane (the rustc ≥ 1.95
+  fail-closed guard, the cargo-deny step, both smokes) + the R1/R2
+  parser hardenings (or the explicit re-deadline) + the bookkeeping +
+  the N2 exit gate.
