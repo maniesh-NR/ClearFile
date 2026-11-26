@@ -8,6 +8,16 @@
 //! Module layout (no I/O anywhere in the library — pure functions only):
 //! - [`params`]: the TY2025 parameter tables (`tax_year.dart`).
 //! - [`engine`]: the compute pipeline (`calculator.dart`).
+//! - [`json`]: the zero-dependency JSON model + strict parser + writer
+//!   shared by the codec modules (N1 session 2, ADR-017 annex (b)).
+//! - [`envelope`]: the `.clearfile.json` envelope codec incl. the v1→v2
+//!   migration and its user-visible warning strings (Dart
+//!   `clearfile/lib/io/return_format.dart` / TS `src/lib/files/cfr.ts`).
+//! - [`txf`]: the TXF bridge codecs (import from Dart
+//!   `clearfile/lib/io/txf_import.dart`, export from TS `src/lib/files/txf.ts`).
+//! - [`tax_inspect`]: read-only `.tax` container inspection + the ClearFile
+//!   exchange container (Dart `clearfile/lib/io/tax_inspect.dart` / TS
+//!   `src/lib/files/taxfile.ts`).
 //!
 //! The input model mirrors the golden-fixture input schema exactly (the
 //! `TaxReturnData` JSON shape in `fixtures/tax/*.json`); the result struct
@@ -23,7 +33,11 @@
 //!   (fixture 00 pins `effectiveRate: 0`).
 
 pub mod engine;
+pub mod envelope;
+pub mod json;
 pub mod params;
+pub mod tax_inspect;
+pub mod txf;
 
 pub use engine::{compute, compute_ty2025};
 pub use params::{Bracket, TaxYearParameters, TY2025};

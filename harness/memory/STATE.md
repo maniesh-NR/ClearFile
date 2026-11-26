@@ -1,6 +1,19 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-26 (continuation session: the owner ruled — the
+**Updated:** 2026-11-26 (N1 session 2 executed: the annex-(a)
+differential/property harness + the annex-(b) ported bridge suites
+landed — the core's format codecs (envelope incl. the v1→v2 migration
+with verbatim warning strings IN the core, TXF import/export with the
+bit-faithful toFixed(2), the .tax inspection with the malformed-ZIP
+crash battery, the exchange container + CRC32, the shared
+zero-dependency strict JSON module), the tracked Dart generator (seed
+771937021) emitting the 550-case byte-deterministic corpus consumed at
+exact binary64 parity, the 7-test property harness incl. the D33
+QSS↔MFJ pin, the payload-seam composition; cargo test 159/159 green;
+harness_check 21 oks 0 failures; a real port bug found by the ported
+Dart canonical test — the reversed import-date year tail — fixed). The
+N1 execution box closed at exactly two sessions. Earlier this date:
+continuation session: the owner ruled — the
 three Stages-4/5/6 gate ratification surfacings RATIFIED (the
 after-the-fact sequencing, the PAT Pages-enablement, the pages.yml
 `id-token: write` grant; recorded in DECISIONS.md's 2026-11-26
@@ -322,17 +335,17 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**N1 session 2 — the box's final session (17/17 already green after
-session 1, so session 2 = the remaining annex items):** the D43
-annex-(a) differential/property harness (the named mechanism: a
-Dart-side random/edge input generator emitting JSON cases that cargo
-test consumes against the Rust core, the Dart reference computing the
-same cases in-process), the ported bridge tests (annex (b): TXF spec
-tests, envelope round-trips + warning wording IN the core, the
-malformed-ZIP crash battery with the ENG-1 crafted file as the
-template — the codecs themselves are the session-2 build), then the
-N1 EXIT gate (the box is TWO sessions; the Stage-2 exit slip is the
-mandatory agenda item at the next convened gate).
+**The N1 EXIT gate (session 2 executed — the box closed at exactly two
+sessions):** the exit checklist is satisfied (17/17 held; the annex-(a)
+differential/property harness GREEN — 550 cases × 26 fields exact
+binary64 parity + the 7-test property harness; the annex-(b) ported
+bridge suites green — envelope + TXF + .tax inspection + the
+composition; cargo test 159/159). The gate convenes on the combined
+N1 delta with the **Stage-2 exit slip as mandatory agenda** (the T3
+MSI-record keystream divergence at payload offset 0x24000, the
+decompile chase, tax-modern.md unwritten — the next convened gate owes
+it the agenda slot per the slip record). Then the epilogue's own gates
+per the tiering: N2 (Linux native UI, delta-scoped — the two-toolkit
+question consolidatable there).
 **Owner-side surfacings standing:** Dependabot alerts, branch
-protection on `main`, PAT expiry (D30 — no ruling received). The T3
-password-layer chase (the Stage-2 exit slip) rides its lane.
+protection on `main`, PAT expiry (D30 — no ruling received).

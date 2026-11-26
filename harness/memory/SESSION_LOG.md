@@ -1748,3 +1748,137 @@ D41/D42 residues ride their lanes.**
   its SPDX header (the LEGAL finding). SESSION-1 EXIT: the box has one
   session left (session 2 = 17/17 + the annex-(a) differential/property
   harness (D43) + the ported bridge tests).
+
+## 2026-11-26 (N1 session 2) · The annex-(a) differential/property harness + the ported bridge suites: the core's format codecs land
+
+- **Scope (the box's second and final session, CONSENSUS's N1 gate
+  record):** 17/17 (held — 42 runner tests green) + the annex-(a)
+  differential/property harness (D43's named mechanism) + the ported
+  bridge tests (ADR-017 annex (b)). All three landed; the execution
+  box closed at two sessions exactly, no tripwire.
+- **The differential harness (annex (a) / D43):** the tracked Dart
+  generator at `scripts/generate_differential_cases.dart` (1,357 lines,
+  pure Dart with relative imports, own xorshift64\* — never dart:math
+  Random; every threshold read at runtime from the Dart TY2025 tables;
+  expected values computed via the golden suite's own call path —
+  `TaxReturnData.fromJson` + `compute`), relocated from
+  `clearfile/tool/` to `scripts/` so the N1 delta keeps the PROD-5
+  boundary (zero `clearfile/` or `src/` paths — the relocation is part
+  of the honest record). Corpus: `fixtures/differential/cases.json` —
+  seed 771937021, **550 cases** (300 random incl. 10 negative-input
+  cases and QSS-weighted sampling — the annex's exhibit-A coverage
+  hole; 246 edge: every ordinary bracket boundary ±$0.01 × 5 statuses,
+  SALT/NIIT/CTC per-status thresholds ±$0.01, QDI caps, the
+  cents-normalize-before-ceiling trap, the itemized-tie
+  strictly-greater rule, QSS↔MFJ twins + the D33 divergence twin,
+  W-2 left-fold-order twins, ACTC cap/earned-floor zones, the D31b
+  SLI zone marked `edge-d31b`; 4 edge-d31b) — **byte-deterministic**
+  (sha256 `a15ac79c…`, two consecutive regeneration runs identical,
+  re-verified after the relocation; the agent's 550-case full
+  recomputation audit: bitwise equality on all 26 fields). The
+  26-key rule (D31c: three-runner-derivable only, never marginalRate)
+  is asserted per case by the consumer AND by harness_check.
+  Consumer: `core/tests/differential_harness.rs` — **550 cases × 26
+  fields, EXACT binary64 parity (tolerance 0.0 semantics, NaN
+  fail-closed)** — green; the strict fixture reader accepts every
+  generated input. The corpus's provenance contract (NOT golden
+  fixtures; the annex-(d) discipline distinction) is documented in
+  `fixtures/differential/README.md`.
+- **The property harness (annex (a), the property half):**
+  `core/tests/property_harness.rs` — 7 tests: totalIncome is exactly
+  the left-associated fold (bitwise, over 500 random inputs + the whole
+  corpus); ordinary tax monotone non-decreasing + bracket-boundary
+  continuous (step ≤ ε×top-rate) on per-status grids incl. every
+  boundary ±0.01 and a 600-point grid; refund/owed exclusivity +
+  non-negativity + taxable/niit/totalTax ≥ 0 + effectiveRate ∈ [0,1]
+  (agi>0) / == 0 (agi≤0, the Dart guard); deduction-method label/total
+  consistency + the strictly-greater auto rule + qualifyingChildren ==
+  the qualifying count; the D33 QSS↔MFJ column equivalence (all derived
+  fields identical on an 80-point grid with no dependents) WITH the
+  live CTC divergence pin (QSS phases out on the $200k column, not the
+  joint $400k); bitwise determinism; the bracket-table invariants.
+- **The ported bridge suites (annex (b)) — the core's format codecs:**
+  - `core/src/json.rs` (~870 lines): the shared zero-dependency JSON
+    module — strict RFC 8259 parser (number grammar, escapes incl.
+    surrogate pairs, duplicate keys last-value-at-first-position, a
+    128-deep nesting limit as the documented crafted-input hardening,
+    non-finite refused) + the ECMAScript-identical number emission
+    (byte-identical to BOTH Dart `jsonEncode` and V8 `JSON.stringify`
+    on the whole f64 range, pinned by a 20k-value xorshift64\*
+    round-trip battery) + the pretty writer byte-identical to Dart's
+    `JsonEncoder.withIndent('  ')`/V8 `(x, null, 2)`.
+  - `core/src/envelope.rs` (1,170 lines): the `.clearfile.json`
+    envelope — `TaxReturnData` (the full model incl. id/displayName/
+    created/modified as ISO text under the purity seam), `to_json_map`
+    (the flat serialization, field order verbatim), the tolerant
+    from_json_map (json_codec.dart semantics), `ReturnFileCodec`
+    encode (2-space pretty, savedAt passed in — Dart's `DateTime.now()`
+    is the clock seam) + decode (envelope v1/v2 + legacy flat + the
+    version guard) with EVERY warning/error string VERBATIM, and the
+    v1 migration field-for-field; `decode_return_import`.
+  - `core/src/txf.rs` (941 lines): the TXF importer whole (the refnum
+    table, W-2 copy spaces, keep-the-first, the three UTF-16-unit caps
+    incl. the 10,000-record ENG-2 cap, unknown-refnum reporting) +
+    the TS exporter (the bit-faithful `toFixed(2)` money lines —
+    tie-to-larger, exact dyadic expansions ≥ 2^53) + the ported
+    `parse_money` (money.dart semantics, decimal-comma refusal).
+    **A real port bug found and fixed in-session by porting the Dart
+    canonical test:** the import-date year tail collected REVERSED
+    ("6202" for 2026) — the date warning read wrong; caught by the
+    ported `warnings[0].contains('2026')` assertion.
+  - `core/src/tax_inspect.rs` (830 + the composition): the `.tax`
+    analysis (EOCD scan-bounded, central-directory walk, STORE
+    extraction, Deflate detection, the honest three-kind taxonomy,
+    entropy flags, never a panic on crafted input) + the
+    exchange-container writer (hand-rolled CRC32 — the standard
+    check value pinned, STORE-only, the honest README wording
+    verbatim) + the payload seam (`clearfile_payload: Option<String>`
+    — ADR-017's "envelope as payload boundary") + the composed
+    `import_tax_container` (the reference's import branch
+    reconstructed: merged warnings in the reference's order, the
+    decode-failure fall-through with its verbatim warning and the
+    re-derived Intuit/plain-ZIP summary).
+  - Ported suites: `return_format_port.rs` (25: the Dart
+    return_format 15 + the mjs cfr groups + the shared
+    fixtures/migration exact warning lists + the lossless round-trip),
+    `tax_inspect_port.rs` (37: the Dart 10 + the mjs tax groups + 19
+    battery extensions beyond the references), `txf_port.rs` (22: the
+    mjs txf groups + the Dart txf-import 11 + the money 5 + the
+    UTF-16-cap/toFixed(2)/round-trip extensions),
+    `exchange_composition.rs` (6: the composed import incl. the
+    v1-fixture merged-warning list, the fall-throughs, the full
+    pipeline round-trip through compute).
+- **The suite: cargo test --locked = 159/159 GREEN** (15 lib + 2
+  manifest + 42 runner + 3 differential + 7 property + 25
+  return_format + 37 tax_inspect + 22 txf + 6 composition) — the
+  orchestrator's own full re-run on the normal target dir.
+- **Ledger/guards:** harness_check +2 families (the differential
+  corpus ledger: caseCount == array == 550 with the generator named;
+  the session-2 file-presence family) — **21 oks, 0 failures**; README
+  gains the `fixtures/differential/` row + the core/ row update (the
+  codecs, the ports, the harnesses, the counts); the backup guard's
+  64-hex known-hash allow-list gains the third recorded instance (the
+  corpus README's regeneration digest — same class as the toolchain
+  pin, recorded in the script's comment).
+- **Execution notes (honest record):** the work ran as five parallel
+  subagent lanes (envelope, TXF, tax-inspect, generator, SDK fetch).
+  THREE Task-agent runs hit the subagent context deadline — two of
+  them (the envelope port, the TXF port) had already written complete
+  work products at the deadline: found green-but-unverified, reviewed,
+  re-run and integrated by the orchestrator (the review caught the one
+  real bug above); the third (the first TXF attempt) left a
+  two-variable naming slip fixed by hand. The class — subagent
+  deadline ≠ incomplete work; verify, don't discard — is recorded for
+  the next parallel lane plan. The SDK fetch lane re-fetched the
+  sha256-pinned Flutter 3.47.9 (dart 3.13.7) after the recycle wipe.
+- **CI:** hygiene runs #28/#29/#30 verified green live (the three
+  session-1 pushes b9008f9/5f7bc33/4a55caf); this session's push
+  verified below in its own bullet.
+- **N1 EXIT CHECKLIST SATISFIED (the box + ENG-6):** 17/17 ✓ (session
+  1, held), the annex-(a) differential/property harness ✓ (D43 closes),
+  the ported bridge tests ✓ (annex (b): TXF spec tests, `.tax`
+  inspection incl. the malformed-ZIP crash battery, envelope
+  round-trips + warning-wording with the strings IN the core). The N1
+  exit gate convenes next on this delta (the Stage-2 slipped-exit T3
+  residue — the keystream divergence chase + tax-modern.md — is
+  mandatory agenda there per the Stage-2 slip record).

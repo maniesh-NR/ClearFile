@@ -121,19 +121,23 @@ HITS="$(
     git grep --cached -I -l -E "$HEX_PATTERNS" -- . ':(exclude)*.lock' \
       ':(exclude)package-lock.json' ':(exclude)bun.lock' ':(exclude)pnpm-lock.yaml' \
       ':(exclude)docs/re-research/corpus-manifest.md' \
-      ':(exclude)scripts/rust_toolchain_manifest' || true
+      ':(exclude)scripts/rust_toolchain_manifest' \
+      ':(exclude)fixtures/differential/README.md' || true
     git grep --cached -I -l -E "$RE_HEX_PATTERNS" -- docs clearfile src scripts fixtures harness core \
       ':(exclude)docs/re-research/corpus-manifest.md' \
       ':(exclude)scripts/rust_toolchain_manifest' \
       ':(exclude)clearfile/.metadata' \
+      ':(exclude)fixtures/differential/README.md' \
       ':(exclude)*.lock' ':(exclude)package-lock.json' ':(exclude)pnpm-lock.yaml' || true
   } | sort -u
 )"
 # The tracked files allowed to carry 64-hex runs, each the recorded
 # known-hash allow-list instance of its class: the TT RE corpus provenance
-# manifest (ADR-019, 2026-11-22) and the Rust toolchain pin manifest
-# (N1 entry gate SEC-2, 2026-11-26). Every other path keeps the strict
-# heuristic.
+# manifest (ADR-019, 2026-11-22), the Rust toolchain pin manifest
+# (N1 entry gate SEC-2, 2026-11-26), and the differential corpus's
+# provenance README carrying its own regeneration digest (N1 session 2,
+# ADR-017 annex (a) — the third recorded known-hash instance). Every
+# other path keeps the strict heuristic.
 if [ -n "$(git grep --cached -I -l -E "$HEX_PATTERNS" -- docs/re-research/corpus-manifest.md 2>/dev/null)" ]; then
   echo "backup: manifest allow-list active (corpus hashes are the recorded known-hash instance)" >&2
 fi

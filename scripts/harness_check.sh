@@ -108,6 +108,42 @@ else
   fail "README lacks the core/ row with the honest fixture count (N1 gate PROD-3) — add one row carrying the manifest's run count"
 fi
 
+# N1 session 2 (ADR-017 annex (a)/(b)): the differential-corpus ledger —
+# PROD-3's mechanical-join mirror for the annex-(a) corpus. The corpus's
+# own manifest must equal its array, stay the full generated set, and name
+# the tracked generator where it actually lives (the relocation is part
+# of the PROD-5 boundary: zero clearfile/ or src/ paths in the N1 delta).
+DIFF_MANIFEST=$(python3 - <<'PYEOF' 2>/dev/null || echo MISSING
+import json
+try:
+    d = json.load(open("fixtures/differential/cases.json"))
+    cases = d.get("cases", [])
+    if (d.get("caseCount") == len(cases)
+            and d.get("kind") == "clearfile-differential"
+            and d.get("generator") == "scripts/generate_differential_cases.dart"
+            and len(cases) >= 500):
+        print(len(cases))
+    else:
+        print("DRIFT")
+except Exception:
+    print("MISSING")
+PYEOF
+)
+if [[ "$DIFF_MANIFEST" =~ ^[0-9]+$ ]]; then
+  pass "the differential corpus ledger: caseCount == the array == $DIFF_MANIFEST cases, the tracked generator named (annex (a) / D43)"
+else
+  fail "differential corpus drift: $DIFF_MANIFEST — the manifest must equal the array, carry >= 500 cases, and name scripts/generate_differential_cases.dart"
+fi
+N1S2_FILES=$(ls core/src/json.rs core/src/envelope.rs core/src/txf.rs core/src/tax_inspect.rs \
+    core/tests/differential_harness.rs core/tests/property_harness.rs core/tests/return_format_port.rs \
+    core/tests/txf_port.rs core/tests/tax_inspect_port.rs core/tests/exchange_composition.rs \
+    scripts/generate_differential_cases.dart 2>/dev/null | wc -l)
+if [ "$N1S2_FILES" -eq 11 ]; then
+  pass "the N1 session-2 surface is fully tracked (4 modules + 6 test files + the generator)"
+else
+  fail "N1 session-2 file drift ($N1S2_FILES of 11) — a codec module, ported suite, harness, or the generator is missing"
+fi
+
 # --- 2. Gate-scope consistency: WORKFLOW §2 tiering ↔ ROADMAP tiering -------
 WF_SCOPE=$(grep -c 'Stage-2 entry' "$WORKFLOW" || true)
 RM_SCOPE=$(grep -c 'Stage 2 entry' "$ROADMAP" || true)

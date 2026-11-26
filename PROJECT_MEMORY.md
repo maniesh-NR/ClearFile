@@ -365,6 +365,27 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
 ## Recent Progress & Git Activity
 
 ```diff
+### Commit: 4a55caf - backup(sandbox): backup(sandbox): N1 session 1 EXECUTED - the Rust core landed (the funded epilogue's first execution session, per the N1 entry gate's session-1 condition ledger). Toolchain: pinned rust/cargo 1.100.0 fetched via the new tracked fetcher (scripts/fetch_rust_toolchain.sh + scripts/rust_toolchain_manifest - the SEC-2 tracked-manifest row, version+url+sha256 resolved from the official channel manifest; quirk-20 hardening; the in-session discovery that the dist tarball is a COMPONENT tree -> --strip-components=2 merges cargo/rustc/rust-std into one prefix and the heavy non-build components are excluded; unauthenticated fetch only; the tarball-skip-when-verified improvement). core/: clearfile-core 0.1.0 edition-2021, std-only ZERO dependencies (Cargo.lock = exactly the root package - asserted fail-closed by the new hygiene license-check step, the LEGAL-2 cargo-deny discharge at core-landing, upgrade due with the first external dependency), SPDX GPL-3.0-only on every tracked file, lib pure (no fs/env/io), calculator.dart ported WHOLE (SLI+SALT+deduction-choice+payments; f64-first with operation order preserved; the four arithmetic-semantics traps in the doc-comment incl. the CTC cents-normalize-before-the-1000-ceiling and NOT porting the oracle's +999 idiom), the STRICT fixture reader (named-field errors), the comparator ported EXACTLY from verify_golden_fixtures.py (per-fixture tolerance 0.005 default / 0.505 fixture-01, delta==tolerance passes, NaN fail-closed via !(delta<=tolerance), deductionMethodUsed exact-string) + boundary/eps/NaN unit tests, the honest-subset skip map + coverage guard. Suite: cargo test --locked 47/47 GREEN (3 lib + 2 manifest + 42 runner; 17 per-fixture tests, 0 ignored - the honest claim is 17 of 17 RUN-GREEN; orchestrator re-verified independently; the port's field-by-field parity audit vs the oracle: 442 fields, max delta 0.0). CI: hygiene suites job + the license assertion + cargo test --locked with version echo (no new uses: lines, no secrets). Guards: .gitignore /core/target/ BEFORE any cargo call; core/ joined sandbox_backup's >=32-hex scan path list; the toolchain manifest joined the 64-hex allow-list (second recorded instance); harness_check gains the mechanical ledger join (manifest run+deferred == fixtures/tax count; the README core/ row with the honest count). Boundary PROD-5 held: zero clearfile/ or src/ paths in the delta. release.yml untouched (the variant precondition - the new guard passes). Box: ONE session remains (session 2 = the D43 annex-(a) differential/property harness + the ported bridge tests, then the N1 exit gate). 19 harness_check oks, 0 failures @ 2026-11-26T10:4xZ @ 2026-11-26T10:46:40Z (Z User, 2026-11-26)
+ .github/workflows/hygiene.yml   |   33 +-
+ .gitignore                      |    5 +-
+ PROJECT_MEMORY.md               |   37 +-
+ README.md                       |    3 +-
+ core/.gitignore                 |    4 +
+ core/Cargo.toml                 |   13 +
+ core/src/engine.rs              |  371 ++++++++++++++
+ core/src/lib.rs                 |  248 ++++++++++
+ core/src/params.rs              |  276 +++++++++++
+ core/tests/fixture_manifest.rs  |  127 +++++
+ core/tests/fixtures_runner.rs   |  553 +++++++++++++++++++++
+ core/tests/harness/mod.rs       | 1014 +++++++++++++++++++++++++++++++++++++++
+ harness/memory/SESSION_LOG.md   |   40 ++
+ harness/memory/STATE.md         |   63 +--
+ scripts/fetch_rust_toolchain.sh |   77 +++
+ scripts/harness_check.sh        |   21 +
+ scripts/rust_toolchain_manifest |    1 +
+ scripts/sandbox_backup.sh       |   18 +-
+ 18 files changed, 2852 insertions(+), 52 deletions(-)
+
 ### Commit: 5f7bc33 - backup(sandbox): backup(sandbox): the N1 full-depth entry gate CLOSED - N1 ENTERED (4 x PROCEED-WITH-CONDITIONS unanimous: ADV-SEC 7, ADV-LEGAL 5, ADV-ENG 9, ADV-PROD 7 conditions; reports filed 2026-11-26-n1-*.md). Gate-level conditions discharged in-session: the TWO-session execution box (session 2 = 17/17 + the annex-(a) differential/property harness + ported bridge tests; Stage-3 tripwire edge rule, extensions need an owner ruling), the third-engine boundary sentence (ROADMAP+STATE: zero-engine-code-touched scoped to the two existing engines, core/ additive by design, delta never touches clearfile/ or src/), the dated 16->17 fixture-count erratum (DECISIONS orchestrator annotation + ROADMAP; actual 17, QSS #17/D33), the zero-dependency fail-closed license assertion named as the licensing annex's cargo-deny discharge at core-landing (upgraded at the first external dependency), harness_check gains the release.yml variant-precondition guard (zero core/|clearfile-core|cargo) and the N-outcome counter 0->1, the tracked fetch_flutter_sdk.sh SPDX residue repaired (LEGAL's live D14-class finding), the Cargo-semver fourth-version-plane note, D43 recorded (the annex-(a) deferral with the named Dart-generator mechanism). Session-1 binding conditions live in CONSENSUS's N1 gate record and bind the execution session that follows. 0 failures @ 2026-11-26T10:2xZ @ 2026-11-26T10:15:40Z (Z User, 2026-11-26)
  harness/adversarial/CONSENSUS.md | 98 ++++++++++++++++++++++++++++++++++++++++
  harness/memory/DEBT.md           | 16 +++++++
@@ -387,9 +408,5 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
  harness/memory/STATE.md          | 54 ++++++++++++++++++++++------------------
  scripts/harness_check.sh         |  8 +++---
  9 files changed, 159 insertions(+), 59 deletions(-)
-
-### Commit: b3bac6e - backup(sandbox): backup(sandbox): the SESSION_LOG's 2026-11-26 entry gains its final append-only bullet - the post-teardown CI fix (67b9501) that the 08:41 CI run forced: the tag-guard suite's scenario SHAs resolve from LOCAL tags a CI checkout (fetch-depth 1, fetch-tags false) does not have, so the suite now fetches the three probe tags from origin first (leading + refspecs; a full local clone is a no-op update). The bullet records the both-ways proof (6/6 fresh shallow clone simulating CI + 6/6 full repo) and the live-verified green re-run on the tip (hygiene run #26, all four jobs, 2m28s - checked post-push this continuation). Session record now complete: bootstrap reconciliation, Stage A honest deferral, Stages 4/5/6 executed+gated (4x PROCEED-WITH-CONDITIONS, conditions discharged), v1.1 shipped (D29 verified live, guard fixed), Pages LIVE, teardown syncs - every push accounted for in the log @ 2026-11-26T09:1xZ @ 2026-11-26T09:25:01Z (Z User, 2026-11-26)
- harness/memory/SESSION_LOG.md | 11 +++++++++++
- 1 file changed, 11 insertions(+)
 ```
 

@@ -584,6 +584,19 @@ v1's stages still close first.
   2026-11-26):** this bullet and ADR-017's annex say "16 shared golden
   fixtures" — the actual count is 17 (fixture #17, the QSS pair, landed
   later as D33); the annex text predates it, and the runner consumes 17.
+  **Session-2 execution (2026-11-26, the box's final session):** the
+  exit checklist satisfied — 17/17 held, the annex-(a)
+  differential/property harness landed (the tracked Dart generator
+  `scripts/generate_differential_cases.dart` seed 771937021 emitting
+  the 550-case byte-deterministic corpus `fixtures/differential/
+  cases.json`, consumed at exact binary64 parity, + the 7-test property
+  harness), the annex-(b) ported bridge suites landed (the envelope
+  incl. the v1→v2 migration with the warning strings IN the core, TXF
+  import/export, the .tax inspection with the malformed-ZIP crash
+  battery, the exchange container, the payload-seam composition); cargo
+  test 159/159 green; D43 closed. The execution box closed at exactly
+  two sessions. **The N1 EXIT gate convenes next** (the Stage-2 exit
+  slip is the mandatory agenda item per the slip record).
 - **N2 — Linux native UI**: the owner's two-tier assignment with one
   toolkit per tier — gtk3-rs (older tier) / Slint (modern tier);
   consolidatable at this gate if single-maintainer reality demands it.

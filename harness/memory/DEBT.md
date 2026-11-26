@@ -190,3 +190,20 @@ in-process — N1's exit checklist names the harness; exceeding the
 two-session box fires the Stage-3 tripwire precedent. Also debt-adjacent,
 recorded at the same gate: the D31c caveat carries to the Rust runner —
 if N1 authors any fixtures, they pin only three-runner-derivable fields.
+
+**N1 session 2 (2026-11-26, append-only):** **D43 CLOSED** — the
+annex-(a) differential/property harness landed exactly per its recorded
+mechanism: the tracked Dart generator (`scripts/generate_differential_cases.dart`,
+relocated from `clearfile/tool/` for the PROD-5 zero-clearfile/src-delta
+boundary) emitting `fixtures/differential/cases.json` (seed 771937021;
+550 cases: 300 random + 246 edge + 4 edge-d31b; byte-deterministic,
+sha256 regeneration-verified) with the Dart reference computing the
+expected values in-process; `core/tests/differential_harness.rs`
+consumes them against the Rust core — 550 × 26 fields EXACT binary64
+parity, tolerance-0.0 semantics — plus `core/tests/property_harness.rs`
+(the property half: fold order, bracket monotonicity/continuity,
+refund/owed exclusivity, the D33 QSS↔MFJ column equivalence). The
+26-key rule (D31c) is asserted per case by the consumer AND by
+harness_check's new corpus-ledger family. The annex-(b) ported bridge
+suites landed with it (envelope + TXF + .tax inspection + the
+composition). The N1 exit gate convenes on the combined delta.
