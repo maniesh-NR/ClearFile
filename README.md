@@ -214,6 +214,31 @@ flutter build windows             # Windows x64
 flutter build web                 # Static web assets
 ```
 
+## Web demo (GitHub Pages)
+
+The Flutter web build is deployed at
+`https://maniesh-NR.github.io/ClearFile/` by `.github/workflows/pages.yml`
+(on push to `main` touching `clearfile/`, and via manual dispatch). The
+deployed build runs the app **from the browser tab's memory** — returns and
+AI settings are not persisted across reloads (the Welcome screen states
+this; native builds keep file-backed persistence).
+
+Security-headers disclosure (honest limitation): **GitHub Pages serves no
+custom HTTP response headers.** The Stage-4 "security headers pinned"
+requirement is therefore met in meta-tag form only — the Content-Security-
+Policy and `no-referrer` policy pinned in `clearfile/web/index.html`, whose
+directives allow exactly what the deployed app loads (same-origin assets,
+the CanvasKit runtime, and — only if the visitor enables the AI assistant —
+the two provider endpoints). Meta CSP cannot carry `frame-ancestors`,
+`report-uri`, or HSTS; those protections are absent on `*.github.io` and
+are not claimed.
+
+Boot verification: `scripts/flutter_web_smoke.py` serves the built bundle
+under the `/ClearFile/` path and checks, in headless Chromium, that the app
+boots (Flutter view attached, a drawn non-blank UI, zero page errors) —
+the disclaimer copy itself is pinned by the widget suite, and the
+screenshot at deploy time is reviewed against the PROD-5 prominence check.
+
 ## Running the web prototype
 
 ```bash

@@ -1,0 +1,97 @@
+name: Deploy Flutter web build to GitHub Pages
+
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# ROADMAP Stage 4 — GitHub Pages deploy of the Flutter web build.
+#
+# Repo security contract (Stage-2 entry gate SEC-1, D10):
+# - least privilege: contents: read workflow-wide; the deploy job adds
+#   pages: write + id-token: write ONLY (the OIDC grant the deploy-pages
+#   API requires — a recorded deviation from ADV-SEC Stage-0's "pages:
+#   write + contents: read, nothing more", which predates deploy-pages'
+#   OIDC exchange).
+# - every `uses:` pinned to a full 40-hex commit SHA, tag in comment (D10;
+#   all pins resolved live via git ls-remote).
+# - timeout-minutes + a concurrency group on every job.
+# - no pull_request_target, no secrets (only the implicit GITHUB_TOKEN).
+# - no tags are consumed here, so release.yml's tag-SHA guard does not
+#   apply; the fail-closed posture is carried by the base-href smoke check
+#   and the boot-verified local build that landed this file.
+#
+# "Security headers pinned" (ROADMAP Stage 4): GitHub Pages cannot serve
+# custom HTTP response headers; the pinned set is the meta-tag
+# CSP/referrer policy in clearfile/web/index.html plus the README
+# disclosure naming the limitation (meta CSP carries no frame-ancestors /
+# report-uri / HSTS). Recorded, not papered over.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'clearfile/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Flutter web (release)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: clearfile
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: '3.47.9'
+          cache: true
+      - name: Ensure the web target is enabled
+        run: flutter config --enable-web
+      - run: flutter pub get
+      # The site is served at https://maniesh-NR.github.io/ClearFile/ —
+      # the base href must match the repo path segment casing exactly.
+      # --no-web-resources-cdn bundles CanvasKit locally so the deployed
+      # bundle matches the locally boot-verified build exactly (no CDN
+      # dependency at runtime; the CSP keeps a harmless gstatic allow
+      # because meta CSP is inherited by any future CDN choice).
+      - run: flutter build web --release --base-href /ClearFile/ --no-web-resources-cdn
+      - name: Smoke-check base href + add .nojekyll (fail closed)
+        run: |
+          grep -q 'href="/ClearFile/"' build/web/index.html || {
+            echo "base href missing/wrong in build/web/index.html" >&2
+            exit 1
+          }
+          touch build/web/.nojekyll
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        with:
+          # upload steps are workspace-root-relative (defaults.run
+          # .working-directory applies to run steps only) — the same quirk
+          # release.yml's artifact uploads already work around.
+          path: clearfile/build/web
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write      # Pages deployment API grant
+      id-token: write   # OIDC token exchange deploy-pages requires
+    steps:
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+        with:
+          enablement: true   # auto-enable Pages on the first run if unset
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

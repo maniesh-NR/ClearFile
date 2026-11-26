@@ -140,16 +140,27 @@ class AiSettings {
 }
 
 /// Persists [AiSettings] as JSON in the app's private directory.
+///
+/// The web build has no filesystem: construct it with [AiSettingsStore.inMemory]
+/// and load()/save() become session-scoped no-ops (defaults apply each boot —
+/// keys are re-entered per session; disclosed on the Welcome screen on web).
 class AiSettingsStore {
-  AiSettingsStore(this.file);
+  AiSettingsStore(this.file) : _memoryOnly = false;
 
-  final File file;
+  /// Session-scoped store: no file is ever touched (the web build).
+  AiSettingsStore.inMemory()
+      : file = null,
+        _memoryOnly = true;
+
+  final File? file;
+  final bool _memoryOnly;
   AiSettings settings = AiSettings();
 
   Future<void> load() async {
-    if (!await file.exists()) return;
+    if (_memoryOnly || file == null) return;
+    if (!await file!.exists()) return;
     try {
-      final decoded = jsonDecode(await file.readAsString());
+      final decoded = jsonDecode(await file!.readAsString());
       if (decoded is Map<String, dynamic>) {
         settings = AiSettings.fromJson(decoded);
       }
@@ -159,8 +170,9 @@ class AiSettingsStore {
   }
 
   Future<void> save() async {
-    await file.parent.create(recursive: true);
-    await file.writeAsString(
+    if (_memoryOnly || file == null) return;
+    await file!.parent.create(recursive: true);
+    await file!.writeAsString(
         const JsonEncoder.withIndent('  ').convert(settings.toJson()));
   }
 }

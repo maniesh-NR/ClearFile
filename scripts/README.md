@@ -61,6 +61,13 @@ Scripts in this directory fall into two groups:
      Playwright — welcome copy, sample-return load, results, and a
      mid-flow reload that must rehydrate state from localStorage.
      Needs `pip install playwright && playwright install chromium`.
+   - `flutter_web_smoke.py` — Stage-4 Flutter-web boot verification: serves
+     the built `clearfile/build/web` bundle under the `/ClearFile/` path
+     segment and checks, in headless Chromium, that the app boots (base
+     href, Flutter view attached, a drawn non-blank screenshot, zero page
+     errors). CanvasKit renders to canvas, so the DOM carries no text —
+     content is pinned by the widget suite and the screenshot is reviewed
+     against the PROD-5 prominence check. Same Playwright dependency.
    - `harness_check.sh` — harness self-enforcement (D19): mechanical
      cross-checks of ROADMAP↔CONSENSUS gate status, tiering consistency,
      STATE freshness, stated-vs-declared test totals (data-driven golden

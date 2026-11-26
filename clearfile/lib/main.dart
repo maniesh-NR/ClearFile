@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'ai/settings.dart';
+import 'io/memory_return_store.dart';
 import 'io/return_store.dart';
 import 'ui/app_state.dart';
 import 'ui/shell.dart';
@@ -15,12 +17,23 @@ import 'ui/shell.dart';
 /// and must not be used to prepare a real tax return.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final base = await getApplicationDocumentsDirectory();
-  final state = AppState(
-    store: FileReturnStore(base),
-    settingsStore:
-        AiSettingsStore(File('${base.path}/$aiSettingsFileName')),
-  );
+  // The web build has no filesystem: returns and AI settings live in memory
+  // for the tab's lifetime only (disclosed on the Welcome screen). Native
+  // platforms keep the file-backed stores.
+  final AppState state;
+  if (kIsWeb) {
+    state = AppState(
+      store: MemoryReturnStore(),
+      settingsStore: AiSettingsStore.inMemory(),
+    );
+  } else {
+    final base = await getApplicationDocumentsDirectory();
+    state = AppState(
+      store: FileReturnStore(base),
+      settingsStore:
+          AiSettingsStore(File('${base.path}/$aiSettingsFileName')),
+    );
+  }
   await state.bootstrap();
   runApp(ClearFileApp(state: state));
 }

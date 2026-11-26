@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../../ai/disclosure.dart';
@@ -189,6 +190,22 @@ class WelcomeScreen extends StatelessWidget {
                   color: scheme.onSurfaceVariant,
                 ),
           ),
+          if (kIsWeb) ...[
+            const SizedBox(height: 8),
+            // Stage 4 web-build honesty note: the deployed demo runs from
+            // memory — nothing is saved to this device (there is no device
+            // filesystem in the browser tab).
+            Text(
+              'Running as a web demo: returns and settings are kept in this '
+              'browser tab\'s memory only and are not saved after you leave '
+              'the page.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+          ],
         ],
       ),
     );
