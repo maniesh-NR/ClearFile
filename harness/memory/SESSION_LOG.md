@@ -1708,3 +1708,43 @@ D41/D42 residues ride their lanes.**
   pin, SPDX-everywhere, core/target gitignored first, the CI step shape,
   the mechanical ledger join) bind the execution that follows in this
   same session; the full ledger is CONSENSUS's N1 gate record.
+- **N1 session 1 EXECUTED (same session, the port delegated to an
+  execution subagent + independently re-verified):** the pinned
+  toolchain (rust/cargo 1.100.0, sha256-verified against the tracked
+  `scripts/rust_toolchain_manifest` row resolved from the official
+  channel manifest; the fetcher hardened per quirk-20 with the
+  tarball-skip-on-verified-hash improvement found in-session — the
+  dist tarball is a COMPONENT tree, so `--strip-components=2` merges
+  cargo/rustc/rust-std into one prefix and the heavy non-build
+  components are excluded); `core/` landed: `clearfile-core` 0.1.0,
+  edition 2021, std-only ZERO dependencies (Cargo.lock = exactly the
+  root package), SPDX GPL-3.0-only on every tracked file, lib pure
+  (no fs/env/io — grep-verified), calculator.dart ported WHOLE (SLI +
+  SALT + deduction-choice + payments, the four arithmetic-semantics
+  traps in the doc-comment, hasSpouse == MarriedJoint, the agi>0
+  effective-rate guard); the STRICT fixture reader in tests (named-field
+  errors); the comparator ported EXACTLY from the oracle (per-fixture
+  tolerance default 0.005 / fixture-01 0.505, delta==tolerance passes,
+  NaN fail-closed via `!(delta <= tolerance)`, deductionMethodUsed
+  exact-string) + the boundary/ε/NaN unit tests; the honest-subset
+  skip map + the coverage guard test; **the suite: 47/47 green (3 lib +
+  2 manifest + 42 runner; 17 per-fixture tests, 0 ignored — the port
+  covers every fixture's input features, so the honest claim is 17 of
+  17 RUN-GREEN, verified by the orchestrator's own re-run of
+  `cargo test --locked` plus the execution agent's field-by-field
+  parity audit: 442 derived fields across 26 oracle keys × 17 fixtures,
+  max |rust−oracle| delta = 0.0)**. CI wired: hygiene's suites job
+  gains the zero-dependency license assertion (fail-closed; the
+  cargo-deny upgrade at the first external dependency) + the
+  `cargo test --locked` step with version echo (no new uses: lines,
+  no secrets); the SEC-1 guard widening landed (`.gitignore`
+  /core/target/ BEFORE any cargo call; `core/` joined the backup
+  script's ≥32-hex scan path list; the toolchain-pin manifest joined
+  the 64-hex allow-list as the second recorded instance); the ledger
+  join landed in harness_check (manifest run+deferred == the fixture
+  directory count; the README core/ row with the honest count);
+  release.yml untouched (the variant precondition holds — the new
+  harness_check guard passes); `scripts/fetch_flutter_sdk.sh` gained
+  its SPDX header (the LEGAL finding). SESSION-1 EXIT: the box has one
+  session left (session 2 = 17/17 + the annex-(a) differential/property
+  harness (D43) + the ported bridge tests).

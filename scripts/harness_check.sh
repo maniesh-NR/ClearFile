@@ -87,6 +87,27 @@ else
   fail "release.yml references core/|clearfile-core|cargo ($RM_NATIVE hits) — a shipped-artifact coupling the recorded variant forbids without a new gate"
 fi
 
+# --- 1c. The Rust suite's mechanical ledger join (N1 gate PROD-3) ----------
+# The third golden-fixture runner's manifest must cover the shared corpus
+# EXACTLY: run + deferred entries == the fixtures/tax/*.json count (the
+# deferred entries are the #[ignore]d tests — skipped-and-counted, never
+# red on main). The anchors match the manifest const's line shape so
+# prose in doc comments cannot pollute the count.
+FIXTURE_DIR_COUNT=$(ls fixtures/tax/*.json 2>/dev/null | wc -l)
+RM_TOTAL=$(grep -cE '^    "[0-9]{2}-[a-z0-9-]+\.json (run|deferred) ' core/tests/harness/mod.rs 2>/dev/null || true)
+RM_DEFERRED=$(grep -E '^    "[0-9]{2}-[a-z0-9-]+\.json (run|deferred) ' core/tests/harness/mod.rs 2>/dev/null | grep -c ' deferred ' || true)
+if [ "$FIXTURE_DIR_COUNT" -gt 0 ] && [ "$RM_TOTAL" -eq "$FIXTURE_DIR_COUNT" ]; then
+  pass "the Rust fixture manifest's run+deferred count ($RM_TOTAL; $RM_DEFERRED deferred) equals the shared fixture directory count ($FIXTURE_DIR_COUNT) — green + #[ignore]d == the corpus"
+else
+  fail "Rust fixture manifest drift (manifest entries: $RM_TOTAL; fixtures/tax/*.json: $FIXTURE_DIR_COUNT; deferred: $RM_DEFERRED) — the runner's manifest must cover the shared corpus exactly (N1 gate PROD-3)"
+fi
+README_CORE_ROW=$(grep -c '17 of 17 shared fixtures green' README.md 2>/dev/null || true)
+if [ "$README_CORE_ROW" -ge 1 ]; then
+  pass "README carries the core/ row with the honest fixture count (PROD-3)"
+else
+  fail "README lacks the core/ row with the honest fixture count (N1 gate PROD-3) — add one row carrying the manifest's run count"
+fi
+
 # --- 2. Gate-scope consistency: WORKFLOW §2 tiering ↔ ROADMAP tiering -------
 WF_SCOPE=$(grep -c 'Stage-2 entry' "$WORKFLOW" || true)
 RM_SCOPE=$(grep -c 'Stage 2 entry' "$ROADMAP" || true)

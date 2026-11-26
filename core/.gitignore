@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Build artifacts (N1 entry gate SEC-1: /core/target/ is gitignored before
+# any cargo invocation lands; the repo-root .gitignore also carries /core/target/).
+/target

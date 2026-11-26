@@ -365,22 +365,31 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
 ## Recent Progress & Git Activity
 
 ```diff
+### Commit: 5f7bc33 - backup(sandbox): backup(sandbox): the N1 full-depth entry gate CLOSED - N1 ENTERED (4 x PROCEED-WITH-CONDITIONS unanimous: ADV-SEC 7, ADV-LEGAL 5, ADV-ENG 9, ADV-PROD 7 conditions; reports filed 2026-11-26-n1-*.md). Gate-level conditions discharged in-session: the TWO-session execution box (session 2 = 17/17 + the annex-(a) differential/property harness + ported bridge tests; Stage-3 tripwire edge rule, extensions need an owner ruling), the third-engine boundary sentence (ROADMAP+STATE: zero-engine-code-touched scoped to the two existing engines, core/ additive by design, delta never touches clearfile/ or src/), the dated 16->17 fixture-count erratum (DECISIONS orchestrator annotation + ROADMAP; actual 17, QSS #17/D33), the zero-dependency fail-closed license assertion named as the licensing annex's cargo-deny discharge at core-landing (upgraded at the first external dependency), harness_check gains the release.yml variant-precondition guard (zero core/|clearfile-core|cargo) and the N-outcome counter 0->1, the tracked fetch_flutter_sdk.sh SPDX residue repaired (LEGAL's live D14-class finding), the Cargo-semver fourth-version-plane note, D43 recorded (the annex-(a) deferral with the named Dart-generator mechanism). Session-1 binding conditions live in CONSENSUS's N1 gate record and bind the execution session that follows. 0 failures @ 2026-11-26T10:2xZ @ 2026-11-26T10:15:40Z (Z User, 2026-11-26)
+ harness/adversarial/CONSENSUS.md | 98 ++++++++++++++++++++++++++++++++++++++++
+ harness/memory/DEBT.md           | 16 +++++++
+ harness/memory/DECISIONS.md      | 13 ++++++
+ harness/memory/ROADMAP.md        | 27 +++++++++--
+ harness/memory/SESSION_LOG.md    | 23 +++++++++-
+ harness/memory/STATE.md          | 50 +++++++++++++-------
+ scripts/fetch_flutter_sdk.sh     |  1 +
+ scripts/harness_check.sh         | 20 +++++---
+ 8 files changed, 220 insertions(+), 28 deletions(-)
+
+### Commit: b9008f9 - backup(sandbox): backup(sandbox): the owner's rulings recorded - the three Stages-4/5/6 gate ratification surfacings RATIFIED (1a the after-the-fact sequencing: valid under an explicit owner directive, never by default, the standing WORKFLOW-2 reading; 1b the PAT's Pages-enablement: the use class joins the token's observed profile in WORKFLOW 5 - Contents:RW + Actions write/read + repo-settings mutations; 1c pages.yml id-token: write: approved as the deploy-pages API requirement) + the epilogue N1-N6 program FUNDED (ROADMAP's six gate statuses PENDING/unfunded -> FUNDED 2026-11-26; funding gates the program, not any stage - every stage still enters only behind its own gate per the tiering; N1's full-depth entry gate convenes next). Records: DECISIONS.md gains the 2026-11-26 ratification register; CONSENSUS's gate record gains the appended ruling; DEBT's append-only note gains the ruling (D30 explicitly untouched - no ruling received on Dependabot/branch-protection/PAT-expiry); STATE refreshed (header, epilogue status, Immediately-next -> the N1 gate + session-1 slice); SESSION_LOG gains the 2026-11-26-later entry incl. the continuation bootstrap sweep (the FOURTH mode-flip divergence normalized, tags verified, run #26 green, Pages 200); harness_check epilogue check updated per the legitimate-advance precedent (PENDING x6 -> FUNDED x6); update_memory run. 0 failures @ 2026-11-26T09:5xZ @ 2026-11-26T10:01:29Z (Z User, 2026-11-26)
+ PROJECT_MEMORY.md                | 36 +++++++++++----------------
+ harness/WORKFLOW.md              |  6 +++++
+ harness/adversarial/CONSENSUS.md | 10 ++++++++
+ harness/memory/DEBT.md           |  8 ++++++
+ harness/memory/DECISIONS.md      | 39 +++++++++++++++++++++++++++++
+ harness/memory/ROADMAP.md        | 29 +++++++++++++--------
+ harness/memory/SESSION_LOG.md    | 28 +++++++++++++++++++++
+ harness/memory/STATE.md          | 54 ++++++++++++++++++++++------------------
+ scripts/harness_check.sh         |  8 +++---
+ 9 files changed, 159 insertions(+), 59 deletions(-)
+
 ### Commit: b3bac6e - backup(sandbox): backup(sandbox): the SESSION_LOG's 2026-11-26 entry gains its final append-only bullet - the post-teardown CI fix (67b9501) that the 08:41 CI run forced: the tag-guard suite's scenario SHAs resolve from LOCAL tags a CI checkout (fetch-depth 1, fetch-tags false) does not have, so the suite now fetches the three probe tags from origin first (leading + refspecs; a full local clone is a no-op update). The bullet records the both-ways proof (6/6 fresh shallow clone simulating CI + 6/6 full repo) and the live-verified green re-run on the tip (hygiene run #26, all four jobs, 2m28s - checked post-push this continuation). Session record now complete: bootstrap reconciliation, Stage A honest deferral, Stages 4/5/6 executed+gated (4x PROCEED-WITH-CONDITIONS, conditions discharged), v1.1 shipped (D29 verified live, guard fixed), Pages LIVE, teardown syncs - every push accounted for in the log @ 2026-11-26T09:1xZ @ 2026-11-26T09:25:01Z (Z User, 2026-11-26)
  harness/memory/SESSION_LOG.md | 11 +++++++++++
  1 file changed, 11 insertions(+)
-
-### Commit: 67b9501 - backup(sandbox): test_tag_guard.sh CI fix (the 2026-11-26 CI run caught the guard suite's own environment assumption): the scenario SHAs resolve from LOCAL tags, which a CI checkout (fetch-depth 1, fetch-tags false) does not have - scenarios 2+5 resolved empty and refused. Fix: the suite fetches the three probe tags from origin first (leading '+' refspecs so a full local clone is a no-op update, not a clobber refusal), making CI and local identical. Proven both ways before push: 6/6 in a fresh shallow clone simulating the CI checkout AND 6/6 in the full repo @ 2026-11-26T08:41:14Z (Z User, 2026-11-26)
- scripts/test_tag_guard.sh | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-### Commit: b853c18 - backup(sandbox): Session teardown + the Stages 4+5+6 gate record: CONSENSUS gains the 2026-11-26 after-the-fact gate record (4 x PROCEED-WITH-CONDITIONS unanimous; every condition discharged incl. the code fixes in 8622e74; the three owner-ratification surfacings: the after-the-fact sequencing itself, the PAT Pages-enablement, the pages.yml id-token OIDC grant; the Stage-2 exit-gate slip recorded as the mandatory agenda item at the next convened gate); ROADMAP: Stage 4 CLOSED (the Pages deploy LIVE + verified, the web-boot fix, the meta-CSP with honest limits, PROD-5 vision-verified), Stage 5 CLOSED (the AI hardening both engines + the v1.1 tag SHIPPED with D29 verified live + the guard FIXED + the 6-scenario suite CI-wired), Stage 6 CLOSED (the maintenance-policy section; the roadmap's terminal intent stands - the open lanes are the TT program's own gates T3/T4 + the unfunded epilogue N1-N6); the Stage-2 exit slip recorded in ROADMAP's Stage-2 section (the 0x24000 keystream divergence, the sweep evidence, the decompile-level next step); DEBT: D8 (both AI halves)/D11/D12/D16/D29 CLOSED with full evidence, D42 updated, the gate's append-only note added; SESSION_LOG: the full 2026-11-26 session entry; STATE: refreshed snapshot (the v1.1 release, the Pages deploy, the slip, the closing suite counts flutter 126/126, parity 17/17, bridge 11/11, ai_cascade 5/5, ai_injection 4/4, oracle 17/17, RE tools 23/23, tag guard 6/6 CI-wired, audit 0, harness_check 0); harness_check legitimate-advance updates (PENDING 9->6 for the epilogue only; the Stages-4/5/6 closure counter) - 0 failures after @ 2026-11-26T08:38:00Z (Z User, 2026-11-26)
- PROJECT_MEMORY.md                | 70 ++++++++++++----------------------------
- harness/adversarial/CONSENSUS.md | 52 +++++++++++++++++++++++++++++
- harness/memory/DEBT.md           | 26 ++++++++++++---
- harness/memory/ROADMAP.md        | 54 +++++++++++++++++++++++++++++--
- harness/memory/SESSION_LOG.md    | 55 +++++++++++++++++++++++++++++++
- harness/memory/STATE.md          | 20 ++++++++++--
- scripts/harness_check.sh         | 14 ++++----
- 7 files changed, 225 insertions(+), 66 deletions(-)
 ```
 

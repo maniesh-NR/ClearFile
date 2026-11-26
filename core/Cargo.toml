@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-3.0-only
+[package]
+name = "clearfile-core"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+description = "ClearFile TY2025 tax engine core (std-only Rust port of the Dart reference)"
+publish = false
+
+# ZERO DEPENDENCIES BY DESIGN (N1 entry gate, SEC-3/LEGAL-2): the licensing
+# annex's fail-closed assertion is "Cargo.lock contains exactly the root
+# package AND this file has no [dependencies] section". Do not add sections
+# below without the gate ruling that upgrades this to a real cargo-deny.

@@ -120,19 +120,25 @@ HITS="$(
   { git grep --cached -l -E "$TOKEN_PATTERNS" -- . || true
     git grep --cached -I -l -E "$HEX_PATTERNS" -- . ':(exclude)*.lock' \
       ':(exclude)package-lock.json' ':(exclude)bun.lock' ':(exclude)pnpm-lock.yaml' \
-      ':(exclude)docs/re-research/corpus-manifest.md' || true
-    git grep --cached -I -l -E "$RE_HEX_PATTERNS" -- docs clearfile src scripts fixtures harness \
       ':(exclude)docs/re-research/corpus-manifest.md' \
+      ':(exclude)scripts/rust_toolchain_manifest' || true
+    git grep --cached -I -l -E "$RE_HEX_PATTERNS" -- docs clearfile src scripts fixtures harness core \
+      ':(exclude)docs/re-research/corpus-manifest.md' \
+      ':(exclude)scripts/rust_toolchain_manifest' \
       ':(exclude)clearfile/.metadata' \
       ':(exclude)*.lock' ':(exclude)package-lock.json' ':(exclude)pnpm-lock.yaml' || true
   } | sort -u
 )"
-# The one tracked file allowed to carry 64-hex runs: the TT RE corpus
-# provenance manifest (ADR-019, 2026-11-22) — sha256 checksums of
-# publicly downloadable installer URLs, the recorded known-hash
-# allow-list instance. Every other path keeps the strict heuristic.
+# The tracked files allowed to carry 64-hex runs, each the recorded
+# known-hash allow-list instance of its class: the TT RE corpus provenance
+# manifest (ADR-019, 2026-11-22) and the Rust toolchain pin manifest
+# (N1 entry gate SEC-2, 2026-11-26). Every other path keeps the strict
+# heuristic.
 if [ -n "$(git grep --cached -I -l -E "$HEX_PATTERNS" -- docs/re-research/corpus-manifest.md 2>/dev/null)" ]; then
   echo "backup: manifest allow-list active (corpus hashes are the recorded known-hash instance)" >&2
+fi
+if [ -n "$(git grep --cached -I -l -E "$HEX_PATTERNS" -- scripts/rust_toolchain_manifest 2>/dev/null)" ]; then
+  echo "backup: toolchain-pin allow-list active (the N1 pinned rust sha256 is the recorded known-hash instance)" >&2
 fi
 if [ -n "$HITS" ]; then
   echo "backup: REFUSING — token-shaped or hex-blob content staged in:" >&2

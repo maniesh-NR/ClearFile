@@ -104,3 +104,6 @@ server.log
 /download/
 /tools/
 /bun.lock
+# N1 (ADR-017, 2026-11-26 entry gate SEC-1): the Rust core's build
+# artifacts must be ignored BEFORE any cargo invocation lands.
+/core/target/

@@ -6,9 +6,20 @@ after-the-fact sequencing, the PAT Pages-enablement, the pages.yml
 `id-token: write` grant; recorded in DECISIONS.md's 2026-11-26
 ratification register + CONSENSUS + DEBT + WORKFLOW §5) and the
 epilogue N1–N6 program FUNDED (ROADMAP's six statuses → FUNDED;
-funding gates the program, not any stage — N1's full-depth entry gate
-convenes next). The earlier same-day session: Stages 4+5+6 executed +
-gated after the fact — 4 ×
+funding gates the program, not any stage). The N1 full-depth entry
+gate convened and CLOSED — **N1: ENTERED** (4 × PROCEED-WITH-
+CONDITIONS unanimous; the reports at
+harness/adversarial/reports/2026-11-26-n1-*.md; the gate-level
+conditions discharged in-session). **N1 session 1 EXECUTED: the Rust
+core landed** — `core/` = clearfile-core 0.1.0, std-only zero-
+dependency, SPDX-everywhere, the TY2025 tables + calculator.dart
+ported whole (f64-first, the four traps documented), the third
+golden-fixture runner + strict reader + skip map, the CI license
+assertion + cargo-test step, the harness_check ledger join; **cargo
+test 47/47 green, 17 of 17 shared fixtures RUN-GREEN** (orchestrator
+re-verified; the port's field-by-field parity audit vs the oracle:
+442 fields, max delta 0.0). The earlier same-day session: Stages
+4+5+6 executed + gated after the fact — 4 ×
 PROCEED-WITH-CONDITIONS unanimous with every condition discharged;
 the v1.1 release SHIPPED (release 459120788, 11 assets + SHA256SUMS,
 tag → e099bc0) with D29 verified live and the tag guard FIXED; the
@@ -155,10 +166,15 @@ session's interrupted closing backup normalized + pushed as
   its own gates; the Rust core alone may run parallel to Stage 4+ behind
   its own gate). **N1: ENTERED 2026-11-26** at its full-depth gate (4 ×
   PROCEED-WITH-CONDITIONS unanimous; execution box TWO sessions; the
-  gate-level conditions discharged in-session). **No native-stack code
-  exists yet** — the session-1 slice (toolchain + std-only `core/` + the
-  TY2025 tables + the ordinary-income path incl. SLI/SALT + the third
-  golden-fixture runner) is the next work. **Boundary sentence: "zero
+  gate-level conditions discharged in-session). **N1 session 1 EXECUTED:
+  the `core/` crate landed** — clearfile-core 0.1.0, std-only zero
+  dependencies, SPDX-everywhere, the TY2025 tables + calculator.dart
+  ported whole (f64-first), the third golden-fixture runner (strict
+  reader, skip map, comparator exactly as the oracle's), the CI license
+  assertion + cargo-test step, the harness_check ledger join —
+  **cargo test 47/47 green, 17 of 17 shared fixtures RUN-GREEN** (the
+  orchestrator re-verified; the field-by-field parity audit vs the
+  oracle: 442 fields, max delta 0.0). **Boundary sentence: "zero
   engine code touched" (the v1 maintenance freeze) is scoped to the two
   existing engines (`clearfile/` Dart, `src/` TS); N1 adds a third
   engine under `core/` that is additive by design, whose correctness
@@ -306,28 +322,17 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**N1 session 1 — the first execution session of the ENTERED Rust core
-(the full-depth entry gate CLOSED 2026-11-26, 4 ×
-PROCEED-WITH-CONDITIONS unanimous; the session-1 condition ledger lives
-in CONSENSUS's N1 gate record):** the sha256-verified standalone
-toolchain under gitignored `tools/rust/` (tracked manifest row, no
-hardcoded hash in scripts/, quirk-20 hardening), the std-only `core/`
-crate (SPDX headers on every tracked file, `core/target/` gitignored
-BEFORE any cargo call, `core/` in the backup hex-scan list), the
-TY2025 parameter tables + the ordinary-income path ported from the
-Dart reference (f64-first, operation order preserved, the four
-arithmetic-semantics traps in the harness doc-comment), the THIRD
-golden-fixture runner consuming the shared 17 fixtures with the
-Python oracle's exact tolerance semantics (per-fixture tolerance,
-NaN fail-closed, the per-fixture skip map + guard test, unported
-fixtures `#[ignore]`d — never red on main), the zero-dependency
-license assertion in CI (the annex's cargo-deny discharged at
-core-landing; upgraded at the first real dependency — "when the core
-lands", the annex's own wording), the harness_check ledger join
-(green + ignored == 17) + the release.yml variant guard (landed at
-the gate), the DEBT entry for the annex (a) deferral. Full 17/17 is
-N1's EXIT condition (session 2: + the differential/property harness
-+ the ported bridge tests); the box is TWO sessions.
+**N1 session 2 — the box's final session (17/17 already green after
+session 1, so session 2 = the remaining annex items):** the D43
+annex-(a) differential/property harness (the named mechanism: a
+Dart-side random/edge input generator emitting JSON cases that cargo
+test consumes against the Rust core, the Dart reference computing the
+same cases in-process), the ported bridge tests (annex (b): TXF spec
+tests, envelope round-trips + warning wording IN the core, the
+malformed-ZIP crash battery with the ENG-1 crafted file as the
+template — the codecs themselves are the session-2 build), then the
+N1 EXIT gate (the box is TWO sessions; the Stage-2 exit slip is the
+mandatory agenda item at the next convened gate).
 **Owner-side surfacings standing:** Dependabot alerts, branch
 protection on `main`, PAT expiry (D30 — no ruling received). The T3
 password-layer chase (the Stage-2 exit slip) rides its lane.
