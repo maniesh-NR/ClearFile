@@ -566,9 +566,18 @@ v1's stages still close first.
   pure, offline, fixture-verifiable; validated against the 16 shared
   golden fixtures PLUS the differential/property harness against the Dart
   reference (the verification annex — fixtures pin breakpoints, not the
-  continuum). **Gate status: ENTERED 2026-11-26** (full-depth gate, 4 ×
-  PROCEED-WITH-CONDITIONS unanimous — CONSENSUS 2026-11-26; reports at
-  `harness/adversarial/reports/2026-11-26-n1-*.md`). **Execution box:
+  continuum). **Gate status: ENTERED 2026-11-26; CLOSED 2026-11-26 (exit PASSED)** —
+  the entry gate (4 × PROCEED-WITH-CONDITIONS unanimous, reports at
+  `harness/adversarial/reports/2026-11-26-n1-*.md`) + the exit gate
+  (4 × PROCEED-family unanimous, no BLOCK, every condition discharged
+  in-session; reports at
+  `harness/adversarial/reports/2026-11-26-n1exit-*.md`): the box closed
+  at exactly two sessions; 17/17 golden + the annex-(a)
+  differential/property harness (550 cases × 26 fields exact parity,
+  D43 closed) + the annex-(b) ported bridge suites (cargo test
+  159/159); the MD3-from-seed palette defers to its first consumer
+  session (D44, N2); the ADR-017 variant holds (no shipped artifact
+  depends on the core). **Execution box:
   TWO sessions** (session 1 = the toolchain + the std-only `core/`
   scaffold + the TY2025 tables + the ordinary-income path incl. SLI/SALT
   + the third golden-fixture runner; session 2 = 17/17 + the annex (a)

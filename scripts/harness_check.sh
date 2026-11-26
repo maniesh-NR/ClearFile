@@ -71,12 +71,15 @@ fi
 
 S2_ENTERED_CS=$(grep -c '\*\*Stage 2: ENTERED\*\*' "$CONSENSUS" || true)
 ENTERED_CS=$(grep -cE '\*\*Stage [456]: CLOSED\*\*' "$CONSENSUS" || true)
-ENTERED_N_CS=$(grep -cE '\*\*N[1-6]: (ENTERED|PASSED|CLOSED)\*\*' "$CONSENSUS" || true)
+# N1's two outcomes (ENTERED at the full-depth entry gate + CLOSED at the
+# exit gate, both 2026-11-26) — updated at the N1 exit close (the
+# legitimate-advance precedent: a checker update, not drift).
+ENTERED_N_CS=$(grep -cE '\*\*N[1-6]: (ENTERED|PASSED|CLOSED)' "$CONSENSUS" || true)
 ENTERED_TT_CS=$(grep -cE '\*\*T[1-4]: (ENTERED|PASSED|CLOSED)\*\*' "$CONSENSUS" || true)
-if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 3 ] && [ "$ENTERED_N_CS" -eq 1 ] && [ "$ENTERED_TT_CS" -eq 1 ]; then
-  pass "CONSENSUS records Stage 2's entry, the TT program's T2 entry, the Stages 4/5/6 closures, and N1's entry (the 2026-11-26 full-depth gate)"
+if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 3 ] && [ "$ENTERED_N_CS" -eq 2 ] && [ "$ENTERED_TT_CS" -eq 1 ]; then
+  pass "CONSENSUS records Stage 2's entry, the TT program's T2 entry, the Stages 4/5/6 closures, and N1's ENTERED + CLOSED outcomes"
 else
-  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/1/1) — reconcile with ROADMAP"
+  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/2/1) — reconcile with ROADMAP"
 fi
 
 # --- 1b. The N1 variant precondition: release.yml stays native-free -------
@@ -142,6 +145,16 @@ if [ "$N1S2_FILES" -eq 11 ]; then
   pass "the N1 session-2 surface is fully tracked (4 modules + 6 test files + the generator)"
 else
   fail "N1 session-2 file drift ($N1S2_FILES of 11) — a codec module, ported suite, harness, or the generator is missing"
+fi
+# The corpus's recorded regeneration digest (N1 exit gate, the SEC/ENG
+# advisory): the committed cases.json must match the digest its README
+# records — a drifted-but-self-consistent corpus otherwise passes the
+# manifest check alone (the ENG exit-gate risk register).
+CORPUS_DIGEST=$(sha256sum fixtures/differential/cases.json 2>/dev/null | cut -d' ' -f1)
+if [ -n "$CORPUS_DIGEST" ] && grep -q "$CORPUS_DIGEST" fixtures/differential/README.md 2>/dev/null; then
+  pass "the differential corpus matches its recorded regeneration digest (${CORPUS_DIGEST:0:12}…)"
+else
+  fail "the differential corpus's sha256 is not the digest recorded in fixtures/differential/README.md — regenerate + re-record, or the corpus has drifted"
 fi
 
 # --- 2. Gate-scope consistency: WORKFLOW §2 tiering ↔ ROADMAP tiering -------

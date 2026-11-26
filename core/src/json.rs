@@ -13,19 +13,24 @@
 //!   A number whose magnitude overflows binary64 to a non-finite value is
 //!   rejected (fail-closed; the references cannot produce one from a valid
 //!   envelope either).
-//! - The WRITER emits numbers ECMAScript-style, which is byte-identical to
-//!   BOTH reference emitters on the whole f64 range: Dart's
-//!   `double.toString` is documented to match ECMAScript `Number#toString`,
-//!   and V8's `JSON.stringify` uses the same shortest-round-trip digits
-//!   and thresholds. Plain decimal form for `1e-6 <= |x| < 1e21`
-//!   (plus zero, which prints `0` — including `-0.0`), exponent form
-//!   `Me+E`/`Me-E` outside that band. Rust's `{}`/`{:e}` produce exactly
-//!   the shortest round-tripping digits (Grisu/Ryu family), so
-//!   `parse(write(x)) == x` holds for every finite `f64` — pinned by the
-//!   unit tests below, including a deterministic pseudo-random battery.
-//!   Non-finite values are refused by the writer (fail-closed): the TS
-//!   writer's silent `NaN → null` is a latent-bug posture, not a contract
-//!   to port; the Dart writer throws on them, which is the posture kept.
+//! - The WRITER emits numbers ECMAScript-style — byte-identical to V8's
+//!   `JSON.stringify` on the whole f64 range, and to Dart's
+//!   `double.toString` / `Number#toString` (documented to match). ONE
+//!   deliberate divergence from Dart's `jsonEncode`: Dart's JSON encoder
+//!   appends `.0` to whole doubles (`jsonEncode(80000.0)` → `80000.0`) to
+//!   mark their type; this writer follows the ECMAScript emitters
+//!   (`80000`), which is byte-compatible with the TS writers the
+//!   envelope/round-trip byte contracts rest on, and value-identical
+//!   everywhere (both forms parse to the same f64). Plain decimal form
+//!   for `1e-6 <= |x| < 1e21` (plus zero, which prints `0` — including
+//!   `-0.0`), exponent form `Me+E`/`Me-E` outside that band. Rust's
+//!   `{}`/`{:e}` produce exactly the shortest round-tripping digits
+//!   (Grisu/Ryu family), so `parse(write(x)) == x` holds for every finite
+//!   `f64` — pinned by the unit tests below, including a deterministic
+//!   pseudo-random battery. Non-finite values are refused by the writer
+//!   (fail-closed): the TS writer's silent `NaN → null` is a latent-bug
+//!   posture, not a contract to port; the Dart writer throws on them,
+//!   which is the posture kept.
 //!
 //! ## Strictness posture (deliberate, documented hardenings)
 //!
@@ -221,7 +226,9 @@ impl Json {
     }
 
     /// Serialize. Numbers follow the ECMAScript emission rules described
-    /// in the module docs (byte-identical to both reference emitters).
+    /// in the module docs (byte-identical to V8 `JSON.stringify`; the one
+    /// deliberate Dart `jsonEncode` divergence — whole doubles keep the
+    /// ECMAScript integer form — is documented there).
     pub fn write(&self) -> Result<String, JsonError> {
         let mut out = String::new();
         self.write_into(&mut out)?;

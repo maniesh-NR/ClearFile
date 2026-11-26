@@ -365,6 +365,31 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
 ## Recent Progress & Git Activity
 
 ```diff
+### Commit: 138e93b - backup(sandbox): N1 session 2 EXECUTED - the annex-(a) differential/property harness + the annex-(b) ported bridge suites: the core's format codecs landed (the .clearfile.json envelope incl. the v1->v2 migration with every warning string VERBATIM in the core; the TXF import/export bridges with the bit-faithful toFixed(2) money lines; the read-only .tax inspection with the malformed-ZIP crash battery + 19 battery extensions; the exchange-container writer with the hand-rolled CRC32; the shared zero-dependency strict JSON module - strict RFC 8259 parser with the 128-deep crafted-input hardening, the ECMAScript-identical number emission pinned by a 20k-value round-trip battery, the pretty writer byte-identical to Dart/V8). Differential corpus: the tracked Dart generator (scripts/generate_differential_cases.dart, seed 771937021, own xorshift64*, thresholds read at runtime, expected values computed by the Dart reference in-process) emits fixtures/differential/cases.json - 550 cases (300 random incl. the 10 negative-input cases + QSS-weighted sampling per the annex's exhibit A; 246 edge incl. every bracket boundary +/-$0.01 x 5 statuses + the D31b SLI zone marked edge-d31b), byte-deterministic (sha256-verified regeneration), consumed by core/tests/differential_harness.rs at EXACT binary64 parity (tolerance 0.0, NaN fail-closed) - 550 x 26 fields all green; the 26-key D31c rule asserted per case + by harness_check. Property harness: 7 tests (the bitwise left-fold, bracket monotonicity + boundary continuity per status, refund/owed exclusivity + bounds + effective-rate domain, deduction consistency + the strictly-greater rule + children count, the D33 QSS<->MFJ column equivalence grid WITH the live $200k-CTC divergence pin, bitwise determinism, table invariants). Composition: import_tax_container (the payload-seam composition per ADR-017's envelope-as-payload-boundary FFI design) + 6 tests incl. the v1-fixture merged-warning list + the Intuit-shape fall-through. Ported suites: return_format 25 + tax_inspect 37 + txf 22 + composition 6; a real port bug found by the ported Dart canonical test (the reversed import-date year tail - 6202 for 2026) and fixed. cargo test --locked 159/159 GREEN (the orchestrator re-run on the normal target). Ledger: harness_check +2 families (the corpus ledger + the session-2 file presence) = 21 oks 0 failures; README gains the fixtures/differential row + the core/ row update; the backup guard's 64-hex known-hash allow-list gains the THIRD recorded instance (the corpus README's regeneration digest). PROD-5 held: zero clearfile/ or src/ paths in the N1 delta (the generator relocated from clearfile/tool/ to scripts/ for it). Execution record: five parallel subagent lanes; three Task runs hit the subagent context deadline with two having already written complete-but-unverified work products (found green, reviewed, integrated - the review caught the year-tail bug); the timeout class is recorded for the next parallel plan. CI: runs #28/#29/#30 verified green live pre-push. The N1 EXIT gate convenes next (the box closed at exactly two sessions; the Stage-2 exit slip - the T3 keystream chase + tax-modern.md - is the mandatory agenda item). 0 failures @ 2026-11-26T13:3xZ @ 2026-11-26T13:18:14Z (Z User, 2026-11-26)
+ PROJECT_MEMORY.md                        |    25 +-
+ README.md                                |     3 +-
+ core/src/envelope.rs                     |  1170 +
+ core/src/json.rs                         |   889 +
+ core/src/lib.rs                          |    14 +
+ core/src/tax_inspect.rs                  |   904 +
+ core/src/txf.rs                          |   940 +
+ core/tests/differential_harness.rs       |   211 +
+ core/tests/exchange_composition.rs       |   193 +
+ core/tests/property_harness.rs           |   407 +
+ core/tests/return_format_port.rs         |   996 +
+ core/tests/tax_inspect_port.rs           |  1309 +
+ core/tests/txf_port.rs                   |   500 +
+ fixtures/differential/README.md          |   131 +
+ fixtures/differential/cases.json         | 40923 +++++++++++++++++++++++++++++
+ harness/memory/DEBT.md                   |    17 +
+ harness/memory/ROADMAP.md                |    13 +
+ harness/memory/SESSION_LOG.md            |   134 +
+ harness/memory/STATE.md                  |    41 +-
+ scripts/generate_differential_cases.dart |  1358 +
+ scripts/harness_check.sh                 |    36 +
+ scripts/sandbox_backup.sh                |    12 +-
+ 22 files changed, 50203 insertions(+), 23 deletions(-)
+
 ### Commit: 4a55caf - backup(sandbox): backup(sandbox): N1 session 1 EXECUTED - the Rust core landed (the funded epilogue's first execution session, per the N1 entry gate's session-1 condition ledger). Toolchain: pinned rust/cargo 1.100.0 fetched via the new tracked fetcher (scripts/fetch_rust_toolchain.sh + scripts/rust_toolchain_manifest - the SEC-2 tracked-manifest row, version+url+sha256 resolved from the official channel manifest; quirk-20 hardening; the in-session discovery that the dist tarball is a COMPONENT tree -> --strip-components=2 merges cargo/rustc/rust-std into one prefix and the heavy non-build components are excluded; unauthenticated fetch only; the tarball-skip-when-verified improvement). core/: clearfile-core 0.1.0 edition-2021, std-only ZERO dependencies (Cargo.lock = exactly the root package - asserted fail-closed by the new hygiene license-check step, the LEGAL-2 cargo-deny discharge at core-landing, upgrade due with the first external dependency), SPDX GPL-3.0-only on every tracked file, lib pure (no fs/env/io), calculator.dart ported WHOLE (SLI+SALT+deduction-choice+payments; f64-first with operation order preserved; the four arithmetic-semantics traps in the doc-comment incl. the CTC cents-normalize-before-the-1000-ceiling and NOT porting the oracle's +999 idiom), the STRICT fixture reader (named-field errors), the comparator ported EXACTLY from verify_golden_fixtures.py (per-fixture tolerance 0.005 default / 0.505 fixture-01, delta==tolerance passes, NaN fail-closed via !(delta<=tolerance), deductionMethodUsed exact-string) + boundary/eps/NaN unit tests, the honest-subset skip map + coverage guard. Suite: cargo test --locked 47/47 GREEN (3 lib + 2 manifest + 42 runner; 17 per-fixture tests, 0 ignored - the honest claim is 17 of 17 RUN-GREEN; orchestrator re-verified independently; the port's field-by-field parity audit vs the oracle: 442 fields, max delta 0.0). CI: hygiene suites job + the license assertion + cargo test --locked with version echo (no new uses: lines, no secrets). Guards: .gitignore /core/target/ BEFORE any cargo call; core/ joined sandbox_backup's >=32-hex scan path list; the toolchain manifest joined the 64-hex allow-list (second recorded instance); harness_check gains the mechanical ledger join (manifest run+deferred == fixtures/tax count; the README core/ row with the honest count). Boundary PROD-5 held: zero clearfile/ or src/ paths in the delta. release.yml untouched (the variant precondition - the new guard passes). Box: ONE session remains (session 2 = the D43 annex-(a) differential/property harness + the ported bridge tests, then the N1 exit gate). 19 harness_check oks, 0 failures @ 2026-11-26T10:4xZ @ 2026-11-26T10:46:40Z (Z User, 2026-11-26)
  .github/workflows/hygiene.yml   |   33 +-
  .gitignore                      |    5 +-
@@ -396,17 +421,5 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
  scripts/fetch_flutter_sdk.sh     |  1 +
  scripts/harness_check.sh         | 20 +++++---
  8 files changed, 220 insertions(+), 28 deletions(-)
-
-### Commit: b9008f9 - backup(sandbox): backup(sandbox): the owner's rulings recorded - the three Stages-4/5/6 gate ratification surfacings RATIFIED (1a the after-the-fact sequencing: valid under an explicit owner directive, never by default, the standing WORKFLOW-2 reading; 1b the PAT's Pages-enablement: the use class joins the token's observed profile in WORKFLOW 5 - Contents:RW + Actions write/read + repo-settings mutations; 1c pages.yml id-token: write: approved as the deploy-pages API requirement) + the epilogue N1-N6 program FUNDED (ROADMAP's six gate statuses PENDING/unfunded -> FUNDED 2026-11-26; funding gates the program, not any stage - every stage still enters only behind its own gate per the tiering; N1's full-depth entry gate convenes next). Records: DECISIONS.md gains the 2026-11-26 ratification register; CONSENSUS's gate record gains the appended ruling; DEBT's append-only note gains the ruling (D30 explicitly untouched - no ruling received on Dependabot/branch-protection/PAT-expiry); STATE refreshed (header, epilogue status, Immediately-next -> the N1 gate + session-1 slice); SESSION_LOG gains the 2026-11-26-later entry incl. the continuation bootstrap sweep (the FOURTH mode-flip divergence normalized, tags verified, run #26 green, Pages 200); harness_check epilogue check updated per the legitimate-advance precedent (PENDING x6 -> FUNDED x6); update_memory run. 0 failures @ 2026-11-26T09:5xZ @ 2026-11-26T10:01:29Z (Z User, 2026-11-26)
- PROJECT_MEMORY.md                | 36 +++++++++++----------------
- harness/WORKFLOW.md              |  6 +++++
- harness/adversarial/CONSENSUS.md | 10 ++++++++
- harness/memory/DEBT.md           |  8 ++++++
- harness/memory/DECISIONS.md      | 39 +++++++++++++++++++++++++++++
- harness/memory/ROADMAP.md        | 29 +++++++++++++--------
- harness/memory/SESSION_LOG.md    | 28 +++++++++++++++++++++
- harness/memory/STATE.md          | 54 ++++++++++++++++++++++------------------
- scripts/harness_check.sh         |  8 +++---
- 9 files changed, 159 insertions(+), 59 deletions(-)
 ```
 

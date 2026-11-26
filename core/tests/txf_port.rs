@@ -126,6 +126,23 @@ fn mjs_txf_exporter_verified_against_spec_v042_structure() {
     // header per spec §VIII
     assert_eq!(lines[0], "V042");
     assert!(lines[1].starts_with("A ClearFile 2025"), "A program line");
+    // The D export date is zero-padded MM/DD/YYYY (the mjs group's shape
+    // assertion `^D \d{2}\/\d{2}\/\d{4}$`, restored — the port had
+    // dropped it).
+    {
+        let d_line = lines[2];
+        let bytes = d_line.as_bytes();
+        assert_eq!(d_line.len(), 12, "D date shape `D MM/DD/YYYY`: {d_line}");
+        assert!(d_line.starts_with("D "), "D date line");
+        assert_eq!(&bytes[4..5], b"/");
+        assert_eq!(&bytes[7..8], b"/");
+        for pos in [2, 3, 5, 6, 8, 9, 10, 11] {
+            assert!(
+                bytes[pos].is_ascii_digit(),
+                "D date shape `D MM/DD/YYYY` at column {pos}: {d_line}"
+            );
+        }
+    }
     assert!(lines[3] == "^");
 
     let records = read_txf(&out);

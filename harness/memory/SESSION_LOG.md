@@ -1882,3 +1882,63 @@ D41/D42 residues ride their lanes.**
   exit gate convenes next on this delta (the Stage-2 slipped-exit T3
   residue — the keystream divergence chase + tax-modern.md — is
   mandatory agenda there per the Stage-2 slip record).
+
+## 2026-11-26 (N1 exit gate) · The N1 exit gate CLOSED — N1: COMPLETE; the core's exit checklist passed 4 × PROCEED-family unanimous
+
+- **Corrections to the session-2 record (the exit-gate reviewers' findings,
+  applied before the gate close):** (ENG-3) the txf importer suite is 12
+  Dart tests, not 11 (the entry counted the `main()` blocks wrong — all
+  12 ported); (ENG-1) json.rs's module docs claimed "byte-identical to
+  BOTH reference emitters" — FALSE for Dart's `jsonEncode` on whole
+  doubles (Dart appends `.0`; the corpus itself carries the proof at
+  line 30679) — the docs now state the exact truth (byte-identical to
+  V8 `JSON.stringify` everywhere; the one deliberate Dart `jsonEncode`
+  divergence documented; value-identical everywhere); (ENG-2) the
+  ported exporter test had dropped the mjs group's D-date shape
+  assertion — restored (the restoration itself carried a column-index
+  slip caught by the re-run and fixed); (LEGAL-1) the README corpus
+  row's taxonomy aligned with the corpus's own class table (300 random
+  + 246 edge + 4 edge-d31b); (SEC-adv/ENG-risk) harness_check gains the
+  corpus-digest family (the committed cases.json must match the digest
+  its README records — 23 ok families total).
+- **The gate:** convened on the combined N1 delta (`b9008f9..138e93b`)
+  with the Stage-2 exit slip as the mandatory agenda item; four
+  reviewers in parallel isolation (plus their own independent
+  re-verifications: fresh-target cargo test 159/159, corpus regeneration
+  byte-identical in a sandbox copy, the SEC reviewer's adversarial
+  parser probes — no panic/hang, the CI run verified green live).
+  Reports at
+  `harness/adversarial/reports/2026-11-26-n1exit-{security,legal,engineering,product}.md`.
+  Verdicts: **SEC PROCEED (0) / LEGAL PROWC (1) / ENG PROWC (3) /
+  PROD PROWC (4) — no BLOCK.** Every condition discharged in-session at
+  the gate close (CONSENSUS's gate record carries the full list):
+  the README taxonomy, the json.rs doc truth, the date-shape assertion,
+  the 11→12 count, the dangling push-verification promise completed
+  (hygiene run #31 green on `138e93b`, verified by the orchestrator AND
+  the PROD reviewer independently), **D44 recorded** (the MD3-from-seed
+  palette deferral made explicit: it lands with N2's session, its first
+  consumer), the N2 pre-positioning notes (the crate-topology question:
+  a cargo workspace would break the core-scoped zero-dep CI assertion —
+  N2's gate decides; the C-ABI timing: cbindgen lands with the first
+  FFI consumer, N3+), and the Stage-2 slip owner surfacing (below).
+- **Registered risks (non-blocking):** the JSON object-key insertion is
+  quadratic on crafted giant objects and the ZIP STORE extraction can
+  amplify a small crafted file into a >1 GB allocation (inherited by
+  parity from the shipped Dart/TS readers) — both harden before the
+  first FFI-wiring session (SEC's register, recorded in CONSENSUS).
+- **The mandatory Stage-2 slip agenda (disposition + owner
+  surfacing):** the Stage-2 exit gate stays SLIPPED and re-agendas at
+  N2's gate. The T3 chase (the MSI-record keystream divergence at
+  payload offset 0x24000 + tax-modern.md, debt D42) is NOT covered by
+  the owner's current funding (the N1–N6 epilogue). **Owner options
+  surfaced: (a) fund a T3 session, (b) supersede the RE-protocol
+  namespace rule requiring the modern format's DoD spec, or (c) the
+  slip keeps re-agenda-ing (the default until ruled).**
+- **Outcome:** **N1: CLOSED (exit PASSED)** — 17/17 golden + the
+  annex-(a) differential/property harness (D43 closed) + the annex-(b)
+  ported bridge suites; cargo test 159/159; the ADR-017 variant holds
+  (nothing shipped depends on the core); harness_check 23 oks 0
+  failures. The epilogue's next gate: **N2 (the Linux native UI)** —
+  delta-scoped, with the two-toolkit consolidation question, the
+  crate-topology decision, the C-ABI timing note, D44's palette lane,
+  and the Stage-2 slip re-agenda on its agenda.

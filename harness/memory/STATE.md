@@ -1,6 +1,7 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-26 (N1 session 2 executed: the annex-(a)
+**Updated:** 2026-11-26 (N1 CLOSED — exit gate PASSED; earlier the same
+day: N1 session 2 executed: the annex-(a)
 differential/property harness + the annex-(b) ported bridge suites
 landed — the core's format codecs (envelope incl. the v1→v2 migration
 with verbatim warning strings IN the core, TXF import/export with the
@@ -335,17 +336,24 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**The N1 EXIT gate (session 2 executed — the box closed at exactly two
-sessions):** the exit checklist is satisfied (17/17 held; the annex-(a)
-differential/property harness GREEN — 550 cases × 26 fields exact
-binary64 parity + the 7-test property harness; the annex-(b) ported
-bridge suites green — envelope + TXF + .tax inspection + the
-composition; cargo test 159/159). The gate convenes on the combined
-N1 delta with the **Stage-2 exit slip as mandatory agenda** (the T3
-MSI-record keystream divergence at payload offset 0x24000, the
-decompile chase, tax-modern.md unwritten — the next convened gate owes
-it the agenda slot per the slip record). Then the epilogue's own gates
-per the tiering: N2 (Linux native UI, delta-scoped — the two-toolkit
-question consolidatable there).
+**N2's delta-scoped gate (the Linux native UI) — N1 CLOSED (exit
+PASSED):** the exit gate closed 4 × PROCEED-family unanimous with every
+condition discharged (CONSENSUS 2026-11-26; the reports at
+harness/adversarial/reports/2026-11-26-n1exit-*.md). N1's record: 17/17
+golden + the annex-(a) differential/property harness (550 × 26 exact
+parity, D43 closed) + the annex-(b) ported bridge suites (cargo test
+159/159); the box closed at exactly two sessions. N2's gate agenda
+carries: the two-toolkit question (gtk3-rs older tier / Slint modern
+tier, consolidatable if single-maintainer reality demands), the
+crate-topology question (PROD-3's exit-gate note: a cargo workspace
+would break the core-scoped zero-dep CI assertion — decide the shape),
+the C-ABI timing (cbindgen lands with the first FFI consumer, N3+),
+the MD3-palette deferral (D44: the palette lands with N2's session,
+its first consumer), and the Stage-2 slip re-agenda (see below).
 **Owner-side surfacings standing:** Dependabot alerts, branch
-protection on `main`, PAT expiry (D30 — no ruling received).
+protection on `main`, PAT expiry (D30 — no ruling received). **The
+Stage-2 exit slip's owner options (surfaced at the N1 exit gate):**
+(a) fund a T3 session (the MSI-record keystream decompile chase +
+tax-modern.md, debt D42), (b) supersede the RE-protocol namespace rule
+that requires the modern format's DoD spec, or (c) the slip keeps
+re-agenda-ing at every convened gate (the default until ruled).

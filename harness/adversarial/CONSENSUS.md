@@ -1108,3 +1108,98 @@ pubspec version unchanged (SEC-7/LEGAL-4).
 conditions discharged in this sync; the session-1 conditions bind the
 first execution session. The ADR-017 recorded variant holds: no shipped
 artifact depends on the core, and the v1 stages remain closed/frozen.)
+
+## 2026-11-26 · The N1 exit gate (the Rust core's exit checklist)
+
+**Context:** N1's execution box closed at exactly two sessions (session 1 =
+the toolchain + the std-only engine + the golden runner, 17/17; session 2
+= the annex-(a) differential/property harness (D43 closed) + the annex-(b)
+ported bridge suites + the format codecs, cargo test 159/159, backup
+`138e93b`, hygiene run #31 green). The exit gate convened on the combined
+N1 delta (`b9008f9..138e93b`) with the **Stage-2 exit slip as the
+mandatory agenda item** (the slip record's re-agenda rule — the T3
+MSI-record keystream divergence at payload offset 0x24000, the decompile
+chase, tax-modern.md unwritten). All four reviewers worked independently
+over the pushed tip; reports filed at
+`harness/adversarial/reports/2026-11-26-n1exit-{security,legal,engineering,product}.md`.
+
+| Reviewer | Verdict | BLOCK? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED (0 conditions) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (1) | no |
+| ADV-ENG | PROCEED-WITH-CONDITIONS (3) | no |
+| ADV-PROD | PROCEED-WITH-CONDITIONS (4) | no |
+
+**Conditions (all discharged in-session at the gate close):**
+(1) LEGAL-1: README's corpus row taxonomy aligned with the corpus's own
+class table (300 random + 246 edge + 4 edge-d31b) — applied.
+(2) ENG-1: json.rs's "byte-identical to BOTH reference emitters" claim
+was FALSE for Dart's `jsonEncode` on whole doubles (Dart appends `.0`;
+the corpus itself proves it — verified live by the reviewer at corpus
+line 30679) — the module docs now state the exact truth (byte-identical
+to V8 `JSON.stringify` everywhere; the one deliberate Dart `jsonEncode`
+divergence documented; value-identical everywhere — both forms parse to
+the same f64).
+(3) ENG-2: the ported exporter test had dropped the mjs group's D-date
+shape assertion — restored (and the restoration itself carried a
+column-index slip found by the re-run and fixed: the honest note).
+(4) ENG-3: SESSION_LOG's "the Dart txf-import 11" corrected to 12.
+(5) PROD-1: the dangling "push verified below in its own bullet" promise
+completed — hygiene run #31 green on `138e93b`, verified live by the
+orchestrator AND independently by the PROD reviewer.
+(6) PROD-2: **D44 recorded** — ADR-017's core boundary names
+"MD3-from-seed palette generation"; N1's two sessions never included it
+(the entry gate's session-1 slice named the engine/runner; session 2 the
+annex harnesses/codecs); the deferral is defensible but now EXPLICIT:
+the palette lands with its FIRST consumer (the N2 session), as debt D44
+with its named target.
+(7) PROD-3: the N2 pre-positioning note recorded — (a) the C-ABI seam
+(cbindgen) lands when the first FFI consumer exists (N3 Android / N4
+Windows / N5 macOS), NOT at N2 (Linux links the crate directly per
+ADR-017); (b) the crate-topology question is N2's gate to decide: a cargo
+WORKSPACE for the app crates would break the core-scoped zero-dependency
+CI assertion (which pins `core/Cargo.lock` to exactly one package) — N2
+either keeps app crates as separate workspace roots re-scoping the
+assertion, or the core stays its own root (the recorded default).
+(8) PROD-4: **the Stage-2 slip owner surfacing** (below).
+(9) SEC-adv/ENG-risk (the manual digest check): harness_check gains the
+corpus-digest family — the committed cases.json must match the digest
+its README records (a drifted-but-self-consistent corpus otherwise
+passes the manifest check alone).
+
+**The mandatory Stage-2 slip agenda (disposition):** the Stage-2 exit
+gate stays SLIPPED and re-agendas at N2's gate (per the slip record's
+own rule). The gate surfaced to the owner: the T3 lane's next session
+(the MSI-record keystream decompile chase + tax-modern.md, debt D42) is
+NOT covered by the current directive (the owner funded N1–N6; the T3
+chase is Stage-2 residue) — the record's cheaper alternative is the
+namespace rule's recorded-supersession path (ADR-012(a)-class):
+**owner options: (a) fund a T3 session for the chase + tax-modern.md,
+(b) supersede the RE-protocol namespace rule that requires the modern
+format's DoD spec, or (c) the slip keeps re-agenda-ing at every
+convened gate.** No ruling received this session; the default is (c).
+
+**Registered risks (non-blocking, from the reports):** SEC R1 — the
+JSON object-key insertion is quadratic in crafted objects (80k keys →
+~27 s vs the references' O(n)); harden before the first FFI-wiring
+session. SEC R2 — the ZIP STORE-extraction allocation amplification (a
+385 KB crafted file can drive >1 GB extraction; inherited by parity
+from the shipped Dart/TS readers); same FFI-wiring hardening lane. ENG —
+the property harness's fold check is self-referential alone (mitigated:
+the differential corpus pins the same fold against the Dart reference);
+the execution pattern's "verify, don't discard" disposition assessed
+SOUND (the review of the deadline-orphaned work caught the one real bug
+— the reversed import-date year tail).
+
+**Gate outcome:**
+
+**N1: CLOSED (exit PASSED)**
+(2026-11-26 — 4 × PROCEED-family unanimous, no BLOCK; every condition
+discharged in-session; the box closed at exactly two sessions, the
+tripwire never fired. The core is golden-fixture green (17/17),
+differential-green (550 cases × 26 fields, exact binary64 parity), and
+bridge-ported (envelope + TXF + .tax inspection + composition). The
+ADR-017 variant holds: no shipped artifact depends on the core. The
+epilogue's next gate is N2's delta-scoped gate — the Linux native UI,
+with the two-toolkit consolidation question (PROD-3's notes) and the
+Stage-2 slip re-agenda on its agenda.)

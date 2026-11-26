@@ -207,3 +207,14 @@ refund/owed exclusivity, the D33 QSS↔MFJ column equivalence). The
 harness_check's new corpus-ledger family. The annex-(b) ported bridge
 suites landed with it (envelope + TXF + .tax inspection + the
 composition). The N1 exit gate convenes on the combined delta.
+
+**N1 exit gate (2026-11-26, append-only):** D44 recorded (PROD-2): ADR-017's
+core boundary names "MD3-from-seed palette generation"; N1's execution box
+never included it (session 1 = the engine/runner slice; session 2 = the
+annex harnesses + codecs), and the gap was silent until the exit gate —
+now explicit: **D44 — the MD3-from-seed tonal palette generation is
+deferred to the first consumer session (N2, the Linux native UI), where
+the palette's contract (the seed → tonal palettes the UI stacks
+consume) becomes pinning-able against a real consumer.** The ADR-017
+licensing annex's MD3 notes (unprotectable functional design, no
+Google/Material logos) carry to that session.
