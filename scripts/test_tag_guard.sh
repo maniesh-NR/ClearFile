@@ -63,6 +63,17 @@ expect() { # $1=desc $2=want_rc $3=got_rc $4=want_grep $5=output
 }
 
 # --- scenario data ----------------------------------------------------------
+# CI checkouts are shallow + tagless (fetch-depth 1, fetch-tags false), so
+# the scenario SHAs would resolve EMPTY there (the 2026-11-26 CI run caught
+# exactly that). Fetch the three probe tags first — then CI and a full local
+# clone run the identical scenarios.
+# Leading '+' so a full local clone (tags already present) is a no-op
+# update instead of a clobber refusal.
+git fetch --no-tags -q origin \
+    '+refs/tags/v1.0.0:refs/tags/v1.0.0' \
+    '+refs/tags/v1.0.1:refs/tags/v1.0.1' \
+    '+refs/tags/v1.1:refs/tags/v1.1' \
+  || { echo "test_tag_guard: could not fetch the probe tags from origin" >&2; exit 2; }
 SHA_HERE="$(git rev-parse HEAD)"            # not every tag's target
 SHA_V1001="$(git rev-parse 'v1.0.1^{commit}')"
 # A commit PROVABLY different from the v1.1 target, at any future tip
