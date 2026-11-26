@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# The palette-fixture generator's scratch flutter package (N2 session 1,
+# D44): exists so the generator can call the APP'S EXACT reference API —
+# ColorScheme.fromSeed — under `flutter test`, without touching clearfile/
+# (the N-delta boundary: zero clearfile/ or src/ paths). material_color_
+# utilities is pinned to 0.13.0 — the version clearfile/pubspec.lock
+# resolves (content-hash 9c337007…48b) — and the generator asserts the
+# scratch lock carries the SAME content hash before emitting.
+name: palette_tool
+description: ClearFile palette-fixture generator (N2/D44)
+publish_to: none
+environment:
+  sdk: ^3.13.0
+dependencies:
+  flutter:
+    sdk: flutter
+  material_color_utilities: 0.13.0
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

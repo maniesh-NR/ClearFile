@@ -1986,3 +1986,45 @@ D41/D42 residues ride their lanes.**
   module + the generator + the corpus + the core tests green + the
   apps/linux scaffold with every guard join — the intra-session
   checkpoint: palette + corpus green BEFORE app work).
+
+## 2026-11-26 (N2 session 1, checkpoint 1) · The palette corpus lands; the FIFTH snapshot divergence normalized; the intra-session checkpoint discipline executed
+
+- **The FIFTH divergence of the recorded snapshot-restore class (the
+  worst yet):** mid-session-1 (between the SDK re-fetch and the port
+  attempts) the sandbox recycled to a stale snapshot — the local git
+  state rolled back to the morning's 40c6a95-vs-67b9501 divergence with
+  the mode-flip family, the remote-tracking ref stale, AND uncommitted
+  working-tree files lost (the palette_tool, the corpus README, the
+  tools/mcu extraction). The real remote was intact (d227bc7 — every
+  backup push landed + CI ran). Disposal per the established protocol:
+  `git fetch` (67b9501..d227bc7) → `git reset --hard origin/main` →
+  harness_check 0 failures → the committed suite re-verified green
+  (cargo test 159/159). The corpus file survived with an unknown digest
+  — regenerated from the rebuilt generator + **the digest matched the
+  recorded `da1ceaf4…` exactly** (the corpus re-verified). The NEW class
+  member: uncommitted work IS lost in this divergence class — the
+  intra-session checkpoint backups are not optional (the gate's own
+  condition, now executed as designed).
+- **The palette generator + corpus (D44's verification half):** the
+  tracked scratch flutter package `scripts/palette_tool/` (pubspec
+  pinned to material_color_utilities 0.13.0; its lock resolves the exact
+  content hash 9c337007…48b clearfile/pubspec.lock pins — verified) +
+  the generator test calling the app's EXACT reference API
+  (`ColorScheme.fromSeed` for the 34 roles light+dark — the
+  field-by-field switch, no mapping of our own — + the SchemeTonalSpot
+  DynamicScheme for the six tonal ladders 0..100). Corpus:
+  `fixtures/palette/cases.json` — 33 seeds (the app seed 0xFF00696E +
+  edge + deterministic xorshift64\* sample), byte-deterministic (two
+  regeneration runs identical; the README carries the digest +
+  regeneration proof); the backup guard's known-hash allow-list gains
+  the SIXTH recorded instance (the palette README's regeneration
+  digest, same class as the differential corpus's).
+- **The port attempts (honest record):** two execution subagents hit
+  the subagent context deadline with ZERO work products (the palette
+  port is the heaviest single numeric module — the reading alone is
+  ~2,200 lines of subtle color math; the deadline class the N2 gate's
+  box-sizing condition predicted). The port is re-planned as sequential
+  deadline-sized chunks (utils → CAM16/viewing → Hct/solver →
+  tonal/scheme + the ladder verification → the roles), each green =
+  backed up. This checkpoint is the corpus + generator + guards; the
+  port follows in the next chunks of the session.

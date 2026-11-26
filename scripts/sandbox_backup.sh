@@ -123,6 +123,9 @@ HITS="$(
       ':(exclude)docs/re-research/corpus-manifest.md' \
       ':(exclude)scripts/rust_toolchain_manifest' \
       ':(exclude)fixtures/differential/README.md' \
+      ':(exclude)fixtures/palette/README.md' \
+      ':(exclude)fixtures/palette/cases.json' \
+      ':(exclude)scripts/palette_tool/test/generate_palette_fixtures.dart' \
       ':(exclude)harness/adversarial/reports/2026-11-26-n1exit-engineering.md' \
       ':(exclude)harness/adversarial/reports/2026-11-26-n1exit-security.md' || true
     git grep --cached -I -l -E "$RE_HEX_PATTERNS" -- docs clearfile src scripts fixtures harness core \
@@ -130,6 +133,9 @@ HITS="$(
       ':(exclude)scripts/rust_toolchain_manifest' \
       ':(exclude)clearfile/.metadata' \
       ':(exclude)fixtures/differential/README.md' \
+      ':(exclude)fixtures/palette/README.md' \
+      ':(exclude)fixtures/palette/cases.json' \
+      ':(exclude)scripts/palette_tool/test/generate_palette_fixtures.dart' \
       ':(exclude)harness/adversarial/reports/2026-11-26-n1exit-engineering.md' \
       ':(exclude)harness/adversarial/reports/2026-11-26-n1exit-security.md' \
       ':(exclude)*.lock' ':(exclude)package-lock.json' ':(exclude)pnpm-lock.yaml' || true
