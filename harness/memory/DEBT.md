@@ -218,3 +218,11 @@ the palette's contract (the seed → tonal palettes the UI stacks
 consume) becomes pinning-able against a real consumer.** The ADR-017
 licensing annex's MD3 notes (unprotectable functional design, no
 Google/Material logos) carry to that session.
+
+**N2 sessions 1+2 (2026-11-26, append-only): D44 CLOSED** — the
+MD3-from-seed palette generation landed in the core (core/src/palette.rs:
+the color math + Hct + the tonal palettes + SchemeTonalSpot + the 34
+MaterialDynamicColors roles) verified by the palette differential corpus
+(fixtures/palette/cases.json, 33 seeds × the six ladders × 101 tones +
+2 × 34 roles, all ARGB-exact) + THIRD-PARTY-NOTICES.md's Apache-2.0
+translation entry; consumed by the Linux app's theme.

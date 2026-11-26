@@ -1361,3 +1361,57 @@ every one checkable; the full text in the reports):**
 consolidation to Slint exercised under the roadmap's own recorded right
 with the demand verified live; the two-session box set with the disk
 plan; the conditions bind the two execution sessions.)
+
+## 2026-11-26 · The N2 exit gate (convened; PENDING two items)
+
+**Context:** N2's execution box closed at exactly two sessions (session
+1: the D44 palette + corpus + the scaffold + guards, checkpointed at
+8365249/ad6bce2/69c8dda/39bdc22; session 2: the Slint window app + the
+shared pipeline + the headless mode + the CI Linux-app lane + the R1/R2
+hardenings, checkpointed at 37f1a5c/7f18fa2). The exit gate convened
+on the N2 delta (d227bc7..7f18fa2) with the Stage-2 slip re-agenda.
+Three of four reviewers filed (parallel isolation, own probes: the
+guard scans replicated, the corpus digest + the MCU content hash
+re-verified live, the CI runs #38/#39 checked live); reports at
+`harness/adversarial/reports/2026-11-26-n2exit-{security,legal,product}.md`.
+**The ENG lane hit the subagent context deadline before filing — its
+report is OWED; the gate stays PENDING its re-convening.**
+
+| Reviewer | Verdict | BLOCK? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (3) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (6) | no |
+| ADV-PROD | PROCEED-WITH-CONDITIONS (5) | no |
+| ADV-ENG | (report owed — the deadline; re-convene) | — |
+
+**The conditions ledger (the reports carry the full text; the
+discharged items marked):** SEC-1 (the 539→549 lockfile count
+correction — this record corrects it: the committed lock is 549
+packages; the earlier count predated the slint-build regeneration) —
+CORRECTED here; SEC-2 (the live-green hygiene run over the tip — the
+PROD finding: runs #38/#39 were RED at the Linux-app job, the runner
+lacked libfontconfig1-dev; FIXED in hygiene.yml's apt line; the green
+run is the gate's pending item); SEC-3 (the "skia excluded" wording —
+the precise statement: skia-safe/skia-bindings sit in the lock as
+never-built optional entries; the no-CDN-prebuilt property holds).
+LEGAL-1..6 (the README rows — DISCHARGED; the headless footer's three
+demo-disclaimer facts; the Apache-2.0 copyright-year + no-NOTICE-file
+notes; the cargo-deny first-green-run evidence — the pending CI run
+covers it; the expected-headless.txt SPDX exception note; the n2exit-
+legal report's own allow-list join if it carries digests — it does
+not). PROD-1 (the CI-red fix + the green run + the honest SESSION_LOG
+record — the fix landed, the run pending); PROD-2 (the README rows —
+DISCHARGED); PROD-3 (the teardown bookkeeping — the D44-CLOSED DEBT
+append + STATE landed; ROADMAP awaits the exit outcome); PROD-4 (the
+N3 pre-positioning note — recorded in STATE's next section); PROD-5
+(the Stage-2 slip re-agenda — the three owner options restated, no
+ruling received, (c) the default).
+
+**Gate outcome:**
+
+**N2: EXIT PENDING (two items)**
+(the ENG report is owed — the subagent deadline, the same class the
+gate's box-sizing condition predicted — and the live-green hygiene run
+on the font-stack fix is pending; the three filed verdicts are
+PROCEED-family unanimous with no BLOCK and every code-level finding
+fixed in-session; the gate closes when both items land.)

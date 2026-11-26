@@ -198,7 +198,12 @@ jobs:
       - name: window smoke (Xvfb + the software renderer)
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y libxkbcommon-x11
+          # The exit-gate PROD finding: the runner image lacks the font
+          # stack slint's Linux build links (yeslogic-fontconfig-sys
+          # panics without libfontconfig1-dev; freetype beside it as
+          # insurance) — hygiene runs #38/#39 caught it live.
+          sudo apt-get install -y libxkbcommon-x11 libfontconfig1-dev \
+            libfreetype6-dev
           Xvfb :99 &
           XVFB_PID=$!
           SLINT_BACKEND=winit-software DISPLAY=:99 timeout 60 cargo run --locked --manifest-path apps/linux/Cargo.toml -- --smoke > /tmp/window-smoke.out 2>&1 || (echo "window smoke: FAIL (exit $?)" && cat /tmp/window-smoke.out && kill "$XVFB_PID" 2>/dev/null || true && exit 1)

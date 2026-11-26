@@ -1,6 +1,6 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-26 (N2 session 1 CLOSED — D44 complete: the palette
+**Updated:** 2026-11-26 (N2 sessions 1+2 executed — the Linux app + CI + the hardenings landed; the exit gate convened with 3/4 reports; earlier: N2 session 1 CLOSED — D44 complete: the palette
 module + corpus verification green (cargo test 170/170) + the
 apps/linux scaffold with every guard joined; earlier: the N2 gate CLOSED — ENTERED; the
 consolidation to Slint exercised under ADR-017's own clause with the
