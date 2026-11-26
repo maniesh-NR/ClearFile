@@ -109,13 +109,30 @@ jobs:
           # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
           # "couldn't find remote ref" case may proceed as a fresh tag; any
           # other fetch failure refuses to build.
+          # D29 fix (2026-11-26, live-verified on the v1.1 annotated-tag
+          # push): on a tag-PUSH event the runner already holds the tag
+          # (checkout fetched it), so re-fetching the same refspec clobbers
+          # and lands in the fail-closed branch. Prefer the LOCAL tag when
+          # present — it IS this run's tag. Both sides are PEELED: an
+          # annotated tag's GITHUB_SHA is the tag OBJECT, not the commit.
           fetch_err="$(mktemp)"
-          if git fetch --no-tags origin \
+          run_commit="$(git rev-parse "$GITHUB_SHA^{commit}" 2>/dev/null \
+              || echo "$GITHUB_SHA")"
+          if git rev-parse -q --verify "refs/tags/$RELEASE_TAG" \
+              >/dev/null 2>&1; then
+            tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
+            if [ "$tagged" != "$run_commit" ]; then
+              echo "refusing: tag $RELEASE_TAG exists at $tagged" \
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
+              rm -f "$fetch_err"
+              exit 1
+            fi
+          elif git fetch --no-tags origin \
               "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
-            if [ "$tagged" != "$GITHUB_SHA" ]; then
+            if [ "$tagged" != "$run_commit" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
-                   "but this run builds $GITHUB_SHA" >&2
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
               rm -f "$fetch_err"
               exit 1
             fi
@@ -181,13 +198,30 @@ jobs:
           # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
           # "couldn't find remote ref" case may proceed as a fresh tag; any
           # other fetch failure refuses to build.
+          # D29 fix (2026-11-26, live-verified on the v1.1 annotated-tag
+          # push): on a tag-PUSH event the runner already holds the tag
+          # (checkout fetched it), so re-fetching the same refspec clobbers
+          # and lands in the fail-closed branch. Prefer the LOCAL tag when
+          # present — it IS this run's tag. Both sides are PEELED: an
+          # annotated tag's GITHUB_SHA is the tag OBJECT, not the commit.
           fetch_err="$(mktemp)"
-          if git fetch --no-tags origin \
+          run_commit="$(git rev-parse "$GITHUB_SHA^{commit}" 2>/dev/null \
+              || echo "$GITHUB_SHA")"
+          if git rev-parse -q --verify "refs/tags/$RELEASE_TAG" \
+              >/dev/null 2>&1; then
+            tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
+            if [ "$tagged" != "$run_commit" ]; then
+              echo "refusing: tag $RELEASE_TAG exists at $tagged" \
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
+              rm -f "$fetch_err"
+              exit 1
+            fi
+          elif git fetch --no-tags origin \
               "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
-            if [ "$tagged" != "$GITHUB_SHA" ]; then
+            if [ "$tagged" != "$run_commit" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
-                   "but this run builds $GITHUB_SHA" >&2
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
               rm -f "$fetch_err"
               exit 1
             fi
@@ -246,13 +280,30 @@ jobs:
           # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
           # "couldn't find remote ref" case may proceed as a fresh tag; any
           # other fetch failure refuses to build.
+          # D29 fix (2026-11-26, live-verified on the v1.1 annotated-tag
+          # push): on a tag-PUSH event the runner already holds the tag
+          # (checkout fetched it), so re-fetching the same refspec clobbers
+          # and lands in the fail-closed branch. Prefer the LOCAL tag when
+          # present — it IS this run's tag. Both sides are PEELED: an
+          # annotated tag's GITHUB_SHA is the tag OBJECT, not the commit.
           fetch_err="$(mktemp)"
-          if git fetch --no-tags origin \
+          run_commit="$(git rev-parse "$GITHUB_SHA^{commit}" 2>/dev/null \
+              || echo "$GITHUB_SHA")"
+          if git rev-parse -q --verify "refs/tags/$RELEASE_TAG" \
+              >/dev/null 2>&1; then
+            tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
+            if [ "$tagged" != "$run_commit" ]; then
+              echo "refusing: tag $RELEASE_TAG exists at $tagged" \
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
+              rm -f "$fetch_err"
+              exit 1
+            fi
+          elif git fetch --no-tags origin \
               "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
-            if [ "$tagged" != "$GITHUB_SHA" ]; then
+            if [ "$tagged" != "$run_commit" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
-                   "but this run builds $GITHUB_SHA" >&2
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
               rm -f "$fetch_err"
               exit 1
             fi
@@ -313,13 +364,30 @@ jobs:
           # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
           # "couldn't find remote ref" case may proceed as a fresh tag; any
           # other fetch failure refuses to build.
+          # D29 fix (2026-11-26, live-verified on the v1.1 annotated-tag
+          # push): on a tag-PUSH event the runner already holds the tag
+          # (checkout fetched it), so re-fetching the same refspec clobbers
+          # and lands in the fail-closed branch. Prefer the LOCAL tag when
+          # present — it IS this run's tag. Both sides are PEELED: an
+          # annotated tag's GITHUB_SHA is the tag OBJECT, not the commit.
           fetch_err="$(mktemp)"
-          if git fetch --no-tags origin \
+          run_commit="$(git rev-parse "$GITHUB_SHA^{commit}" 2>/dev/null \
+              || echo "$GITHUB_SHA")"
+          if git rev-parse -q --verify "refs/tags/$RELEASE_TAG" \
+              >/dev/null 2>&1; then
+            tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
+            if [ "$tagged" != "$run_commit" ]; then
+              echo "refusing: tag $RELEASE_TAG exists at $tagged" \
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
+              rm -f "$fetch_err"
+              exit 1
+            fi
+          elif git fetch --no-tags origin \
               "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
-            if [ "$tagged" != "$GITHUB_SHA" ]; then
+            if [ "$tagged" != "$run_commit" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
-                   "but this run builds $GITHUB_SHA" >&2
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
               rm -f "$fetch_err"
               exit 1
             fi
@@ -378,13 +446,30 @@ jobs:
           # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
           # "couldn't find remote ref" case may proceed as a fresh tag; any
           # other fetch failure refuses to build.
+          # D29 fix (2026-11-26, live-verified on the v1.1 annotated-tag
+          # push): on a tag-PUSH event the runner already holds the tag
+          # (checkout fetched it), so re-fetching the same refspec clobbers
+          # and lands in the fail-closed branch. Prefer the LOCAL tag when
+          # present — it IS this run's tag. Both sides are PEELED: an
+          # annotated tag's GITHUB_SHA is the tag OBJECT, not the commit.
           fetch_err="$(mktemp)"
-          if git fetch --no-tags origin \
+          run_commit="$(git rev-parse "$GITHUB_SHA^{commit}" 2>/dev/null \
+              || echo "$GITHUB_SHA")"
+          if git rev-parse -q --verify "refs/tags/$RELEASE_TAG" \
+              >/dev/null 2>&1; then
+            tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
+            if [ "$tagged" != "$run_commit" ]; then
+              echo "refusing: tag $RELEASE_TAG exists at $tagged" \
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
+              rm -f "$fetch_err"
+              exit 1
+            fi
+          elif git fetch --no-tags origin \
               "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
-            if [ "$tagged" != "$GITHUB_SHA" ]; then
+            if [ "$tagged" != "$run_commit" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
-                   "but this run builds $GITHUB_SHA" >&2
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
               rm -f "$fetch_err"
               exit 1
             fi
@@ -436,13 +521,30 @@ jobs:
           # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
           # "couldn't find remote ref" case may proceed as a fresh tag; any
           # other fetch failure refuses to build.
+          # D29 fix (2026-11-26, live-verified on the v1.1 annotated-tag
+          # push): on a tag-PUSH event the runner already holds the tag
+          # (checkout fetched it), so re-fetching the same refspec clobbers
+          # and lands in the fail-closed branch. Prefer the LOCAL tag when
+          # present — it IS this run's tag. Both sides are PEELED: an
+          # annotated tag's GITHUB_SHA is the tag OBJECT, not the commit.
           fetch_err="$(mktemp)"
-          if git fetch --no-tags origin \
+          run_commit="$(git rev-parse "$GITHUB_SHA^{commit}" 2>/dev/null \
+              || echo "$GITHUB_SHA")"
+          if git rev-parse -q --verify "refs/tags/$RELEASE_TAG" \
+              >/dev/null 2>&1; then
+            tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
+            if [ "$tagged" != "$run_commit" ]; then
+              echo "refusing: tag $RELEASE_TAG exists at $tagged" \
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
+              rm -f "$fetch_err"
+              exit 1
+            fi
+          elif git fetch --no-tags origin \
               "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
-            if [ "$tagged" != "$GITHUB_SHA" ]; then
+            if [ "$tagged" != "$run_commit" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
-                   "but this run builds $GITHUB_SHA" >&2
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
               rm -f "$fetch_err"
               exit 1
             fi
@@ -499,13 +601,30 @@ jobs:
           # Fail-closed refinement (Stage-2 entry gate, ENG-1): only the
           # "couldn't find remote ref" case may proceed as a fresh tag; any
           # other fetch failure refuses to build.
+          # D29 fix (2026-11-26, live-verified on the v1.1 annotated-tag
+          # push): on a tag-PUSH event the runner already holds the tag
+          # (checkout fetched it), so re-fetching the same refspec clobbers
+          # and lands in the fail-closed branch. Prefer the LOCAL tag when
+          # present — it IS this run's tag. Both sides are PEELED: an
+          # annotated tag's GITHUB_SHA is the tag OBJECT, not the commit.
           fetch_err="$(mktemp)"
-          if git fetch --no-tags origin \
+          run_commit="$(git rev-parse "$GITHUB_SHA^{commit}" 2>/dev/null \
+              || echo "$GITHUB_SHA")"
+          if git rev-parse -q --verify "refs/tags/$RELEASE_TAG" \
+              >/dev/null 2>&1; then
+            tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
+            if [ "$tagged" != "$run_commit" ]; then
+              echo "refusing: tag $RELEASE_TAG exists at $tagged" \
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
+              rm -f "$fetch_err"
+              exit 1
+            fi
+          elif git fetch --no-tags origin \
               "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" 2>"$fetch_err"; then
             tagged="$(git rev-parse "$RELEASE_TAG^{commit}")"
-            if [ "$tagged" != "$GITHUB_SHA" ]; then
+            if [ "$tagged" != "$run_commit" ]; then
               echo "refusing: tag $RELEASE_TAG exists at $tagged" \
-                   "but this run builds $GITHUB_SHA" >&2
+                   "but this run builds $run_commit ($GITHUB_SHA)" >&2
               rm -f "$fetch_err"
               exit 1
             fi

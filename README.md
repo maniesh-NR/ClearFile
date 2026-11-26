@@ -256,6 +256,28 @@ The standalone build plus `cp -r .next/static .next/standalone/.next/` and
 `cp -r public .next/standalone/` (already in `package.json` `build`
 script) gives a self-hostable bundle.
 
+## Maintenance policy (v1.1 and later — Stage 6)
+
+With the v1.1 DoD met ("a reader can verify every number against a cited
+IRS source without reading git history" — engine inline citations, the
+pinned golden fixtures, and the independent Decimal oracle), the project is
+in **declared maintenance mode: parameter corrections only.**
+
+- **Accepted changes:** tax-parameter corrections backed by a cited IRS
+  source (flowing through the shared golden fixtures + the oracle, per the
+  Stage-3 contract), bug and security fixes with regression tests, and
+  dependency security bumps (the `npm audit --omit=dev` critical gate).
+- **What earns a v1.x bump:** the above, when user-visible.
+- **What earns the v2.0.0 major bump:** only the ADR-017 epilogue — the
+  Rust core and per-OS native stacks — or a breaking return-format change
+  (which itself requires a new envelope `formatVersion` + migration, per
+  the ADR-015 version-guard rule). The web prototype stays in maintenance
+  parity (ADR-016) until the Rust core serves the web (WASM) and the TS
+  engine retires.
+- **Out of scope without a new owner directive:** new engine features, new
+  platforms, new web-engine features (the ADR-016 freeze), and the TT
+  compatibility program beyond its own gated lanes (ADR-019/020).
+
 ## License
 
 GPL-3.0-only — see `LICENSE`. The vendored shadcn/ui components under
