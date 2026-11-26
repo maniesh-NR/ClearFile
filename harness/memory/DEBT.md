@@ -174,3 +174,19 @@ OIDC grant) — no remediation directed. The same message FUNDED the
 epilogue N1–N6 program (ADR-017). D30 remains untouched and standing —
 no ruling was received on Dependabot alerts, branch protection, or PAT
 expiry; they stay owner-side.
+
+**N1 entry gate (2026-11-26, append-only):** applied in-session, NOT
+debt — the gate-level conditions (the TWO-session box, the third-engine
+boundary sentence, the 16→17 count erratum, the zero-dependency license
+assertion as the annex's cargo-deny discharge, the harness_check
+release.yml variant guard, the fetch_flutter_sdk.sh SPDX residue
+repair, the fourth-version-plane note). Recorded as debt: **D43** —
+the ADR-017 verification annex (a) differential/property harness is
+DEFERRED to N1 session 2 by design (session 1 lands only the third
+golden-fixture runner); mechanism named: a Dart-side random/edge input
+generator emitting JSON cases that a later `cargo test` consumes
+against the Rust core, with the Dart reference computing the same cases
+in-process — N1's exit checklist names the harness; exceeding the
+two-session box fires the Stage-3 tripwire precedent. Also debt-adjacent,
+recorded at the same gate: the D31c caveat carries to the Rust runner —
+if N1 authors any fixtures, they pin only three-runner-derivable fields.

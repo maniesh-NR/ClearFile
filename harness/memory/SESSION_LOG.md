@@ -1685,7 +1685,26 @@ D41/D42 residues ride their lanes.**
   legitimate-advance precedent (PENDING×6 → FUNDED×6).
 - **D30 status:** untouched and standing — the owner's message contained
   no ruling on Dependabot alerts, branch protection, or PAT expiry.
-- **N1 gate:** the full-depth entry gate convenes this session on the
+- **N1 gate:** the full-depth entry gate convened this session on the
   ADR-017 terms (the verification annex + the licensing annex); the
-  four adversarial reports file under harness/adversarial/reports/
+  four adversarial reports filed under harness/adversarial/reports/
   2026-11-26-n1-*.md; the outcome lands in CONSENSUS at the gate close.
+- **N1 gate CLOSED — N1 ENTERED (4 × PROCEED-WITH-CONDITIONS, unanimous):
+** ADV-SEC 7 / ADV-LEGAL 5 / ADV-ENG 9 / ADV-PROD 7 conditions. The
+  gate-level conditions discharged in-session at the gate close: the
+  TWO-session execution box (session 1 = the slice; session 2 = 17/17 +
+  the annex-(a) differential/property harness + the ported bridge tests;
+  tripwire edge rule), the third-engine boundary sentence (ROADMAP +
+  STATE), the dated 16→17 count erratum (DECISIONS orchestrator
+  annotation + ROADMAP), the zero-dependency fail-closed license
+  assertion named as the annex's cargo-deny discharge at core-landing,
+  harness_check's release.yml variant-precondition guard added, the
+  tracked fetch_flutter_sdk.sh SPDX residue repaired (LEGAL's live
+  finding), the fourth-version-plane note, and D43 recorded (the annex-(a)
+  deferral with its named mechanism). The session-1 binding conditions
+  (comparator semantics ported exactly, NaN fail-closed, the per-fixture
+  skip map + guard, #[ignore]-not-red, the SLI/SALT pipeline inclusion,
+  the four arithmetic traps, the strict JSON reader, the fetcher manifest
+  pin, SPDX-everywhere, core/target gitignored first, the CI step shape,
+  the mechanical ledger join) bind the execution that follows in this
+  same session; the full ledger is CONSENSUS's N1 gate record.

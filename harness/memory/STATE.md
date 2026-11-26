@@ -153,10 +153,18 @@ session's interrupted closing backup normalized + pushed as
   in-conversation) — the ADR-014 re-platforming settlement is recorded
   (staged per-OS over the Rust core, a finite post-Stage-6 program with
   its own gates; the Rust core alone may run parallel to Stage 4+ behind
-  its own gate). **No native-stack code exists yet** — funding gates the
-  program, not any stage; N1's full-depth entry gate convenes next; the
-  Flutter app and web prototype remain the live implementation, exactly
-  as the ROADMAP matrix says.
+  its own gate). **N1: ENTERED 2026-11-26** at its full-depth gate (4 ×
+  PROCEED-WITH-CONDITIONS unanimous; execution box TWO sessions; the
+  gate-level conditions discharged in-session). **No native-stack code
+  exists yet** — the session-1 slice (toolchain + std-only `core/` + the
+  TY2025 tables + the ordinary-income path incl. SLI/SALT + the third
+  golden-fixture runner) is the next work. **Boundary sentence: "zero
+  engine code touched" (the v1 maintenance freeze) is scoped to the two
+  existing engines (`clearfile/` Dart, `src/` TS); N1 adds a third
+  engine under `core/` that is additive by design, whose correctness
+  contract is the shared fixtures + oracle, and whose delta never
+  touches `clearfile/` or `src/`.** The Flutter app and web prototype
+  remain the live implementation, exactly as the ROADMAP matrix says.
 - **TT-compatibility program (ADR-019 + ADR-020): T2 ENTERED 2026-11-22**
   at its own gate (4 × PROCEED-WITH-CONDITIONS, unanimous; T1 complete
   and verified at the gate). Stage-2's DoD box is NOT grown — TT specs
@@ -298,18 +306,28 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**N1 session 1 — the Rust core's full-depth entry gate + the first
-execution session (FUNDED 2026-11-26):** the gate convenes on the
-ADR-017 settlement's terms — the verification annex (the 17 shared
-golden fixtures as a third runner with the oracle's tolerance
-semantics + the differential/property harness against the Dart
-reference + f64-first arithmetic, no semantic changes during the
-port) and the licensing annex (GPL-3.0-only + a cargo-deny license
-gate when dependencies land). Session-1 slice: the sha256-verified
-standalone toolchain under gitignored `tools/rust/`, the std-only
-`core/` crate scaffold, the TY2025 parameter tables + the
-ordinary-income path, the fixture-consuming differential harness;
-full 17/17 fixture parity is N1's EXIT condition, not session-1's.
+**N1 session 1 — the first execution session of the ENTERED Rust core
+(the full-depth entry gate CLOSED 2026-11-26, 4 ×
+PROCEED-WITH-CONDITIONS unanimous; the session-1 condition ledger lives
+in CONSENSUS's N1 gate record):** the sha256-verified standalone
+toolchain under gitignored `tools/rust/` (tracked manifest row, no
+hardcoded hash in scripts/, quirk-20 hardening), the std-only `core/`
+crate (SPDX headers on every tracked file, `core/target/` gitignored
+BEFORE any cargo call, `core/` in the backup hex-scan list), the
+TY2025 parameter tables + the ordinary-income path ported from the
+Dart reference (f64-first, operation order preserved, the four
+arithmetic-semantics traps in the harness doc-comment), the THIRD
+golden-fixture runner consuming the shared 17 fixtures with the
+Python oracle's exact tolerance semantics (per-fixture tolerance,
+NaN fail-closed, the per-fixture skip map + guard test, unported
+fixtures `#[ignore]`d — never red on main), the zero-dependency
+license assertion in CI (the annex's cargo-deny discharged at
+core-landing; upgraded at the first real dependency — "when the core
+lands", the annex's own wording), the harness_check ledger join
+(green + ignored == 17) + the release.yml variant guard (landed at
+the gate), the DEBT entry for the annex (a) deferral. Full 17/17 is
+N1's EXIT condition (session 2: + the differential/property harness
++ the ported bridge tests); the box is TWO sessions.
 **Owner-side surfacings standing:** Dependabot alerts, branch
 protection on `main`, PAT expiry (D30 — no ruling received). The T3
 password-layer chase (the Stage-2 exit slip) rides its lane.

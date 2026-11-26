@@ -63,20 +63,28 @@ else
 fi
 
 FUNDED_RM=$(grep -c 'Gate status:.*FUNDED' "$ROADMAP" || true)
-if [ "$FUNDED_RM" -eq 6 ]; then
-  pass "The six epilogue stages N1–N6 are FUNDED in ROADMAP ($FUNDED_RM; owner 2026-11-26 in-conversation — each still enters only behind its own gate; checker updated per the legitimate-advance precedent)"
+if [ "$FUNDED_RM" -eq 5 ]; then
+  pass "Epilogue N2–N6 are FUNDED in ROADMAP ($FUNDED_RM; owner 2026-11-26 in-conversation — each still enters only behind its own delta-scoped gate); N1 is ENTERED (its full-depth gate closed 2026-11-26) — checker updated per the legitimate-advance precedent"
 else
-  fail "ROADMAP has $FUNDED_RM 'Gate status: FUNDED' lines; expected 6 (epilogue N1–N6 funded 2026-11-26, gates per tiering). Update this checker if a stage legitimately advanced"
+  fail "ROADMAP has $FUNDED_RM 'Gate status: FUNDED' lines; expected 5 (epilogue N2–N6 funded 2026-11-26; N1 ENTERED 2026-11-26). Update this checker if a stage legitimately advanced"
 fi
 
 S2_ENTERED_CS=$(grep -c '\*\*Stage 2: ENTERED\*\*' "$CONSENSUS" || true)
 ENTERED_CS=$(grep -cE '\*\*Stage [456]: CLOSED\*\*' "$CONSENSUS" || true)
 ENTERED_N_CS=$(grep -cE '\*\*N[1-6]: (ENTERED|PASSED|CLOSED)\*\*' "$CONSENSUS" || true)
 ENTERED_TT_CS=$(grep -cE '\*\*T[1-4]: (ENTERED|PASSED|CLOSED)\*\*' "$CONSENSUS" || true)
-if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 3 ] && [ "$ENTERED_N_CS" -eq 0 ] && [ "$ENTERED_TT_CS" -eq 1 ]; then
-  pass "CONSENSUS records Stage 2's entry, the TT program's T2 entry, and the Stages 4/5/6 closures (the 2026-11-26 after-the-fact gate); the epilogue N1–N6 stays un-gated"
+if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 3 ] && [ "$ENTERED_N_CS" -eq 1 ] && [ "$ENTERED_TT_CS" -eq 1 ]; then
+  pass "CONSENSUS records Stage 2's entry, the TT program's T2 entry, the Stages 4/5/6 closures, and N1's entry (the 2026-11-26 full-depth gate)"
 else
-  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/0/1) — reconcile with ROADMAP"
+  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/1/1) — reconcile with ROADMAP"
+fi
+
+# --- 1b. The N1 variant precondition: release.yml stays native-free -------
+RM_NATIVE=$(grep -cE 'core/|clearfile-core|cargo' ".github/workflows/release.yml" || true)
+if [ "$RM_NATIVE" -eq 0 ]; then
+  pass "release.yml references no core/, clearfile-core, or cargo (the ADR-017 variant precondition — nothing shipped depends on the Rust core)"
+else
+  fail "release.yml references core/|clearfile-core|cargo ($RM_NATIVE hits) — a shipped-artifact coupling the recorded variant forbids without a new gate"
 fi
 
 # --- 2. Gate-scope consistency: WORKFLOW §2 tiering ↔ ROADMAP tiering -------

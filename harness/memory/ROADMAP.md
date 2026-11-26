@@ -566,9 +566,24 @@ v1's stages still close first.
   pure, offline, fixture-verifiable; validated against the 16 shared
   golden fixtures PLUS the differential/property harness against the Dart
   reference (the verification annex — fixtures pin breakpoints, not the
-  continuum). **Gate status: FUNDED 2026-11-26 (owner, in-conversation;
-  the full-depth entry gate convenes at this session's gate, per the
-  tiering above).**
+  continuum). **Gate status: ENTERED 2026-11-26** (full-depth gate, 4 ×
+  PROCEED-WITH-CONDITIONS unanimous — CONSENSUS 2026-11-26; reports at
+  `harness/adversarial/reports/2026-11-26-n1-*.md`). **Execution box:
+  TWO sessions** (session 1 = the toolchain + the std-only `core/`
+  scaffold + the TY2025 tables + the ordinary-income path incl. SLI/SALT
+  + the third golden-fixture runner; session 2 = 17/17 + the annex (a)
+  differential/property harness + the ported bridge tests) — exceeding
+  the box fires the Stage-3 tripwire precedent: the slip is logged
+  honestly and disposed at the N1 exit gate, never silently extended;
+  an extension requires a recorded owner ruling. **Boundary sentence:
+  "zero engine code touched" (the v1 maintenance freeze) is scoped to
+  the two existing engines (`clearfile/` Dart, `src/` TS); N1 adds a
+  third engine under `core/` that is additive by design, whose
+  correctness contract is the shared fixtures + oracle, and whose delta
+  never touches `clearfile/` or `src/`.** **Count erratum (dated
+  2026-11-26):** this bullet and ADR-017's annex say "16 shared golden
+  fixtures" — the actual count is 17 (fixture #17, the QSS pair, landed
+  later as D33); the annex text predates it, and the runner consumes 17.
 - **N2 — Linux native UI**: the owner's two-tier assignment with one
   toolkit per tier — gtk3-rs (older tier) / Slint (modern tier);
   consolidatable at this gate if single-maintainer reality demands it.
@@ -594,7 +609,11 @@ v1's stages still close first.
 
 The per-OS order after N1 (Android before Windows, macOS last) is
 re-settable at the epilogue's own gates without reopening the ADR-017
-settlement.
+settlement. **Version-plane note (2026-11-26, the N1 entry gate):** the
+`core/` crate's Cargo semver is a FOURTH version plane, separate from
+the app semver, the `.clearfile.json` envelope schema version, and the
+web package.json version (ADR-017 keeps three planes separate; the
+crate adds one).
 
 ---
 

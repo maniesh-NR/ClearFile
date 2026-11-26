@@ -854,3 +854,16 @@ recorded variant remains available (N1 alone may proceed while later
 stages wait). ROADMAP's six epilogue gate statuses updated to FUNDED
 2026-11-26; CONSENSUS and DEBT carry the ruling; no epilogue code
 exists yet.
+
+**Orchestrator annotation (2026-11-26, filed at the N1 full-depth entry
+gate — count erratum, gate conditions ENG-9/SEC-adv/PROD-7; the
+decision text above and the annexes are otherwise verbatim and
+unedited):** the verification annex's "16 shared golden fixtures" and
+ROADMAP's N1 bullet predate D33 (2026-11-22, the QSS fixture #17); the
+actual shared-fixture count is **17**, and the Rust runner consumes 17.
+The verification annex's licensing annex sentence "runs in CI when the
+core lands" is authoritative over any looser paraphrase ("when
+dependencies land") that may appear elsewhere — the N1 gate discharged
+it with the zero-dependency fail-closed assertion in the same commit
+series as the core, upgraded to a real cargo-deny at the first external
+dependency.

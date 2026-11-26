@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-only
 # Fetch and install the Flutter SDK pinned for this project (3.47.9 stable,
 # Linux x64) into the gitignored tools/ directory, verifying the tarball's
 # sha256 against the official releases_linux.json manifest (WORKFLOW §4

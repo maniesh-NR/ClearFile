@@ -1010,3 +1010,101 @@ deploy-pages API requirement. No remediation directed. The same owner
 message FUNDED the epilogue N1–N6 program (ADR-017): ROADMAP's six
 epilogue gate statuses became FUNDED — funding gates the program, not
 any stage; the gates convene per the tiering (N1 full-depth first).
+
+---
+
+## 2026-11-26 · The N1 full-depth entry gate (the Rust core)
+
+**Context:** the owner funded epilogue N1–N6 in the ruling recorded
+above; the first gate of the funded program convenes per the tiering —
+N1 (the Rust core) is FULL-DEPTH. The proposal under review: a session-1
+slice (the sha256-verified standalone toolchain under gitignored
+`tools/rust/`; a single std-only tracked crate at `core/` — GPL-3.0-only,
+SPDX headers, zero external dependencies, no build.rs; the TY2025
+parameter tables + the ordinary-income path ported from the Dart
+reference; the fixture-JSON reader strictly in the test harness; the
+third golden-fixture runner consuming the SHARED 17 fixtures with the
+Python oracle's exact tolerance semantics; a plain `cargo test` step in
+hygiene's suites job) with N1's overall exit (17/17 + the annex's
+differential/property harness + the ported bridge tests) explicitly NOT
+session-1's claim. All four reviewers worked independently over the
+repo at tip `b9008f9`; reports filed at
+`harness/adversarial/reports/2026-11-26-n1-{security,engineering,legal,product}.md`.
+
+| Reviewer | Verdict | BLOCK? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (7) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (5) | no |
+| ADV-ENG | PROCEED-WITH-CONDITIONS (9) | no |
+| ADV-PROD | PROCEED-WITH-CONDITIONS (7) | no |
+
+**Gate-level conditions (discharged at the gate close, this sync):**
+(1) the N1 execution box is TWO sessions (session 1 = the reviewed
+slice; session 2 = 17/17 + the annex (a) differential/property harness +
+the ported bridge tests) with the Stage-3 tripwire edge rule — exceeding
+the box logs the slip honestly and disposes it at the N1 exit gate,
+never silently extended, and an extension requires a recorded owner
+ruling (PROD-1); (2) the third-engine boundary sentence recorded in
+ROADMAP + STATE — the v1 maintenance freeze "zero engine code touched"
+is scoped to the two existing engines; `core/` is additive by design;
+its delta never touches `clearfile/` or `src/` (PROD-5); (3) the
+"16 shared golden fixtures" count erratum (actual: 17, QSS #17, D33)
+recorded as a dated annotation, never a silent edit (ENG-9/SEC-adv/
+PROD-7); (4) the licensing annex's cargo-deny disposition named — the
+zero-dependency fail-closed assertion (Cargo.lock = exactly the root
+package AND no `[dependencies]` section) IS the license check at
+core-landing, upgraded to a real cargo-deny in the same commit as the
+first external dependency (SEC-3/LEGAL-2); (5) harness_check gains the
+release.yml variant-precondition guard (zero `core/|clearfile-core|cargo`
+references) now (PROD-4/SEC-7/LEGAL-4); (6) the tracked
+`scripts/fetch_flutter_sdk.sh` SPDX residue repaired same-session
+(LEGAL-1's live finding); (7) the crate's Cargo semver recorded as a
+FOURTH version plane, separate from app semver / envelope schema /
+web package.json (PROD-adv); (8) STATE.md's "when dependencies land"
+paraphrase corrected to the annex's "when the core lands" (LEGAL-adv).
+
+**Session-1 binding conditions (the execution's own gate ledger; every
+one checkable):** SPDX GPL-3.0-only header on EVERY new tracked file
+from the first commit including the fetcher (LEGAL-1); `core/target/`
+gitignored BEFORE any cargo invocation + `core/` added to
+sandbox_backup.sh's hex-scan path list in the same commit (SEC-1); the
+toolchain fetcher verifies sha256 against a TRACKED manifest row
+(version+URL+size+hash — the fetch_tt_corpus.sh pattern), the manifest
+in the backup hex allow-list, no hardcoded 64-hex constant in scripts/,
+unauthenticated fetch only, quirk-20 hardening (strict sha256, benign
+tar-status tolerance, `cargo --version` smoke as the authority)
+(SEC-2/SEC-6/SEC-adv/LEGAL-3); CI step: `cargo test --locked`, version
+echo, no new `uses:` lines, no secrets, existing permissions
+(SEC-4/ENG-8); the comparator ported EXACTLY from
+verify_golden_fixtures.py (field-set = the fixture's expected keys,
+`deductionMethodUsed` exact string, else `|delta| > tolerance` fails —
+delta == tolerance passes — per-fixture `tolerance` default 0.005,
+fixture 01's 0.505; NOT cent-rounded) + NaN/∞ fail-closed + the
+boundary unit tests (ENG-1/ENG-2/PROD-6); the honest-subset mechanism =
+a committed per-fixture skip map (`run | deferred{reason}` keyed to
+input features) + a guard test asserting map keys == the directory's
+fixture set exactly; unported fixtures `#[ignore]`d with a reason,
+never red on main (ENG-3/PROD-2/SEC-5); the slice includes SLI + SALT
++ deduction-choice + payments (port calculator.dart whole) or the skip
+map accounts for every fixture needing them (ENG-4); the four
+arithmetic-semantics traps in the harness doc-comment (operation order;
+the CTC cents-normalize BEFORE the $1,000 ceiling and never port the
+oracle's +999 idiom; Dart round/ceil == Rust f64::round/ceil; Dart
+min/max NaN propagation noted) + fixture 12 in the green set (ENG-5);
+the fixture-JSON reader STRICT (named-field errors on missing/misspelled
+inputs — unlike the Dart loader's defaults) and strictly in `core/tests/`
+(ENG-7/SEC-adv); the differential/property-harness deferral recorded as
+a DEBT entry citing annex (a) with the named mechanism (ENG-6/PROD-6);
+the Rust suite joins the ledger mechanically (harness_check: green +
+ignored == the fixture directory count against a `core/tests/` manifest;
+README gains ONE `core/` row "N of 17 fixtures green"; the Dart 126-class
+checks untouched) (PROD-3); `release.yml` diff-empty at session close +
+pubspec version unchanged (SEC-7/LEGAL-4).
+
+**Gate outcome:**
+
+**N1: ENTERED**
+(2026-11-26 — 4 × PROCEED-WITH-CONDITIONS, unanimous; the gate-level
+conditions discharged in this sync; the session-1 conditions bind the
+first execution session. The ADR-017 recorded variant holds: no shipped
+artifact depends on the core, and the v1 stages remain closed/frozen.)
