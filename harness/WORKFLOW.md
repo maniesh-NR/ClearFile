@@ -228,6 +228,12 @@ in platform scaffolding; the `origin` remote, the Flutter SDK (`tools/`),
   PAT rather than trusting one recovered from stale context.
 - **Owner decision 2026-11-14: the PAT is left as-is** (no expiry change,
   no rotation at this time) — an explicit, acknowledged risk acceptance.
+- **Profile correction 2026-11-26 (owner-RATIFIED):** the token was also
+  used for a repo-settings mutation (enabling Pages after the workflow
+  GITHUB_TOKEN's create-site 403) — a use class ratified by the owner
+  (DECISIONS.md, Ratifications recorded 2026-11-26). The token's observed
+  profile is now: Contents:RW + Actions write/read + repo-settings
+  mutations — treat theft as full-repo, CI, AND settings compromise.
   The rotation policy above remains the standing guidance for when the
   owner chooses to act; the token continues to live only in `.git/config`
   and must be re-supplied by the owner after any recycle where it stops

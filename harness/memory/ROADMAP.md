@@ -548,7 +548,11 @@ program's own gates (T3/T4) and the unfunded epilogue N1–N6.
 
 A **separate, finite program** — not part of the roadmap above, which
 still ends at Stage 6 — entered only behind its own gates when the owner
-funds it with sessions. Full settlement: `memory/DECISIONS.md` ADR-017
+funds it with sessions. **FUNDED 2026-11-26 (owner, in-conversation,
+the same message that ratified the Stages-4/5/6 gate's three
+surfacings); every stage still enters only behind its own gate per the
+tiering — funding gates the program, not any stage.** Full settlement:
+`memory/DECISIONS.md` ADR-017
 (migration shape, sequencing, Rust-core boundary, FFI seam, macOS/Linux
 tiering, KMP, the explicit iOS drop, the v2.0.0 rule, the ADR-009
 disposition, the verification + licensing annexes). Recorded variant:
@@ -562,26 +566,31 @@ v1's stages still close first.
   pure, offline, fixture-verifiable; validated against the 16 shared
   golden fixtures PLUS the differential/property harness against the Dart
   reference (the verification annex — fixtures pin breakpoints, not the
-  continuum). **Gate status: PENDING (unfunded; full-depth entry gate
-  under the tiering above).**
+  continuum). **Gate status: FUNDED 2026-11-26 (owner, in-conversation;
+  the full-depth entry gate convenes at this session's gate, per the
+  tiering above).**
 - **N2 — Linux native UI**: the owner's two-tier assignment with one
   toolkit per tier — gtk3-rs (older tier) / Slint (modern tier);
   consolidatable at this gate if single-maintainer reality demands it.
-  **Gate status: PENDING (unfunded; delta-scoped gate).**
+  **Gate status: FUNDED 2026-11-26 (owner, in-conversation; the
+  delta-scoped gate convenes at its turn).**
 - **N3 — Android native UI**: Android Views + Kotlin Multiplatform
-  (Android-only) over the core via a thin JNI shim. **Gate status: PENDING
-  (unfunded; delta-scoped gate).**
+  (Android-only) over the core via a thin JNI shim. **Gate status: FUNDED
+  2026-11-26 (owner, in-conversation; the delta-scoped gate convenes at
+  its turn).**
 - **N4 — Windows native UI**: raw Win32 + Direct2D consuming the
-  cbindgen C header. **Gate status: PENDING (unfunded; delta-scoped
-  gate).**
+  cbindgen C header. **Gate status: FUNDED 2026-11-26 (owner,
+  in-conversation; the delta-scoped gate convenes at its turn).**
 - **N5 — macOS native UI**: one Swift+AppKit app, deployment floor
   macOS 13 (confirmable here); requires the `macos-latest` CI runner or
   owner-side builds — this Linux sandbox cannot build or verify AppKit.
-  **Gate status: PENDING (unfunded; delta-scoped gate).**
+  **Gate status: FUNDED 2026-11-26 (owner, in-conversation; the
+  delta-scoped gate convenes at its turn).**
 - **N6 — web via WASM + terminal freeze**: the Rust core serves the
   web; the TS engine retires per ADR-016; the epilogue program declares
   its own freeze (v2.0.0 territory per the settlement's rule).
-  **Gate status: PENDING (unfunded; delta-scoped gate).**
+  **Gate status: FUNDED 2026-11-26 (owner, in-conversation; the
+  delta-scoped gate convenes at its turn).**
 
 The per-OS order after N1 (Android before Windows, macOS last) is
 re-settable at the epilogue's own gates without reopening the ADR-017

@@ -1000,3 +1000,13 @@ gate stays unconvened. No DoD claim was falsified.
 **Stage 6: CLOSED**
 (2026-11-26 — 4 × PROCEED-WITH-CONDITIONS, unanimous; conditions
 discharged in-session as recorded above).
+
+**Owner ruling recorded 2026-11-26 (in-conversation, appended):** the
+owner RATIFIED all three surfacings — (1) the after-the-fact gate
+sequencing stands as valid; (2) the PAT's use to enable Pages is
+approved (the use class joins the token's observed profile in WORKFLOW
+§5); (3) pages.yml's `id-token: write` OIDC grant is approved as the
+deploy-pages API requirement. No remediation directed. The same owner
+message FUNDED the epilogue N1–N6 program (ADR-017): ROADMAP's six
+epilogue gate statuses became FUNDED — funding gates the program, not
+any stage; the gates convene per the tiering (N1 full-depth first).

@@ -166,3 +166,11 @@ create-site 403 — a new PAT-use class adjacent to D30); (b) pages.yml's
 from the Stage-0 "nothing more" posture, recorded in-file). D30
 re-affirmed untouched (Dependabot, branch protection, PAT expiry —
 owner-side).
+
+**Owner ruling (2026-11-26, append-only):** the ratification
+surfacings above are RATIFIED by the owner in-conversation (the
+after-the-fact sequencing, the PAT-Pages-use, the `id-token: write`
+OIDC grant) — no remediation directed. The same message FUNDED the
+epilogue N1–N6 program (ADR-017). D30 remains untouched and standing —
+no ruling was received on Dependabot alerts, branch protection, or PAT
+expiry; they stay owner-side.

@@ -1661,3 +1661,31 @@ D41/D42 residues ride their lanes.**
   shallow clone simulating the CI checkout AND 6/6 in the full repo;
   CI re-ran GREEN on the tip (hygiene run #26 — gitleaks, suites, RE
   tooling, harness self-check; verified live post-push, 2 m 28 s).
+
+---
+
+## 2026-11-26 (later) · The owner's rulings: three ratifications + the epilogue funding; N1's full-depth entry gate convenes
+
+- **Bootstrap verification sweep (the continuation):** the working tree
+  was already at the session-complete state; a FOURTH divergence of the
+  recorded mode-flip class found and normalized (40c6a95 local vs 67b9501
+  remote, content-identical, `git reset --hard`); tags v1.0.0/v1.0.1/v1.1
+  verified in sync local↔remote; harness_check 0 failures; hygiene run
+  #26 verified GREEN live; the Pages deploy verified LIVE (HTTP 200); the
+  post-teardown CI-fix bullet appended to the prior entry + pushed as
+  `b3bac6e` (run #27 green).
+- **The owner's rulings (in-conversation):** (1a/1b/1c) the three
+  Stages-4/5/6 gate ratification surfacings RATIFIED — recorded in
+  DECISIONS.md's "Ratifications recorded 2026-11-26" register,
+  CONSENSUS's gate record, DEBT's append-only note, and WORKFLOW §5's
+  token-profile correction (Contents:RW + Actions write/read +
+  repo-settings mutations). (2) the epilogue N1–N6 program FUNDED —
+  ROADMAP's six gate statuses → FUNDED 2026-11-26; funding gates the
+  program, not any stage; harness_check's epilogue check updated per the
+  legitimate-advance precedent (PENDING×6 → FUNDED×6).
+- **D30 status:** untouched and standing — the owner's message contained
+  no ruling on Dependabot alerts, branch protection, or PAT expiry.
+- **N1 gate:** the full-depth entry gate convenes this session on the
+  ADR-017 terms (the verification annex + the licensing annex); the
+  four adversarial reports file under harness/adversarial/reports/
+  2026-11-26-n1-*.md; the outcome lands in CONSENSUS at the gate close.

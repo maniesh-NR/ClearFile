@@ -1,7 +1,14 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-26 (the owner-directed execution session:
-Stages 4+5+6 executed + gated after the fact — 4 ×
+**Updated:** 2026-11-26 (continuation session: the owner ruled — the
+three Stages-4/5/6 gate ratification surfacings RATIFIED (the
+after-the-fact sequencing, the PAT Pages-enablement, the pages.yml
+`id-token: write` grant; recorded in DECISIONS.md's 2026-11-26
+ratification register + CONSENSUS + DEBT + WORKFLOW §5) and the
+epilogue N1–N6 program FUNDED (ROADMAP's six statuses → FUNDED;
+funding gates the program, not any stage — N1's full-depth entry gate
+convenes next). The earlier same-day session: Stages 4+5+6 executed +
+gated after the fact — 4 ×
 PROCEED-WITH-CONDITIONS unanimous with every condition discharged;
 the v1.1 release SHIPPED (release 459120788, 11 assets + SHA256SUMS,
 tag → e099bc0) with D29 verified live and the tag guard FIXED; the
@@ -142,11 +149,12 @@ session's interrupted closing backup normalized + pushed as
   formally closed at the same gate after unanimous live verification of
   the execution evidence; the tripwire outcome — box NOT exceeded, slip
   FIRED — was reviewed and disposed as ADR-16's maintenance freeze).
-- **Epilogue native program N1–N6 (ADR-017): PENDING/unfunded** — the
-  ADR-014 re-platforming settlement is recorded (staged per-OS over the
-  Rust core, a finite post-Stage-6 program with its own gates; entered
-  only when the owner funds it; the Rust core alone may run parallel to
-  Stage 4+ behind its own gate). **No native-stack code exists**; the
+- **Epilogue native program N1–N6 (ADR-017): FUNDED 2026-11-26** (owner,
+  in-conversation) — the ADR-014 re-platforming settlement is recorded
+  (staged per-OS over the Rust core, a finite post-Stage-6 program with
+  its own gates; the Rust core alone may run parallel to Stage 4+ behind
+  its own gate). **No native-stack code exists yet** — funding gates the
+  program, not any stage; N1's full-depth entry gate convenes next; the
   Flutter app and web prototype remain the live implementation, exactly
   as the ROADMAP matrix says.
 - **TT-compatibility program (ADR-019 + ADR-020): T2 ENTERED 2026-11-22**
@@ -290,20 +298,18 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**T3 session 2 — the password-layer construction chase:** the REA
-import of the carved ttax engine DLL (26 MB, `tools/re/ttax_engine.dll`)
-attempted under the full single-call budget (checkpoint mode), or the
-.pdata-bounded targeted decode of the 67 anchored entry-map functions
-(`docs/re-research/2026-11-23-tt-t3-session1.md` — the .tax-referencing
-FUN_00121cf0/22020, the crypt/cipher band, the IData:: call-site chase);
-the password-layer construction (KDF/cipher over the embedded Crypto++
-+ the password check + the ADR-020 fixed-key boundary) documented at
-function-fact level → then the T3 format-family spec drafts (the
-`.tax` layer + `tax-modern.md` unlocks the Stage-2 EXIT gate). D42
-(the .tax container's host — not OLE in this module; the export-table
-residue) + D41 (the CAN-Business ISc residues) ride their lanes.
-
-Owner-side surfacings standing: Dependabot alerts, branch protection on
-`main`, PAT expiry (D30). The epilogue native program (ADR-017) is
-PENDING/unfunded — it moves only when the owner funds it with sessions;
-the v1.1 tag is Stage 5's closing event and does not wait for it.
+**N1 session 1 — the Rust core's full-depth entry gate + the first
+execution session (FUNDED 2026-11-26):** the gate convenes on the
+ADR-017 settlement's terms — the verification annex (the 17 shared
+golden fixtures as a third runner with the oracle's tolerance
+semantics + the differential/property harness against the Dart
+reference + f64-first arithmetic, no semantic changes during the
+port) and the licensing annex (GPL-3.0-only + a cargo-deny license
+gate when dependencies land). Session-1 slice: the sha256-verified
+standalone toolchain under gitignored `tools/rust/`, the std-only
+`core/` crate scaffold, the TY2025 parameter tables + the
+ordinary-income path, the fixture-consuming differential harness;
+full 17/17 fixture parity is N1's EXIT condition, not session-1's.
+**Owner-side surfacings standing:** Dependabot alerts, branch
+protection on `main`, PAT expiry (D30 — no ruling received). The T3
+password-layer chase (the Stage-2 exit slip) rides its lane.

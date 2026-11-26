@@ -62,11 +62,11 @@ else
   fail "Stage 2 gate status drift between ROADMAP and CONSENSUS (entry not recorded?)"
 fi
 
-PENDING_RM=$(grep -c 'Gate status:.*PENDING' "$ROADMAP" || true)
-if [ "$PENDING_RM" -eq 6 ]; then
-  pass "The six unfunded epilogue stages N1–N6 remain PENDING in ROADMAP ($PENDING_RM; Stages 4, 5, 6 CLOSED 2026-11-26 at the after-the-fact gate — checker updated per the legitimate-advance precedent)"
+FUNDED_RM=$(grep -c 'Gate status:.*FUNDED' "$ROADMAP" || true)
+if [ "$FUNDED_RM" -eq 6 ]; then
+  pass "The six epilogue stages N1–N6 are FUNDED in ROADMAP ($FUNDED_RM; owner 2026-11-26 in-conversation — each still enters only behind its own gate; checker updated per the legitimate-advance precedent)"
 else
-  fail "ROADMAP has $PENDING_RM 'Gate status: PENDING' lines; expected 6 (epilogue N1–N6 only; Stages 4, 5, 6 closed 2026-11-26). Update this checker if a stage legitimately advanced"
+  fail "ROADMAP has $FUNDED_RM 'Gate status: FUNDED' lines; expected 6 (epilogue N1–N6 funded 2026-11-26, gates per tiering). Update this checker if a stage legitimately advanced"
 fi
 
 S2_ENTERED_CS=$(grep -c '\*\*Stage 2: ENTERED\*\*' "$CONSENSUS" || true)

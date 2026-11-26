@@ -815,3 +815,42 @@ Exit-ramp artifact classes for the enforcement-response plan: the
 bridge's distribution pauses (plus a gate re-open); the by-existence
 specs/notes (T2/T3 outputs, no key values) are reviewed at that gate,
 not auto-removed.
+
+## Ratifications recorded 2026-11-26 (owner, in-conversation)
+
+The Stages-4/5/6 after-the-fact gate (CONSENSUS 2026-11-26) surfaced
+three deviations for owner ratification. The owner ruled on all three
+in one message, and funded the epilogue program in the same message.
+
+**Gate sequencing — RATIFIED.** The after-the-fact convening of the
+Stages-4/5/6 gate stands as valid (the execution preceded the gate
+under the owner's own blanket directive; the gate reviewed the full
+delta `6205222 → 8622e74` and returned 4 × PROCEED-WITH-CONDITIONS
+with every condition discharged). No remediation directed; the
+retrospective-gate pattern is acceptable ONLY under an explicit owner
+directive, never by default — recorded as the standing reading of
+WORKFLOW §2.
+
+**PAT Pages-enablement — RATIFIED.** The owner's fine-grained PAT was
+used to mutate repo settings (enable Pages) after the workflow's
+GITHUB_TOKEN was 403-refused on site creation. Approved; the use class
+joins the token's observed profile in WORKFLOW §5 (Contents:RW +
+Actions write/read + repo-settings mutations — treat theft as
+full-repo, CI, and settings compromise).
+
+**pages.yml `id-token: write` — RATIFIED.** The OIDC grant on the
+deploy job is approved as the deploy-pages API requirement; the
+recorded deviation from the Stage-0 "pages: write + contents: read,
+nothing more" posture is accepted with eyes open (the grant is
+deploy-scoped, short-lived by the OIDC design, and confined to
+pages.yml).
+
+**Epilogue N1–N6 — FUNDED.** The owner funded the native re-platforming
+program (ADR-017 settlement) in the same message. Funding gates the
+program, not any stage: every epilogue stage still enters only behind
+its own gate per the WORKFLOW §2 tiering — N1's full-depth entry gate
+convenes first; N2–N6 are delta-scoped at their turns. The ADR-017
+recorded variant remains available (N1 alone may proceed while later
+stages wait). ROADMAP's six epilogue gate statuses updated to FUNDED
+2026-11-26; CONSENSUS and DEBT carry the ruling; no epilogue code
+exists yet.
