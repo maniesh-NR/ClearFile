@@ -153,7 +153,7 @@ class SettingsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('ClearFile 1.0.1 - demonstration software',
+                      Text('ClearFile 1.1.0 - demonstration software',
                           style: Theme.of(context).textTheme.titleSmall),
                       const SizedBox(height: 8),
                       Text(
