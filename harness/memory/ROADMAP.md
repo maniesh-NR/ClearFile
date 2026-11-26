@@ -327,6 +327,17 @@ two-session box):
   smoke 6/6, audit gate 0, RE tools 23/23, blob assertion clean, formats
   lint 3/3 clean.
 - **The execution box is CLOSED at exactly two sessions.**
+  **Exit-gate slip (recorded 2026-11-26, mandatory agenda item at the
+  next convened gate):** T3 session 2's password-layer chase found the
+  MSI-record keystream diverging from the recorded formula at payload
+  offset 0x24000 (the documented variant-A cipher inflates cleanly to
+  0x24000 then dies; 14 cipher variants, 1024 phase deltas and 256 key
+  constants swept with a continue-stream oracle — no match; the
+  decompile-level chase over the ISSetupStream cipher is required), so
+  `tax-modern.md` remains unwritten and the exit gate remains
+  unconvened. No DoD claim was falsified: 3/4 named specs §7.5-clean,
+  exactly 2 execution sessions, refusal/cap tests green, blob assertion
+  green — the checklist is otherwise green.
   `tax-modern.md` (the fourth named spec) was NEVER landable inside the
   box — it awaits T3's format-family findings incl. the password layer,
   exactly as the box's own plan recorded (no stub was written: §7.5
@@ -466,7 +477,23 @@ welcome disclaimer verified prominent, Stage-1 copy fixes landed first).
 need appears): Linux AppImage; Android `.aab` (Play-ready when an account
 exists); further packaging breadth.
 
-**Gate status:** PENDING (delta-scoped gate).
+**Gate status:** **CLOSED 2026-11-26** (delta-scoped gate, the Stages
+4+5+6 panel — 4 × PROCEED-WITH-CONDITIONS, unanimous; every condition
+discharged in-session: `8622e74` + the governance sync). EXECUTED
+2026-11-26 under the owner's blanket directive ("implement everything on
+the roadmap that does not require my input" — recorded here and in
+CONSENSUS as an after-the-fact sequencing deviation awaiting owner
+ratification, the ADR-009 recorded-prerogative pattern): the web-boot fix
+(main.dart kIsWeb → MemoryReturnStore + AiSettingsStore.inMemory — the
+v1.0.1 web artifact could never boot), the memory persistence disclosed
+in-App + README, index.html de-scaffolded + the meta CSP/referrer set
+(the *.github.io no-custom-headers limit disclosed), pages.yml (least
+privilege, SHA-pinned, the id-token OIDC deviation recorded in-file),
+boot verified by scripts/flutter_web_smoke.py + a vision-reviewed
+screenshot (PROD-5). The site is LIVE at
+https://maniesh-nr.github.io/ClearFile/ (deploy run green; Pages enabled
+via the owner PAT after the GITHUB_TOKEN create-site 403 — surfaced for
+owner ratification at this gate).
 
 ## Stage 5 — AI assistant hardening
 
@@ -483,7 +510,21 @@ history") is reachable on the CURRENT codebases and must not wait for
 the epilogue re-platforming; the tag also discharges D29 (the tag-PUSH
 trigger verification) as the next tagged release.
 
-**Gate status:** PENDING (delta-scoped gate).
+**Gate status:** **CLOSED 2026-11-26** (delta-scoped gate, the Stages
+4+5+6 panel — 4 × PROCEED-WITH-CONDITIONS, unanimous; conditions
+discharged in-session). EXECUTED 2026-11-26 under the owner's blanket
+directive (see the Stage-4 note + CONSENSUS): timeout parity (Google 45
+s / OpenRouter 90 s, the OpenRouter `.timeout()` now actually applied —
+a live unbounded-wait bug), the Google key moved to the x-goog-api-key
+header (mirrors the web ladder; pinned by tests), the behavior-generated
+disclosure platform-accurate on both sides + pinned by privacy_test,
+the prompt-injection suites (Dart 5 + web 4) and the shared-fixture
+cascade e2e (fixtures/ai/ driven by both engines). **The v1.1 tag SHIPPED**
+(release 459120788, 11 assets + SHA256SUMS, tag → e099bc0); D29 verified
+live (the annotated-tag push fired the trigger; the guard refused
+fail-closed exactly as the debt predicted — then FIXED + extended to the
+6-scenario suite wired into CI). D8 (AI halves)/D11/D12/D16 closed in
+DEBT.
 
 ## Stage 6 — Freeze & codify (terminal)
 
@@ -492,7 +533,14 @@ corrections only; version policy (what earns v1.1 / a major bump). The
 roadmap ends here deliberately (ADV-PROD F11: a demo project without a
 "done" invites an infinite roadmap).
 
-**Gate status:** PENDING (delta-scoped gate).
+**Gate status:** **CLOSED 2026-11-26** (delta-scoped gate, the Stages
+4+5+6 panel — 4 × PROCEED-WITH-CONDITIONS, unanimous). EXECUTED
+2026-11-26 under the owner's blanket directive (see the Stage-4 note +
+CONSENSUS): the README maintenance-policy section (parameter
+corrections only, the cited-IRS-source rule through the shared fixtures
++ oracle; the v1.x vs v2.0.0 ADR-017 rule; out-of-scope list). The
+roadmap's terminal intent stands — the remaining open lanes are the TT
+program's own gates (T3/T4) and the unfunded epilogue N1–N6.
 
 ---
 

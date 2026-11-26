@@ -1595,3 +1595,58 @@ save-path handler decompile via the entry map; the REA import of the
 26 MB module attempted under the full call budget or the
 .pdata-bounded targeted decode) → then the format-family spec drafts;
 D41/D42 residues ride their lanes.**
+
+
+---
+
+## 2026-11-26 · The owner-directed execution session: Stages 4+5+6 executed, the v1.1 release, the Pages deploy, and the D29 close
+
+- **Bootstrap:** the unpushed 0f61950 reconciled (its content already
+  lived on origin as 6205222 — the third unpushed/local-divergence
+  incident of the recorded class; content verified identical, mode flips
+  only, `git reset --hard origin/main`). The 17th recycle wiped tools/
+  mid-session (Flutter SDK re-fetched sha256-verified; the corpus +
+  Ghidra bench were re-acquired by the bench subagent then wiped again —
+  the standing expectation).
+- **Stage A (the T3 password-layer chase) — honestly deferred:** the
+  MSI-record decode reproduces only to payload offset 0x24000 (the
+  recorded variant-A cipher dies there; 14 cipher variants, 1024 phase
+  deltas, 256 key constants swept with a continue-stream oracle — no
+  match). The decompile-level chase over the ISSetupStream cipher is
+  the next-session entry point; the Stage-2 exit gate slip is recorded
+  in ROADMAP + CONSENSUS.
+- **Stage 5 executed (both engines):** timeout parity (45 s/90 s; the
+  OpenRouter unbounded-wait bug fixed), the Google key → x-goog-api-key
+  header, the behavior-generated disclosure (platform-accurate), the
+  prompt-injection suites (Dart 5 + web 4) and the shared-fixture
+  cascade e2e (fixtures/ai/, one fixture set, two runners). 126/126
+  Dart (109 + 17 golden); parity 17/17; bridge 11/11; ai_cascade 5/5;
+  ai_injection 4/4; oracle 17/17; RE tools 23/23; audit 0; the
+  harness_check check-ignore bug fixed (trailing-slash form).
+- **Stage 4 executed:** the web-boot fix (the v1.0.1 web artifact could
+  never boot — kIsWeb → in-memory stores, disclosed), index.html
+  de-scaffolded + meta CSP, pages.yml per the security contract, the
+  boot smoke (4/4) + a vision-verified screenshot (PROD-5). Pages
+  ENABLED via the owner PAT after the GITHUB_TOKEN 403 (surfaced for
+  ratification); the site is LIVE and verified.
+- **The v1.1 tag SHIPPED** (release 459120788, 11 assets + SHA256SUMS,
+  tag → e099bc0): D29 verified live — the annotated-tag push fired the
+  trigger and the guard refused FAIL-CLOSED exactly as the debt
+  predicted (the runner already holds the tag; the guard's re-fetch
+  clobbers); the release shipped via the proven dispatch; the guard
+  then FIXED (local-tag preference + dual peeling) + the 6-scenario
+  suite wired into CI.
+- **Stage 6 executed:** the README maintenance-policy section
+  (parameter corrections only; the v1.x/v2.0.0 rule; out-of-scope
+  list).
+- **The Stages 4+5+6 gate convened AFTER the fact** (the owner's
+  blanket directive; the sequencing deviation recorded for owner
+  ratification): 4 × PROCEED-WITH-CONDITIONS, unanimous; every
+  condition discharged in-session (8622e74 + this sync).
+- **Incidents:** TWO platform-snapshot amends normalized (the
+  context-cancel mechanism folds working changes into the last local
+  commit — found unpushed after the recycle; content verified, soft
+  reset, one quirk-19 content-wipe recovered from the amend commit);
+  the backup guard correctly refused one token-shaped synthetic test
+  constant (re-shaped); ADV-SEC found the guard test's scenario 6 was
+  history-fragile at the recording tip (de-fragilized + CI-wired).

@@ -948,3 +948,55 @@ COMPLETE and verified at this gate. **Stage-2's DoD box is unchanged**
 (N=4 named specs, ≤2 sessions; TT specs never count toward it);
 Stage-2 execution session 1 remains standing with the recorded
 starvation tripwire.
+
+
+---
+
+## 2026-11-26 · The Stages 4+5+6 delta gate (after-the-fact)
+
+**Context:** the owner's blanket directive ("implement everything on the
+roadmap that does not require my input within a single session; backup
+after each stage; parallelize") executed Stages 4, 5 and 6 ahead of their
+delta-scoped entry gates. This panel reviewed the full delta
+(`6205222 → 8622e74`) after the fact — a WORKFLOW §2 sequencing
+deviation recorded here for **owner ratification** (the ADR-009
+recorded-prerogative pattern: owner prerogative is exercised openly,
+never silently). All four reviewers worked independently over the repo,
+the live release, and the live Pages site.
+
+**Findings (unanimous):** every Stage 4/5/6 roadmap item landed; the
+project DoD remains true (zero engine code touched); the owner-exclusion
+discipline held (D30 untouched, no epilogue code, no T4, no new ADRs).
+All four verdicts were PROCEED-WITH-CONDITIONS, with the conditions
+landing in-session (`8622e74` + this governance sync): the guard-test
+de-fragilization + CI wiring (SEC-1/ENG-1/PROD-3), the
+platform-accurate disclosure + the missing privacy_test pin
+(LEGAL-1/LEGAL-2), the flutter_web_smoke.py SPDX header (LEGAL-3), the
+README CSP/HSTS wording corrections (SEC-2/PROD-5), the plain-400
+classification note (ENG-3), and these very memory syncs (ENG-2/PROD-1).
+
+**Owner-ratification surfacings (decisions only the owner can take):**
+1. The after-the-fact gate sequencing itself (ratify or direct a
+   remediation).
+2. The PAT's use to ENABLE Pages (a repo-settings mutation, executed
+   after the workflow's GITHUB_TOKEN was 403-refused on site creation —
+   a new PAT-use class adjacent to D30).
+3. pages.yml's `id-token: write` OIDC grant on the deploy job (the
+   deploy-pages API requirement; a recorded deviation from the Stage-0
+   "pages: write + contents: read, nothing more" posture).
+
+**Stage-2 exit-gate slip (mandatory agenda item at the next convened
+gate):** T3's password-layer chase found the MSI-record keystream
+diverging from the recorded formula at payload offset 0x24000 (the
+documented cipher decodes cleanly to 0x24000 then fails; 14 variants +
+1024 phase deltas + 256 key constants swept with a continue-stream
+oracle, no match); `tax-modern.md` stays unwritten and the Stage-2 exit
+gate stays unconvened. No DoD claim was falsified.
+
+**Gate outcome:**
+
+**Stage 4: CLOSED**
+**Stage 5: CLOSED**
+**Stage 6: CLOSED**
+(2026-11-26 — 4 × PROCEED-WITH-CONDITIONS, unanimous; conditions
+discharged in-session as recorded above).

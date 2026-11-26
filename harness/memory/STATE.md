@@ -1,7 +1,23 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-23 (TT program T3 session 1 — the ttax engine
-module ENTERED: the MSI-cab codec byte-proven (the InstallShield
+**Updated:** 2026-11-26 (the owner-directed execution session:
+Stages 4+5+6 executed + gated after the fact — 4 ×
+PROCEED-WITH-CONDITIONS unanimous with every condition discharged;
+the v1.1 release SHIPPED (release 459120788, 11 assets + SHA256SUMS,
+tag → e099bc0) with D29 verified live and the tag guard FIXED; the
+Pages web demo LIVE at maniesh-Nr.github.io/ClearFile/ after the
+web-boot fix (in-memory stores, disclosed) + the owner-PAT Pages
+enablement (surfaced for ratification); the AI hardening complete
+both engines (timeout parity, header-only key transport, the
+platform-accurate disclosure + privacy pins, the injection suites
+and the shared fixtures/ai cascade e2e); the Stage-2 exit gate
+SLIPPED honestly — the T3 MSI-record keystream diverges at payload
+offset 0x24000, decompile chase required, tax-modern.md unwritten;
+suites at close: flutter 126/126, parity 17/17, bridge 11/11,
+ai_cascade 5/5, ai_injection 4/4, oracle 17/17, RE tools 23/23,
+tag guard 6/6 (CI-wired), audit 0, harness_check 0. Prior snapshot
+2026-11-23 (T3 session 1 — the ttax engine module ENTERED: the MSI-cab
+codec byte-proven (the InstallShield
 MSZIP variant — every block a CK-marked complete raw-deflate stream
 whose distance codes reach into the previous block's output; decoded
 via ctypes zlib inflateReset+inflateSetDictionary with the rolling
