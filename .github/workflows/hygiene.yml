@@ -192,7 +192,7 @@ jobs:
           # freetype beside it as insurance; libxkbcommon-x11 for the
           # later window smoke (winit's X11 path dlopens it at runtime).
           sudo apt-get install -y libfontconfig1-dev libfreetype6-dev \
-            libxkbcommon-x11
+            libxkbcommon-x11-0
       - name: app unit tests
         run: cargo test --locked --manifest-path apps/linux/Cargo.toml
       # The headless smoke (ENG-6): the shared pipeline's text output,
