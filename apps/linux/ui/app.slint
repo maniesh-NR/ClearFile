@@ -1,0 +1,330 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// The ClearFile Linux window (N2 session 2, the ADR-017 epilogue): the
+// results view over the ONE shared pipeline fn `load_and_compute` — the
+// import status area (path + warnings, honest), the five TaxResult groups
+// (income → deduction → tax → credits → refund/owed + the rates), and the
+// About area (LEGAL-4/PROD-4: the demo disclaimer, the AI-absence /
+// no-network / no-key-storage note, and the IRS/Intuit non-affiliation
+// line). Theme: MD3-from-seed — every role color lives in the Theme
+// global, computed in Rust from `clearfile_core::palette::scheme_role`
+// (seed 0xFF00696E, D44; light default, the dark toggle re-applies). The
+// crate's slint features carry no std-widgets, so this markup is built
+// from core elements only: layouts, Text, Rectangle, TouchArea, Flickable.
+
+export struct ResultRow {
+    label: string,
+    value: string,
+}
+
+export global Theme {
+    // The MD3 roles the markup below uses (the minimal set), set from Rust.
+    in-out property <color> primary;
+    in-out property <color> on-primary;
+    in-out property <color> primary-container;
+    in-out property <color> on-primary-container;
+    in-out property <color> secondary-container;
+    in-out property <color> on-secondary-container;
+    in-out property <color> surface;
+    in-out property <color> on-surface;
+    in-out property <color> on-surface-variant;
+    in-out property <color> surface-container-low;
+    in-out property <color> surface-container-highest;
+    in-out property <color> outline-variant;
+    in-out property <color> error;
+    in-out property <color> on-error;
+    in-out property <color> error-container;
+    in-out property <color> on-error-container;
+}
+
+component SectionTitle inherits Text {
+    color: Theme.on-surface-variant;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+}
+
+// One label/value line with a hairline separator (the same label/value pair
+// the headless text summary prints — one row source, no drift).
+component ResultRowView inherits VerticalLayout {
+    in property <string> label;
+    in property <string> value;
+    in property <color> value-color;
+    HorizontalLayout {
+        padding-left: 4px;
+        padding-right: 4px;
+        spacing: 12px;
+        Text {
+            text: root.label;
+            color: Theme.on-surface;
+            font-size: 14px;
+            overflow: elide;
+            horizontal-stretch: 1;
+            vertical-alignment: center;
+        }
+        Text {
+            text: root.value;
+            color: root.value-color;
+            font-size: 14px;
+            vertical-alignment: center;
+        }
+    }
+    Rectangle {
+        height: 1px;
+        background: Theme.outline-variant;
+    }
+}
+
+// A rounded card: a Rectangle background with the children forwarded into
+// an explicitly-filling content layout (no reliance on implicit sizing).
+component Card inherits Rectangle {
+    in property <length> card-padding: 16px;
+    border-radius: 12px;
+    VerticalLayout {
+        x: 0px;
+        y: 0px;
+        width: root.width;
+        height: root.height;
+        padding: root.card-padding;
+        spacing: 8px;
+        @children
+    }
+}
+
+component ThemeToggle inherits Rectangle {
+    callback clicked();
+    in property <string> caption;
+    background: Theme.primary;
+    border-radius: 8px;
+    height: 32px;
+    HorizontalLayout {
+        x: 0px;
+        y: 0px;
+        width: root.width;
+        height: root.height;
+        padding-left: 14px;
+        padding-right: 14px;
+        alignment: center;
+        Text {
+            text: root.caption;
+            color: Theme.on-primary;
+            font-size: 13px;
+            vertical-alignment: center;
+        }
+    }
+    TouchArea {
+        x: 0px;
+        y: 0px;
+        width: root.width;
+        height: root.height;
+        clicked => {
+            root.clicked();
+        }
+    }
+}
+
+export component MainWindow inherits Window {
+    title: "ClearFile — Linux native prototype (demonstration)";
+    preferred-width: 780px;
+    preferred-height: 960px;
+    min-width: 560px;
+    min-height: 480px;
+    background: Theme.surface;
+
+    // The import status area (path + return + source, or the honest states).
+    in property <bool> has-file;
+    in property <bool> has-error;
+    in property <string> file-path;
+    in property <string> return-name;
+    in property <string> import-note;
+    in property <[string]> warnings;
+    in property <string> error-text;
+
+    // The results groups (filled from the same rows the headless summary
+    // prints).
+    in property <[ResultRow]> income-rows;
+    in property <[ResultRow]> deduction-rows;
+    in property <[ResultRow]> tax-rows;
+    in property <[ResultRow]> credit-rows;
+    in property <[ResultRow]> refund-rows;
+    in property <bool> refund-positive;
+    in property <bool> owed-positive;
+
+    callback toggle-theme();
+
+    Flickable {
+        content := VerticalLayout {
+            padding: 12px;
+            spacing: 12px;
+
+            // --- header: the app name + the prototype label + the theme
+            // toggle (the dark scheme is the same seed, dark: true) ---
+            Rectangle {
+                background: Theme.primary-container;
+                border-radius: 12px;
+                height: 72px;
+                HorizontalLayout {
+                    x: 0px;
+                    y: 0px;
+                    width: parent.width;
+                    height: parent.height;
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    spacing: 16px;
+                    VerticalLayout {
+                        alignment: center;
+                        spacing: 2px;
+                        Text {
+                            text: "ClearFile";
+                            color: Theme.on-primary-container;
+                            font-size: 20px;
+                            font-weight: 700;
+                        }
+                        Text {
+                            text: "Linux native prototype — demonstration only";
+                            color: Theme.on-primary-container;
+                            font-size: 12px;
+                        }
+                    }
+                    Rectangle { horizontal-stretch: 1; }
+                    ThemeToggle {
+                        caption: "Dark theme";
+                        clicked => {
+                            root.toggle-theme();
+                        }
+                    }
+                }
+            }
+
+            // --- the honest no-file state ---
+            if !root.has-file && !root.has-error: Card {
+                Text {
+                    text: "No file loaded.";
+                    color: Theme.on-surface;
+                    font-size: 14px;
+                    font-weight: 700;
+                }
+                Text {
+                    text: "Start this app with a .clearfile.json return (or a .tax ClearFile exchange container) as the command-line argument to view its computed TY2025 result.";
+                    color: Theme.on-surface-variant;
+                    font-size: 13px;
+                    wrap: word-wrap;
+                }
+            }
+
+            // --- the honest import-error state ---
+            if root.has-error: Card {
+                background: Theme.error-container;
+                Text {
+                    text: "The return could not be loaded";
+                    color: Theme.on-error-container;
+                    font-size: 14px;
+                    font-weight: 700;
+                }
+                Text {
+                    text: root.file-path;
+                    color: Theme.on-error-container;
+                    font-size: 12px;
+                    overflow: elide;
+                }
+                Text {
+                    text: root.error-text;
+                    color: Theme.on-error-container;
+                    font-size: 13px;
+                    wrap: word-wrap;
+                }
+            }
+
+            // --- the import status area (file path + warnings, honest) ---
+            if root.has-file && !root.has-error: Card {
+                Text {
+                    text: "Imported file: " + root.file-path;
+                    color: Theme.on-surface-variant;
+                    font-size: 12px;
+                    overflow: elide;
+                }
+                Text {
+                    text: root.import-note;
+                    color: Theme.on-surface;
+                    font-size: 14px;
+                    font-weight: 700;
+                    wrap: word-wrap;
+                }
+                if root.warnings.length > 0: Text {
+                    text: "Import warnings (" + root.warnings.length + ")";
+                    color: Theme.on-surface-variant;
+                    font-size: 12px;
+                    font-weight: 700;
+                }
+                for warning in root.warnings: Text {
+                    text: "• " + warning;
+                    color: Theme.on-surface-variant;
+                    font-size: 13px;
+                    wrap: word-wrap;
+                }
+            }
+
+            // --- the results view: the five TaxResult groups ---
+            if root.has-file && !root.has-error: Card {
+                SectionTitle { text: "Income"; }
+                for row in root.income-rows: ResultRowView {
+                    label: row.label;
+                    value: row.value;
+                }
+                SectionTitle { text: "Deduction"; }
+                for row in root.deduction-rows: ResultRowView {
+                    label: row.label;
+                    value: row.value;
+                }
+                SectionTitle { text: "Tax"; }
+                for row in root.tax-rows: ResultRowView {
+                    label: row.label;
+                    value: row.value;
+                }
+                SectionTitle { text: "Credits"; }
+                for row in root.credit-rows: ResultRowView {
+                    label: row.label;
+                    value: row.value;
+                }
+                SectionTitle { text: "Refund / amount owed"; }
+                for row in root.refund-rows: ResultRowView {
+                    label: row.label;
+                    value: row.value;
+                    value-color: row.label == "Refund" && root.refund-positive ? Theme.primary
+                        : row.label == "Amount owed" && root.owed-positive ? Theme.error
+                        : Theme.on-surface;
+                }
+            }
+
+            // --- About / disclaimer (the honest demo posture) ---
+            Card {
+                background: Theme.secondary-container;
+                Text {
+                    text: "Demonstration prototype";
+                    color: Theme.on-secondary-container;
+                    font-size: 14px;
+                    font-weight: 700;
+                }
+                Text {
+                    text: "ClearFile prepares a simplified 2025 US federal return for study and demonstration. It is not IRS-authorized, cannot e-file, and must not be used to file a real tax return. Check with a qualified tax professional before making tax decisions.";
+                    color: Theme.on-secondary-container;
+                    font-size: 13px;
+                    wrap: word-wrap;
+                }
+                Text {
+                    text: "No AI features: this build makes no network connections, stores no keys, and sends no data anywhere.";
+                    color: Theme.on-secondary-container;
+                    font-size: 13px;
+                    wrap: word-wrap;
+                }
+                Text {
+                    text: "ClearFile is an independent prototype, not affiliated with or endorsed by the IRS, Intuit, or TurboTax.";
+                    color: Theme.on-secondary-container;
+                    font-size: 13px;
+                    wrap: word-wrap;
+                }
+            }
+        }
+        viewport-width: self.width;
+        viewport-height: max(self.height, content.preferred-height);
+    }
+}

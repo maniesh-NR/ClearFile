@@ -22,3 +22,20 @@ slint = { version = "1.19", default-features = false, features = [
   "compat-1-2",
   "accessibility",
 ] }
+
+# N2 session 2 (reported): the ONE added dependency of the session —
+# slint-build, the build-time compiler of ui/app.slint (the standard Slint
+# split: markup in .slint, compiled by build.rs, consumed via
+# slint::include_modules!). Bound to the same audited 1.19 series, the
+# renderer-software feature mirroring the runtime's renderer set; the
+# [dependencies] lines above are byte-unchanged, and Cargo.lock was
+# regenerated for this addition (the added packages are the slint compiler
+# tree, audited by the same cargo-deny lane).
+[build-dependencies]
+slint-build = { version = "1.19", default-features = false, features = [
+  "renderer-software",
+  # slint-build 1.19 fails closed without the forward-compatibility
+  # feature (its build.rs errors: "The feature `compat-1-18` must be
+  # enabled to ensure forward compatibility") — enabled explicitly.
+  "compat-1-18",
+] }

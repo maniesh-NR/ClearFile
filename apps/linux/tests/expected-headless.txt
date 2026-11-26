@@ -1,0 +1,42 @@
+ClearFile — TY2025 federal summary (demonstration prototype)
+File: fixtures/migration/v1-web-envelope.json
+Return: Imported return (Married filing jointly, TY2025)
+Imported from the .clearfile.json envelope.
+Income
+  Total income: $90,800.00
+  Student loan interest deduction: $0.00
+  Adjusted gross income: $90,800.00
+Deduction
+  Basic standard deduction: $31,500.00
+  Additional standard deduction: $0.00
+  Senior deduction: $0.00
+  Standard deduction total: $31,500.00
+  SALT paid: $8,000.00
+  SALT cap: $40,000.00
+  SALT allowed: $8,000.00
+  Itemized deductions total: $18,000.00
+  Method used: Standard deduction
+  Deduction used: $31,500.00
+  Taxable income: $59,300.00
+Tax
+  Ordinary tax: $6,639.00
+  Preferential income: $0.00
+  Preferential tax: $0.00
+  NIIT: $0.00
+Credits
+  Qualifying children: 2
+  Non-refundable credits: $4,900.00
+  Refundable credits: $0.00
+  Total tax (after non-refundable credits): $1,739.00
+Refund / amount owed
+  Total payments: $9,000.00
+  Refund: $7,261.00
+  Amount owed: $0.00
+  Effective tax rate: 0.0%
+  Marginal tax rate: 0.1%
+Import warnings (4)
+  - Saved with an older prototype: the return was migrated to the current engine model.
+  - "Adjustments to income" had no equivalent in the current model and was dropped — re-enter it as student loan interest if that is what it was.
+  - Medical and "other" itemized expenses have no equivalent in the current model and were dropped.
+  - Dependent counts were migrated; re-enter their names in the Dependents step.
+Demonstration prototype — not tax advice; check with a qualified tax professional.
