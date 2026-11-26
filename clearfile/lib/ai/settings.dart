@@ -66,6 +66,11 @@ const List<AiModelSpec> suggestedModels = [
   AiModelSpec(provider: AiProviderKind.openrouter, modelId: 'openrouter/free'),
 ];
 
+/// The plaintext JSON file (inside the app's documents directory) where
+/// AI settings — including the API keys — are stored. The name is lifted
+/// here so the disclosure copy and the store write the same truth (D12).
+const String aiSettingsFileName = 'ai_settings.json';
+
 /// User-held AI configuration. API keys are bring-your-own, stored only in
 /// the app's private settings file on this device, and never sent anywhere
 /// except directly to the chosen provider.

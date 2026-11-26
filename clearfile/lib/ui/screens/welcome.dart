@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import 'package:flutter/material.dart';
 
+import '../../ai/disclosure.dart';
 import '../../io/return_format.dart';
 import '../app_state.dart';
 
@@ -178,12 +179,11 @@ class WelcomeScreen extends StatelessWidget {
               ),
           ],
           const SizedBox(height: 16),
+          // Stage 5 (D12): the behavior-generated disclosure — keys live in
+          // PLAINTEXT JSON in ai_settings.json and travel only as request
+          // headers directly to the provider; pinned by privacy_test.dart.
           Text(
-            'Your returns stay on this device. When the AI assistant is '
-            'enabled (your own free API keys), it calls Google AI Studio or '
-            'OpenRouter directly, sending only the de-identified figures you '
-            'approved - never names, SSNs, or employer names. Nothing else '
-            'leaves this device.',
+            aiPrivacyDisclosure,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: scheme.onSurfaceVariant,

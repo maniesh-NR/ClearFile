@@ -1,0 +1,16 @@
+{
+  "name": "openrouter 503 upstream temporarily unavailable",
+  "provider": "openrouter",
+  "status": 503,
+  "headers": { "content-type": "application/json" },
+  "body": {
+    "error": {
+      "code": 503,
+      "message": "The upstream provider for this free model is temporarily overloaded or unavailable. No application currently serves this model's traffic — the ladder will step down to the next rung, or you can retry shortly. [temporarily_rate-limited_upstream]"
+    }
+  },
+  "expect": {
+    "kind": "server",
+    "shortReason": "HTTP 503 falls through the classifier's generic branch: 'other' ErrorKind with the ≤200-char provider snippet embedded; the ladder steps down."
+  }
+}

@@ -58,11 +58,14 @@ class AiCascadeException implements Exception {
 ///  4. The first model that answers wins; the reply records which model
 ///     served it and every model that was skipped over.
 class AiCascade {
-  AiCascade({http.Client? client, this.timeout = defaultAiTimeout})
+  AiCascade({http.Client? client, this.timeout})
       : _client = client ?? http.Client();
 
   final http.Client _client;
-  final Duration timeout;
+
+  /// Explicit whole-request deadline override; when null, each provider's
+  /// own parity constant applies (Google 45 s, OpenRouter 90 s — D8).
+  final Duration? timeout;
 
   Future<CascadeResult> complete({
     required AiSettings settings,
@@ -87,7 +90,10 @@ class AiCascade {
               model: spec.modelId,
               system: system,
               conversation: conversation,
-              timeout: timeout,
+              timeout: timeout ??
+                  (spec.provider == AiProviderKind.google
+                      ? googleAiTimeout
+                      : openrouterAiTimeout),
               temperature: temperature,
               maxOutputTokens: maxTokens,
             ),
@@ -97,7 +103,10 @@ class AiCascade {
               model: spec.modelId,
               system: system,
               conversation: conversation,
-              timeout: timeout,
+              timeout: timeout ??
+                  (spec.provider == AiProviderKind.google
+                      ? googleAiTimeout
+                      : openrouterAiTimeout),
               temperature: temperature,
               maxTokens: maxTokens,
             ),

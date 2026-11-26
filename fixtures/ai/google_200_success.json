@@ -1,0 +1,26 @@
+{
+  "name": "google generateContent success (valid candidates shape)",
+  "provider": "google",
+  "status": 200,
+  "headers": { "content-type": "application/json" },
+  "body": {
+    "candidates": [
+      {
+        "content": {
+          "parts": [
+            {
+              "text": "{\"forms\":[{\"type\":\"W-2\",\"employer\":\"Synthetic Corp\",\"wages\":52500,\"federalWithheld\":4200,\"interest\":null,\"dividends\":null}]}"
+            }
+          ],
+          "role": "model"
+        },
+        "finishReason": "STOP"
+      }
+    ],
+    "usageMetadata": { "promptTokenCount": 10, "candidatesTokenCount": 40, "totalTokenCount": 50 }
+  },
+  "expect": {
+    "kind": "success",
+    "shortReason": "HTTP 200 with candidates[0].content.parts[0].text — the ladder returns the joined parts and stops stepping down."
+  }
+}

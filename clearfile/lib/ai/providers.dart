@@ -50,7 +50,20 @@ class ChatTurn {
   final String content;
 }
 
-const Duration defaultAiTimeout = Duration(seconds: 90);
+/// Whole-request deadline for Google (Generative Language API) rungs.
+///
+/// Parity with the web ladder (src/lib/ai/ladder.ts): both sides are a
+/// single whole-request deadline, and the web's 45 s Google budget is the
+/// reference value (D8).
+const Duration googleAiTimeout = Duration(seconds: 45);
+
+/// Whole-request deadline for OpenRouter rungs.
+///
+/// Parity with the web ladder (90 s, evidence-backed there: the largest
+/// ladder task answered in ~47 s) — and this deadline is now actually
+/// APPLIED on the OpenRouter transport (it previously plumbed the value in
+/// but never called `.timeout()`, leaving the wait unbounded).
+const Duration openrouterAiTimeout = Duration(seconds: 90);
 
 /// Calls one Google AI Studio (Generative Language API) model.
 Future<String> callGoogleModel(
@@ -59,12 +72,14 @@ Future<String> callGoogleModel(
   required String model,
   required String system,
   required List<ChatTurn> conversation,
-  Duration timeout = defaultAiTimeout,
+  Duration timeout = googleAiTimeout,
   double temperature = 0.2,
   int maxOutputTokens = 1024,
 }) async {
+  // The key travels in the x-goog-api-key header (mirrors the web ladder);
+  // a URL query parameter leaks the key into logs and proxies (D11/D16).
   final uri = Uri.parse(
-      'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$apiKey');
+      'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent');
   final body = <String, dynamic>{
     'contents': conversation
         .map((t) => {
@@ -88,8 +103,10 @@ Future<String> callGoogleModel(
   final http.Response response;
   try {
     response = await client
-        .post(uri, headers: {'content-type': 'application/json'},
-            body: jsonEncode(body))
+        .post(uri, headers: {
+          'content-type': 'application/json',
+          'x-goog-api-key': apiKey,
+        }, body: jsonEncode(body))
         .timeout(timeout);
   } on TimeoutException {
     throw AiCallException(AiFailureKind.network, '$model timed out');
@@ -126,13 +143,16 @@ String _extractGoogleText(http.Response response, String model) {
           if (text.trim().isNotEmpty) return text;
         }
       }
-      // Content was blocked (e.g. safety filter) rather than failing.
-      final finish = first['finishReason'];
+      // Content was blocked (e.g. safety filter) rather than failing. The
+      // finishReason value is provider-controlled; it is clipped so a
+      // hostile body cannot smuggle arbitrary text into error surfaces
+      // (pinned by the prompt-injection suite).
+      final finish = _clip(first['finishReason']);
       throw AiCallException(
           AiFailureKind.other, '$model returned no text (finishReason: $finish)');
     }
   }
-  final feedback = data['promptFeedback'];
+  final feedback = _clip(data['promptFeedback']);
   throw AiCallException(
       AiFailureKind.other, '$model returned no text ($feedback)');
 }
@@ -148,7 +168,7 @@ Future<String> callOpenrouterModel(
   required String model,
   required String system,
   required List<ChatTurn> conversation,
-  Duration timeout = defaultAiTimeout,
+  Duration timeout = openrouterAiTimeout,
   double temperature = 0.2,
   int maxTokens = 1024,
 }) async {
@@ -180,7 +200,8 @@ Future<String> callOpenrouterModel(
           'authorization': 'Bearer $apiKey',
           'X-Title': 'ClearFile',
         },
-        body: jsonEncode(body));
+        body: jsonEncode(body))
+        .timeout(timeout);
   } on TimeoutException {
     throw AiCallException(AiFailureKind.network, '$model timed out');
   } on SocketException catch (e) {
@@ -217,9 +238,9 @@ AiCallException _httpError(
     if (data is Map && data['error'] is Map) {
       final error = data['error'] as Map;
       final msg = error['message'];
-      if (msg != null) detail = msg.toString();
+      if (msg != null) detail = _clip(msg, 200);
     } else if (data is Map && data['message'] != null) {
-      detail = data['message'].toString();
+      detail = _clip(data['message'], 200);
     }
   } catch (_) {}
   if (detail.isEmpty) {
@@ -257,4 +278,18 @@ AiCallException _httpError(
   }
   return AiCallException(kind, '$provider $model responded '
       '${response.statusCode}: $detail', response.statusCode);
+}
+
+/// Clips a provider-controlled diagnostic value to a bounded, single-line
+/// snippet: control characters and line breaks collapse to spaces and the
+/// run is capped, so a hostile body cannot carry long injected instructions
+/// into error surfaces. The snippet stays available for diagnosis (the UI
+/// renders only the generic shortReason labels).
+String _clip(Object? value, [int max = 80]) {
+  if (value == null) return '';
+  final flat = value
+      .toString()
+      .replaceAll(RegExp(r'[\x00-\x1f\x7f\s]+'), ' ')
+      .trim();
+  return flat.length <= max ? flat : '${flat.substring(0, max)}...';
 }

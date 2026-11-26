@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "lib": ["es2020", "dom"],
+    "strict": true,
+    "noEmitOnError": true,
+    "declaration": false,
+    "skipLibCheck": true,
+    "outDir": "../.ai-build",
+    "rootDir": "../src/lib"
+  },
+  "files": [
+    "../src/lib/ai/ladder.ts",
+    "../src/lib/ai/tasks.ts",
+    "../src/lib/tax/config.ts",
+    "../src/lib/tax/engine.ts"
+  ]
+}

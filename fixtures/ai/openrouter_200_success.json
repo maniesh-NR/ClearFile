@@ -1,0 +1,27 @@
+{
+  "name": "openrouter chat/completions success (valid choices shape)",
+  "provider": "openrouter",
+  "status": 200,
+  "headers": { "content-type": "application/json" },
+  "body": {
+    "id": "synthetic-cascade-success",
+    "object": "chat.completion",
+    "created": 1764000000,
+    "model": "nvidia/nemotron-3.5-super-vl:free",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"forms\":[{\"type\":\"1099-INT\",\"employer\":\"Synthetic Bank\",\"interest\":320,\"federalWithheld\":null,\"wages\":null,\"dividends\":null}]}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": { "prompt_tokens": 10, "completion_tokens": 40, "total_tokens": 50 }
+  },
+  "expect": {
+    "kind": "success",
+    "shortReason": "HTTP 200 with choices[0].message.content — the ladder returns the trimmed content and stops stepping down."
+  }
+}

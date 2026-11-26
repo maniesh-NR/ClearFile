@@ -1,0 +1,17 @@
+{
+  "name": "google 400 geo-blocked region (FAILED_PRECONDITION)",
+  "provider": "google",
+  "status": 400,
+  "headers": { "content-type": "application/json" },
+  "body": {
+    "error": {
+      "code": 400,
+      "message": "User location is not supported for the API use.",
+      "status": "FAILED_PRECONDITION"
+    }
+  },
+  "expect": {
+    "kind": "other",
+    "shortReason": "The 400 geo-block matches the classifier's location-not-supported branch: generic 'other' kind with a fixed honest message (no provider snippet is embedded)."
+  }
+}

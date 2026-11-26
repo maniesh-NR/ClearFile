@@ -256,7 +256,7 @@ export function SettingsDialog() {
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-md-on-surface-variant">
               <ul className="space-y-1.5 list-disc list-inside">
-                <li>Keys are stored only in this browser (localStorage) and are never sent anywhere except directly to the provider.</li>
+                <li>Keys are stored in plaintext in this browser&apos;s localStorage under the &quot;clearfile-store-v1&quot; entry — the same blob as the return data — and are sent only as the x-goog-api-key (Google) / Authorization (OpenRouter) auth headers directly to the provider endpoints when a request is made.</li>
                 <li>ClearFile does not store names, SSNs, or addresses, and AI requests see only the summarized return shown in the copilot. The one exception: text you paste into auto-fill is transmitted to your chosen provider for extraction.</li>
                 <li>OpenRouter&apos;s free endpoints run on hosts whose terms may allow prompt training (for example NVIDIA&apos;s free-tier terms). You can restrict that in your OpenRouter privacy settings; what ClearFile sends is already de-identified.</li>
                 <li>Clearing your browser data removes the keys. No telemetry exists in this prototype.</li>

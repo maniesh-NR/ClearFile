@@ -1,0 +1,17 @@
+{
+  "name": "google 429 quota exceeded (RESOURCE_EXHAUSTED)",
+  "provider": "google",
+  "status": 429,
+  "headers": { "content-type": "application/json", "retry-after": "25" },
+  "body": {
+    "error": {
+      "code": 429,
+      "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-docs/rate-limits. To increase your quota, request a higher limit through AI Studio. quota_metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, quota_limit: GenerateRequestsPerDayPerProjectPerModel-FreeTier, quota_value: 0",
+      "status": "RESOURCE_EXHAUSTED"
+    }
+  },
+  "expect": {
+    "kind": "rateLimit",
+    "shortReason": "HTTP 429 classifies as rate-limit regardless of the quota wording — the ladder steps down to the next rung."
+  }
+}

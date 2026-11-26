@@ -18,7 +18,8 @@ Future<void> main() async {
   final base = await getApplicationDocumentsDirectory();
   final state = AppState(
     store: FileReturnStore(base),
-    settingsStore: AiSettingsStore(File('${base.path}/ai_settings.json')),
+    settingsStore:
+        AiSettingsStore(File('${base.path}/$aiSettingsFileName')),
   );
   await state.bootstrap();
   runApp(ClearFileApp(state: state));

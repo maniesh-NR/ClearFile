@@ -166,7 +166,9 @@ export function parseReview(text: string): AiReview | null {
   return { summary: obj.summary, findings }
 }
 
-function extractJson(text: string): unknown | null {
+// Exported for the offline AI injection suite (scripts/ai_injection_test.mjs)
+// so the object-only refusal contract is pinned directly — no behavior change.
+export function extractJson(text: string): unknown | null {
   const stripped = text.replace(/```json/gi, '```').replace(/```/g, '').trim()
   const start = stripped.indexOf('{')
   const end = stripped.lastIndexOf('}')

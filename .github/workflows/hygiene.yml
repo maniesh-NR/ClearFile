@@ -85,6 +85,18 @@ jobs:
       # exporter against the published TXF spec v042 structure and the
       # .tax analyzer against synthetic containers).
       - run: node scripts/txf_taxfile_test.mjs
+      # Stage-5 AI hardening (2026-11-24): the AI cascade replays synthetic
+      # provider fixtures (fixtures/ai/, provenance in fixtures/ai/README.md)
+      # through the compiled ladder via a STUBBED fetch — no live network, no
+      # keys — asserting the errorKind cascade sequence, transport header
+      # discipline (x-goog-api-key / Authorization Bearer, key never in the
+      # URL) and the ≤200-char snippet rule on Attempt.error.
+      - run: node scripts/ai_cascade_fixture_test.mjs
+      # Stage-5 prompt-injection suite (same compile): pins the generic
+      # ERROR_KIND_LABEL display map (ai-ui.tsx / settings.tsx), the
+      # parseExtracted/parseReview field whitelists, and extractJson's
+      # object-only refusal against hostile provider payloads.
+      - run: node scripts/ai_injection_test.mjs
 
   re-tooling:
     # Stage-2 execution session 1 (2026-11-22, ADR-012 mechanics (b)/(e) +

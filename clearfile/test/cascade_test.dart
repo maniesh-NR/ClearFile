@@ -195,6 +195,39 @@ void main() {
     );
   });
 
+  test('the Google key travels in the x-goog-api-key header, never the URL',
+      () async {
+    final seen = <({Uri url, Map<String, String> headers})>[];
+    final client = MockClient((request) async {
+      seen.add((url: request.url, headers: request.headers));
+      return _googleOk('Header answer');
+    });
+    final cascade = AiCascade(client: client);
+
+    final result = await cascade.complete(
+      settings: _settings(),
+      system: 'sys',
+      conversation: const [ChatTurn(fromUser: true, content: 'Q')],
+    );
+
+    expect(result.servedBy.modelId, 'gemini-3.1-pro-preview');
+    expect(seen, hasLength(1));
+    expect(seen.single.url.queryParameters.containsKey('key'), isFalse,
+        reason: 'a URL query parameter leaks the key into logs/proxies');
+    expect(seen.single.headers['x-goog-api-key'], 'g-key');
+  });
+
+  test('per-provider whole-request deadlines mirror the web ladder (D8)', () {
+    // Parity with src/lib/ai/ladder.ts: Google 45 s, OpenRouter 90 s. The
+    // OpenRouter deadline is also actually APPLIED (it previously plumbed
+    // the value in without calling .timeout(), leaving the wait unbounded).
+    expect(googleAiTimeout, const Duration(seconds: 45));
+    expect(openrouterAiTimeout, const Duration(seconds: 90));
+    final googleOnly = AiCascade();
+    expect(googleOnly.timeout, isNull,
+        reason: 'null = each provider applies its own parity constant');
+  });
+
   test('settings survive a JSON roundtrip', () {
     final original = AiSettings(
       assistantEnabled: true,

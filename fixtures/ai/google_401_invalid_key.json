@@ -1,0 +1,17 @@
+{
+  "name": "google 401 invalid API key",
+  "provider": "google",
+  "status": 401,
+  "headers": { "content-type": "application/json" },
+  "body": {
+    "error": {
+      "code": 401,
+      "message": "API key not valid. Please pass a valid API key.",
+      "status": "INVALID_ARGUMENT"
+    }
+  },
+  "expect": {
+    "kind": "auth",
+    "shortReason": "HTTP 401 classifies as auth (key rejected) — stepping down would not help, but the ladder keeps the attempt generic."
+  }
+}

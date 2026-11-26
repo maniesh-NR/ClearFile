@@ -50,6 +50,10 @@ dev.out.log
 # the engine here before running the golden fixtures; never tracked).
 /.parity-build/
 /.files-build/
+# Stage-5 AI suites (scripts/ai_cascade_fixture_test.mjs and
+# scripts/ai_injection_test.mjs compile src/lib/ai here via
+# scripts/tsconfig.ai.json; rebuildable, never tracked).
+/.ai-build/
 # Python bytecode cache (update_memory.py / oracle runs; rebuildable, never
 # tracked — ADR-018 session, same class as .parity-build).
 __pycache__/

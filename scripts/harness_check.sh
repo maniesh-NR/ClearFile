@@ -156,7 +156,12 @@ fi
 # land there by accident), and (e) the RE tooling must never be wired into
 # release.yml artifact paths (checkouts of both rules; the CI binary-blob
 # assertion itself lives in hygiene.yml's re-tooling job).
-if git check-ignore -q fixtures/re 2>/dev/null; then
+# The path carries a trailing slash: a directory-only ignore pattern
+# (/fixtures/re/) matches only directory-resolved paths, and on a fresh
+# clone or post-recycle checkout the runtime-generated directory does not
+# EXIST on disk — the bare-name form then false-fails (observed 2026-11-25;
+# the trailing-slash form matches the .gitignore rule by pattern alone).
+if git check-ignore -q fixtures/re/ 2>/dev/null; then
   pass "fixtures/re/ (the enumerated synthetic-fixture path) is gitignored (ADR-012 (a))"
 else
   fail "fixtures/re/ is NOT gitignored — the ADR-012 (a) fixture path must stay ignored"

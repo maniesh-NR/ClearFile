@@ -123,7 +123,10 @@ async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: numbe
   }
 }
 
-function classifyHttpError(status: number, bodyText: string): { kind: ErrorKind; message: string } {
+// Exported for the offline AI suites (scripts/ai_cascade_fixture_test.mjs /
+// scripts/ai_injection_test.mjs) so the classification contract itself is
+// pinned against synthetic provider fixtures — no behavior change.
+export function classifyHttpError(status: number, bodyText: string): { kind: ErrorKind; message: string } {
   const snippet = bodyText.slice(0, 200)
   if (status === 429) return { kind: 'rate-limit', message: `HTTP 429 — ${snippet}` }
   if (status === 401 || status === 403) return { kind: 'auth', message: `HTTP ${status} — ${snippet}` }

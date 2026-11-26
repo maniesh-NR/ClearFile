@@ -1,0 +1,16 @@
+{
+  "name": "openrouter 402 daily free-model allowance exhausted",
+  "provider": "openrouter",
+  "status": 402,
+  "headers": { "content-type": "application/json" },
+  "body": {
+    "error": {
+      "code": 402,
+      "message": "You've reached the daily free-model limit. Purchase credits or wait for the daily reset to continue using free models."
+    }
+  },
+  "expect": {
+    "kind": "quota",
+    "shortReason": "HTTP 402 (daily free allowance exhausted) classifies as auth in ErrorKind terms — the fixture kind 'quota' records the semantics; the ladder steps down."
+  }
+}

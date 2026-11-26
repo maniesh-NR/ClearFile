@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../ai/disclosure.dart';
 import '../../ai/settings.dart';
 import '../app_state.dart';
 
@@ -111,6 +112,16 @@ class SettingsScreen extends StatelessWidget {
                       'The review button sends the same de-identified '
                       'figures when you tap it.'),
                 ),
+              ),
+              const SizedBox(height: 8),
+              // Stage 5 (D12): the full behavior-generated disclosure — the
+              // same text the Welcome footer renders, pinned by
+              // privacy_test.dart so it cannot drift from the transport.
+              Text(
+                aiPrivacyDisclosure,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
               const SizedBox(height: 16),
               _SectionHeader('Your data'),
