@@ -56,4 +56,9 @@ yanked = "deny"
 
 [bans]
 multiple-versions = "warn"
-wildcards = "deny"
+# The ONE dependency with no registry version is clearfile-core — a PATH
+# dependency on the workspace sibling, the recorded ADR-017 Linux seam
+# ("Linux links the crate directly (no FFI)"). The wildcard ban's purpose
+# (unaudited `*` registry versions) is served by every registry
+# dependency carrying an explicit bound; the path dep is our own crate.
+wildcards = "warn"
