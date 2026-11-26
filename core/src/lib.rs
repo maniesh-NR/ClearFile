@@ -35,6 +35,7 @@
 pub mod engine;
 pub mod envelope;
 pub mod json;
+pub mod palette;
 pub mod params;
 pub mod tax_inspect;
 pub mod txf;
