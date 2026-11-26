@@ -1650,3 +1650,14 @@ D41/D42 residues ride their lanes.**
   the backup guard correctly refused one token-shaped synthetic test
   constant (re-shaped); ADV-SEC found the guard test's scenario 6 was
   history-fragile at the recording tip (de-fragilized + CI-wired).
+- **Post-teardown CI fix (the session's last code push, `67b9501`):**
+  the 08:41 CI run caught the tag-guard suite's own environment
+  assumption — the scenario SHAs resolve from LOCAL tags, which a CI
+  checkout (fetch-depth 1, fetch-tags false) does not have, so
+  scenarios 2+5 resolved empty and refused. Fix: the suite fetches the
+  three probe tags from origin first (leading `+` refspecs so a full
+  local clone is a no-op update, not a clobber refusal), making CI and
+  local identical. Proven both ways before push: 6/6 in a fresh
+  shallow clone simulating the CI checkout AND 6/6 in the full repo;
+  CI re-ran GREEN on the tip (hygiene run #26 — gitleaks, suites, RE
+  tooling, harness self-check; verified live post-push, 2 m 28 s).
