@@ -44,3 +44,22 @@ exclusion of the vendored paths above).
 
 *Recorded 2026-11-14, Stage-2 entry gate condition LEGAL-2/ADV-LEGAL
 (vendored-code attribution).*
+
+## material_color_utilities formulas in the Rust core (Apache-2.0)
+
+The Rust core's palette module `core/src/palette.rs` is a translation — a
+derivative work, derived not vendored; no Google code text is copied — of
+Google's Dart package
+[material_color_utilities](https://pub.dev/packages/material_color_utilities)
+0.13.0, distributed under the Apache License 2.0: the CAM16/HCT color math
+and solver, the tonal palettes, and the Material You dynamic-color scheme
+formulas (the `SchemeTonalSpot` palettes and the 34 scheme-role
+declarations), each ported item citing its Dart source file. The
+differential corpus `fixtures/palette/cases.json` pins the module's outputs
+against that reference implementation's own. The Apache License 2.0 is
+GPL-3.0-compatible; its text is available at
+<https://www.apache.org/licenses/LICENSE-2.0>.
+
+*Recorded at the D44 palette close, chunk 2 of 2 (task N2-S1-PALETTE-2,
+derivative-work attribution per the LEGAL-2/ADV-LEGAL discipline).*
+

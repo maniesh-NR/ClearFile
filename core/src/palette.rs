@@ -45,8 +45,9 @@ fn clamp_int(min: i32, max: i32, input: i32) -> i32 {
     }
 }
 
-/// `MathUtils.sanitizeDegreesDouble` (utils/math_utils.dart).
-fn sanitize_degrees_double(degrees: f64) -> f64 {
+/// `MathUtils.sanitizeDegreesDouble` (utils/math_utils.dart) — chunk 2's
+/// scheme reads it (the tertiary hue rotation).
+pub(crate) fn sanitize_degrees_double(degrees: f64) -> f64 {
     let mut degrees = degrees % 360.0;
     if degrees < 0.0 {
         degrees += 360.0;
@@ -129,8 +130,9 @@ fn argb_from_linrgb(linrgb: [f64; 3]) -> u32 {
     argb_from_rgb(r, g, b)
 }
 
-/// `ColorUtils._labF` (utils/color_utils.dart).
-fn lab_f(t: f64) -> f64 {
+/// `ColorUtils._labF` (utils/color_utils.dart) — chunk 2's `lstarFromY`
+/// contrast math reads it.
+pub(crate) fn lab_f(t: f64) -> f64 {
     let e = 216.0 / 24389.0;
     let kappa = 24389.0 / 27.0;
     if t > e {
@@ -152,8 +154,9 @@ fn lab_invf(ft: f64) -> f64 {
     }
 }
 
-/// `ColorUtils.yFromLstar` (utils/color_utils.dart).
-fn y_from_lstar(lstar: f64) -> f64 {
+/// `ColorUtils.yFromLstar` (utils/color_utils.dart) — chunk 2's
+/// `Contrast` math reads it.
+pub(crate) fn y_from_lstar(lstar: f64) -> f64 {
     100.0 * lab_invf((lstar + 16.0) / 116.0)
 }
 
@@ -734,8 +737,9 @@ pub struct Hct {
 
 impl Hct {
     /// `Hct.from` (hct/hct.dart): solve, then cache the coordinates the
-    /// returned color actually has (`Hct._(argb)`).
-    fn from_hue_chroma_tone(hue: f64, chroma: f64, tone: f64) -> Hct {
+    /// returned color actually has (`Hct._(argb)`) — chunk 2's
+    /// TonalPalette/scheme code builds on it.
+    pub(crate) fn from_hue_chroma_tone(hue: f64, chroma: f64, tone: f64) -> Hct {
         let argb = solve_to_int(hue, chroma, tone);
         let cam16 = Cam16::from_int(argb);
         Hct { argb, hue: cam16.hue, chroma: cam16.chroma, tone: lstar_from_argb(argb) }
@@ -885,4 +889,1149 @@ mod tests {
         assert_eq!(cam.astar, -21.860396793468663);
         assert_eq!(cam.bstar, -8.8785695491172500);
     }
+}
+
+// ===========================================================================
+// D44 chunk 2: the tonal palettes + the Material You scheme roles — a
+// translation of `palettes/tonal_palette.dart` (the `.of` construction the
+// scheme uses), `contrast/contrast.dart`, `scheme/scheme_tonal_spot.dart` +
+// `dynamic_scheme.dart`'s palette wiring, `dynamic_color.dart`'s tone
+// resolution, `dynamiccolor/src/contrast_curve.dart`,
+// `dynamiccolor/src/tone_delta_pair.dart`, and the 34
+// `material_dynamic_colors.dart` declarations the corpus pins — math
+// verbatim (operation order preserved); only the branches
+// `Variant.tonalSpot` at contrast 0.0 can reach are kept, and every
+// omission is cited where it would have been.
+// ===========================================================================
+
+// --- MathUtils/ColorUtils additions the scheme chain reads (utils/math_utils.dart, utils/color_utils.dart) ---
+
+/// `MathUtils.clampDouble` (utils/math_utils.dart:57).
+fn clamp_double(min: f64, max: f64, input: f64) -> f64 {
+    if input < min {
+        min
+    } else if input > max {
+        max
+    } else {
+        input
+    }
+}
+
+/// `ColorUtils.lstarFromY` (utils/color_utils.dart).
+fn lstar_from_y(y: f64) -> f64 {
+    let y = clamp_double(0.0, 100.0, y);
+    116.0 * lab_f(y / 100.0) - 16.0
+}
+
+// --- Contrast (contrast/contrast.dart) ---
+
+/// `Contrast._ratioOfYs` (contrast/contrast.dart:41).
+fn ratio_of_ys(y1: f64, y2: f64) -> f64 {
+    let lighter = if y1 > y2 { y1 } else { y2 };
+    let darker = if lighter == y2 { y1 } else { y2 };
+    (lighter + 5.0) / (darker + 5.0)
+}
+
+/// `Contrast.ratioOfTones` (contrast/contrast.dart:32): both tones clamped first.
+fn ratio_of_tones(tone_a: f64, tone_b: f64) -> f64 {
+    let tone_a = clamp_double(0.0, 100.0, tone_a);
+    let tone_b = clamp_double(0.0, 100.0, tone_b);
+    ratio_of_ys(y_from_lstar(tone_a), y_from_lstar(tone_b))
+}
+
+/// `Contrast.lighter` (contrast/contrast.dart:55): a tone >= `tone` ensuring
+/// `ratio`, or -1 when it cannot be reached.
+fn contrast_lighter(tone: f64, ratio: f64) -> f64 {
+    if tone < 0.0 || tone > 100.0 {
+        return -1.0;
+    }
+    let dark_y = y_from_lstar(tone);
+    let light_y = ratio * (dark_y + 5.0) - 5.0;
+    let real_contrast = ratio_of_ys(light_y, dark_y);
+    let delta = (real_contrast - ratio).abs();
+    if real_contrast < ratio && delta > 0.04 {
+        return -1.0;
+    }
+    // Ensure gamut mapping, which requires a 'range' on tone, will still
+    // result the correct ratio by darkening slightly.
+    let return_value = lstar_from_y(light_y) + 0.4;
+    if return_value < 0.0 || return_value > 100.0 {
+        return -1.0;
+    }
+    return_value
+}
+
+/// `Contrast.darker` (contrast/contrast.dart:85): a tone <= `tone` ensuring
+/// `ratio`, or -1 when it cannot be reached.
+fn contrast_darker(tone: f64, ratio: f64) -> f64 {
+    if tone < 0.0 || tone > 100.0 {
+        return -1.0;
+    }
+    let light_y = y_from_lstar(tone);
+    let dark_y = ((light_y + 5.0) / ratio) - 5.0;
+    let real_contrast = ratio_of_ys(light_y, dark_y);
+    let delta = (real_contrast - ratio).abs();
+    if real_contrast < ratio && delta > 0.04 {
+        return -1.0;
+    }
+    let return_value = lstar_from_y(dark_y) - 0.4;
+    if return_value < 0.0 || return_value > 100.0 {
+        return -1.0;
+    }
+    return_value
+}
+
+/// `Contrast.lighterUnsafe` (contrast/contrast.dart:120).
+fn lighter_unsafe(tone: f64, ratio: f64) -> f64 {
+    let lighter_safe = contrast_lighter(tone, ratio);
+    if lighter_safe < 0.0 {
+        100.0
+    } else {
+        lighter_safe
+    }
+}
+
+/// `Contrast.darkerUnsafe` (contrast/contrast.dart:137).
+fn darker_unsafe(tone: f64, ratio: f64) -> f64 {
+    let darker_safe = contrast_darker(tone, ratio);
+    if darker_safe < 0.0 {
+        0.0
+    } else {
+        darker_safe
+    }
+}
+
+// --- ContrastCurve (dynamiccolor/src/contrast_curve.dart) ---
+
+/// `ContrastCurve` (dynamiccolor/src/contrast_curve.dart): a value that
+/// changes with the contrast level — the four values are the ones at
+/// contrast levels -1.0 / 0.0 / 0.5 / 1.0.
+#[derive(Clone, Copy)]
+struct ContrastCurve {
+    low: f64,
+    normal: f64,
+    medium: f64,
+    high: f64,
+}
+
+impl ContrastCurve {
+    /// The constructor (dynamiccolor/src/contrast_curve.dart:34).
+    fn new(low: f64, normal: f64, medium: f64, high: f64) -> ContrastCurve {
+        ContrastCurve { low, normal, medium, high }
+    }
+
+    /// `ContrastCurve.get` (dynamiccolor/src/contrast_curve.dart:41).
+    fn get(&self, contrast_level: f64) -> f64 {
+        if contrast_level <= -1.0 {
+            self.low
+        } else if contrast_level < 0.0 {
+            lerp(self.low, self.normal, (contrast_level - (-1.0)) / 1.0)
+        } else if contrast_level < 0.5 {
+            lerp(self.normal, self.medium, (contrast_level - 0.0) / 0.5)
+        } else if contrast_level < 1.0 {
+            lerp(self.medium, self.high, (contrast_level - 0.5) / 0.5)
+        } else {
+            self.high
+        }
+    }
+}
+
+// --- The role set (material_dynamic_colors.dart) ---
+
+/// The 34 scheme roles the corpus pins — `MaterialDynamicColors`'s
+/// declarations (material_dynamic_colors.dart), in the corpus's role order
+/// (the M3 families: primary/secondary/ tertiary containers, the error
+/// family, outline, the surface container ladder, the inverse/shadow
+/// family). `name` is the corpus's camelCase role key — Flutter
+/// `ColorScheme`'s field names (MCU's `inverseOnSurface` is the corpus's
+/// `onInverseSurface`); Dart's fixed roles and palette key colors exist too,
+/// but the corpus pins none of them, so they are not carried.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum PaletteRole {
+    Primary,
+    OnPrimary,
+    PrimaryContainer,
+    OnPrimaryContainer,
+    Secondary,
+    OnSecondary,
+    SecondaryContainer,
+    OnSecondaryContainer,
+    Tertiary,
+    OnTertiary,
+    TertiaryContainer,
+    OnTertiaryContainer,
+    Error,
+    OnError,
+    ErrorContainer,
+    OnErrorContainer,
+    Outline,
+    OutlineVariant,
+    Surface,
+    OnSurface,
+    SurfaceDim,
+    SurfaceBright,
+    SurfaceContainerLowest,
+    SurfaceContainerLow,
+    SurfaceContainer,
+    SurfaceContainerHigh,
+    SurfaceContainerHighest,
+    OnSurfaceVariant,
+    InverseSurface,
+    OnInverseSurface,
+    InversePrimary,
+    Shadow,
+    Scrim,
+    SurfaceTint,
+}
+
+impl PaletteRole {
+    /// Every role, in the corpus's role order (material_dynamic_colors.dart's
+    /// pinned declarations; the 34 the corpus keys).
+    pub const ALL: [PaletteRole; 34] = [
+        PaletteRole::Primary,
+        PaletteRole::OnPrimary,
+        PaletteRole::PrimaryContainer,
+        PaletteRole::OnPrimaryContainer,
+        PaletteRole::Secondary,
+        PaletteRole::OnSecondary,
+        PaletteRole::SecondaryContainer,
+        PaletteRole::OnSecondaryContainer,
+        PaletteRole::Tertiary,
+        PaletteRole::OnTertiary,
+        PaletteRole::TertiaryContainer,
+        PaletteRole::OnTertiaryContainer,
+        PaletteRole::Error,
+        PaletteRole::OnError,
+        PaletteRole::ErrorContainer,
+        PaletteRole::OnErrorContainer,
+        PaletteRole::Outline,
+        PaletteRole::OutlineVariant,
+        PaletteRole::Surface,
+        PaletteRole::OnSurface,
+        PaletteRole::SurfaceDim,
+        PaletteRole::SurfaceBright,
+        PaletteRole::SurfaceContainerLowest,
+        PaletteRole::SurfaceContainerLow,
+        PaletteRole::SurfaceContainer,
+        PaletteRole::SurfaceContainerHigh,
+        PaletteRole::SurfaceContainerHighest,
+        PaletteRole::OnSurfaceVariant,
+        PaletteRole::InverseSurface,
+        PaletteRole::OnInverseSurface,
+        PaletteRole::InversePrimary,
+        PaletteRole::Shadow,
+        PaletteRole::Scrim,
+        PaletteRole::SurfaceTint,
+    ];
+
+    /// The corpus's camelCase role key (the 34 above — the match is
+    /// exhaustive over the enum, so a 35th role cannot compile without a key
+    /// here and in `spec`).
+    pub fn name(self) -> &'static str {
+        match self {
+            PaletteRole::Primary => "primary",
+            PaletteRole::OnPrimary => "onPrimary",
+            PaletteRole::PrimaryContainer => "primaryContainer",
+            PaletteRole::OnPrimaryContainer => "onPrimaryContainer",
+            PaletteRole::Secondary => "secondary",
+            PaletteRole::OnSecondary => "onSecondary",
+            PaletteRole::SecondaryContainer => "secondaryContainer",
+            PaletteRole::OnSecondaryContainer => "onSecondaryContainer",
+            PaletteRole::Tertiary => "tertiary",
+            PaletteRole::OnTertiary => "onTertiary",
+            PaletteRole::TertiaryContainer => "tertiaryContainer",
+            PaletteRole::OnTertiaryContainer => "onTertiaryContainer",
+            PaletteRole::Error => "error",
+            PaletteRole::OnError => "onError",
+            PaletteRole::ErrorContainer => "errorContainer",
+            PaletteRole::OnErrorContainer => "onErrorContainer",
+            PaletteRole::Outline => "outline",
+            PaletteRole::OutlineVariant => "outlineVariant",
+            PaletteRole::Surface => "surface",
+            PaletteRole::OnSurface => "onSurface",
+            PaletteRole::SurfaceDim => "surfaceDim",
+            PaletteRole::SurfaceBright => "surfaceBright",
+            PaletteRole::SurfaceContainerLowest => "surfaceContainerLowest",
+            PaletteRole::SurfaceContainerLow => "surfaceContainerLow",
+            PaletteRole::SurfaceContainer => "surfaceContainer",
+            PaletteRole::SurfaceContainerHigh => "surfaceContainerHigh",
+            PaletteRole::SurfaceContainerHighest => "surfaceContainerHighest",
+            PaletteRole::OnSurfaceVariant => "onSurfaceVariant",
+            PaletteRole::InverseSurface => "inverseSurface",
+            PaletteRole::OnInverseSurface => "onInverseSurface",
+            PaletteRole::InversePrimary => "inversePrimary",
+            PaletteRole::Shadow => "shadow",
+            PaletteRole::Scrim => "scrim",
+            PaletteRole::SurfaceTint => "surfaceTint",
+        }
+    }
+}
+
+// --- TonePolarity / ToneDeltaPair (dynamiccolor/src/tone_delta_pair.dart) ---
+
+/// `TonePolarity` (dynamiccolor/src/tone_delta_pair.dart:18): an adjective
+/// describing role A, compared to role B. Every pinned pair is `nearer`, but
+/// `getTone`'s a-is-nearer resolution carries all four
+/// (dynamic_color.dart:181-184), so the enum keeps them (`darker`/`lighter`/
+/// `farther` are constructed by no pinned declaration).
+#[allow(dead_code)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum TonePolarity {
+    Darker,
+    Lighter,
+    Nearer,
+    Farther,
+}
+
+/// `ToneDeltaPair` (dynamiccolor/src/tone_delta_pair.dart:26): a required
+/// tone distance between two roles — the polarity describes role A relative
+/// to role B, and `stayTogether` ("keep both polarities", :52-53) keeps the
+/// pair on one side of the T50-59 awkward zone in `role_tone`.
+#[derive(Clone, Copy)]
+struct ToneDeltaPair {
+    role_a: PaletteRole,
+    role_b: PaletteRole,
+    delta: f64,
+    polarity: TonePolarity,
+    stay_together: bool,
+}
+
+impl ToneDeltaPair {
+    /// The constructor (dynamiccolor/src/tone_delta_pair.dart:54).
+    fn new(
+        role_a: PaletteRole,
+        role_b: PaletteRole,
+        delta: f64,
+        polarity: TonePolarity,
+        stay_together: bool,
+    ) -> ToneDeltaPair {
+        ToneDeltaPair { role_a, role_b, delta, polarity, stay_together }
+    }
+}
+
+// --- TonalPalette (palettes/tonal_palette.dart) ---
+
+/// `TonalPalette` for the `.of` construction the scheme uses
+/// (palettes/tonal_palette.dart:76-78): the hue/chroma pair IS the whole
+/// state — `get`/`getHct` are pure `Hct.from(hue, chroma, tone)` per call,
+/// so the Dart `_cache` (:55, populated by `get` :132-137 and replayed by
+/// `getHct` :148-154) only ever replays that same computation and is
+/// dropped, and `keyColor` (:50, eagerly built by every Dart constructor
+/// :58-73) is read only by the palette-key-color roles
+/// (material_dynamic_colors.dart:38-67), which the corpus does not pin —
+/// no other output depends on either field.
+#[derive(Clone, Copy, Debug)]
+pub struct TonalPalette {
+    hue: f64,
+    chroma: f64,
+}
+
+impl TonalPalette {
+    /// `TonalPalette.of` (palettes/tonal_palette.dart:76).
+    pub fn of(hue: f64, chroma: f64) -> TonalPalette {
+        TonalPalette { hue, chroma }
+    }
+
+    /// `TonalPalette.get` (palettes/tonal_palette.dart:132): the tone's ARGB
+    /// — the empty-`_cache` path (see the struct note).
+    pub fn tone(&self, tone: u32) -> u32 {
+        self.get_hct(tone as f64).to_int()
+    }
+
+    /// `TonalPalette.getHct` (palettes/tonal_palette.dart:148) for a `.of`
+    /// palette — the empty-`_cache` path (see the struct note).
+    fn get_hct(&self, tone: f64) -> Hct {
+        Hct::from_hue_chroma_tone(self.hue, self.chroma, tone)
+    }
+}
+
+// --- SchemeTonalSpot's palettes (scheme/scheme_tonal_spot.dart + dynamic_scheme.dart) ---
+
+/// The six `TonalPalette`s `DynamicScheme` carries (dynamic_scheme.dart's
+/// palette fields), as `SchemeTonalSpot` builds them.
+#[derive(Clone, Copy, Debug)]
+pub struct SchemeTonalSpotPalettes {
+    /// `primaryPalette` (scheme/scheme_tonal_spot.dart:29).
+    pub primary: TonalPalette,
+    /// `secondaryPalette` (scheme/scheme_tonal_spot.dart:30).
+    pub secondary: TonalPalette,
+    /// `tertiaryPalette` (scheme/scheme_tonal_spot.dart:31-34).
+    pub tertiary: TonalPalette,
+    /// `neutralPalette` (scheme/scheme_tonal_spot.dart:35).
+    pub neutral: TonalPalette,
+    /// `neutralVariantPalette` (scheme/scheme_tonal_spot.dart:36).
+    pub neutral_variant: TonalPalette,
+    /// `errorPalette` — `DynamicScheme`'s default (dynamic_scheme.dart:80:
+    /// `TonalPalette.of(25.0, 84.0)`; `SchemeTonalSpot` passes none).
+    pub error: TonalPalette,
+}
+
+/// `SchemeTonalSpot`'s palette construction (scheme/scheme_tonal_spot.dart:
+/// 27-37) from a seed ARGB: the seed's HCT hue drives every palette
+/// (tertiary rotated +60° and sanitized back into [0, 360)).
+pub fn scheme_tonal_spot_palettes(seed: u32) -> SchemeTonalSpotPalettes {
+    let hue = Hct::from_int(seed).hue();
+    SchemeTonalSpotPalettes {
+        primary: TonalPalette::of(hue, 36.0),
+        secondary: TonalPalette::of(hue, 16.0),
+        tertiary: TonalPalette::of(sanitize_degrees_double(hue + 60.0), 24.0),
+        neutral: TonalPalette::of(hue, 6.0),
+        neutral_variant: TonalPalette::of(hue, 8.0),
+        error: TonalPalette::of(25.0, 84.0),
+    }
+}
+
+// --- DynamicScheme subset (dynamic_scheme.dart) ---
+
+/// `DynamicScheme` (dynamic_scheme.dart), reduced to the state the 34
+/// pinned roles read: the palettes, `isDark`, and `contrastLevel` (the
+/// app's call path constructs the scheme at contrast 0.0 —
+/// `ColorScheme.fromSeed`'s default, `DynamicScheme`'s own,
+/// dynamic_scheme.dart:71). `sourceColorHct` and `variant` exist in Dart
+/// to build the palettes and to feed the fidelity/monochrome tone branches
+/// — the palettes are built up front ([`scheme_tonal_spot_palettes`]) and
+/// the branches never fire for `Variant.tonalSpot`, so neither is carried.
+struct Scheme {
+    is_dark: bool,
+    contrast_level: f64,
+    palettes: SchemeTonalSpotPalettes,
+}
+
+impl Scheme {
+    /// The scheme the app's call path constructs (dynamic_scheme.dart:68-80
+    /// + scheme/scheme_tonal_spot.dart:27-37): tonal spot, the seed's HCT,
+    /// the brightness, contrast 0.0.
+    fn new(seed: u32, is_dark: bool) -> Scheme {
+        Scheme {
+            is_dark,
+            contrast_level: 0.0,
+            palettes: scheme_tonal_spot_palettes(seed),
+        }
+    }
+}
+
+// --- One DynamicColor declaration (dynamic_color.dart + material_dynamic_colors.dart) ---
+
+/// `MaterialDynamicColors.highestSurface` (material_dynamic_colors.dart:34).
+fn highest_surface(s: &Scheme) -> PaletteRole {
+    if s.is_dark {
+        PaletteRole::SurfaceBright
+    } else {
+        PaletteRole::SurfaceDim
+    }
+}
+
+/// The background/curve/pair wiring of a `DynamicColor.fromPalette`
+/// declaration (dynamic_color.dart:109-118's optional `background`,
+/// `secondBackground`, `contrastCurve`, `toneDeltaPair`), shaped as
+/// `getTone`'s dispatch cases (dynamic_color.dart:170/263/294): Dart's `!`
+/// dereferences assert that every paired declaration also declares a
+/// background (:178) and that both pair members declare contrast curves
+/// (:191-192), and that every background-bearing declaration declares a
+/// curve (:272) — the enum makes those invariants structural instead of
+/// asserted.
+#[derive(Clone, Copy)]
+enum RoleWiring {
+    /// No `background`: `getTone`'s case-2 early return — the raw tone
+    /// closure, no contrast adjustment (dynamic_color.dart:266-268).
+    Bare,
+    /// `background` + `contrastCurve` (case 2, dynamic_color.dart:270-292),
+    /// plus Dart's optional `secondBackground` (case 3, :294-331).
+    Background {
+        background: fn(&Scheme) -> PaletteRole,
+        contrast_curve: ContrastCurve,
+        second_background: Option<fn(&Scheme) -> PaletteRole>,
+    },
+    /// `toneDeltaPair` plus the declaration's own `background` and
+    /// `contrastCurve` (case 1, dynamic_color.dart:170-261) — the pair
+    /// members' curves are read from their own specs (`nearer.
+    /// contrastCurve!`, :191-192), the pair itself lives here.
+    Pair {
+        background: fn(&Scheme) -> PaletteRole,
+        contrast_curve: ContrastCurve,
+        pair: ToneDeltaPair,
+    },
+}
+
+/// One `DynamicColor` as `MaterialDynamicColors` declares it
+/// (dynamic_color.dart:44-52 + material_dynamic_colors.dart's statics): the
+/// palette/tone closures and the `isBackground` flag, with the wiring
+/// above.
+#[derive(Clone, Copy)]
+struct DynamicColorSpec {
+    palette: fn(&Scheme) -> &TonalPalette,
+    tone: fn(&Scheme) -> f64,
+    is_background: bool,
+    wiring: RoleWiring,
+}
+
+/// The 34 pinned roles' declarations — `MaterialDynamicColors.*`
+/// (material_dynamic_colors.dart), one arm per role, the palette/tone/
+/// `isBackground`/`background`/`contrastCurve`/`toneDeltaPair` wiring
+/// verbatim from each declaration. Only the tone-closure branches
+/// `Variant.tonalSpot` reaches are kept: `_isFidelity`/`_isMonochrome`
+/// (:25-29) are variant tests that are constant-false for the tonal-spot
+/// scheme the corpus pins (`SchemeTonalSpot` pins `variant:
+/// Variant.tonalSpot`, scheme_tonal_spot.dart:28), so their arms —
+/// primary :236-241/:258-263/:271-278/:296-307, onSecondary :340-345,
+/// secondaryContainer :354-367 (`_findDesiredChromaByTone`)/onSecondary-
+/// Container :385-395, tertiary :404-409/:427-431/:439-448 (DislikeAnalyzer)/
+/// :465-475, onErrorContainer :526-531 — are dropped with the helpers only
+/// they call.
+fn spec(role: PaletteRole) -> DynamicColorSpec {
+    match role {
+        // `MaterialDynamicColors.primary` (material_dynamic_colors.dart:233).
+        PaletteRole::Primary => DynamicColorSpec {
+            palette: |s| &s.palettes.primary,
+            tone: |s| if s.is_dark { 80.0 } else { 40.0 },
+            is_background: true,
+            wiring: RoleWiring::Pair {
+                background: highest_surface,
+                contrast_curve: ContrastCurve::new(3.0, 4.5, 7.0, 7.0),
+                pair: ToneDeltaPair::new(
+                    PaletteRole::PrimaryContainer,
+                    PaletteRole::Primary,
+                    10.0,
+                    TonePolarity::Nearer,
+                    false,
+                ),
+            },
+        },
+        // `MaterialDynamicColors.onPrimary` (material_dynamic_colors.dart:255).
+        PaletteRole::OnPrimary => DynamicColorSpec {
+            palette: |s| &s.palettes.primary,
+            tone: |s| if s.is_dark { 20.0 } else { 100.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: |_| PaletteRole::Primary,
+                contrast_curve: ContrastCurve::new(4.5, 7.0, 11.0, 21.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.primaryContainer` (material_dynamic_colors.dart:268).
+        PaletteRole::PrimaryContainer => DynamicColorSpec {
+            palette: |s| &s.palettes.primary,
+            tone: |s| if s.is_dark { 30.0 } else { 90.0 },
+            is_background: true,
+            wiring: RoleWiring::Pair {
+                background: highest_surface,
+                contrast_curve: ContrastCurve::new(1.0, 1.0, 3.0, 4.5),
+                pair: ToneDeltaPair::new(
+                    PaletteRole::PrimaryContainer,
+                    PaletteRole::Primary,
+                    10.0,
+                    TonePolarity::Nearer,
+                    false,
+                ),
+            },
+        },
+        // `MaterialDynamicColors.onPrimaryContainer` (material_dynamic_colors.dart:293).
+        PaletteRole::OnPrimaryContainer => DynamicColorSpec {
+            palette: |s| &s.palettes.primary,
+            tone: |s| if s.is_dark { 90.0 } else { 30.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: |_| PaletteRole::PrimaryContainer,
+                contrast_curve: ContrastCurve::new(3.0, 4.5, 7.0, 11.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.secondary` (material_dynamic_colors.dart:320).
+        PaletteRole::Secondary => DynamicColorSpec {
+            palette: |s| &s.palettes.secondary,
+            tone: |s| if s.is_dark { 80.0 } else { 40.0 },
+            is_background: true,
+            wiring: RoleWiring::Pair {
+                background: highest_surface,
+                contrast_curve: ContrastCurve::new(3.0, 4.5, 7.0, 7.0),
+                pair: ToneDeltaPair::new(
+                    PaletteRole::SecondaryContainer,
+                    PaletteRole::Secondary,
+                    10.0,
+                    TonePolarity::Nearer,
+                    false,
+                ),
+            },
+        },
+        // `MaterialDynamicColors.onSecondary` (material_dynamic_colors.dart:337).
+        PaletteRole::OnSecondary => DynamicColorSpec {
+            palette: |s| &s.palettes.secondary,
+            tone: |s| if s.is_dark { 20.0 } else { 100.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: |_| PaletteRole::Secondary,
+                contrast_curve: ContrastCurve::new(4.5, 7.0, 11.0, 21.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.secondaryContainer` (material_dynamic_colors.dart:351).
+        PaletteRole::SecondaryContainer => DynamicColorSpec {
+            palette: |s| &s.palettes.secondary,
+            tone: |s| if s.is_dark { 30.0 } else { 90.0 },
+            is_background: true,
+            wiring: RoleWiring::Pair {
+                background: highest_surface,
+                contrast_curve: ContrastCurve::new(1.0, 1.0, 3.0, 4.5),
+                pair: ToneDeltaPair::new(
+                    PaletteRole::SecondaryContainer,
+                    PaletteRole::Secondary,
+                    10.0,
+                    TonePolarity::Nearer,
+                    false,
+                ),
+            },
+        },
+        // `MaterialDynamicColors.onSecondaryContainer` (material_dynamic_colors.dart:382).
+        PaletteRole::OnSecondaryContainer => DynamicColorSpec {
+            palette: |s| &s.palettes.secondary,
+            tone: |s| if s.is_dark { 90.0 } else { 30.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: |_| PaletteRole::SecondaryContainer,
+                contrast_curve: ContrastCurve::new(3.0, 4.5, 7.0, 11.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.tertiary` (material_dynamic_colors.dart:401).
+        PaletteRole::Tertiary => DynamicColorSpec {
+            palette: |s| &s.palettes.tertiary,
+            tone: |s| if s.is_dark { 80.0 } else { 40.0 },
+            is_background: true,
+            wiring: RoleWiring::Pair {
+                background: highest_surface,
+                contrast_curve: ContrastCurve::new(3.0, 4.5, 7.0, 7.0),
+                pair: ToneDeltaPair::new(
+                    PaletteRole::TertiaryContainer,
+                    PaletteRole::Tertiary,
+                    10.0,
+                    TonePolarity::Nearer,
+                    false,
+                ),
+            },
+        },
+        // `MaterialDynamicColors.onTertiary` (material_dynamic_colors.dart:423).
+        PaletteRole::OnTertiary => DynamicColorSpec {
+            palette: |s| &s.palettes.tertiary,
+            tone: |s| if s.is_dark { 20.0 } else { 100.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: |_| PaletteRole::Tertiary,
+                contrast_curve: ContrastCurve::new(4.5, 7.0, 11.0, 21.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.tertiaryContainer` (material_dynamic_colors.dart:436).
+        PaletteRole::TertiaryContainer => DynamicColorSpec {
+            palette: |s| &s.palettes.tertiary,
+            tone: |s| if s.is_dark { 30.0 } else { 90.0 },
+            is_background: true,
+            wiring: RoleWiring::Pair {
+                background: highest_surface,
+                contrast_curve: ContrastCurve::new(1.0, 1.0, 3.0, 4.5),
+                pair: ToneDeltaPair::new(
+                    PaletteRole::TertiaryContainer,
+                    PaletteRole::Tertiary,
+                    10.0,
+                    TonePolarity::Nearer,
+                    false,
+                ),
+            },
+        },
+        // `MaterialDynamicColors.onTertiaryContainer` (material_dynamic_colors.dart:462).
+        PaletteRole::OnTertiaryContainer => DynamicColorSpec {
+            palette: |s| &s.palettes.tertiary,
+            tone: |s| if s.is_dark { 90.0 } else { 30.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: |_| PaletteRole::TertiaryContainer,
+                contrast_curve: ContrastCurve::new(3.0, 4.5, 7.0, 11.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.error` (material_dynamic_colors.dart:481).
+        PaletteRole::Error => DynamicColorSpec {
+            palette: |s| &s.palettes.error,
+            tone: |s| if s.is_dark { 80.0 } else { 40.0 },
+            is_background: true,
+            wiring: RoleWiring::Pair {
+                background: highest_surface,
+                contrast_curve: ContrastCurve::new(3.0, 4.5, 7.0, 7.0),
+                pair: ToneDeltaPair::new(
+                    PaletteRole::ErrorContainer,
+                    PaletteRole::Error,
+                    10.0,
+                    TonePolarity::Nearer,
+                    false,
+                ),
+            },
+        },
+        // `MaterialDynamicColors.onError` (material_dynamic_colors.dart:498).
+        PaletteRole::OnError => DynamicColorSpec {
+            palette: |s| &s.palettes.error,
+            tone: |s| if s.is_dark { 20.0 } else { 100.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: |_| PaletteRole::Error,
+                contrast_curve: ContrastCurve::new(4.5, 7.0, 11.0, 21.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.errorContainer` (material_dynamic_colors.dart:506).
+        PaletteRole::ErrorContainer => DynamicColorSpec {
+            palette: |s| &s.palettes.error,
+            tone: |s| if s.is_dark { 30.0 } else { 90.0 },
+            is_background: true,
+            wiring: RoleWiring::Pair {
+                background: highest_surface,
+                contrast_curve: ContrastCurve::new(1.0, 1.0, 3.0, 4.5),
+                pair: ToneDeltaPair::new(
+                    PaletteRole::ErrorContainer,
+                    PaletteRole::Error,
+                    10.0,
+                    TonePolarity::Nearer,
+                    false,
+                ),
+            },
+        },
+        // `MaterialDynamicColors.onErrorContainer` (material_dynamic_colors.dart:523).
+        PaletteRole::OnErrorContainer => DynamicColorSpec {
+            palette: |s| &s.palettes.error,
+            tone: |s| if s.is_dark { 90.0 } else { 30.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: |_| PaletteRole::ErrorContainer,
+                contrast_curve: ContrastCurve::new(3.0, 4.5, 7.0, 11.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.outline` (material_dynamic_colors.dart:198).
+        PaletteRole::Outline => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral_variant,
+            tone: |s| if s.is_dark { 60.0 } else { 50.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: highest_surface,
+                contrast_curve: ContrastCurve::new(1.5, 3.0, 4.5, 7.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.outlineVariant` (material_dynamic_colors.dart:206).
+        PaletteRole::OutlineVariant => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral_variant,
+            tone: |s| if s.is_dark { 30.0 } else { 80.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: highest_surface,
+                contrast_curve: ContrastCurve::new(1.0, 1.0, 3.0, 4.5),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.surface` (material_dynamic_colors.dart:84).
+        PaletteRole::Surface => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |s| if s.is_dark { 6.0 } else { 98.0 },
+            is_background: true,
+            wiring: RoleWiring::Bare,
+        },
+        // `MaterialDynamicColors.onSurface` (material_dynamic_colors.dart:161).
+        PaletteRole::OnSurface => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |s| if s.is_dark { 90.0 } else { 10.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: highest_surface,
+                contrast_curve: ContrastCurve::new(4.5, 7.0, 11.0, 21.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.surfaceDim` (material_dynamic_colors.dart:91).
+        PaletteRole::SurfaceDim => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |s| if s.is_dark {
+                6.0
+            } else {
+                ContrastCurve::new(87.0, 87.0, 80.0, 75.0).get(s.contrast_level)
+            },
+            is_background: true,
+            wiring: RoleWiring::Bare,
+        },
+        // `MaterialDynamicColors.surfaceBright` (material_dynamic_colors.dart:100).
+        PaletteRole::SurfaceBright => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |s| if s.is_dark {
+                ContrastCurve::new(24.0, 24.0, 29.0, 34.0).get(s.contrast_level)
+            } else {
+                98.0
+            },
+            is_background: true,
+            wiring: RoleWiring::Bare,
+        },
+        // `MaterialDynamicColors.surfaceContainerLowest` (material_dynamic_colors.dart:109).
+        PaletteRole::SurfaceContainerLowest => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |s| if s.is_dark {
+                ContrastCurve::new(4.0, 4.0, 2.0, 0.0).get(s.contrast_level)
+            } else {
+                100.0
+            },
+            is_background: true,
+            wiring: RoleWiring::Bare,
+        },
+        // `MaterialDynamicColors.surfaceContainerLow` (material_dynamic_colors.dart:117).
+        PaletteRole::SurfaceContainerLow => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |s| if s.is_dark {
+                ContrastCurve::new(10.0, 10.0, 11.0, 12.0).get(s.contrast_level)
+            } else {
+                ContrastCurve::new(96.0, 96.0, 96.0, 95.0).get(s.contrast_level)
+            },
+            is_background: true,
+            wiring: RoleWiring::Bare,
+        },
+        // `MaterialDynamicColors.surfaceContainer` (material_dynamic_colors.dart:128).
+        PaletteRole::SurfaceContainer => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |s| if s.is_dark {
+                ContrastCurve::new(12.0, 12.0, 16.0, 20.0).get(s.contrast_level)
+            } else {
+                ContrastCurve::new(94.0, 94.0, 92.0, 90.0).get(s.contrast_level)
+            },
+            is_background: true,
+            wiring: RoleWiring::Bare,
+        },
+        // `MaterialDynamicColors.surfaceContainerHigh` (material_dynamic_colors.dart:139).
+        PaletteRole::SurfaceContainerHigh => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |s| if s.is_dark {
+                ContrastCurve::new(17.0, 17.0, 21.0, 25.0).get(s.contrast_level)
+            } else {
+                ContrastCurve::new(92.0, 92.0, 88.0, 85.0).get(s.contrast_level)
+            },
+            is_background: true,
+            wiring: RoleWiring::Bare,
+        },
+        // `MaterialDynamicColors.surfaceContainerHighest` (material_dynamic_colors.dart:150).
+        PaletteRole::SurfaceContainerHighest => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |s| if s.is_dark {
+                ContrastCurve::new(22.0, 22.0, 26.0, 30.0).get(s.contrast_level)
+            } else {
+                ContrastCurve::new(90.0, 90.0, 84.0, 80.0).get(s.contrast_level)
+            },
+            is_background: true,
+            wiring: RoleWiring::Bare,
+        },
+        // `MaterialDynamicColors.onSurfaceVariant` (material_dynamic_colors.dart:176).
+        PaletteRole::OnSurfaceVariant => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral_variant,
+            tone: |s| if s.is_dark { 80.0 } else { 30.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: highest_surface,
+                contrast_curve: ContrastCurve::new(3.0, 4.5, 7.0, 11.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.inverseSurface` (material_dynamic_colors.dart:184).
+        PaletteRole::InverseSurface => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |s| if s.is_dark { 90.0 } else { 20.0 },
+            is_background: false,
+            wiring: RoleWiring::Bare,
+        },
+        // `MaterialDynamicColors.inverseOnSurface` — the corpus's `onInverseSurface` (material_dynamic_colors.dart:190).
+        PaletteRole::OnInverseSurface => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |s| if s.is_dark { 20.0 } else { 95.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: |_| PaletteRole::InverseSurface,
+                contrast_curve: ContrastCurve::new(4.5, 7.0, 11.0, 21.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.inversePrimary` (material_dynamic_colors.dart:312).
+        PaletteRole::InversePrimary => DynamicColorSpec {
+            palette: |s| &s.palettes.primary,
+            tone: |s| if s.is_dark { 40.0 } else { 80.0 },
+            is_background: false,
+            wiring: RoleWiring::Background {
+                background: |_| PaletteRole::InverseSurface,
+                contrast_curve: ContrastCurve::new(3.0, 4.5, 7.0, 7.0),
+                second_background: None,
+            },
+        },
+        // `MaterialDynamicColors.shadow` (material_dynamic_colors.dart:214).
+        PaletteRole::Shadow => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |_| 0.0,
+            is_background: false,
+            wiring: RoleWiring::Bare,
+        },
+        // `MaterialDynamicColors.scrim` (material_dynamic_colors.dart:220).
+        PaletteRole::Scrim => DynamicColorSpec {
+            palette: |s| &s.palettes.neutral,
+            tone: |_| 0.0,
+            is_background: false,
+            wiring: RoleWiring::Bare,
+        },
+        // `MaterialDynamicColors.surfaceTint` (material_dynamic_colors.dart:226).
+        PaletteRole::SurfaceTint => DynamicColorSpec {
+            palette: |s| &s.palettes.primary,
+            tone: |s| if s.is_dark { 80.0 } else { 40.0 },
+            is_background: true,
+            wiring: RoleWiring::Bare,
+        },
+    }
+}
+
+// --- DynamicColor resolution (dynamic_color.dart) ---
+
+/// Dart `nearer.contrastCurve!` / `farther.contrastCurve!`
+/// (dynamic_color.dart:191-192): a pair member's own declared curve — every
+/// pinned pair member (the eight *Container/* family pairs) declares one;
+/// a `Bare` member would be a table-authoring error and reads as ratio 1
+/// (no adjustment — case 2's good-enough posture).
+fn contrast_of(role: PaletteRole) -> ContrastCurve {
+    match spec(role).wiring {
+        RoleWiring::Pair { contrast_curve, .. }
+        | RoleWiring::Background { contrast_curve, .. } => contrast_curve,
+        RoleWiring::Bare => ContrastCurve::new(1.0, 1.0, 1.0, 1.0),
+    }
+}
+
+/// `DynamicColor.tonePrefersLightForeground` (dynamic_color.dart:394).
+fn tone_prefers_light_foreground(tone: f64) -> bool {
+    tone.round() < 60.0
+}
+
+/// `DynamicColor.foregroundTone` (dynamic_color.dart:343).
+fn foreground_tone(bg_tone: f64, ratio: f64) -> f64 {
+    let lighter_tone = lighter_unsafe(bg_tone, ratio);
+    let darker_tone = darker_unsafe(bg_tone, ratio);
+    let lighter_ratio = ratio_of_tones(lighter_tone, bg_tone);
+    let darker_ratio = ratio_of_tones(darker_tone, bg_tone);
+    let prefer_lighter = tone_prefers_light_foreground(bg_tone);
+
+    if prefer_lighter {
+        // This handles an edge case where the initial contrast ratio is high
+        // (ex. 13.0), and the ratio passed to the function is that high ratio,
+        // and both the lighter and darker ratio fails to pass that ratio.
+        //
+        // This was observed with Tonal Spot's On Primary Container turning
+        // black momentarily between high and max contrast in light mode.
+        // PC's standard tone was T90, OPC's was T10, it was light mode, and
+        // the contrast value was 0.6568521221032331.
+        let negligible_difference = (lighter_ratio - darker_ratio).abs() < 0.1
+            && lighter_ratio < ratio
+            && darker_ratio < ratio;
+        if lighter_ratio >= ratio
+            || lighter_ratio >= darker_ratio
+            || negligible_difference
+        {
+            lighter_tone
+        } else {
+            darker_tone
+        }
+    } else if darker_ratio >= ratio || darker_ratio >= lighter_ratio {
+        darker_tone
+    } else {
+        lighter_tone
+    }
+}
+
+/// `DynamicColor.getTone` (dynamic_color.dart:166) — case 1: the tone delta
+/// pair (:170-261); case 2: the no-background early return (:266-268) and
+/// the background contrast solve (:270-292); case 3: the dual-background
+/// solve (:294-331). `decreasingContrast` (:167) never fires at contrast
+/// 0.0 — the only level the corpus pins — but is ported as written.
+fn role_tone(scheme: &Scheme, role: PaletteRole) -> f64 {
+    let s = spec(role);
+    let decreasing_contrast = scheme.contrast_level < 0.0;
+
+    match s.wiring {
+        RoleWiring::Pair { background, pair, .. } => {
+            // Case 1: dual foreground, pair of colors with delta constraint.
+            let role_a = pair.role_a;
+            let role_b = pair.role_b;
+            let delta = pair.delta;
+            let polarity = pair.polarity;
+            let stay_together = pair.stay_together;
+
+            let bg_tone = role_tone(scheme, background(scheme));
+
+            let a_is_nearer = polarity == TonePolarity::Nearer
+                || (polarity == TonePolarity::Lighter && !scheme.is_dark)
+                || (polarity == TonePolarity::Darker && scheme.is_dark);
+            let nearer = if a_is_nearer { role_a } else { role_b };
+            let farther = if a_is_nearer { role_b } else { role_a };
+            let am_nearer = role == nearer;
+            let expansion_dir = if scheme.is_dark { 1.0 } else { -1.0 };
+
+            // 1st round: solve to min, each.
+            let n_contrast = contrast_of(nearer).get(scheme.contrast_level);
+            let f_contrast = contrast_of(farther).get(scheme.contrast_level);
+
+            // If a color is good enough, it is not adjusted.
+            // Initial and adjusted tones for `nearer`.
+            let n_initial_tone = (spec(nearer).tone)(scheme);
+            let mut n_tone = if ratio_of_tones(bg_tone, n_initial_tone) >= n_contrast {
+                n_initial_tone
+            } else {
+                foreground_tone(bg_tone, n_contrast)
+            };
+            // Initial and adjusted tones for `farther`.
+            let f_initial_tone = (spec(farther).tone)(scheme);
+            let mut f_tone = if ratio_of_tones(bg_tone, f_initial_tone) >= f_contrast {
+                f_initial_tone
+            } else {
+                foreground_tone(bg_tone, f_contrast)
+            };
+
+            if decreasing_contrast {
+                // If decreasing contrast, adjust color to the "bare minimum"
+                // that satisfies contrast.
+                n_tone = foreground_tone(bg_tone, n_contrast);
+                f_tone = foreground_tone(bg_tone, f_contrast);
+            }
+
+            if (f_tone - n_tone) * expansion_dir < delta {
+                // 2nd round: expand farther to match delta.
+                f_tone = clamp_double(0.0, 100.0, n_tone + delta * expansion_dir);
+                if (f_tone - n_tone) * expansion_dir < delta {
+                    // 3rd round: contract nearer to match delta.
+                    n_tone = clamp_double(0.0, 100.0, f_tone - delta * expansion_dir);
+                }
+            }
+
+            // Avoids the 50-59 awkward zone.
+            if 50.0 <= n_tone && n_tone < 60.0 {
+                // If `nearer` is in the awkward zone, move it away, together
+                // with `farther`.
+                if expansion_dir > 0.0 {
+                    n_tone = 60.0;
+                    f_tone = f64::max(f_tone, n_tone + delta * expansion_dir);
+                } else {
+                    n_tone = 49.0;
+                    f_tone = f64::min(f_tone, n_tone + delta * expansion_dir);
+                }
+            } else if 50.0 <= f_tone && f_tone < 60.0 {
+                if stay_together {
+                    // Fixes both, to avoid two colors on opposite sides of
+                    // the "awkward zone".
+                    if expansion_dir > 0.0 {
+                        n_tone = 60.0;
+                        f_tone = f64::max(f_tone, n_tone + delta * expansion_dir);
+                    } else {
+                        n_tone = 49.0;
+                        f_tone = f64::min(f_tone, n_tone + delta * expansion_dir);
+                    }
+                } else {
+                    // Not required to stay together; fixes just one.
+                    if expansion_dir > 0.0 {
+                        f_tone = 60.0;
+                    } else {
+                        f_tone = 49.0;
+                    }
+                }
+            }
+
+            // Returns `nTone` if this color is `nearer`, otherwise `fTone`.
+            if am_nearer {
+                n_tone
+            } else {
+                f_tone
+            }
+        }
+        // Case 2, no background: no adjustment for colors with no background.
+        RoleWiring::Bare => (s.tone)(scheme),
+        RoleWiring::Background { background, contrast_curve, second_background } => {
+            // Case 2: no contrast pair; just solve for itself.
+            let mut answer = (s.tone)(scheme);
+
+            let bg_tone = role_tone(scheme, background(scheme));
+
+            let desired_ratio = contrast_curve.get(scheme.contrast_level);
+
+            // Don't "improve" what's good enough — otherwise, rough improvement.
+            if ratio_of_tones(bg_tone, answer) < desired_ratio {
+                answer = foreground_tone(bg_tone, desired_ratio);
+            }
+
+            if decreasing_contrast {
+                answer = foreground_tone(bg_tone, desired_ratio);
+            }
+
+            if s.is_background && 50.0 <= answer && answer < 60.0 {
+                // Must adjust
+                if ratio_of_tones(49.0, bg_tone) >= desired_ratio {
+                    answer = 49.0;
+                } else {
+                    answer = 60.0;
+                }
+            }
+
+            if let Some(second_background) = second_background {
+                // Case 3: adjust for dual backgrounds (no pinned role carries
+                // one — Dart's onFixed roles do — but the case is ported).
+                let bg_tone1 = role_tone(scheme, background(scheme));
+                let bg_tone2 = role_tone(scheme, second_background(scheme));
+
+                let upper = f64::max(bg_tone1, bg_tone2);
+                let lower = f64::min(bg_tone1, bg_tone2);
+
+                if ratio_of_tones(upper, answer) >= desired_ratio
+                    && ratio_of_tones(lower, answer) >= desired_ratio
+                {
+                    return answer;
+                }
+
+                // The darkest light tone that satisfies the desired ratio,
+                // or -1 if such ratio cannot be reached.
+                let light_option = contrast_lighter(upper, desired_ratio);
+
+                // The lightest dark tone that satisfies the desired ratio,
+                // or -1 if such ratio cannot be reached.
+                let dark_option = contrast_darker(lower, desired_ratio);
+
+                // Tones suitable for the foreground.
+                let mut availables = Vec::new();
+                if light_option != -1.0 {
+                    availables.push(light_option);
+                }
+                if dark_option != -1.0 {
+                    availables.push(dark_option);
+                }
+
+                let prefers_light = tone_prefers_light_foreground(bg_tone1)
+                    || tone_prefers_light_foreground(bg_tone2);
+                if prefers_light {
+                    return if light_option < 0.0 { 100.0 } else { light_option };
+                }
+                if availables.len() == 1 {
+                    return availables[0];
+                }
+                return if dark_option < 0.0 { 0.0 } else { dark_option };
+            }
+
+            answer
+        }
+    }
+}
+
+/// `DynamicColor.getHct`/`getArgb` (dynamic_color.dart:146/136): the
+/// resolved tone, then the declaration's palette at that tone.
+fn role_argb(scheme: &Scheme, role: PaletteRole) -> u32 {
+    let tone = role_tone(scheme, role);
+    ((spec(role).palette)(scheme)).get_hct(tone).to_int()
+}
+
+// --- The scheme API (dynamic_scheme.dart + scheme/scheme_tonal_spot.dart) ---
+
+/// `DynamicScheme.getArgb(MaterialDynamicColors.<role>)` on the scheme the
+/// app's call path constructs (dynamic_scheme.dart:106; Flutter
+/// `ColorScheme.fromSeed` → `SchemeTonalSpot` at contrast 0.0).
+pub fn scheme_role(seed: u32, dark: bool, role: PaletteRole) -> u32 {
+    let scheme = Scheme::new(seed, dark);
+    role_argb(&scheme, role)
 }
