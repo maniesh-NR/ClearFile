@@ -27,6 +27,11 @@ allow = [
   "Unicode-DFS-2016",
   "0BSD",
   "CC0-1.0",
+  # BSL-1.0 (Boost Software License): permissive, GPL-3.0-compatible —
+  # encountered in the committed lock's tree on the first live cargo-deny
+  # run (hygiene run #42); added per the closed-list rule: allowed ids are
+  # the ones actually encountered + reviewed.
+  "BSL-1.0",
 ]
 # Exactly `GPL-3.0-only` (not the deprecated `GPL-3.0`): GNU-pedantic ids.
 # GPL-2.0-only and unlicensed crates are barred (ADR-017's licensing annex)
