@@ -2076,3 +2076,44 @@ D41/D42 residues ride their lanes.**
   fail-closed guard, the cargo-deny step, both smokes) + the R1/R2
   parser hardenings (or the explicit re-deadline) + the bookkeeping +
   the N2 exit gate.
+
+## 2026-11-26 (N2 session 2 close) · The Linux app + the CI lane + the R1/R2 hardenings: session 2 of the box closes (the exit gate convenes next)
+
+- **The R1/R2 parser hardenings (the gate condition 9, in substance):**
+  json.rs gains the 10,000-member object cap (the quadratic duplicate-key
+  scan — 80k keys ≈ 26.8 s — closed fail-closed with the named
+  TooManyMembers error; duplicates never grow the count so they never
+  trip it) + tax_inspect.rs gains the 256 MiB cumulative STORE-extraction
+  cap (the 385 KB → >1 GB amplification closed with the honest walk note
+  "Extraction stopped after N bytes of extracted entries (the analysis
+  limit)." — the analysis path never errors; the writer untouched) + the
+  battery extensions pinning both caps (incl. the exact-boundary
+  cases). **cargo test 174/174 green (170 + 4); the app 5/5 green.**
+- **The session-2 record (the earlier checkpoint 37f1a5c):** the Slint
+  window app (the MD3-from-seed theme via the core palette, the honest
+  demo disclaimer + the no-AI/no-network note, the prototype label) +
+  the shared pipeline (one `load_and_compute(path)` structurally shared
+  by the window + the headless mode) + the headless byte-exact text
+  (tests/expected-headless.txt, regenerated + path-normalized) + the CI
+  Linux-app job (the rustc ≥ 1.95 fail-closed MSRV guard first, the app
+  tests, the headless diff smoke, the window smoke: apt
+  libxkbcommon-x11 + DIRECT Xvfb :99 + SLINT_BACKEND=winit-software +
+  a timeout with failure asserted, cargo-deny via the SHA-pinned
+  cargo-deny-action 81891abc19 (v2.1.4) over the committed
+  539-package lock) — the existing jobs byte-identical.
+- **The session-2 execution pattern (the deadline-recovery record):**
+  the app agent hit the context deadline with COMPLETE-but-unverified
+  work (the second recorded instance; reviewed + completed by the
+  orchestrator: the Debug derive, the migration-idempotence assertion
+  correction, the compat-1-18 forward-compat feature, the expected-text
+  regeneration); the first harden-agent attempt failed confused with
+  nothing landed (the retry landed cleanly).
+- **SESSION-2 EXIT per the box:** every session-2 item landed. The N2
+  EXIT checklist for the gate: the box closed at exactly two sessions
+  (no tripwire); the consolidation + topology recorded; D44 complete
+  (the palette + corpus + the module's 22,242 exact-parity checks); the
+  app builds + tests + both smokes wired; cargo-deny green-configured;
+  the R1/R2 hardenings landed; the variant preconditions held (no
+  release.yml change, no version movement, zero clearfile/ or src/
+  paths in the N2 delta). **The N2 exit gate convenes next** (the
+  Stage-2 slip re-agenda rides with it).

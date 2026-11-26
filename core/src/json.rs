@@ -44,12 +44,26 @@
 //! - Duplicate object keys: the LAST value wins, at the FIRST position —
 //!   the observable semantics of both `jsonDecode` (Dart LinkedHashMap)
 //!   and `JSON.parse` (V8).
+//! - An object with MORE THAN [`MAX_OBJECT_MEMBERS`] members is rejected
+//!   ([`JsonError::TooManyMembers`]). Neither reference bounds this; the
+//!   duplicate-key resolution above is a linear scan per key, so a
+//!   crafted wide object parses in O(n²) (80,000 keys ≈ 26.8 s of pure
+//!   scan) — the quadratic-insertion risk the N1-exit gate registered,
+//!   closed fail-closed instead.
 
 use std::fmt::Write as _;
 
 /// Maximum parser nesting depth (arrays + objects combined). Generous
 /// against the envelope schema's ~4; bounded against crafted payloads.
 pub const MAX_NESTING_DEPTH: usize = 128;
+
+/// Maximum number of members in one JSON object. Generous against the
+/// envelope/store schemas (each has fewer than 40 members); bounded
+/// against crafted payloads — the duplicate-key scan in
+/// [`Parser::parse_object`] is O(n²) in the member count (80,000 keys ≈
+/// 26.8 s of pure scan), the quadratic-insertion risk the N1-exit gate
+/// registered, so a wider object is refused outright, not parsed slowly.
+pub const MAX_OBJECT_MEMBERS: usize = 10_000;
 
 /// Named parser/writer errors. Every error carries the byte offset of the
 /// offending construct, so callers surface named, locatable failures
@@ -72,6 +86,11 @@ pub enum JsonError {
     NumberOutOfRange { offset: usize },
     /// Nesting exceeded [`MAX_NESTING_DEPTH`].
     DepthLimitExceeded { offset: usize, depth: usize },
+    /// An object carried more than [`MAX_OBJECT_MEMBERS`] members —
+    /// `count` is the member that tripped the cap, whose key opens at
+    /// `offset` (fail-closed: the duplicate-key scan is O(n²) in the
+    /// member count — see module docs).
+    TooManyMembers { offset: usize, count: usize },
     /// The writer was handed a non-finite number (fail-closed; see module
     /// docs — the Dart writer throws on this, the TS writer's `null` is
     /// not ported).
@@ -102,6 +121,14 @@ impl std::fmt::Display for JsonError {
             }
             JsonError::DepthLimitExceeded { offset, depth } => {
                 write!(f, "nesting depth {depth} exceeds the {MAX_NESTING_DEPTH}-deep limit at offset {offset}")
+            }
+            JsonError::TooManyMembers { offset, .. } => {
+                // The limit is spelled out (10,000 == MAX_OBJECT_MEMBERS),
+                // like the writer-side errors' "65,535-byte" wording.
+                write!(
+                    f,
+                    "a JSON object exceeds the 10,000-member parser limit at offset {offset}"
+                )
             }
             JsonError::NonFiniteNumber => write!(
                 f,
@@ -458,6 +485,7 @@ impl<'a> Parser<'a> {
                     what: "non-string object key",
                 });
             }
+            let key_offset = self.pos;
             let key = self.parse_string()?;
             self.skip_ws();
             if self.peek() != Some(b':') {
@@ -473,7 +501,20 @@ impl<'a> Parser<'a> {
             // (Dart LinkedHashMap / V8 semantics).
             match pairs.iter_mut().find(|(k, _)| *k == key) {
                 Some(slot) => slot.1 = value,
-                None => pairs.push((key, value)),
+                None => {
+                    // Member-count cap (fail-closed, module docs): the scan
+                    // above is O(n²) in the member count, so the
+                    // (MAX_OBJECT_MEMBERS + 1)-th NEW member is refused
+                    // outright rather than parsed slowly (duplicate keys
+                    // never grow the member count, so they never trip it).
+                    if pairs.len() >= MAX_OBJECT_MEMBERS {
+                        return Err(JsonError::TooManyMembers {
+                            offset: key_offset,
+                            count: pairs.len() + 1,
+                        });
+                    }
+                    pairs.push((key, value));
+                }
             }
             self.skip_ws();
             match self.peek() {
@@ -833,6 +874,54 @@ mod tests {
             ok.push(']');
         }
         assert!(Json::parse(&ok).is_ok());
+    }
+
+    /// The object member-count cap (fail-closed, module docs): 10,001 NEW
+    /// members → the named error; exactly 10,000 parses. Built
+    /// programmatically — the strings are ~130 KB, no literals.
+    #[test]
+    fn parse_object_member_cap_fail_closed() {
+        let mut wide = String::from("{");
+        for i in 0..=MAX_OBJECT_MEMBERS {
+            if i > 0 {
+                wide.push(',');
+            }
+            let _ = write!(wide, "\"k{i}\":0");
+        }
+        wide.push('}');
+        // The (MAX_OBJECT_MEMBERS + 1)-th member — "k10000" — trips the
+        // cap; the offset is its key's opening quote.
+        let key_offset = wide.rfind("\"k10000\"").unwrap();
+        assert_eq!(
+            Json::parse(&wide),
+            Err(JsonError::TooManyMembers {
+                offset: key_offset,
+                count: MAX_OBJECT_MEMBERS + 1
+            })
+        );
+        // The Display names the limit and the offset, file style.
+        assert_eq!(
+            JsonError::TooManyMembers {
+                offset: 7,
+                count: MAX_OBJECT_MEMBERS + 1
+            }
+            .to_string(),
+            "a JSON object exceeds the 10,000-member parser limit at offset 7"
+        );
+    }
+
+    #[test]
+    fn parse_object_member_cap_exactly_10_000_parses() {
+        let mut wide = String::from("{");
+        for i in 0..MAX_OBJECT_MEMBERS {
+            if i > 0 {
+                wide.push(',');
+            }
+            let _ = write!(wide, "\"k{i}\":0");
+        }
+        wide.push('}');
+        let v = Json::parse(&wide).unwrap();
+        assert_eq!(v.as_obj().unwrap().len(), MAX_OBJECT_MEMBERS);
     }
 
     #[test]

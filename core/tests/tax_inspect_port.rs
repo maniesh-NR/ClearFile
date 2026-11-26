@@ -1307,3 +1307,66 @@ fn battery_central_directory_walk_cap_4096() {
     assert_eq!(insp.entries.len(), 4096);
     assert!(insp.warnings.is_empty()); // the cap stops silently (dart:248)
 }
+
+// battery extension (N2 gate condition 9): the 256 MiB cumulative
+// STORE-extraction cap. A crafted container whose central records alias
+// shared STORE bytes can drive extraction far past its own size (a
+// 385 KB file drove >1 GB) — the amplification the N1-exit gate
+// registered. 257 × 1 MiB STORE entries (all zeros) are 257 MiB > 256 MiB;
+// the walk must stop at the 256th entry with the honest note — no panic,
+// no hang, bounded entries. The test's own allocation is bounded and
+// documented: ONE shared 1 MiB zero buffer (every entry references the
+// same slice) + the ~257 MiB container make_zip builds from it — no
+// per-entry copies.
+#[test]
+fn battery_store_extraction_cap_256_mib_stops_the_walk() {
+    let mib = 1024 * 1024;
+    let zeros = vec![0u8; mib];
+    let entries: Vec<(&str, &[u8])> = (0..257)
+        .map(|_| ("e", zeros.as_slice()))
+        .collect();
+    let bytes = make_zip(&entries).unwrap(); // ~257 MiB container
+
+    let insp = analyze_tax_file(&bytes);
+    assert!(insp.is_zip);
+    // Bounded: the walk stopped at 256 entries (256 MiB extracted), far
+    // short of all 257 — and only what WAS extracted is listed.
+    assert!(insp.entries.len() < 257);
+    assert_eq!(insp.entries.len(), 256);
+    // The honest note, not an error: the exact byte count, module style.
+    assert_eq!(insp.warnings.len(), 1);
+    assert_eq!(
+        insp.warnings[0],
+        format!(
+            "Extraction stopped after {} bytes of extracted entries (the analysis limit).",
+            256 * mib
+        )
+    );
+    // Every listed entry was fully extracted (1 MiB of zeros each).
+    assert!(insp
+        .entries
+        .iter()
+        .all(|e| e.data.as_ref().map_or(false, |d| d.len() == mib)));
+}
+
+// battery extension (N2 gate condition 9): the just-under-cap twin — a
+// container whose cumulative STORE extraction stays under the 256 MiB cap
+// (2 × 100 MiB = 200 MiB, one shared 100 MiB buffer, freed before the
+// analysis) extracts fully, with no note.
+#[test]
+fn battery_store_extraction_just_under_cap_extracts_fully() {
+    let bytes = {
+        let chunk = vec![0u8; 100 * 1024 * 1024];
+        make_zip(&[("a.bin", &chunk), ("b.bin", &chunk)]).unwrap()
+    }; // the 100 MiB buffer is dropped here; only the container stays
+
+    let insp = analyze_tax_file(&bytes);
+    assert!(insp.is_zip);
+    assert_eq!(insp.entries.len(), 2);
+    assert!(insp
+        .entries
+        .iter()
+        .all(|e| e.data.as_ref().map_or(false, |d| d.len() == 100 * 1024 * 1024)));
+    assert!(insp.warnings.is_empty());
+    assert!(insp.summary.starts_with("ZIP container detected"));
+}

@@ -18,6 +18,9 @@
 //!   the **central directory** (name, method, sizes) — never a linear scan.
 //! - Extracts **STORE-method entries only**; DEFLATE entries are listed but
 //!   not extracted (honest, dependency-free reading; no inflate is bundled).
+//!   Cumulative STORE extraction is capped (256 MiB, `analysis limit`):
+//!   a crafted container that would extract past the cap stops the walk
+//!   with an honest note — the analysis path never panics, never errors.
 //! - Recognizes ClearFile's own open exchange container (a STORE-extracted
 //!   `clearfile.json` entry) and **carries its payload text out** (below).
 //! - Recognizes the *shape* of the modern Intuit container and reports
@@ -145,6 +148,17 @@ const MAX_EOCD_SCAN_WINDOW: u64 = 66_000;
 /// Central-directory walk cap (untrusted input) — `maxEntries = 4096`
 /// (tax_inspect.dart:246 / taxfile.ts:206).
 const MAX_ZIP_ENTRIES: usize = 4096;
+
+/// Cumulative STORE-extraction cap (untrusted input): 256 MiB across the
+/// whole walk. Honest exchange containers are KB-scale (the ClearFile
+/// exchange container is two STORE entries — a JSON envelope plus a short
+/// README), so the cap is unreachable for real files; a crafted container
+/// whose central records alias shared STORE bytes can otherwise drive
+/// extraction far past the file's own size (a 385 KB crafted file, >1 GB
+/// extracted) — the amplification the N1-exit gate registered. Exceeding
+/// it STOPS the walk with an honest note (the analysis path never errors,
+/// never panics); the writer-side export path is untouched.
+const MAX_STORED_EXTRACTION_BYTES: u64 = 256 * 1024 * 1024;
 
 /// The ClearFile-exchange-container summary, verbatim
 /// (tax_inspect.dart:158-160 == taxfile.ts:328; the spec §2 quotes it as
@@ -547,13 +561,17 @@ fn read_central_record(bytes: &[u8], ptr: u64) -> Option<CentralRecord> {
 
 /// Walk the central directory (dart:226-295 `_readZipDirectory` ==
 /// taxfile.ts:181-249 `readZip`): EOCD scan → up to `count` records under
-/// the [`MAX_ZIP_ENTRIES`] cap → STORE extraction. Every problem lands in
+/// the [`MAX_ZIP_ENTRIES`] cap → STORE extraction under the
+/// [`MAX_STORED_EXTRACTION_BYTES`] cumulative cap. Every problem lands in
 /// `notes` as an honest user-readable message; nothing panics. All
 /// offset arithmetic runs in u64 (the fields are u32 but their SUMS can
 /// exceed 32 bits — the crafted battery forges exactly that).
 fn read_zip_directory(bytes: &[u8], notes: &mut Vec<String>) -> Vec<ZipDirEntry> {
     let mut out: Vec<ZipDirEntry> = Vec::new();
     let len = bytes.len() as u64;
+    // Cumulative STORE-extracted bytes (u64: the SUM of many u32-size
+    // entries can exceed 32 bits — same u64 posture as the offsets).
+    let mut extracted: u64 = 0;
 
     let eocd = match find_eocd(bytes) {
         Some(e) => e as u64,
@@ -616,6 +634,20 @@ fn read_zip_directory(bytes: &[u8], notes: &mut Vec<String>) -> Vec<ZipDirEntry>
                     let data_start = local + 30 + l_name_len as u64 + l_extra_len as u64;
                     let data_end = data_start + rec.compressed_size as u64;
                     if data_end <= len {
+                        // Cumulative STORE-extraction cap (untrusted input,
+                        // [`MAX_STORED_EXTRACTION_BYTES`]): stop the WALK
+                        // before extracting an entry that would exceed it —
+                        // honest note, no panic, no error (the analysis
+                        // path's contract); the entry that tripped the cap
+                        // is not extracted, so it is not listed either.
+                        let size = data_end - data_start;
+                        if extracted + size > MAX_STORED_EXTRACTION_BYTES {
+                            notes.push(format!(
+                                "Extraction stopped after {extracted} bytes of extracted entries (the analysis limit)."
+                            ));
+                            break;
+                        }
+                        extracted += size;
                         stored = Some(bytes[data_start as usize..data_end as usize].to_vec());
                     } else {
                         notes.push(format!(
