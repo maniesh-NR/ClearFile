@@ -2342,3 +2342,52 @@ D41/D42 residues ride their lanes.**
   CI-ONLY (the measured JRE-only Java + the absent SDK/NDK) — the
   first live CI run's evidence is this session's closing verification
   (the run number recorded at the close).
+
+## 2026-11-27 (N3 session 2 CLOSED) · The Android lane's first live-green run: hygiene run 45948447173 GREEN on ae9e078
+
+- **Hygiene run 45948447173 GREEN on ae9e078 — ALL SIX JOBS** including
+  the new Android lane end-to-end: the rustc guard + the rustup target,
+  the NDK identity guard (the pinned 29.0.14206865), the JDK 21 guard,
+  the Gradle 9.9-series guard, the committed-header freshness check,
+  the core-ffi boundary battery (10/10, host), the host cdylib
+  (host-jni), the aarch64-linux-android cross-build (the NDK clang
+  linker), **assembleDebug** (the .so packaged into the installable
+  debug APK — the unzip proof), **the JVM unit tests through the REAL
+  Java_\* seam** (the golden-fixture parity, the error surfacing, the
+  palette seam — System.load of the host cdylib + the mangled-symbol
+  binding), and **cargo-deny over core-ffi's 74-package lock** (the
+  MPL-2.0 join + the jni crate tree passed the closed allow-list — the
+  first live green cargo-deny run over the FFI crate's lock).
+- **The eleven-round honest record (the N2 four-round precedent
+  extended):** (1) AGP 9 refuses the kotlin.android plugin (built-in
+  Kotlin); (2) AGP 9 refuses Provider instances in the SourceSet API;
+  (3) the exact Gradle pin caught the fleet's mid-rollout state (9.9.1
+  and 9.9.2 both live — two consecutive runs measured different patch
+  versions; the guard failed closed exactly as designed) → the 9.9
+  SERIES guard; (4) the Xvfb race in the LINUX job's window smoke
+  (exit 101, the same code green on three prior runs) → the bounded
+  display-socket wait; (5) the python-string-literal line-continuation
+  class caught in the workflow file itself (the trailing
+  backslash-newlines of the original heredoc were eaten by python
+  string literals — the joined lines still ran valid shell by luck;
+  restored + the class recorded); (6) com.android.library is
+  incompatible with kotlin("multiplatform") since AGP 9 → the KMP
+  library plugin + androidLibrary; (7) the built-in-Kotlin
+  compileAndroidMain did not see commonMain's sources → the model moved
+  beside its only consumer in androidMain; (8) **the real root cause of
+  6–7: the model file had NO package declaration** (my own bug — the
+  root package vs dev.clearfile.ffi; one line, found after the two
+  investigation rounds); (9) MainActivity's file-name import + the
+  ByteArray-to-model call sites (my bugs, fixed); (10) the JVM test's
+  fixture path (the test JVM's working dir is the module dir — three
+  levels up, not two); (11) the test's containment checks asserted the
+  fixture's rounded pins (2789) where the boundary emits the raw engine
+  value (2788.5; the fixture's own tolerance is 0.505 — reproduced
+  locally through clearfile_compute before fixing).
+- **The box discipline:** session 2 closed with every lane green —
+  no red-close needed (the absorption rule never fired). The N3
+  execution box closes at exactly two sessions (session 1: the
+  hardenings + the core-ffi crate; session 2: the app + the CI lane).
+  **The N3 EXIT gate convenes next** (the Stage-2 slip re-agenda's
+  SEVENTH surfacing rides with it — the enumeration is pinned in the
+  gate record).
