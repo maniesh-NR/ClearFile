@@ -70,8 +70,8 @@ class NativeJniHostTest {
     @Test
     fun goldenFixtureParityThroughTheRealJniSeam() {
         // The shared fixture family, by path (the same corpus the Dart/TS/
-        // Rust runners consume).
-        val fixture = java.io.File("../../fixtures/tax/01-tax-table-single-25225.json")
+        // Rust runners consume; the test JVM runs from the module dir
+        val fixture = java.io.File("../../../fixtures/tax/01-tax-table-single-25225.json")
             .readText()
         val input = extractObject(fixture, "input")
         val output = String(Native.compute(input.toByteArray(Charsets.UTF_8)))
