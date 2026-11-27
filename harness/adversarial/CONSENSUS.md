@@ -2207,3 +2207,112 @@ preconditions byte-verified; the close riders discharged at the close.
 The epilogue's next gate is N6's — the TERMINAL gate: the wasm32
 target question, the TS retirement per ADR-016, the parity suites'
 survival rule, the epilogue's OWN freeze declaration.)
+
+## 2026-11-27 · The N6 delta-scoped gate (the web via WASM — the TERMINAL gate)
+
+**Context:** N5 CLOSED (exit PASSED); the epilogue's last lane. The
+proposal: the Rust core serves the web — wasm32-unknown-unknown (not
+wasip1), core-ffi compiled to wasm (the SAME flat C ABI, cfg-clean for
+wasm: the JNI shim android-gated, cbindgen build-time-only), a
+hand-rolled zero-npm-dep JS loader/adapter, the TS ENGINE + the TS
+codecs retiring as frozen transition artifacts (ADR-016's conversion
+day), the parity + bridge suites transferring to the wasm adapter, the
+CI wasm lane, the terminal freeze declaration, the TWELFTH slip
+surfacing with the parking posture. Four reviewers in parallel
+isolation with their own probes; reports at
+`harness/adversarial/reports/2026-11-27-n6-*.md`.
+
+| Reviewer | Verdict | BLOCK? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (8) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (9) | no |
+| ADV-ENG | PROCEED-WITH-CONDITIONS (8) | no |
+| ADV-PROD | PROCEED-WITH-CONDITIONS (8) | no |
+
+**The gate's headline rulings (the full text in the reports):**
+(1) **Shape A — the full serving — ruled by ALL FOUR reviewers** (the
+codecs are in the settled core boundary; Shape B would leave a second
+live untrusted-input parser in the shipped artifact and re-create the
+rejected D32 divergence shape; Shape B is lawful only as an explicitly
+recorded owner election); (2) **the alloc/free seam is LENGTH-PAIRED**
+(SEC-1/ENG-1, BOTH probe-verified: a leaked Vec freed by clearfile_free
+is unsound — CString::from_raw derives the dealloc from strlen, and
+interior-NUL payloads — every .tax container — trap the allocator; the
+alloc/dealloc pair carries the recorded length); (3) **the container
+export is the length-out binary channel** (binary never rides the
+NUL-terminated CString returns — caller-allocated output with the
+length out); (4) **catch_unwind does NOT transfer to wasm32** (a Rust
+panic aborts → a WebAssembly RuntimeError trap: the adapter owns the
+try/catch mapping to the guard's wording family + the poisoned-module
+posture; the native-only proof record); (5) the adapter disciplines
+(BigInt for the i64 year; lengths < 2^32; no cached views across
+calls; the node/browser dual init); (6) **ENG's local verification
+probes ran the whole approach before any CI round**: the pinned
+toolchain + the wasm32-std component fetched, the .wasm built
+(~300KB), and the 17-fixture parity run green in node — the local
+lane is real (the CI-primary posture softened to CI-verified + locally
+provable); (7) the LICENSES-manifest trigger lit at the NEXT tag (the
+palette + the statically-linked Rust std — the /MT precedent — + the
+carried shadcn set); (8) release.yml stays BYTE-FROZEN with the
+nextjs-web job recorded STALE-BY-DESIGN (PROD's ruling over LEGAL's
+narrow-amendment alternative — nothing ships at N6; any tag before
+the v2.0.0-GA rework is an owner decision that first resolves the
+web-asset question; LEGAL's narrow shape is the pre-ruled rework
+form); (9) the first-conveyance rows + the D14 root-dotfile class +
+the README honest-surface rewrite; (10) the manifest row 2 (the
+pinned wasm32-std component) + the stray-tarball discharge (the
+parallel-lane probe artifact — absent from the tree at the close).
+
+**The orchestrator reconciliations recorded at the execution:** (a)
+the exports are PLAIN (un-gated) on every target — SEC's
+wasm32-cfg-gating intent (a smaller native header) yields to the
+battery's every-target coverage (the tests prove the alloc/dealloc +
+container exports on every lane; the header grows four declarations
+through the config-emitted flow; LEGAL-6's "exactly one declaration"
+was superseded by the SEC/ENG honest-set finding — the reconciled
+set is FOUR); (b) `clearfile_params_json` — the orchestrator's
+addition beyond the gate's ruled set (the UI's live bracket display
+requires the table; the table's retirement requires the core to serve
+it; the display walk stays adapter-side glue — zero parameter logic
+platform-side, the recorded middle); (c) the params JSON's field
+names/keys mirror the TS interface exactly (the TS `upTo: number |
+null` ↔ the core's infinite terminal rung serialized as null); (d)
+the bridge suite's ClearFile-container fixture now builds via the
+adapter's own exportTaxContainer (the app's own writer — the same
+class as the retired makeZip usage) and the suite carries its own
+STORE-ZIP builder for the synthetic non-ClearFile shapes (test-side
+fixture tooling, the ENG-1 crafted-file template class); (e) the
+legacy-flat lift through the core is WARNING-FREE (the core's
+documented divergence 5 — web-reader-only strings not ported; the
+transferred assertion follows the core's contract, recorded in the
+suite); (f) the instantiate bufferSource overload resolves
+{module, instance} (the runtime truth over some TS lib typings — the
+adapter handles both shapes).
+
+**The Stage-2 slip re-agenda — the TWELFTH surfacing (the TERMINAL
+gate's mandatory item):** the enumeration — 1 the N1-exit, 2 the
+N2-entry, 3 the N2-exit convening, 4 the N2-exit close, 5 the
+2026-11-27 restatement, 6 the N3 entry, 7 the N3 exit, 8 the N4
+entry, 9 the N4 exit, 10 the N5 entry, 11 the N5 exit, 12 THIS gate.
+The three owner options: (a) **fund a T3 session** (the MSI-record
+keystream decompile chase at payload offset 0x24000 + tax-modern.md,
+debt D42), (b) **supersede the RE-protocol namespace rule**, (c)
+**the default re-agenda**. No ruling received across ELEVEN prior
+surfacings; (c) continues. **THE TERMINAL-GATE PARKING POSTURE:** this
+is the epilogue's LAST gate — the slip cannot ride past it unexamined:
+if still unruled at the close, the record states explicitly — the
+Stage-2 exit stays SLIPPED; the MSI-record keystream chase stands as
+recorded debt D42 (disposition "T3 session 2"); D30 (the owner-side
+hardening items) stands; these leave the funded scope with the
+terminal freeze and remain owner decisions — never a silent drop.
+
+**Gate outcome:**
+
+**N6: ENTERED**
+(2026-11-27 — 4 × PROCEED-WITH-CONDITIONS, unanimous, no BLOCK; Shape
+A ruled by all four; the length-paired alloc/dealloc + the
+length-out container export + the trap mapping ruled; ENG's local
+verification proving the whole approach before any CI round; the
+ONE-session box under the owner's standing single-session directive;
+the TWELFTH slip surfacing with the explicit TERMINAL-gate parking
+posture.)

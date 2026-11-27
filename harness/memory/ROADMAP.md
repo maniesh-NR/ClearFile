@@ -777,9 +777,28 @@ v1's stages still close first.
   N5 exit).
 - **N6 — web via WASM + terminal freeze**: the Rust core serves the
   web; the TS engine retires per ADR-016; the epilogue program declares
-  its own freeze (v2.0.0 territory per the settlement's rule).
-  **Gate status: FUNDED 2026-11-26 (owner, in-conversation; the
-  delta-scoped gate convenes at its turn).**
+  its own freeze (v2.0.0 territory per the settlement's rule). **Gate
+  status: ENTERED 2026-11-27** (the TERMINAL gate, 4 × PWC unanimous —
+  SEC 8 / LEGAL 9 / ENG 8 / PROD 8, no BLOCK; Shape A — the full
+  serving — ruled by ALL FOUR; the length-paired alloc/dealloc + the
+  length-out container export + the trap mapping + the params service
+  ruled; ENG's local verification proving the whole approach before any
+  CI round; reports at `harness/adversarial/reports/2026-11-27-n6-*.md`).
+  **The execution record:** the ONE-session box closed on the FIRST
+  LIVE-GREEN ROUND — run **45991816001** on f295a27, all EIGHT jobs (the
+  suites job's wasm32 build + the import-empty guard — the .wasm with
+  ZERO imports, the strongest no-network proof — + the transferred
+  parity suite 17/17 + the transferred bridge 11/11 + the AI suites
+  5/5 + 4/4; the native lanes re-proving the expanded battery 12/12 +
+  the regenerated header). The exports: clearfile_alloc/dealloc
+  (LENGTH-PAIRED), clearfile_export_tax_container (the length-out
+  binary channel), clearfile_params_json (the table's one true source).
+  The retirement: engine.ts + txf.ts + taxfile.ts + cfr.ts carry the
+  dated terminal banner (byte-frozen transition artifacts, out of the
+  import graph, still tsc-checked); config.ts's TABLE removed (the
+  labels/formatters live on); the adapter src/lib/wasm/core.ts serves
+  compute + every format; page.tsx's boot gate. The exit gate + the
+  terminal freeze declaration follow at the close.
 
 The per-OS order after N1 (Android before Windows, macOS last) is
 re-settable at the epilogue's own gates without reopening the ADR-017
