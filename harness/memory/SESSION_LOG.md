@@ -2457,3 +2457,36 @@ D41/D42 residues ride their lanes.**
 - **The window mode is the named non-verification** (the hosted runner
   has no interactive desktop): the headless mode is the verifiable
   surface — the working-app bar per the gate's ruling.
+
+## 2026-11-27 (N4 session 2 CLOSED) · The Windows lane's first live-green run
+
+- **Hygiene run GREEN on 8b3cb95 — ALL SEVEN JOBS** including the
+  Windows lane end-to-end: the rustc + host-triple guards (the msvc
+  lane enforced mechanically), the release cdylib + the MSVC import
+  library asserted, the boundary battery ON WINDOWS (the real ABI
+  lane), the MSVC compile/link via the vswhere→vcvars discovery, the
+  PE import-table network guard on both the exe and the .dll, and the
+  headless smoke — the byte-exact text family proven across platforms
+  (the Linux app's committed expected text). The android job also
+  green WITH the rider's supersession-discharge assertions (the
+  kotlin-stdlib 2.4.21 as the one recorded runtime artifact + the
+  junit/hamcrest test classpath).
+- **The five-round honest record:** (1) my DrawTextW brush bug (the
+  API takes ID2D1Brush*, never a color) + the rider assertion's
+  over-strictness (the kotlin-stdlib rides the runtime classpath via
+  :shared's KMP build — the assertion now pins it as the one recorded
+  artifact); (2) the cmd errorlevel gotcha (findstr's no-match — the
+  GOOD case — leaves errorlevel 1 and echo does not reset it; the
+  explicit `exit /b 0` is load-bearing) + the `project ':app'` root in
+  the test-classpath tree; (3) the EOL diagnosis round (the one-sided
+  normalization still differed); (4) **the real root cause: git's
+  core.autocrlf on the Windows runner converts the EXPECTED file's LF
+  to CRLF at checkout** — the smoke EOL-normalizes both sides before
+  the byte-exact content diff; (5) green.
+- **The box discipline:** two sessions (session 1: the guarded header
+  + the C++ app + the guard joins; session 2: the CI lane + the rounds
+  + the records). The window mode is the named non-verification (the
+  hosted runner has no interactive desktop); the headless mode is the
+  verifiable surface — proven green.
+- **The N4 EXIT gate convenes next** (the slip's NINTH surfacing rides
+  with it).
