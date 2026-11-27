@@ -2518,3 +2518,27 @@ D41/D42 residues ride their lanes.**
   non-verification clause + the run number; the main.cpp 0.1.0
   source-side marker; the checker updated (the epilogue outcome count
   6→7).
+
+## 2026-11-27 (session close) · The session's honest completion record
+
+- **This session completed (all gates + executions + full CI-green
+  evidence):** the N2-exit riding list discharge; **N3 COMPLETE** (the
+  hardenings + the core-ffi crate + the Android app + the CI android
+  lane — the exit gate unanimous, closed on run 45948447173 after the
+  eleven-round CI-fix record); **N4 COMPLETE** (the extern-"C" guarded
+  header + the C++ Win32/D2D app + the CI windows lane — the exit gate
+  unanimous, closed on run 45957061389 after the five-round CI-fix
+  record; SEC's gradle dependencyLocking rider discharged by the
+  accepted supersession shape + re-proven green).
+- **The standing positions:** the per-OS order holds (N5 → N6); the
+  slip's NINTH surfacing is pinned (the TENTH rides with N5's gate);
+  D30 (the owner-side items) + D42 (the T3 chase) stand; the
+  epilogue's remaining stages (N5 macOS, N6 web-WASM + the freeze)
+  are FUNDED with their pre-positioned gate agendas in STATE's
+  "Immediately next" — each enters only behind its own gate (the
+  recorded rule: funding gates the program, not any stage).
+- **The session's honest bound:** the remaining budget cannot carry
+  N5 (the Swift+AppKit app + the macos-latest CI lane + the gates) or
+  N6 (the WASM web + the TS retirement per ADR-016 + the epilogue's
+  freeze declaration) at the required gate discipline — the next
+  session resumes at N5's delta-scoped gate, exactly as STATE records.

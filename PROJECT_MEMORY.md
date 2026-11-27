@@ -365,18 +365,23 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
 ## Recent Progress & Git Activity
 
 ```diff
-### Commit: 8478a09 - backup(sandbox): The N2 exit gate's CI pending item DISCHARGED - hygiene run #44 GREEN on a592b06, all five jobs: gitleaks, the Linux app (the unit tests 5/5 + the headless byte-diff smoke + the window smoke under Xvfb + winit-software + the first live cargo-deny green over the committed lock), the suites, the RE tooling, the harness memory check. The four-round fix record: the build-time font stack moved before the first cargo invocation, the runner's libxkbcommon-x11-0 package name, the BSL-1.0 allow-list join (permissive + GPL-compatible, the actually-encountered rule, the comment naming the encounter), and the wildcard disposition for the clearfile-core path dep (the recorded ADR-017 Linux seam). The gate stays open ONLY on the ENG report (the subagent-deadline lane) - the re-convening is the next session's first item. 0 failures @ 2026-11-26T19:0xZ @ 2026-11-26T18:41:32Z (Z User, 2026-11-26)
- PROJECT_MEMORY.md                | 35 +++++++++--------------------------
- harness/adversarial/CONSENSUS.md | 13 ++++++++-----
- harness/memory/SESSION_LOG.md    | 24 ++++++++++++++++++++++++
- 3 files changed, 41 insertions(+), 31 deletions(-)
+### Commit: 92bd77b - backup(sandbox): The N4 EXIT GATE CLOSED - N4: COMPLETE (exit PASSED). Four reviewers, parallel isolation: SEC EXIT-PASS (0) / LEGAL PROCEED (0) / ENG PASS (0) / PROD EXIT-PASS (3 one-line riders discharged at the close) - no BLOCK. The record: two sessions exactly (the config-emitted extern-C header guards + the C++ app in session 1; the CI windows lane in session 2 closing on the first live-green run 45957061389 after the five-round CI-fix record); the first C++ consumption of the committed header proven natively (the boundary battery ON WINDOWS, the MSVC build, the PE import-table network guard, the byte-parity text family across platforms); the mingw rejection recorded; the variant preconditions byte-verified; the SEC rider's supersession discharge landed + re-proven green; the registered notes (the /MT CRT default, the EOL hardening as an N5 pre-check, the run-ID convention) in the exit record. The slip's NINTH surfacing pinned - the TENTTH rides with N5's gate. ROADMAP/STATE/README/checker (N-outcomes 6->7) closed out. Next: N5's delta-scoped gate (macOS - the macos-latest live-verification list, the bar ruling, the SPM consumption of the same committed header). 0 failures @ 2026-11-27 @ 2026-11-27T07:32:27Z (Z User, 2026-11-27)
+ README.md                        |  2 +-
+ apps/windows/main.cpp            |  4 ++++
+ harness/adversarial/CONSENSUS.md | 50 +++++++++++++++++++++++++++++++++++++++
+ harness/memory/ROADMAP.md        | 24 +++++++++++++++++--
+ harness/memory/SESSION_LOG.md    | 28 ++++++++++++++++++++++
+ harness/memory/STATE.md          | 51 ++++++++++++++++++++--------------------
+ scripts/harness_check.sh         |  6 ++---
+ 7 files changed, 134 insertions(+), 31 deletions(-)
 
-### Commit: a592b06 - backup(sandbox): The CI cargo-deny round 5: the wildcard ban flagged the app's ONE version-less dependency - clearfile-core, the path dependency on the workspace sibling, the recorded ADR-017 Linux seam ('Linux links the crate directly, no FFI'). The honest disposition: wildcards = warn with the comment naming the seam + the ban's purpose (unaudited * registry versions - every registry dep carries an explicit bound). The green run is the gate's pending item. 0 failures @ 2026-11-26T18:6xZ @ 2026-11-26T18:36:00Z (Z User, 2026-11-26)
- apps/linux/deny.toml | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+### Commit: 9e6cf46 - backup(sandbox): N4 session 2 CLOSED - the Windows lane's FIRST LIVE-GREEN RUN on 8b3cb95, ALL SEVEN JOBS: the host-triple guard (the msvc lane enforced), the release cdylib + the MSVC import library, the boundary battery ON WINDOWS, the MSVC build via vswhere->vcvars, the PE import-table network guard (the no-network claim's mechanical proof), and the headless smoke - the byte-exact text family across platforms (EOL-normalized both sides after the autocrlf root-cause round). The android job green WITH the rider's supersession assertions (the kotlin-stdlib 2.4.21 as the one recorded runtime artifact). The five-round honest record in SESSION_LOG (my DrawTextW brush bug, the over-strict rider assertion, the cmd errorlevel gotcha, the one-sided EOL diagnosis, the autocrlf root cause). Two sessions exactly; the window mode is the named non-verification. Next: the N4 EXIT gate (the slip's NINTH surfacing rides with it). 0 failures @ 2026-11-27 @ 2026-11-27T07:21:57Z (Z User, 2026-11-27)
+ README.md                     |  1 +
+ harness/memory/SESSION_LOG.md | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 34 insertions(+)
 
-### Commit: d43034b - backup(sandbox): The CI font-stack fix, round 4: the first cargo-deny run over the committed lock rejected the tree's BSL-1.0 crates (the Boost Software License - permissive, GPL-3.0-compatible) - the closed allow-list rule is allowed ids = actually-encountered + reviewed, so BSL-1.0 joins with the comment naming the encounter (hygiene run #42, the first live cargo-deny run). The unit tests + the headless smoke + the window smoke ALL PASSED on run #42 (the font stack + the libxkbcommon-x11-0 name fixed them). The green run is the gate's pending item. 0 failures @ 2026-11-26T18:5xZ @ 2026-11-26T18:30:18Z (Z User, 2026-11-26)
- apps/linux/deny.toml | 5 +++++
- 1 file changed, 5 insertions(+)
+### Commit: 8b3cb95 - backup(sandbox): The CI windows round 5 (run at ed51621): the round-4 diagnosis was half-right - the one-sided EOL normalization still differed on every line with identical content. The REAL root cause: git's core.autocrlf on the Windows runner converts the EXPECTED file's LF to CRLF at CHECKOUT (the runner-side working tree), while the exe's output (after the first normalization) is LF. The smoke now EOL-normalizes BOTH sides (tr -d \\r on the expected + the output) before the byte-exact content diff - the canonical text family stays the assertion, EOL-independent. 0 failures @ 2026-11-27 @ 2026-11-27T07:14:07Z (Z User, 2026-11-27)
+ .github/workflows/hygiene.yml | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 ```
 
