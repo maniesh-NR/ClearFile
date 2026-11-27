@@ -231,7 +231,13 @@ func textSummary(_ loaded: Loaded) -> String {
 
 let kMaxInputFileBytes: UInt64 = 512 * 1024 * 1024
 
-func loadAndCompute(_ path: String) -> Result<Loaded, String> {
+/// The pipeline's failure (a named user-readable message) — Result's
+/// failure type must conform to Error, so the message rides a wrapper.
+struct LoadError: Error {
+    let message: String
+}
+
+func loadAndCompute(_ path: String) -> Result<Loaded, LoadError> {
     // The SEC-R2 hardening platform-side: the shared 512 MiB core bound
     // (2x the 256 MiB STORE cap) refused BEFORE the read, by metadata
     // alone — the same named message family every platform surfaces.
@@ -239,20 +245,20 @@ func loadAndCompute(_ path: String) -> Result<Loaded, String> {
     do {
         let attributes = try FileManager.default.attributesOfItem(atPath: path)
         guard let sizeNumber = attributes[.size] as? NSNumber else {
-            return .failure("The file could not be read: the platform reports no size.")
+            return .failure(LoadError(message: "The file could not be read: the platform reports no size."))
         }
         size = sizeNumber.uint64Value
     } catch {
-        return .failure("The file could not be read: the platform reports the item is unavailable.")
+        return .failure(LoadError(message: "The file could not be read: the platform reports the item is unavailable."))
     }
     if size > kMaxInputFileBytes {
-        return .failure("The file is too large to open — the limit is 512 MiB.")
+        return .failure(LoadError(message: "The file is too large to open — the limit is 512 MiB."))
     }
     let bytes: Data
     do {
         bytes = try Data(contentsOf: URL(fileURLWithPath: path))
     } catch {
-        return .failure("The file could not be read: the platform reports the item is unreadable.")
+        return .failure(LoadError(message: "The file could not be read: the platform reports the item is unreadable."))
     }
     // The owned payload with the ownership discipline inline (the input
     // borrow must stay inside the withUnsafeBytes scope): NULL is the
@@ -263,14 +269,14 @@ func loadAndCompute(_ path: String) -> Result<Loaded, String> {
         guard let owned = bytes.withUnsafeBytes({ (raw: UnsafeRawBufferPointer) -> UnsafeMutablePointer<CChar>? in
             clearfile_load_and_compute(raw.bindMemory(to: CChar.self).baseAddress, UInt(raw.count))
         }) else {
-            return .failure(lastErrorText())
+            return .failure(LoadError(message: lastErrorText()))
         }
         defer { clearfile_free(owned) }
         payload = String(cString: owned)
     }
     guard let payloadData = payload.data(using: .utf8),
           let object = (try? JSONSerialization.jsonObject(with: payloadData)) as? [String: Any] else {
-        return .failure("The file could not be opened as a ClearFile return.")
+        return .failure(LoadError(message: "The file could not be opened as a ClearFile return."))
     }
     var loaded = Loaded()
     loaded.path = path
@@ -350,7 +356,7 @@ func runWindow(_ path: String?) {
     if let filePath = path {
         switch loadAndCompute(filePath) {
         case .success(let value): loaded = value
-        case .failure(let message): loadError = message
+        case .failure(let error): loadError = error.message
         }
     }
 
@@ -396,8 +402,8 @@ func runWindow(_ path: String?) {
             switch loadAndCompute(url.path) {
             case .success(let value):
                 view.text = textSummary(value)
-            case .failure(let message):
-                view.text = "ClearFile (prototype) — TY2025 federal summary\n\nThe file could not be opened as a ClearFile return.\n\n" + message
+            case .failure(let error):
+                view.text = "ClearFile (prototype) — TY2025 federal summary\n\nThe file could not be opened as a ClearFile return.\n\n" + error.message
             }
             view.needsDisplay = true
         }
@@ -437,8 +443,8 @@ if headless {
         usageError("--headless needs a file path")
     }
     switch loadAndCompute(filePath) {
-    case .failure(let message):
-        writeErr(message + "\n")
+    case .failure(let error):
+        writeErr(error.message + "\n")
         exit(1)
     case .success(let loaded):
         // The byte-exact UTF-8 + LF stdout (the CI smoke diffs the full
