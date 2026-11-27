@@ -76,17 +76,21 @@ class NativeJniHostTest {
         val input = extractObject(fixture, "input")
         val output = String(Native.compute(input.toByteArray(Charsets.UTF_8)))
 
-        // Fixture 01's own expected values (the same numbers the shared
-        // corpus pins): the boundary's result JSON carries them exactly.
+        // Fixture 01's own expected values — the same numbers the shared
+        // corpus pins: the integral fields exactly; the tax fields in the
+        // engine's RAW emission (the fixture pins 2789 within its 0.505
+        // tolerance — the comparator's raw-comparison rule — while the
+        // boundary emits the raw engine value 2788.5, as the Rust-side
+        // boundary battery asserts field-by-field).
         assertTrue(output.contains("\"totalIncome\":40975"))
         assertTrue(output.contains("\"agi\":40975"))
         assertTrue(output.contains("\"standardDeductionTotal\":15750"))
         assertTrue(output.contains("\"taxableIncome\":25225"))
-        assertTrue(output.contains("\"ordinaryTax\":2789"))
+        assertTrue(output.contains("\"ordinaryTax\":2788.5"))
         assertTrue(output.contains("\"preferentialTax\":0"))
         assertTrue(output.contains("\"niit\":0"))
-        assertTrue(output.contains("\"totalTax\":2789"))
-        assertTrue(output.contains("\"amountOwed\":2789"))
+        assertTrue(output.contains("\"totalTax\":2788.5"))
+        assertTrue(output.contains("\"amountOwed\":2788.5"))
         assertTrue(output.contains("\"deductionMethodUsed\":\"standard\""))
     }
 
