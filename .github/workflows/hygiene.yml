@@ -377,7 +377,7 @@ jobs:
           fi
           TESTCP="$(gradle --no-daemon -q :app:dependencies --configuration debugUnitTestRuntimeClasspath)"
           echo "$TESTCP" | grep -q 'junit:junit:4.13.2' || { echo "dependency assertion: FAIL — junit 4.13.2 missing from the test classpath" >&2; exit 1; }
-          echo "$TESTCP" | grep -E '^[[:space:]]*[+\\]--- ' | grep -v ':shared' | grep -v 'junit:junit:4.13.2' | grep -v 'org.hamcrest:hamcrest-core:1.3' | grep -v 'org.jetbrains.kotlin:kotlin-stdlib:2.4.21' > /tmp/ext-test-deps.txt || true
+          echo "$TESTCP" | grep -E '^[[:space:]]*[+\\]--- ' | grep -v "project ':app'" | grep -v "project ':shared'" | grep -v 'junit:junit:4.13.2' | grep -v 'org.hamcrest:hamcrest-core:1.3' | grep -v 'org.jetbrains.kotlin:kotlin-stdlib:2.4.21' > /tmp/ext-test-deps.txt || true
           if [ -s /tmp/ext-test-deps.txt ]; then
             echo "dependency assertion: FAIL — unexpected external test artifacts:" >&2
             cat /tmp/ext-test-deps.txt >&2
@@ -460,6 +460,9 @@ jobs:
           dumpbin /DEPENDENTS apps\windows\build\clearfile-windows.exe | findstr /i "ws2_32 wininet winhttp urlmon" && exit /b 1
           dumpbin /DEPENDENTS core-ffi\target\release\clearfile_core_ffi.dll | findstr /i "ws2_32 wininet winhttp urlmon" && exit /b 1
           echo import guard: ok — no network imports in the exe or the dll
+          rem findstr's no-match (the good case) leaves errorlevel 1 and
+          rem echo does not reset it — the explicit success exit is load-bearing.
+          exit /b 0
       # The headless smoke (the Linux app's canonical expected text — one
       # text family, two platforms): the .dll rides beside the exe.
       - name: the headless smoke (diff against the Linux app's expected text)
