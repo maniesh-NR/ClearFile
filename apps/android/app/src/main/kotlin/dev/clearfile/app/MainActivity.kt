@@ -27,7 +27,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import dev.clearfile.ffi.LoadedReturn
-import dev.clearfile.ffi.NativeAndroid
+import dev.clearfile.ffi.ensureLoaded
 import dev.clearfile.ffi.Roles
 import dev.clearfile.ffi.loadAndDisplay
 import dev.clearfile.ffi.roleColor
@@ -41,7 +41,7 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         // The single library load (the app owns it; the JVM host test
         // instead System.load's the host-built .so).
-        NativeAndroid.ensureLoaded()
+        ensureLoaded()
         buildUi()
     }
 
@@ -79,7 +79,7 @@ class MainActivity : Activity() {
 
         content.addView(
             button(R.string.load_bundled) {
-                runCatching { assets.open("clearfile-fixture.json").readBytes() }
+                runCatching { loadAndDisplay(assets.open("clearfile-fixture.json").readBytes()) }
                     .onSuccess(::showLoaded)
                     .onFailure { showError(it.message ?: getString(R.string.load_failed)) }
             },
@@ -140,7 +140,7 @@ class MainActivity : Activity() {
             }
         }
         runCatching {
-            contentResolver.openInputStream(uri)!!.use { it.readBytes() }
+            loadAndDisplay(contentResolver.openInputStream(uri)!!.use { it.readBytes() })
         }
             .onSuccess(::showLoaded)
             .onFailure { showError(it.message ?: getString(R.string.load_failed)) }
@@ -199,7 +199,7 @@ class MainActivity : Activity() {
                     buildUi()
                     // Re-display the last payload? The bundled example is
                     // always available; re-load it for the fresh theme.
-                    runCatching { assets.open("clearfile-fixture.json").readBytes() }
+                    runCatching { loadAndDisplay(assets.open("clearfile-fixture.json").readBytes()) }
                         .onSuccess(::showLoaded)
                 }
             },
