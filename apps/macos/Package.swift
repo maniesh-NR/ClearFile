@@ -1,3 +1,4 @@
+// swift-tools-version: 5.9
 // SPDX-License-Identifier: GPL-3.0-only
 // The ClearFile macOS SPM package (N5, the ADR-017 epilogue): ONE
 // Swift+AppKit app consuming the SAME committed flat C ABI header
@@ -13,7 +14,11 @@
 // (the 2026-11-27 live probe); the floor is enforced by the SDK's
 // deployment-target emission and mechanically asserted from the built
 // binary's minimum-OS load command.
-// swift-tools-version: 5.9
+//
+// (The tools-version directive sits at line 1 by SwiftPM's own rule:
+// a tools-version appearing after other content makes the manifest
+// backward-incompatible for Swift < 6 — the CI round-1 finding,
+// 2026-11-27.)
 
 import PackageDescription
 
