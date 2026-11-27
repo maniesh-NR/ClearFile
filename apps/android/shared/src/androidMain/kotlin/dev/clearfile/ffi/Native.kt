@@ -10,6 +10,8 @@
 // thin JNI shim (the cdylib) — this file only models what the viewer
 // displays.
 
+package dev.clearfile.ffi
+
 /** The loaded-and-computed payload the viewer displays (the glue model). */
 data class LoadedReturn(
     /** Honest provenance line ("the .clearfile.json envelope" / "the ClearFile exchange container (.tax)"). */
