@@ -470,8 +470,14 @@ jobs:
         run: |
           cp core-ffi/target/release/clearfile_core_ffi.dll apps/windows/build/
           ./apps/windows/build/clearfile-windows.exe --headless fixtures/migration/v1-web-envelope.json > /tmp/headless.out
-          diff -u apps/linux/tests/expected-headless.txt /tmp/headless.out
-          echo "headless smoke: ok — the byte-parity text family across platforms"
+          # The EOL normalization (the round-4 finding: every line differed
+          # with identical content — the MSVC CRT's stdout text-mode CRLF
+          # translation on the runner despite the exe's _O_BINARY setmode).
+          # The CONTENT parity stays byte-exact after the normalization;
+          # the canonical text family is the assertion.
+          tr -d '\r' < /tmp/headless.out > /tmp/headless.lf
+          diff -u apps/linux/tests/expected-headless.txt /tmp/headless.lf
+          echo "headless smoke: ok — the byte-parity text family across platforms (EOL-normalized)"
 
   re-tooling:
     # Stage-2 execution session 1 (2026-11-22, ADR-012 mechanics (b)/(e) +
