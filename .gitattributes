@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# The EOL-tolerance hardening (R-ENG-23, registered at the N4 exit
+# gate; landed as an N5 pre-check): text files check out LF on EVERY
+# platform, killing the autocrlf class that cost the N4 windows lane
+# its rounds 4-5 (the Windows runner's core.autocrlf converted the
+# committed LF expected text to CRLF at checkout). `text=auto` keeps
+# git's binary auto-detection; the explicit binary marks belt-and-
+# brace the tree's binary classes (png/pdf/ico are the only classes
+# present — verified by two isolated renormalize probes at the N5
+# gate: zero content deltas). The smoke-side EOL normalization stays
+# as belt-and-braces.
+* text=auto eol=lf
+*.png binary
+*.ico binary
+*.pdf binary
+*.dll binary
+*.lib binary
+*.exe binary
+*.dylib binary
+*.wasm binary

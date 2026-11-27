@@ -145,3 +145,10 @@ server.log
 /apps/windows/*.dll
 /apps/windows/*.exe
 /apps/windows/*.lib
+
+# The N5 macOS app: the SPM residue (the .build/ tree, the package
+# caches) — guarded BEFORE any in-repo build (the N2/N3/N4 pattern);
+# the built executable + the dylib are CI-side only, never committed
+# (the blob policy).
+/apps/macos/.build/
+/apps/macos/.swiftpm/

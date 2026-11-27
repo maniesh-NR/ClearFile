@@ -344,5 +344,33 @@ else
   fail "N4 scaffold drift (main.cpp present: $WIN_FILES; header extern-C guards: $WIN_GUARD) — the windows app or the guarded header drifted"
 fi
 
+# --- The N5 scaffold family (the 2026-11-27 N5 gate) --------------------------
+
+# The macOS app's tracked surface: the SPM package (the zero-dep manifest with
+# the macOS 13 floor), the wrapper umbrella header including the SAME committed
+# header verbatim (the symlink shape rejected at the gate — the include line
+# is the contract), the anchor TU, and the Swift app source.
+MAC_PKG=$(ls apps/macos/Package.swift 2>/dev/null | wc -l)
+MAC_SWIFT=$(ls apps/macos/Sources/ClearFileMacOS/main.swift 2>/dev/null | wc -l)
+MAC_SHIM=$(ls apps/macos/Sources/ClearFileFFI/shim.c 2>/dev/null | wc -l)
+MAC_INCLUDE=$(grep -cF '#include "../../../../../core-ffi/clearfile.h"' apps/macos/Sources/ClearFileFFI/include/ClearFileFFI.h 2>/dev/null || true)
+MAC_FLOOR=$(grep -c 'macOS(.v13)' apps/macos/Package.swift 2>/dev/null || true)
+if [ "$MAC_PKG" -eq 1 ] && [ "$MAC_SWIFT" -eq 1 ] && [ "$MAC_SHIM" -eq 1 ] && [ "$MAC_INCLUDE" -eq 1 ] && [ "$MAC_FLOOR" -eq 1 ]; then
+  pass "the N5 apps/macos surface is tracked (the SPM package + the wrapper umbrella header including the committed header + the shim + the app) with the macOS 13 floor"
+else
+  fail "N5 scaffold drift (Package.swift: $MAC_PKG; main.swift: $MAC_SWIFT; shim.c: $MAC_SHIM; wrapper include: $MAC_INCLUDE; macOS 13 floor: $MAC_FLOOR) — the macOS app surface drifted"
+fi
+
+# The SPM zero-dependency posture (the N5 gate's fail-closed condition): the
+# manifest declares no external packages/targets, and the EOL-tolerance
+# hardening is in place (R-ENG-23: text=auto eol=lf + the binary marks).
+MAC_DEPS=$(grep -cE '\.package\(|\.binaryTarget|\.systemLibrary|url:' apps/macos/Package.swift 2>/dev/null || true)
+EOL_ATTR=$(grep -c 'text=auto eol=lf' .gitattributes 2>/dev/null || true)
+if [ "$MAC_DEPS" -eq 0 ] && [ "$EOL_ATTR" -eq 1 ]; then
+  pass "the N5 SPM zero-dependency posture holds and the .gitattributes EOL-tolerance hardening is in place (R-ENG-23)"
+else
+  fail "N5 posture drift (SPM external deps declared: $MAC_DEPS; .gitattributes eol rule: $EOL_ATTR) — the macOS lane's zero-dep or EOL posture drifted"
+fi
+
 echo "harness_check: $FAILURES failure(s)"
 exit $([ "$FAILURES" -eq 0 ] && echo 0 || echo 1)

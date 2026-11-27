@@ -483,6 +483,140 @@ jobs:
           diff -u /tmp/expected.lf /tmp/headless.lf
           echo "headless smoke: ok — the byte-parity text family across platforms (EOL-normalized both sides)"
 
+  macos-app:
+    # N5 (2026-11-27, the N5 gate's ledger): the macOS lane — ONE
+    # Swift+AppKit app consuming the SAME committed header through the
+    # SPM wrapper target (the symlink shape rejected at the gate: both
+    # sandbox probe findings recorded). Author-blind Swift (the Linux
+    # sandbox has no Swift toolchain — the first compile IS this lane;
+    # the N4-accepted trade). Fail-closed guards first (rustc + the
+    # host-triple assertion — macos-latest = macOS 26 arm64 per the
+    # 2026-11-27 live probe, three independent probes); cargo --locked
+    # everywhere; the boundary battery RUNS ON MACOS (the real ABI
+    # lane); the wrapper-include assertion (the SAME committed header —
+    # the build pins it; the freshness check stays with the android
+    # job's every-push check); the SPM zero-dependency assertion; the
+    # swift build (the -Xlinker single-token form — the link flags live
+    # in CI, the cl /LIBPATH discipline's analogue); the headless smoke
+    # diffs the full stdout against the LINUX app's committed expected
+    # text (one canonical text family, three platforms, EOL-normalized
+    # both sides); the otool -L direct-linkage guard (the no-network
+    # claim's mechanical proof — Foundation transitively loads CFNetwork
+    # as an OS fact; the record is "no network framework linked BY the
+    # app/core"); the deployment-floor assertion (the macOS 13 floor is
+    # build-time-only confirmable — the binary's minimum-OS load
+    # command is the proof); the identity echo (sw_vers + swift
+    # --version — macos-latest floats); no cargo-deny (the android job
+    # denies core-ffi's lock every push — the recorded reason); NO
+    # uploads (nothing ships).
+    name: "macOS app (Swift seam: guards + boundary battery + SPM build + headless smoke + link guard)"
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      # The rustc guard + the host-triple assertion (fail-closed: the
+      # lane verifies the aarch64-apple-darwin ABI; if the macos-latest
+      # label drifts to another image, the claim is re-examined, never
+      # silently carried).
+      - name: rustc + host-triple guard (aarch64-apple-darwin, fail-closed)
+        run: |
+          LINE="$(rustc --version)"
+          VERSION="${LINE#rustc }"
+          MAJOR="$(printf '%s' "$VERSION" | cut -d. -f1)"
+          MINOR="$(printf '%s' "$VERSION" | cut -d. -f2)"
+          case "$MAJOR" in ''|*[!0-9]*) echo "rustc guard: FAIL — unparsable: $LINE" >&2; exit 1 ;; esac
+          case "$MINOR" in ''|*[!0-9]*) echo "rustc guard: FAIL — unparsable: $LINE" >&2; exit 1 ;; esac
+          if [ "$MAJOR" -lt 1 ] || { [ "$MAJOR" -eq 1 ] && [ "$MINOR" -lt 95 ]; }; then
+            echo "rustc guard: FAIL — rustc $MAJOR.$MINOR < 1.95; refusing. $LINE" >&2
+            exit 1
+          fi
+          HOST="$(rustc -vV | sed -n 's/^host: //p')"
+          if [ "$HOST" != "aarch64-apple-darwin" ]; then
+            echo "host-triple guard: FAIL — host '$HOST' is not aarch64-apple-darwin (the probed macos-latest lane; re-examine the label)" >&2
+            exit 1
+          fi
+          echo "guards: ok — rustc $MAJOR.$MINOR >= 1.95, host $HOST"
+      # The identity echo (macos-latest floats — recorded every run so
+      # the verification claim cannot silently drift).
+      - name: the identity echo (sw_vers + swift --version, recorded)
+        run: |
+          sw_vers
+          swift --version
+      # The FFI cdylib (release) — the .dylib.
+      - name: the FFI cdylib (release) — the .dylib
+        run: |
+          cargo build --locked --release --manifest-path core-ffi/Cargo.toml
+          test -f core-ffi/target/release/libclearfile_core_ffi.dylib || { echo "FAIL — the .dylib was not emitted" >&2; exit 1; }
+      # The boundary battery ON MACOS (the real ABI lane).
+      - name: the boundary battery ON MACOS (the real ABI lane)
+        run: cargo test --locked --manifest-path core-ffi/Cargo.toml --features panic-hook-test
+      # The wrapper-header assertion (the SAME committed header): the
+      # include line is the contract — the build below pins it, the
+      # freshness check stays with the android job's every-push check.
+      - name: the wrapper-header assertion (the committed header)
+        run: |
+          test -f core-ffi/clearfile.h
+          grep -F '#include "../../../../../core-ffi/clearfile.h"' apps/macos/Sources/ClearFileFFI/include/ClearFileFFI.h \
+            || { echo "wrapper-header assertion: FAIL — the umbrella no longer includes the committed core-ffi/clearfile.h" >&2; exit 1; }
+          echo "wrapper-header assertion: ok — the committed header, via the wrapper"
+      # The SPM zero-dependency assertion (fail-closed).
+      - name: the SPM zero-dependency assertion
+        run: |
+          if grep -nE '\.package\(|\.binaryTarget|\.systemLibrary|url:' apps/macos/Package.swift; then
+            echo "SPM dependency assertion: FAIL — an external dependency is declared" >&2
+            exit 1
+          fi
+          echo "SPM dependency assertion: ok — zero external packages"
+      # The SPM build (the -Xlinker single-token form) + the
+      # Package.resolved absence assertion (zero deps resolve).
+      - name: the SPM build (linked against the cdylib)
+        working-directory: apps/macos
+        run: |
+          swift build -Xlinker -L../../core-ffi/target/release -Xlinker -lclearfile_core_ffi
+          test ! -f Package.resolved || { echo "FAIL — Package.resolved emerged (a dependency resolved)" >&2; exit 1; }
+          test -x .build/debug/ClearFileMacOS || { echo "FAIL — the executable was not emitted" >&2; exit 1; }
+      # The deployment-floor assertion (macOS 13, build-time-only
+      # confirmable — the binary's minimum-OS load command is the
+      # mechanical proof).
+      - name: the deployment-floor assertion (macOS 13)
+        run: |
+          otool -l apps/macos/.build/debug/ClearFileMacOS | grep -A3 'LC_BUILD_VERSION' | grep -E 'minos 13' \
+            || { echo "deployment-floor assertion: FAIL — the binary's minimum OS is not macOS 13" >&2; exit 1; }
+          echo "deployment-floor assertion: ok — macOS 13.0"
+      # The headless smoke (the Linux app's canonical expected text —
+      # one text family, three platforms): the smoke's cwd is the repo
+      # root (the File: line's byte parity); the dylib resolves via
+      # DYLD_LIBRARY_PATH (absolute — covers both install-name shapes).
+      - name: the headless smoke (diff against the Linux app's expected text)
+        run: |
+          DYLD_LIBRARY_PATH="$PWD/core-ffi/target/release" ./apps/macos/.build/debug/ClearFileMacOS --headless fixtures/migration/v1-web-envelope.json > /tmp/headless.out
+          tr -d '\r' < /tmp/headless.out > /tmp/headless.lf
+          tr -d '\r' < apps/linux/tests/expected-headless.txt > /tmp/expected.lf
+          diff -u /tmp/expected.lf /tmp/headless.lf
+          echo "headless smoke: ok — the byte-parity text family across platforms (EOL-normalized both sides)"
+      # The link guard (the PE import-table analogue): no network
+      # framework linked BY the app or the core (Foundation
+      # transitively loads CFNetwork as an OS fact — the direct-link
+      # list is the mechanical proof we own). The full lists stay
+      # visible above for the exit gate's exact-list tightening.
+      - name: the link guard (otool -L, direct linkage only)
+        run: |
+          echo "--- the executable's direct links:"
+          otool -L apps/macos/.build/debug/ClearFileMacOS
+          echo "--- the cdylib's direct links:"
+          otool -L core-ffi/target/release/libclearfile_core_ffi.dylib
+          if otool -L apps/macos/.build/debug/ClearFileMacOS | grep -E 'CFNetwork|Network\.framework|libcurl|libssl'; then
+            echo "link guard: FAIL — a network library is directly linked by the app" >&2; exit 1
+          fi
+          if otool -L core-ffi/target/release/libclearfile_core_ffi.dylib | grep -E 'CFNetwork|Network\.framework|libcurl|libssl'; then
+            echo "link guard: FAIL — a network library is directly linked by the core" >&2; exit 1
+          fi
+          otool -L core-ffi/target/release/libclearfile_core_ffi.dylib | grep -q '/usr/lib/libSystem.B.dylib' \
+            || { echo "link guard: FAIL — the core dylib does not link libSystem" >&2; exit 1; }
+          echo "link guard: ok — no network library directly linked; the core links libSystem"
+
   re-tooling:
     # Stage-2 execution session 1 (2026-11-22, ADR-012 mechanics (b)/(e) +
     # the LEGAL-1 lint + the tools' security contract): the no-binary-blob
