@@ -785,7 +785,7 @@ v1's stages still close first.
   ruled; ENG's local verification proving the whole approach before any
   CI round; reports at `harness/adversarial/reports/2026-11-27-n6-*.md`).
   **The execution record:** the ONE-session box closed on the FIRST
-  LIVE-GREEN ROUND — run **45991816001** on f295a27, all EIGHT jobs (the
+  LIVE-GREEN ROUND — run **45991786766** on f295a27, all EIGHT jobs (the
   suites job's wasm32 build + the import-empty guard — the .wasm with
   ZERO imports, the strongest no-network proof — + the transferred
   parity suite 17/17 + the transferred bridge 11/11 + the AI suites

@@ -82,6 +82,20 @@ jobs:
       # test hook; the plain build below overwrites the output path).
       - name: the wasm32 build + the import-empty guard
         run: |
+          # The rustc family guard (the android lane's pattern — never the
+          # runner's luck): fail-closed on a toolchain older than the repo's
+          # era before any wasm build.
+          LINE="$(rustc --version)"
+          VERSION="${LINE#rustc }"
+          MAJOR="$(printf '%s' "$VERSION" | cut -d. -f1)"
+          MINOR="$(printf '%s' "$VERSION" | cut -d. -f2)"
+          case "$MAJOR" in ''|*[!0-9]*) echo "rustc guard: FAIL — unparsable: $LINE" >&2; exit 1 ;; esac
+          case "$MINOR" in ''|*[!0-9]*) echo "rustc guard: FAIL — unparsable: $LINE" >&2; exit 1 ;; esac
+          if [ "$MAJOR" -lt 1 ] || { [ "$MAJOR" -eq 1 ] && [ "$MINOR" -lt 95 ]; }; then
+            echo "rustc guard: FAIL — rustc $MAJOR.$MINOR < 1.95; refusing. $LINE" >&2
+            exit 1
+          fi
+          echo "rustc guard: ok — $MAJOR.$MINOR >= 1.95 ($LINE)"
           rustup target add wasm32-unknown-unknown
           cargo build --locked --release --target wasm32-unknown-unknown --features panic-hook-test --manifest-path core-ffi/Cargo.toml
           cp core-ffi/target/wasm32-unknown-unknown/release/clearfile_core_ffi.wasm core-ffi/target/wasm32-unknown-unknown/release/clearfile_core_ffi_panic.wasm

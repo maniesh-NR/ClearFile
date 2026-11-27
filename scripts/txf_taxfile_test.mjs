@@ -221,16 +221,16 @@ function readTxf(text) {
 /* ---------------- 2. .tax analysis -------------------------------------- */
 
 {
-  // ClearFile exchange container: makeZip + serializeCfr round-trip.
+  // ClearFile exchange container: the app's OWN writer — exportTaxContainer
+  // (the adapter's most intricate dance: the envelope serialization + the
+  // length-out binary channel — pinned here; the N6-exit riders' fix,
+  // matching CONSENSUS's (d) record) — then analyzed back.
   const filing = {
     taxYear: 2025,
     w2s: [{ employer: 'Acme Corp', wages: 52500, withholding: 6200 }],
     interestIncome: 120,
   }
-  const bytes = makeZip([
-    { name: 'clearfile.json', data: enc.encode(serializeCfr(filing)) },
-    { name: 'README.txt', data: enc.encode('ClearFile exchange container') },
-  ])
+  const bytes = core.exportTaxContainer(filing)
   const a = analyzeTaxFile(bytes)
   assert.equal(a.isZip, true)
   assert.equal(a.clearfileContainer, true)

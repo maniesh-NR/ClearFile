@@ -78,10 +78,10 @@ ENTERED_CS=$(grep -cE '\*\*Stage [456]: CLOSED\*\*' "$CONSENSUS" || true)
 # precedent: a checker update, not drift).
 ENTERED_N_CS=$(grep -cE '\*\*N[1-6]: (ENTERED|PASSED|CLOSED)' "$CONSENSUS" || true)
 ENTERED_TT_CS=$(grep -cE '\*\*T[1-4]: (ENTERED|PASSED|CLOSED)\*\*' "$CONSENSUS" || true)
-if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 3 ] && [ "$ENTERED_N_CS" -eq 10 ] && [ "$ENTERED_TT_CS" -eq 1 ]; then
-  pass "CONSENSUS records Stage 2's entry, the TT program's T2 entry, the Stages 4/5/6 closures, and N1–N6's ENTERED+CLOSED outcomes"
+if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 3 ] && [ "$ENTERED_N_CS" -eq 11 ] && [ "$ENTERED_TT_CS" -eq 1 ]; then
+  pass "CONSENSUS records Stage 2's entry, the TT program's T2 entry, the Stages 4/5/6 closures, and N1–N6's ENTERED+CLOSED outcomes (N6 exit included)"
 else
-  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/10/1) — reconcile with ROADMAP"
+  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/11/1) — reconcile with ROADMAP"
 fi
 
 # --- 1b. The N1 variant precondition: release.yml stays native-free -------

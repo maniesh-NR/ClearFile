@@ -3,7 +3,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { DEFAULT_YEAR } from './tax/config'
 import type { DeductionMethod, FilingStatus } from './tax/config'
-import type { Dependent, TaxReturnData, W2Entry } from './tax/engine'
+import type { Dependent, TaxReturnData, W2Entry } from './wasm/core'
 
 /** New ids for store-managed list rows (D6: identity keys, not value keys). */
 function freshId(prefix: string): string {

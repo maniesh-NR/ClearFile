@@ -25,7 +25,7 @@
  */
 
 import { execFileSync } from 'node:child_process'
-import { readdirSync, readFileSync } from 'node:fs'
+import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
@@ -70,11 +70,26 @@ await core.initWasmFromBuffer(readFileSync(modulePath))
 }
 
 // --- the trap ruling (SEC-2/ENG-3), when the panic-hook module exists ----
-try {
-  readFileSync(panicModulePath)
-  const panicInstance = await WebAssembly.instantiate(readFileSync(panicModulePath), {})
-  const panicFn = panicInstance.exports.clearfile_test_guard_panic
-  if (typeof panicFn !== 'function') throw new Error('the panic-hook export is missing')
+if (!existsSync(panicModulePath)) {
+  // Fail-closed: the CI step builds the panic-hook variant by contract —
+  // its absence is a lane defect, never a skip (the N6-exit riders' fix).
+  console.log(`FAIL the panic-hook module is missing at ${panicModulePath} (the CI step builds it by contract)`)
+  process.exit(1)
+}
+{
+  const instantiated = await WebAssembly.instantiate(readFileSync(panicModulePath), {})
+  // The bufferSource overload resolves { module, instance } per the spec —
+  // the same shape discipline the adapter's init carries (reconciliation
+  // (f)); handle both shapes.
+  const instance =
+    instantiated instanceof WebAssembly.Instance
+      ? instantiated
+      : instantiated.instance
+  const panicFn = (instance.exports).clearfile_test_guard_panic
+  if (typeof panicFn !== 'function') {
+    console.log('FAIL the panic-hook export is missing from the panic module')
+    process.exit(1)
+  }
   let trapped = false
   try {
     panicFn()
@@ -83,12 +98,6 @@ try {
   }
   console.log(`${trapped ? 'ok  ' : 'FAIL'} the trap ruling: a Rust panic on wasm32 is a RuntimeError trap (never a sentinel return)`)
   if (!trapped) process.exit(1)
-} catch (e) {
-  if (e instanceof WebAssembly.RuntimeError) {
-    console.log('FAIL the panic-hook trap assertion threw the wrong class')
-    process.exit(1)
-  }
-  console.log('skip the trap assertion (no panic-hook module built)')
 }
 
 // --- the core-served parameter table (the N6 reconciliation: the table's

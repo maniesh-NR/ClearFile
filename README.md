@@ -15,7 +15,7 @@ Licensed under [GPL-3.0](LICENSE).
 
 | Path | What it is |
 | --- | --- |
-| `src/` | The **Next.js 16 web prototype**: a seven-step Material 3 tax interview (status → income → deductions → dependents → payments → review → results) with the **same TY2025 calculation engine as the Flutter app** (ADR-009 parity, 2026-11-15: line-for-line port validated against the shared golden fixtures), deterministic review findings, and an optional bring-your-own-key AI assistant. |
+| `src/` | The **Next.js 16 web prototype**: a seven-step Material 3 tax interview (status → income → deductions → dependents → payments → review → results) computing via the **shared Rust core compiled to WASM** (N6, 2026-11-27 — the same flat C ABI every native lane consumes; the wasm parity suite pins the same 17 shared golden fixtures in CI), deterministic review findings, and an optional bring-your-own-key AI assistant. The TS engine + TS codecs are retired frozen transition artifacts (ADR-016 → ADR-017, kept in-tree; see D46 before any tagged web release). |
 | `clearfile/` | The **Flutter 3.47 app** — the full-featured implementation: the five-step interview, the complete TY2025 engine and the AI cascade, compiled to the Android, iOS, macOS, Windows, Linux and Web targets from one Dart codebase. The two codebases share no code; the web engine is a line-for-line TypeScript port of this one (Stage-3 parity). |
 | `clearfile/test/` | 126 Dart tests — 109 hand-written (19 calculator, 10 AI cascade (header-key discipline + D8 timeout parity), 5 prompt-injection (hostile provider bodies stay bounded and out of UI summaries; system instruction byte-stable), 2 recorded-fixture cascade e2e (the shared `fixtures/ai/` family, also driven by the web ladder suite), 7 privacy (incl. the findings-path leak guard, the native + web disclosure-copy pins), 10 CSV import, 3 JSON roundtrip, 5 privacy (incl. the findings-path leak guard), 2 autosave regressions (delete + switch), 5 money-parsing edges, 6 step/settings widget guards (incl. the duplicate-row guards), 3 app-flow widget, 12 TXF import (spec v042 structure, W-2 copy grouping, sign convention, hardening caps incl. the 10,000-record refusal), 10 `.tax` container inspection (Intuit shape + entropy flags, ClearFile container import incl. the web envelope + honest failures incl. the crafted truncated-central-directory never-throws guard), **15 unified return-format tests (envelope round-trip, version guard, legacy flat lift, web-v1 migration from the shared cross-suite fixtures with exact warning lists (D34), the dependent-count clamp edge, sealed import outcomes, store envelope on disk)**) plus 17 IRS-pinned golden fixtures (repo-level `fixtures/tax/`, shared with the web engine's parity tests and re-derived independently by `scripts/verify_golden_fixtures.py` — the 17th pins the qualifying-surviving-spouse column mappings incl. the $200,000 CTC threshold it forced in both engines) — that pin the engine, the UI behaviour and the AI-privacy contract. `flutter analyze` is clean and `flutter test` is green. |
 | `fixtures/tax/` | The **shared golden fixtures**: 17 `(TaxReturnData, TaxResult)` JSON pairs, each pinned to an IRS-published TY2025 worked example or worksheet (Tax Table, QDIVCG worksheet, Schedule 1-A Part V, Schedule A SALT worksheet, Schedule 8812, Form 8960, Pub 501) with its citation, derivation and tolerance in the file. The single source of truth **three** runners are held to: `clearfile/test/golden_fixtures_test.dart` (Dart) and `scripts/web_parity_test.mjs` (TypeScript) and `core/` (Rust) run the same files in CI. |
@@ -279,15 +279,28 @@ in **declared maintenance mode: parameter corrections only.**
   Stage-3 contract), bug and security fixes with regression tests, and
   dependency security bumps (the `npm audit --omit=dev` critical gate).
 - **What earns a v1.x bump:** the above, when user-visible.
-- **What earns the v2.0.0 major bump:** only the ADR-017 epilogue — the
-  Rust core and per-OS native stacks — or a breaking return-format change
-  (which itself requires a new envelope `formatVersion` + migration, per
-  the ADR-015 version-guard rule). The web prototype stays in maintenance
-  parity (ADR-016) until the Rust core serves the web (WASM) and the TS
-  engine retires.
+- **What earns the v2.0.0 major bump:** the first GA release whose
+  distributed artifact for any OS is the native stack (the ADR-017 rule —
+  the epilogue program froze complete 2026-11-27 at N6 WITHOUT a GA:
+  every native lane is a demonstration prototype, unreleased,
+  CI-verified-only), or a breaking return-format change (which itself
+  requires a new envelope `formatVersion` + migration, per the ADR-015
+  version-guard rule).
+- **The epilogue's terminal freeze (2026-11-27, N6):** the native
+  re-platforming program (N1–N6) is COMPLETE and FROZEN — the shared Rust
+  core serves every platform (the four native demo lanes + the web via
+  wasm32, one flat C ABI); the Flutter app remains the shipped product on
+  every OS; the Dart engine remains the frozen reference; the TS engine
+  and TS codecs are retired frozen transition artifacts (their cleanup
+  after v2.0.0 GA is a future owner decision; nothing deletes or rewrites
+  them). **Standing owner items parked at the terminal gate:** the
+  Stage-2 exit stays slipped (the MSI-record keystream chase = D42,
+  disposition "T3 session 2"); D30 (the owner-side hardening items)
+  stands; D46 (the no-tag web-release constraint) stands.
 - **Out of scope without a new owner directive:** new engine features, new
-  platforms, new web-engine features (the ADR-016 freeze), and the TT
-  compatibility program beyond its own gated lanes (ADR-019/020).
+  platforms, new UI features, the TT compatibility program beyond its own
+  gated lanes (ADR-019/020 — T3/T4 unfunded), and any work on the frozen
+  transition artifacts beyond keeping them compiling.
 
 ## License
 

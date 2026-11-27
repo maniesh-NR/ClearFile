@@ -2316,3 +2316,129 @@ verification proving the whole approach before any CI round; the
 ONE-session box under the owner's standing single-session directive;
 the TWELFTH slip surfacing with the explicit TERMINAL-gate parking
 posture.)
+
+## 2026-11-27 · The N6 exit gate — N6: CLOSED (exit PASSED) — the EPILOGUE closes
+
+**Context:** the terminal lane's ONE-session box closed on the FIRST
+LIVE-GREEN ROUND — hygiene run **45991786766** on f295a27, all EIGHT
+jobs (the recorded 45991816001 was the adjacent Dependabot run — the
+dated correction, SEC-3/PROD-1), after the local pre-flight (the
+parity 17/17 + the bridge 11/11 + the AI suites green in node BEFORE
+any push — the honest datum N6=1 round vs N3=11, N4=5, N5=4). Four
+reviewers in parallel isolation over the delta 1dd84dc..HEAD; reports
+at `harness/adversarial/reports/2026-11-27-n6exit-*.md`.
+
+| Reviewer | Verdict | BLOCK? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (6 close riders — discharged at the close) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (5 close riders — discharged at the close) | no |
+| ADV-ENG | PROCEED-WITH-CONDITIONS (5 close riders — discharged at the close) | no |
+| ADV-PROD | EXIT-PASS (9 close riders — discharged at the close) | no |
+
+**The close riders, discharged AT the close (the full texts in the
+reports):** (1) the trap assertion FIXED (the {module,instance} shape
+bug — reconciliation (f)'s own class re-introduced in the suite's raw
+instantiate — the both-shapes form + the fail-closed missing-module
+path; the assertion now REALLY runs and passes: `RuntimeError:
+unreachable`, the N6-exit SEC-1/ENG-1 finding); (2) the bridge
+suite's ClearFile-container fixture now builds via the adapter's own
+exportTaxContainer (matching CONSENSUS (d) — and pinning the adapter's
+most intricate dance, previously uncovered by any suite — SEC-2/ENG-2);
+(3) the poisoned-dealloc guards in the adapter's finally blocks
+(ENG-3: a post-trap dealloc could itself trap and mask the mapped
+wording — the leaked buffer is the honest cost of the poisoned
+posture); (4) the rustc >= 1.95 family guard before the suites job's
+wasm build (SEC-5/ENG-4, the android lane's form); (5) store.ts's
+type-import rehomed off the frozen engine.ts (SEC-4); (6) the run-ID
+dated correction (45991816001 → 45991786766 — the hygiene run, all
+eight jobs verified live; the adjacent Dependabot run's ID was cited
+by the execution record — corrected everywhere, never papered over);
+(7) D45 opened (the first-conveyance LICENSES-manifest trigger at the
+NEXT tag: the palette Apache-2.0 + the statically-linked Rust std MIT
+OR Apache-2.0 + the carried shadcn MIT; the §6 same-tag --locked
+discipline) + the THIRD-PARTY-NOTICES one-liner; (8) D46 opened (the
+nextjs-web release job STALE-BY-DESIGN — LEGAL's live build probe
+DISPROVED the fail-LOUD claim: `npm run build` is GREEN without the
+.wasm, so a tag would ship a GREEN-built tar.gz that cannot boot —
+GREEN-THROUGH-BROKEN; the protection is the recorded NO-TAG constraint
+until the web-asset rework (LEGAL's narrow wasm-step shape is the
+pre-ruled rework form, the same-commit harness_check guard flip with
+it); (9) the README honest-surface rewrite (the web rows + the
+engines section + the running commands + the maintenance policy);
+(10) the checker's N-outcomes 10 → 11.
+
+**The Stage-2 slip re-agenda — the THIRTEENTH surfacing (the exit
+takes its own number, the recorded convention):** the enumeration — 1
+the N1-exit, 2 the N2-entry, 3 the N2-exit convening, 4 the N2-exit
+close, 5 the 2026-11-27 restatement, 6 the N3 entry, 7 the N3 exit, 8
+the N4 entry, 9 the N4 exit, 10 the N5 entry, 11 the N5 exit, 12 the
+N6 entry, 13 THIS exit gate. No ruling received across TWELVE prior
+surfacings; the three owner options stand ((a) fund a T3 session (the
+0x24000 MSI keystream chase + tax-modern.md, D42), (b) supersede the
+namespace rule, (c) the default re-agenda). **THE TERMINAL-GATE
+PARKING POSTURE (the epilogue's last gate — the slip cannot ride past
+it unexamined):** the Stage-2 exit gate stays SLIPPED; the MSI-record
+keystream chase stands as recorded debt D42 (disposition "T3 session
+2"); D30 (the owner-side hardening items) stands; these leave the
+funded scope with the terminal freeze and remain owner decisions —
+never a silent drop.
+
+**Gate outcome:**
+
+**N6: CLOSED (exit PASSED) — THE EPILOGUE PROGRAM CLOSES**
+(2026-11-27 — 4 × PROCEED-family unanimous, no BLOCK; the shared Rust
+core now serves every platform — the four native demo lanes and the
+web through the same flat C ABI compiled to wasm32-unknown-unknown;
+the TS engine + the TS codecs retired as byte-frozen transition
+artifacts; the terminal freeze declared below.)
+
+---
+
+## 2026-11-27 · THE TERMINAL FREEZE DECLARATION (the ADR-017 epilogue's close — PROD's text, LEGAL's element-(ii) clause)
+
+**The epilogue's terminal freeze (declared at N6 — the ADR-017
+program's close).** The native re-platforming epilogue (N1–N6) is
+COMPLETE: the Rust core (N1), the Linux (N2), Android (N3), Windows
+(N4) and macOS (N5) native lanes, and the web via WASM (N6) each
+entered, executed, and closed behind their own gate with an honest
+record; the shared Rust core now serves every platform — the four
+native demo lanes and the web through the same flat C ABI compiled to
+wasm32-unknown-unknown. Every native app is a demonstration
+prototype, unreleased, CI-verified-only; the Flutter app remains the
+shipped product on every OS until that OS's native stack reaches GA,
+and the Dart engine remains the frozen reference. The live Pages demo
+stays the FLUTTER web build; the Next.js prototype is a repo prototype
++ a release-tar.gz artifact, never deployed. The TypeScript engine and
+the TypeScript codecs are RETIRED frozen transition artifacts per
+ADR-016/ADR-017 — kept in-tree as the transition record; their cleanup
+after v2.0.0 GA is a future owner decision; nothing deletes or
+rewrites them ("keeping them compiling" is the only lawful change:
+tsc stays green).
+
+**v2.0.0 stays GA-gated (ADR-017's rule, unchanged):** v2.0.0 is earned
+ONLY at the first GA release whose distributed artifact for any OS is
+the native stack — a user-visible platform-lineage change the owner
+explicitly releases. Nothing at the N6 close moves any version plane:
+the app semver stays v1.x, the `.clearfile.json` envelope schema stays
+2, and every crate and package plane stays its own.
+
+**Post-epilogue maintenance posture (the v1.x policy's form,
+extended):** accepted changes are (1) tax-parameter corrections backed
+by a cited IRS source, flowing through the shared golden fixtures +
+the independent Decimal oracle to every live engine — the Dart
+reference and the Rust core, with the web receiving them through the
+wasm build; (2) bug and security fixes with regression tests; (3)
+format-guard compliance — a future `.clearfile.json` envelope version
+bump lands in the core's envelope codec, pinned by the shared
+migration fixtures; (4) dependency security bumps under the existing
+gates. Out of scope without a new owner directive: new engine
+features, new platforms, new UI features, the TT compatibility program
+beyond its own gated lanes (T3/T4 unfunded), and any work on the
+frozen transition artifacts beyond keeping them compiling.
+
+**The standing owner items, parked explicitly at the terminal gate —
+never a silent drop:** the Stage-2 exit gate stays SLIPPED; the
+MSI-record keystream chase stands as recorded debt D42 (disposition
+"T3 session 2"); D30 (the owner-side hardening items) stands. These
+leave the funded scope with this declaration and remain owner
+decisions.

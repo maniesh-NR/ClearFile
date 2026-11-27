@@ -2652,3 +2652,63 @@ rule, the epilogue's OWN terminal freeze declaration per the
 v2.0.0-territory rule, the TWELFTH slip surfacing with the explicit
 parking posture) — then the epilogue closes and the program freeze
 declares.
+
+## 2026-11-27 (the N6 session, the TERMINAL lane) · The epilogue closes: N6 COMPLETE (exit PASSED) + the terminal freeze declared
+
+**What was done (the owner's standing single-session directive):** N6
+entered and CLOSED in one session, and the epilogue program with it —
+- **The N6 delta-scoped gate** (the TERMINAL gate, 4 reviewers in
+  parallel isolation, unanimous PWC: SEC 8 / LEGAL 9 / ENG 8 / PROD 8,
+  no BLOCK): Shape A — the full serving — ruled by ALL FOUR; the
+  length-paired alloc/dealloc + the length-out container export + the
+  trap mapping ruled; ENG's local verification (the pinned toolchain +
+  the wasm32-std component + the .wasm build + the 17-fixture parity
+  run in node) proving the whole approach before any CI round; the
+  TWELFTH surfacing + the TERMINAL-gate parking posture.
+- **The execution:** core-ffi's FOUR additive exports
+  (clearfile_alloc/dealloc LENGTH-PAIRED; clearfile_export_tax_container
+  the length-out binary channel; clearfile_params_json the table's one
+  true source — the orchestrator's reconciled addition); the battery
+  12/12; the .wasm ~318KB with ZERO imports; the adapter
+  src/lib/wasm/core.ts (zero npm deps); the retirement of engine.ts +
+  txf.ts + taxfile.ts + cfr.ts (the exact terminal banners) + config's
+  table; the consumers switched; the boot gate; the suites transferred
+  (wasm_parity 17/17 + the allocator/trap/params proofs; the bridge
+  11/11; the AI suites untouched contracts 5/5 + 4/4); the CI wasm
+  steps + the import-empty guard. **First-green on ONE round: run
+  45991786766 on f295a27** (the execution record's first citation —
+  45991816001 — was the adjacent Dependabot run; the dated correction
+  is the exit gate's own finding). The honest CI datum: N3=11, N4=5,
+  N5=4, N6=1 — the local node pre-flight is why.
+- **The N6 exit gate** (4 reviewers in parallel): SEC PWC (6 riders) /
+  LEGAL PWC (5) / ENG PWC (5) / PROD EXIT-PASS (9) — no BLOCK; every
+  rider discharged AT the close: the trap assertion's shape bug FIXED
+  (it had silently skipped — now really running + passing); the bridge
+  fixture via exportTaxContainer (the (d) record honored); the
+  poisoned-dealloc guards; the rustc guard; the store.ts type rehome;
+  the run-ID correction; D45 + D46 opened (the LICENSES-at-next-tag
+  trigger + the stale-by-design no-tag constraint — LEGAL's live probe
+  disproved the fail-LOUD claim: a tag would ship GREEN-THROUGH-BROKEN);
+  the README honest surface; the checker N-outcomes 11.
+- **The terminal freeze declared** (the full text in CONSENSUS + README
+  + STATE): the epilogue COMPLETE (N1–N6 all gated, executed, closed);
+  the core serves every platform; v2.0.0 stays GA-gated; the
+  post-epilogue maintenance posture; the standing owner items parked
+  explicitly (the Stage-2 exit slipped; D42; D30) — never a silent
+  drop.
+
+**Decisions:** the THIRTEENTH surfacing = the N6 exit (the exit takes
+its own number); the parking posture is now the standing record — the
+slip leaves the funded scope with the freeze and remains an owner
+decision.
+
+**Open questions:** none in the funded scope — the program is complete.
+The owner-side standing items: D30 (Dependabot/branch protection/PAT
+rotation), D42 (the MSI keystream chase behind the T3 funding option),
+D45 (the LICENSES manifest at the next tag), D46 (the no-tag
+web-release constraint until the web-asset rework), and the
+pre-positioned v2.0.0-GA readiness list (the owner-side builds, the
+release.yml rework, the Flutter-target retirement sequencing).
+
+**Next step:** none owed by the program — the epilogue is closed and
+frozen. The next session is a fresh directive's.

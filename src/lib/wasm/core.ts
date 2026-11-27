@@ -343,7 +343,11 @@ function withInput<T>(bytes: Uint8Array, body: (ptr: number, len: number) => T):
     new Uint8Array(w.memory.buffer, ptr, len).set(bytes)
     return body(ptr, len)
   } finally {
-    w.clearfile_dealloc(ptr, len)
+    // A trap poisoned the instance: a post-trap dealloc could itself trap
+    // (the poisoning may leave the allocator's state suspect) and would
+    // mask the mapped wording — the leaked buffer is the honest cost of
+    // the poisoned posture (the N6-exit ENG-3 rider).
+    if (!poisoned) w.clearfile_dealloc(ptr, len)
   }
 }
 
@@ -544,10 +548,10 @@ export function exportTaxContainer(filing: TaxReturnData): Uint8Array {
         if (rc !== 0) throw new CoreError('The container export could not be written.')
         return new Uint8Array(new Uint8Array(w.memory.buffer, out, needed))
       } finally {
-        w.clearfile_dealloc(out, needed)
+        if (!poisoned) w.clearfile_dealloc(out, needed)
       }
     } finally {
-      w.clearfile_dealloc(lenSlot, 4)
+      if (!poisoned) w.clearfile_dealloc(lenSlot, 4)
     }
   })
 }

@@ -362,33 +362,36 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**N6's delta-scoped gate — the TERMINAL gate (N5 CLOSED 2026-11-27,
-exit PASSED; the per-OS order's last lane):** the agenda carries —
-(1) **the wasm32 target question** (unknown-unknown vs wasip1) for
-the std-only zero-dependency core: the gate rules the wasm target +
-the JS binding seam (wasm-bindgen would add dependencies to a
-std-only crate — the gate rules whether the zero-dep C-ABI-style
-export surface (the same flat functions, no framework) or another
-shape serves the web, and how the .wasm is loaded by the Next.js
-prototype WITHOUT touching the frozen engines' semantics); (2) **the
-TS engine's retirement per ADR-016** (the freeze converts to
-retirement the day the shared Rust core serves the web — the gate
-rules the mechanics: what `src/lib/tax/engine.ts`'s retirement looks
-like, what the web parity suite becomes, the ADR-009 disposition row
-(the parity suites survive as long as any old engine ships anywhere),
-and the CI suites job's shape after the retirement); (3) **the
-epilogue's OWN terminal freeze declaration** (the v2.0.0-territory
-rule — N6's to declare, never an earlier stage's; v2.0.0 itself stays
-GA-gated per ADR-017's row); (4) **the TWELFTH slip surfacing** (the
-enumeration: …10 the N5 entry, 11 the N5 exit, 12 N6's gate — the
-TERMINAL gate's record must state the explicit parking posture if
-still unruled: the Stage-2 exit stays slipped; the MSI chase stands
-as recorded debt D42; D30 standing — never a silent drop; the three
-owner options restated with the no-ruling count); (5) the N6
-execution box + the per-condition discipline (the Pages deployment
-path is live at maniesh-Nr.github.io/ClearFile/ — the web-WASM build
-must keep it green; the variant preconditions: release.yml's
-byte-frozen status must be RE-RULED by the gate if the web build
-needs to change pages.yml or the suites job). Standing: D30 + D42
-(the owner-side items). After N6 closes: the epilogue program's
-close-out — the program freeze declaration + the final memory sync.
+**THE EPILOGUE PROGRAM IS CLOSED AND FROZEN (2026-11-27, N6 exit
+PASSED; the terminal freeze declared — the full text in CONSENSUS +
+README):** the ADR-017 program's six lanes each entered, executed, and
+closed behind their own gates with unanimous exit records — the Rust
+core (N1), Linux/Slint (N2), Android/JNI (N3), Windows/C++ (N4),
+macOS/Swift (N5), and the web via wasm32-unknown-unknown (N6 — the
+same flat C ABI, the .wasm with ZERO imports; the TS engine + codecs
+retired byte-frozen; the parity + bridge suites transferred; the
+FIRST-green run 45991786766, ONE CI round after the local node
+pre-flight). Every native app is a demonstration prototype,
+unreleased, CI-verified-only; the Flutter app remains the shipped
+product on every OS; the Dart engine remains the frozen reference;
+v2.0.0 stays GA-gated (earned only at the first native-stack GA
+release). **The post-epilogue maintenance posture:** parameter
+corrections through the shared fixtures + the oracle; bug/security
+fixes with regression tests; format-guard compliance in the core's
+envelope codec; dependency security bumps — nothing else without a
+new owner directive. **The standing owner items, parked explicitly at
+the terminal gate (never a silent drop):** the Stage-2 exit stays
+SLIPPED (the MSI-record keystream chase at payload offset 0x24000 +
+tax-modern.md = D42, disposition "T3 session 2" — behind the T3
+funding option); D30 (Dependabot, branch protection on main, PAT
+rotation) stands; D45 (the first-conveyance LICENSES manifest at the
+NEXT tag: the palette + the statically-linked Rust std + the carried
+shadcn set); D46 (the NO-TAG web-release constraint until the
+web-asset rework — the nextjs-web job is stale-by-design,
+GREEN-THROUGH-BROKEN). **The pre-positioned v2.0.0-GA readiness list**
+(the owner's GA decision, whenever it comes): the owner-side builds
++ verification on every OS (the recorded bar rulings); the release.yml
+web-asset rework (D46's pre-ruled shape); the per-OS LICENSES
+manifests; the Flutter-target retirement sequencing per ADR-017's
+staged GA; the per-platform LICENSES-manifest rows. **The next
+session is a fresh directive's** — nothing is owed by the program.
