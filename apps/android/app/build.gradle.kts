@@ -5,8 +5,9 @@
 // MD3-from-seed colors computed through the palette FFI). ZERO engine
 // logic: all compute flows through :shared's JNI seam into the Rust core.
 plugins {
+    // AGP 9's built-in Kotlin compiles the .kt sources (the recorded first
+    // CI round's finding: the kotlin.android plugin is refused by AGP 9).
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
 }
 
 android {

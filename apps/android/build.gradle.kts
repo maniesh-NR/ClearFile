@@ -6,6 +6,9 @@
 plugins {
     id("com.android.application") version "9.5.3" apply false
     id("com.android.library") version "9.5.3" apply false
-    id("org.jetbrains.kotlin.android") version "2.4.21" apply false
+    // AGP 9 has Kotlin support built in (kotl.in/gradle/agp-built-in-kotlin)
+    // — the org.jetbrains.kotlin.android plugin is NOT applied anywhere
+    // (the first CI round's finding: AGP 9 refuses it). The multiplatform
+    // plugin remains :shared's own (verified live: 2.4.21).
     id("org.jetbrains.kotlin.multiplatform") version "2.4.21" apply false
 }
