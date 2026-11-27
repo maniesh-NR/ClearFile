@@ -350,33 +350,33 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**N3's delta-scoped gate (the Android native UI) — N2 CLOSED (exit
-PASSED) + every rider discharged (CONSENSUS 2026-11-27):** the gate's
-agenda carries — (1) the **Stage-2 slip re-agenda (the MANDATORY item,
-fifth surfacing)**: owner options (a) fund a T3 session (the
-MSI-record keystream decompile chase + tax-modern.md, debt D42),
-(b) supersede the RE-protocol namespace rule, (c) the default
-re-agenda — no ruling received across four prior surfacings, (c)
-continues; (2) the **SDK/NDK feasibility lane** (the measured facts:
-no Android SDK/NDK anywhere in this sandbox; Java 21 present; the
-mitigations — a NEW tracked sha256-pinned fetcher class in the
-fetch_tt_corpus/fetch_rust_toolchain pattern (sdkmanager needs no
-root) and/or the CI ubuntu runners, which ship the Android SDK; the
-disk plan re-measured live — ~6 GB free class after the toolchain
-re-fetch); (3) the **JNI shim design per ADR-017's FFI seam**: one
-flat C ABI (`extern "C"`, cbindgen-generated header — N3 is the
-recorded cbindgen trigger, the first FFI consumer), the thin JNI shim
-over it, the envelope as the payload boundary, the FFI surface ≈ a
-dozen functions (compute, import_txf, export_txf, inspect_tax,
-envelope encode/decode, palette); (4) **KMP per the settlement**:
-Android-only, no second Kotlin target; (5) the **ENG-riding
-bound-or-record** (the duplicate-scan amplification — the standing
-framing: closure before any FFI wiring, and N3 is the FFI wiring);
-SEC's file-size pre-check candidate rides the same lane; (6) the
-per-OS order standing (N3 → N4 → N5 → N6; re-settable at the gate,
-no demand to re-order); (7) the variant preconditions (zero
-`clearfile/`/`src/` paths in the N3 delta; release.yml byte-unchanged;
-no version movement). The GA-lane notes carry forward: the
-file-picker constraint (rfd is GTK-backed — the eventual route is
-xdg-desktop-portal or Slint's own offering) and the distro baseline
-as a GA-gate decision.
+**N3 session 1 (the hardenings FIRST, then the core-ffi crate) — N3:
+ENTERED 2026-11-27** (the delta-scoped gate 4 × PWC unanimous — SEC 11 /
+LEGAL 8 / ENG 7 / PROD 8, no BLOCK; the consolidated 16-item ledger +
+the two-session box in CONSENSUS's 2026-11-27 N3 gate record; the reports
+at harness/adversarial/reports/2026-11-27-n3-*.md). The session-1 order
+(ledger item 15): (1) the **indexed-lookup duplicate-scan bound** in
+core/src/json.rs (MAX_LINEAR_KEY_SCAN ≈64; the order-preserving
+key→slot HashMap for find-or-insert past the threshold; byte-identical
+output; the hostile-amplification + threshold-straddling battery) +
+the **512 MiB file-size pre-check** (the core-owned pub const + the
+pure decision fn + the named message + enforcement in apps/linux's
+load_and_compute + the future Android path + the core-ffi boundary);
+both GREEN + COMMITTED before any FFI work (the checkpoint discipline —
+a session death still closes the riders); (2) the **core-ffi crate**:
+the ONE flat C ABI (≈a dozen fns matching the ADR list), strings/bytes
+only, the single clearfile_free + the borrowed last_error, catch_unwind
+at every export, cbindgen =0.29.4 as BUILD-dep (Language::C pinned; the
+Java_* shim excluded from the header; the SPDX emitted by the generator
+config; the header COMMITTED + the CI freshness check), core-ffi's
+deny.toml from its FIRST commit (the closed list + MPL-2.0
+encountered+reviewed), the JNI shim (cfg(any(android, feature
+"host-jni")); jbyteArray never jstring), the boundary batteries (the 17
+golden fixtures + the malformed classes + both cap batteries + the
+550-case corpus THROUGH the boundary), the host tests green; (3) the
+guard joins same-commit (.gitignore /core-ffi/target/ + the backup
+scan-path join). Session 2 = the CI-primary app (apps/android +
+the CI android job + the records/README; the box's CI-flakiness
+absorption rule + the per-lane live-status discipline). The N3 EXIT gate
+convenes after the box closes (the slip's SEVENTH surfacing rides with
+it — the enumeration is pinned in the gate record).

@@ -1492,3 +1492,219 @@ tracked-fetcher class vs the CI android image), the cbindgen trigger (N3
 is the recorded first FFI consumer), the FFI seam shape per ADR-017, the
 ENG-riding bound-or-record, the per-OS order standing, and the slip
 re-agenda above).
+
+## 2026-11-27 · The N3 delta-scoped gate (the Android native UI)
+
+**Context:** N2 CLOSED (exit PASSED) + every rider discharged (the entry
+above). The proposal under review (the orchestrator's consolidation): the
+new separate-root `core-ffi/` crate (the ONE flat C ABI over the core,
+cbindgen-generated header, cdylib, the thin Android JNI shim), `apps/
+android/` (Gradle + Kotlin, KMP-shaped one target, Android Views, the
+SAF viewer demo, MD3-from-seed via the palette FFI), verification via
+local host FFI tests + a CI android job, the riding hardenings (the
+duplicate-scan bound + the file-size pre-check), a two-session box, and
+the variant preconditions. All four reviewers worked in parallel
+isolation with their own probes over the pushed tip 44929c0 (the tree
+verified clean by every lane; the ENG topology probe built a real scratch
+cdylib path-depping the core — the proposal's core claim verified live).
+Reports at `harness/adversarial/reports/2026-11-27-n3-{security,legal,
+engineering,product}.md`.
+
+| Reviewer | Verdict | BLOCK? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (11) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (8) | no |
+| ADV-ENG | PROCEED-WITH-CONDITIONS (7) | no |
+| ADV-PROD | PROCEED-WITH-CONDITIONS (8) | no |
+
+**Material findings the probes overturned (corrected in this record —
+the LEGAL risk-(a) class: proposal license claims are claims, not
+facts):** (1) cbindgen is **MPL-2.0**, NOT "MIT OR Apache-2.0" (verified
+live three ways; GPL-3.0-compatible, build-time-only, never
+linked/distributed — the posture is clean; every in-tree record states
+MPL-2.0); (2) free disk measured **1.7–1.8 GB** at the gate (not the
+~5 GB the 2026-11-27 close carried — `apps/linux/target` (3.4 GB
+re-buildable residue) reclaimed AT this gate close per the disk plan:
+~5.2 GB free again); (3) the sandbox's Java is a **JRE only** (no
+javac/gradle/kotlinc) — the local JVM-test lane does not exist; the FFI
+session is cargo-only in-sandbox, the app session is **CI-primary,
+forced not chosen**; (4) the runner image, measured live:
+ubuntu-latest ships the Android SDK **and** NDK (27.3.x default, 29.x,
+30.x present; platforms 34–37; Gradle 9.9.1; JDK 11/17/21/25-default;
+Rust 1.100.0 + rustup) — the CI android job needs NO new download
+class, only fail-closed version assertions; (5) the ENG probe verified
+end-to-end: the cdylib + cbindgen =0.29.4 build-dep route keeps
+`core/Cargo.lock` byte-identical, emits the header (Language::C must be
+pinned — the default is C++), and the Java_* host-lane (System.load +
+the real mangled symbols) works on this sandbox's JVM.
+
+**The consolidated condition ledger (binding the two execution
+sessions; every one checkable; the full text in the four reports):**
+1. **The hardenings land FIRST in session 1, green + committed BEFORE
+   any FFI work** (the riding items close in substance, not record):
+   the **indexed-lookup bound** (ENG-1/SEC-5 — the stronger option): in
+   `core/src/json.rs::parse_object`, past a new `pub const
+   MAX_LINEAR_KEY_SCAN` (≈64, the session records the exact number), a
+   lazily built `HashMap<String, usize>` key→slot index, used ONLY for
+   find-or-insert (never iterated — insertion order, the
+   last-value-wins-at-first-position contract, and every output byte
+   unchanged; below the threshold the linear scan stays), with the
+   battery: the hostile-amplification case (a 10,000-member object +
+   ~100k duplicate-key occurrences, the R-ENG-1 surface, parses green
+   under a generous wall-clock bound), the threshold-straddling
+   boundary pairs, and the existing member-cap tests unchanged; PLUS
+   the **512 MiB file-size pre-check** (ENG-2/SEC-6): the core-owned
+   `pub const MAX_INPUT_FILE_BYTES = 512 MiB` (2× the STORE cap,
+   rationale beside it) + the named refusal message family + the pure
+   decision fn + enforcement in apps/linux's `load_and_compute` (the
+   retrofit) AND the Android SAF path AND the core-ffi boundary
+   (payloads >512 MiB refused); the exact-boundary battery at each.
+2. **The ABI contract** (SEC-2): strings/bytes only — no `#[repr(C)]`
+   struct mirrors (the envelope is the payload boundary), inputs
+   `(const ptr, explicit len)` NUL-safe pairs, UTF-8-validated named
+   errors, NO path parameters (the platform owns file acquisition);
+   exactly TWO documented return classes (owned buffers freed ONLY by
+   the single `clearfile_free`; `last_error` a borrowed thread-local
+   pointer never freed); zero filesystem access in core-ffi.
+3. **Panic containment at every export** (SEC-1/ENG-4): one shared
+   catch_unwind(AssertUnwindSafe) wrapper at EVERY export (flat ABI +
+   Java_* alike) mapping panics to the sentinel status + the
+   thread-local last-error in the core's wording family; no
+   `panic = "abort"`; the exported-count == wrapped-count grep audit +
+   the panic-injection test.
+4. **cbindgen exactly** (ENG-3/SEC-7/LEGAL-1/3): `=0.29.4` as
+   core-ffi's BUILD-dep; `Language::C` pinned (not the C++ default);
+   the Java_* shim EXCLUDED from the header; the SPDX line EMITTED BY
+   THE GENERATOR CONFIG (`cbindgen.toml` header) with cbindgen's own
+   banner retained; the header a COMMITTED tracked artifact with the
+   CI freshness check (regenerate-to-temp + diff fails on drift);
+   `core/Cargo.lock` byte-unchanged after every build; the MPL-2.0
+   truth in every record (never the refuted dual id).
+5. **The JNI shim** (ENG-3/SEC-3/PROD-2): compiled under
+   `cfg(any(target_os="android", feature="host-jni"))`; marshals
+   `jbyteArray` NEVER `jstring` (the Modified-UTF-8 corruption class);
+   a thin translation only — ZERO engine logic on the Kotlin side
+   (all compute through JNI; the C ABI stays the one audit surface);
+   the JVM tests load the HOST-built .so and call the REAL Java_*
+   mangled symbols.
+6. **The battery runs THROUGH the boundary** (SEC-4): core-ffi/tests
+   calls every C function over all 17 golden fixtures (parity vs
+   direct core calls), the malformed-ZIP crash classes + the malformed
+   envelope/JSON classes (named errors, never an abort), both cap
+   batteries through the boundary; the 550-case differential corpus
+   through the boundary (the non-ASCII marshaling catcher — SEC adv-1).
+7. **core-ffi's deny.toml from its FIRST commit** (SEC-7/LEGAL-2): the
+   apps/linux closed list + **MPL-2.0** (encountered+reviewed: cbindgen
+   build-time-only, never linked/distributed) + the wildcard
+   disposition for the clearfile-core path dep; sources crates.io-only;
+   yanked/wildcards deny; full-lock incl. the build-dep tree; the first
+   live green run's number recorded.
+8. **apps/android's shape** (PROD-2/LEGAL-5/8): KMP-shaped with
+   EXACTLY `androidTarget()` (a `:shared` module + `:app`) — or the
+   plain-module simplification as an EXPLICIT recorded gate ruling;
+   Android Views only (no Compose); MD3-from-seed via the palette FFI
+   at the corpus seed; SAF open (`.clearfile.json`/`.tax`; TXF the
+   optional advisory); the bundled fixture PULLED from the shared
+   `fixtures/tax/` family (never newly authored); the honesty surfaces
+   (the three-fact disclaimer, the IRS/Intuit non-affiliation line,
+   prototype labels, the no-AI/no-network note); the manifest requests
+   **zero uses-permission (no INTERNET — the claim OS-enforced)**,
+   `allowBackup=false`, launcher-only; the AndroidX-taken-or-avoided
+   posture + the resolved AGP/Kotlin versions + the SDK-terms one-line
+   analysis recorded.
+9. **The gradle supply chain** (SEC-8/ENG-5): NO committed
+   `gradle-wrapper.jar` (the blob policy — own-authored binaries only);
+   CI-primary gradle with the fail-closed version assertion (never the
+   unpinned preinstalled default) — or the tracked sha256-pinned
+   fetcher class if reproducibility is demanded (the chosen lane
+   recorded); `dependencyLocking` + the committed lockfile(s);
+   repositories google()/mavenCentral() only; exact-pinned AGP/Kotlin;
+   the minimal dependency set (no network/AI libraries).
+10. **The CI android job** (ENG-5/SEC-9/PROD-3): additive to
+    hygiene.yml (the existing jobs byte-identical — the N2 audit
+    pattern); guards-FIRST (the rustc guard; `rustup target add
+    aarch64-linux-android`; the NDK identity guard asserting the EXACT
+    pinned version's path under `$ANDROID_HOME/ndk/<ver>` — never the
+    default or the env; `JAVA_HOME` explicit; the gradle version
+    assertion); the cdylib cross-build `--locked --target
+    aarch64-linux-android` (the NDK clang as linker via env — no
+    cargo-ndk dep); the host .so (feature `host-jni`) + the JVM unit
+    tests through the REAL Java_* seam (golden-fixture parity against
+    the shared `fixtures/tax/` family); **`assembleDebug`** (beyond
+    compileDebugKotlin — the installable APK proven); cargo-deny over
+    core-ffi's lock; permissions contents:read; SHA-pinned actions
+    only (any NEW pin resolved live + recorded at landing); timeout;
+    no secrets; NO uploads.
+11. **The guard joins same-commit BEFORE the first build** (SEC-10/
+    ENG-6/PROD-7): `.gitignore` gains `/core-ffi/target/` + the
+    apps/android set (`.gradle/`, `build/`, `app/build/`,
+    `local.properties`, `*.keystore`) BEFORE any in-repo build state;
+    the backup ≥32-hex scan path list joins `core-ffi` (apps covers
+    apps/android); any known-hash manifest joins at its landing
+    commit.
+12. **The variant preconditions at exit** (SEC-11/LEGAL-7/PROD-8):
+    zero `clearfile/`+`src/` paths in the N3 delta; release.yml
+    byte-unchanged; `core/Cargo.toml`+`core/Cargo.lock` byte-unchanged
+    (the hygiene license check keeps asserting exactly 1 package); no
+    version movement (core-ffi 0.1.0 + apps/android 0.1.0 = new
+    `publish = false` planes); nothing shipped, uploaded, or tagged.
+13. **The records at the close** (LEGAL-6/PROD-1/3/7): the README rows
+    (apps/android + core-ffi: the honest viewer scope, the
+    unreleased/prototype status, the interim statement — the Flutter
+    app remains the shipped product, the no-AI/no-network +
+    non-affiliation notes); STATE/ROADMAP/DEBT/SESSION_LOG/harness_
+    check families (the N2 pattern); **every record states each
+    verification lane's live status — never an unqualified "landed"**
+    (the landed≠verified hardening).
+14. **The Stage-2 slip re-agenda — the MANDATORY item, the count
+    PINNED** (PROD-4): the enumeration — 1 the N1-exit surfacing, 2
+    the N2-entry, 3 the N2-exit convening, 4 the N2-exit close, 5 the
+    2026-11-27 discharge restatement, **6 this gate**. The three owner
+    options: (a) fund a T3 session (the MSI-record keystream decompile
+    chase at payload offset 0x24000 + tax-modern.md, debt D42), (b)
+    supersede the RE-protocol namespace rule, (c) the default
+    re-agenda. No ruling received at any surfacing; (c) continues; the
+    next surfacing rides with N3's EXIT gate.
+15. **The execution box: TWO sessions** (ENG-7/PROD-6): session 1 =
+    the hardenings green + committed FIRST (item 1), then the
+    core-ffi crate + the header + the JNI shim + the boundary
+    batteries + the host tests green — all in-sandbox cargo-only; a
+    session death still leaves items 1–7 landed (the checkpoint
+    discipline). Session 2 = the CI-primary app (apps/android + the
+    CI lane + the records/README). The slip rule stands (logged
+    honestly, never silently extended; an extension needs a recorded
+    owner ruling). **The CI-flakiness absorption rule:** a session may
+    close with the CI lane RED and the record stating the run numbers
+    + statuses honestly (the disposition riding to the N3 exit gate) —
+    what the box forbids is the silent extension or the unqualified
+    "landed". The disk re-measured at each session start (1.8 GB at
+    the gate; ~5.2 GB after the target reclamation; the app session
+    is CI-primary regardless — the JRE-only Java forbids any local
+    JVM lane).
+16. **The N4/N5/N6 pre-positioning recorded** (PROD-5): **N4** — no
+    mingw in-sandbox (re-measured); the two mitigation lanes (a
+    portable user-space mingw cross-build, or CI windows runners); N4's
+    gate rules the toolchain lane, the first C-header consumption by
+    C++ (Win32+Direct2D), the runner's Rust pin, and its own
+    working-app bar (the per-lane-status discipline). **N5** — the
+    ADR-recorded sandbox infeasibility stands; N5's gate LIVE-verifies
+    the macos-latest image list, the label resolution, and the
+    macos-13 retirement window; the recorded PROD position: a
+    macos-latest CI job alone (author-blind Swift + CI-verified)
+    satisfies the settlement's demo bar under exactly the per-lane
+    status discipline, with the single-maintainer risk recorded and
+    any macOS GA owing an owner-side build or the recorded acceptance.
+    **N6** — its gate rules the wasm target for the std-only core, the
+    TS engine's retirement per ADR-016, the parity suites' survival
+    rule, and the epilogue's OWN terminal freeze declaration (the
+    v2.0.0-territory rule — N6's to declare, never an earlier stage's).
+
+**Gate outcome:**
+
+**N3: ENTERED**
+(2026-11-27 — 4 × PROCEED-WITH-CONDITIONS, unanimous, no BLOCK; the
+topology claim verified live by the ENG probe; the cbindgen MPL-2.0
+correction recorded; the two-session box set with the hardenings-first
+checkpoint ordering; the disk plan re-measured and the 3.4 GB
+re-buildable residue reclaimed; the CI-primary posture recorded as
+forced-not-chosen; the slip's sixth surfacing pinned by enumeration.)

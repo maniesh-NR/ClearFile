@@ -63,23 +63,25 @@ else
 fi
 
 FUNDED_RM=$(grep -c 'Gate status:.*FUNDED' "$ROADMAP" || true)
-if [ "$FUNDED_RM" -eq 4 ]; then
-  pass "Epilogue funding posture in ROADMAP ($FUNDED_RM FUNDED: N3–N6; N1 ENTERED+CLOSED, N2 ENTERED — all 2026-11-26; each unfunded-stage still enters only behind its own delta-scoped gate) — checker updated per the legitimate-advance precedent"
+if [ "$FUNDED_RM" -eq 3 ]; then
+  pass "Epilogue funding posture in ROADMAP ($FUNDED_RM FUNDED: N4–N6; N1 ENTERED+CLOSED, N2 ENTERED+CLOSED, N3 ENTERED — each unfunded-stage still enters only behind its own delta-scoped gate) — checker updated per the legitimate-advance precedent"
 else
-  fail "ROADMAP has $FUNDED_RM 'Gate status: FUNDED' lines; expected 4 (N3–N6 still funded; N1 ENTERED+CLOSED, N2 ENTERED, all 2026-11-26). Update this checker if a stage legitimately advanced"
+  fail "ROADMAP has $FUNDED_RM 'Gate status: FUNDED' lines; expected 3 (N4–N6 still funded; N1 ENTERED+CLOSED, N2 ENTERED+CLOSED, N3 ENTERED). Update this checker if a stage legitimately advanced"
 fi
 
 S2_ENTERED_CS=$(grep -c '\*\*Stage 2: ENTERED\*\*' "$CONSENSUS" || true)
 ENTERED_CS=$(grep -cE '\*\*Stage [456]: CLOSED\*\*' "$CONSENSUS" || true)
-# N1's two outcomes (ENTERED at the full-depth entry gate + CLOSED at the
-# exit gate, both 2026-11-26) — updated at the N1 exit close (the
-# legitimate-advance precedent: a checker update, not drift).
+# The epilogue outcomes: N1 ENTERED + N1 CLOSED (both 2026-11-26) + N2
+# ENTERED + N3 ENTERED (2026-11-27) — the N2 exit closure is recorded in
+# the 2026-11-27 discharge entry's prose (not the bold outcome pattern);
+# updated at the N3 gate close (the legitimate-advance precedent: a
+# checker update, not drift).
 ENTERED_N_CS=$(grep -cE '\*\*N[1-6]: (ENTERED|PASSED|CLOSED)' "$CONSENSUS" || true)
 ENTERED_TT_CS=$(grep -cE '\*\*T[1-4]: (ENTERED|PASSED|CLOSED)\*\*' "$CONSENSUS" || true)
-if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 3 ] && [ "$ENTERED_N_CS" -eq 3 ] && [ "$ENTERED_TT_CS" -eq 1 ]; then
-  pass "CONSENSUS records Stage 2's entry, the TT program's T2 entry, the Stages 4/5/6 closures, and N1's ENTERED + CLOSED + N2's ENTERED outcomes"
+if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 3 ] && [ "$ENTERED_N_CS" -eq 4 ] && [ "$ENTERED_TT_CS" -eq 1 ]; then
+  pass "CONSENSUS records Stage 2's entry, the TT program's T2 entry, the Stages 4/5/6 closures, and N1's ENTERED + CLOSED + N2's ENTERED + N3's ENTERED outcomes"
 else
-  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/3/1) — reconcile with ROADMAP"
+  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/4/1) — reconcile with ROADMAP"
 fi
 
 # --- 1b. The N1 variant precondition: release.yml stays native-free -------

@@ -2232,3 +2232,58 @@ D41/D42 residues ride their lanes.**
 - **Next: N3's delta-scoped gate** (the agenda in STATE's
   "Immediately next"; the reviewers convene in parallel isolation
   with their own probes).
+
+## 2026-11-27 (the N3 delta-scoped gate) · N3: ENTERED
+
+- **The gate convened 4-way in parallel isolation over the pushed tip
+  44929c0** (each lane with its own probes; the ENG lane's topology probe
+  built a real scratch cdylib path-depping the core with cbindgen =0.29.4
+  as a build-dep — 44 s build, the header emitted, `nm -D` exports,
+  `core/Cargo.lock` byte-identical after every build; the JVM host-lane
+  probe called a real Java_* symbol through `System.load` on the
+  sandbox's JVM; the runner-image facts fetched live). Verdicts: **SEC
+  PWC (11) / LEGAL PWC (8) / ENG PWC (7) / PROD PWC (8) — no BLOCK.**
+  Reports at `harness/adversarial/reports/2026-11-27-n3-*.md`.
+- **The material corrections the probes forced (recorded in the gate
+  record):** cbindgen is **MPL-2.0** (the proposal's "MIT OR Apache-2.0"
+  refuted live three ways; GPL-3.0-compatible + build-time-only — the
+  posture clean, the records corrected); the disk measured **1.7–1.8 GB**
+  at the gate (the records' ~5 GB stale) — `apps/linux/target` (3.4 GB
+  re-buildable residue) reclaimed at the gate close per the disk plan →
+  **~5.2 GB free**; the sandbox Java is a **JRE only** (no
+  javac/gradle/kotlinc) — the app session is **CI-primary, forced not
+  chosen**; ubuntu-latest ships the Android SDK **and** NDK (27.3.x/29.x/
+  30.x) + Gradle 9.9.1 + JDK 11/17/21/25-default + Rust 1.100.0 + rustup
+  — the CI job needs fail-closed version assertions only, no new
+  download class.
+- **The consolidated 16-item condition ledger + the TWO-session box** live
+  in CONSENSUS's 2026-11-27 N3 gate record (the highlights: the
+  hardenings land FIRST green + committed before any FFI work — the
+  indexed-lookup bound + the 512 MiB pre-check; the flat C ABI contract:
+  strings/bytes only, the single free fn, catch_unwind at every export,
+  no fs in core-ffi; cbindgen =0.29.4 exact, Language::C, the Java_*
+  shim excluded from the header, the header COMMITTED with the CI
+  freshness check; the JNI shim jbyteArray-never-jstring + zero engine
+  logic in Kotlin; the boundary batteries through the C seam; core-ffi's
+  deny.toml from its first commit with MPL-2.0 added; the zero-permission
+  manifest (no INTERNET — the claim OS-enforced); NO committed
+  gradle-wrapper jar (the blob policy); the CI job guards-first +
+  assembleDebug + the JVM tests through the REAL Java_* seam + no
+  uploads; the variant preconditions; the records with per-lane live
+  statuses). The **Stage-2 slip re-agenda: the SIXTH surfacing, pinned
+  by enumeration** (1 N1-exit, 2 N2-entry, 3 N2-exit-convening, 4
+  N2-exit-close, 5 the 2026-11-27 restatement, 6 this gate); no ruling
+  received at any; (c) the default continues; the next rides with N3's
+  EXIT gate. The **N4/N5/N6 pre-positioning** recorded in the gate
+  record (PROD-5: N4's no-mingw + the two toolchain lanes; N5's
+  live-verification list + the recorded PROD position that macos-latest
+  CI alone satisfies the demo bar under the per-lane discipline; N6's
+  wasm + TS-retirement + freeze-declaration agenda).
+- **The checkers updated per the legitimate-advance precedent:**
+  FUNDED 4→3 (N4–N6 remain FUNDED) + the epilogue outcome count 3→4
+  (N1 ENTERED + N1 CLOSED + N2 ENTERED + N3 ENTERED; the N2 exit
+  closure lives in the 2026-11-27 discharge prose). ROADMAP's N3 bullet
+  rewritten to the ENTERED record; STATE's "Immediately next" rewritten
+  to the session-1 execution order.
+- **Next: N3 session 1 executes** (the hardenings first, then the
+  core-ffi crate — STATE's "Immediately next" carries the full order).

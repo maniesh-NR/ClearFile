@@ -638,9 +638,29 @@ v1's stages still close first.
   material_color_utilities 0.13.0 (the pubspec.lock-resolved version,
   content-hash pinned — NOT the SDK version).
 - **N3 — Android native UI**: Android Views + Kotlin Multiplatform
-  (Android-only) over the core via a thin JNI shim. **Gate status: FUNDED
-  2026-11-26 (owner, in-conversation; the delta-scoped gate convenes at
-  its turn).**
+  (Android-only) over the core via a thin JNI shim. **Gate status:
+  ENTERED 2026-11-27** (the delta-scoped gate, 4 × PWC unanimous — SEC
+  11 / LEGAL 8 / ENG 7 / PROD 8, no BLOCK; reports at
+  `harness/adversarial/reports/2026-11-27-n3-*.md`; the material
+  corrections the probes forced: cbindgen is MPL-2.0 (not the proposal's
+  refuted dual id — GPL-3.0-compatible, build-time-only), the app session
+  is CI-primary FORCED (JRE-only Java, no gradle/kotlinc, the disk
+  measured 1.8 GB), and the runner image ships the SDK+NDK (fail-closed
+  version assertions only). The shape: the NEW separate-root `core-ffi/`
+  crate (the ONE flat C ABI + the cbindgen header + the cdylib + the thin
+  jbyteArray JNI shim) + `apps/android/` (KMP-shaped, exactly
+  androidTarget(), Android Views, the SAF viewer demo, MD3-from-seed via
+  the palette FFI, zero-permission manifest) + the CI android job
+  (guards-first, assembleDebug, the JVM tests through the REAL Java_*
+  seam, cargo-deny, no uploads). **The execution box: TWO sessions** —
+  session 1 = the riding hardenings land FIRST green + committed (the
+  indexed-lookup duplicate-scan bound + the 512 MiB file-size pre-check)
+  before any FFI work, then the core-ffi crate + header + shim + the
+  boundary batteries + host tests green (all in-sandbox cargo-only);
+  session 2 = the CI-primary app + the CI lane + the records/README. The
+  consolidated 16-item condition ledger + the sixth-surfacing slip
+  enumeration + the N4/N5/N6 pre-positioning live in CONSENSUS's 2026-
+  11-27 N3 gate record.)
 - **N4 — Windows native UI**: raw Win32 + Direct2D consuming the
   cbindgen C header. **Gate status: FUNDED 2026-11-26 (owner,
   in-conversation; the delta-scoped gate convenes at its turn).**
