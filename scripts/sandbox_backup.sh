@@ -129,7 +129,7 @@ HITS="$(
       ':(exclude)harness/adversarial/reports/2026-11-26-n1exit-engineering.md' \
       ':(exclude)harness/adversarial/reports/2026-11-26-n1exit-security.md' \
       ':(exclude)harness/adversarial/reports/2026-11-26-n2exit-legal.md' || true
-    git grep --cached -I -l -E "$RE_HEX_PATTERNS" -- docs clearfile src scripts fixtures harness core apps \
+    git grep --cached -I -l -E "$RE_HEX_PATTERNS" -- docs clearfile src scripts fixtures harness core core-ffi apps \
       ':(exclude)docs/re-research/corpus-manifest.md' \
       ':(exclude)scripts/rust_toolchain_manifest' \
       ':(exclude)clearfile/.metadata' \

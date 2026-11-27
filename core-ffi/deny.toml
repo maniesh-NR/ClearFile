@@ -1,0 +1,73 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# The N3 gate's cargo-deny config for core-ffi (SEC-7/LEGAL-2: the crate
+# carrying a first external dependency owns a closed allow-list from its
+# FIRST commit). Same shape as apps/linux/deny.toml, extended with the
+# two ids this crate's tree actually encounters:
+#
+# ## The cbindgen license record (LEGAL-1, verified live 2026-11-27)
+# cbindgen is MPL-2.0 (crates.io 0.29.4 + mozilla/cbindgen master both
+# declare it; the N3 proposal's "MIT OR Apache-2.0" premise was refuted
+# live — every record states MPL-2.0). MPL-2.0 is a build-time-only
+# dependency: never linked into the cdylib, never distributed. MPL-2.0
+# is GPL-3.0-compatible (file-level copyleft; Larger-Work combining
+# permitted — the FSF license list), added per the closed-list rule:
+# allowed ids are the ones actually encountered + reviewed.
+#
+# ## The jni crate (android/host-jni target-gated)
+# Apache-2.0/MIT dual — both already in the allow-list below (the
+# target-gated android/host tree is covered by the full-lockfile check).
+
+[licenses]
+version = 2
+allow = [
+  "GPL-3.0-only",
+  "MIT",
+  "Apache-2.0",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "Zlib",
+  "Unicode-3.0",
+  "Unicode-DFS-2016",
+  "0BSD",
+  "CC0-1.0",
+  # BSL-1.0 (Boost Software License): permissive, GPL-3.0-compatible —
+  # the apps/linux precedent (encountered in that tree's first live
+  # cargo-deny run, hygiene run #42); this tree's transitive core path
+  # may share it.
+  "BSL-1.0",
+  # MPL-2.0 (Mozilla Public License 2.0): cbindgen (build-time-only,
+  # GPL-3.0-compatible) — the actually-encountered id of THIS crate's
+  # tree, verified live at the N3 gate (LEGAL-1).
+  "MPL-2.0",
+]
+# Exactly `GPL-3.0-only` (not the deprecated `GPL-3.0`): GNU-pedantic ids.
+# GPL-2.0-only and unlicensed crates are barred (ADR-017's licensing annex)
+# — they are simply absent from the allow-list, so they fail closed.
+confidence-threshold = 0.93
+private = { ignore = true }
+
+# Sources: crates.io-registry only (the apps/linux precedent) — anything
+# else fails.
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []
+
+# The full lockfile is covered — incl. the build-dep tree (cbindgen) and
+# the target-gated android/host-jni families (the `jni` crate + its deps):
+# the CI check runs against all targets' lock entries.
+[advisories]
+version = 2
+yanked = "deny"
+
+[bans]
+multiple-versions = "warn"
+# The ONE dependency with no registry version is clearfile-core — a PATH
+# dependency on the workspace sibling, the recorded ADR-017 seam ("Linux
+# links the crate directly (no FFI)"; core-ffi wraps the core for the
+# Android/Windows/macOS consumers). The wildcard ban's purpose (unaudited
+# `*` registry versions) is served by every registry dependency carrying
+# an explicit bound; the path dep is our own crate.
+wildcards = "warn"

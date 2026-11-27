@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: GPL-3.0-only
+[package]
+name = "clearfile-core-ffi"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-only"
+description = "ClearFile FFI seam (N3, the ADR-017 epilogue): the ONE flat C ABI over the clearfile-core Rust core — the cbindgen-generated header (N4 Win32 C++ / N5 macOS SPM consume it), the cdylib, and the thin Android JNI shim"
+publish = false
+
+# The ADR-017 FFI seam: "One flat C ABI (extern \"C\", cbindgen-generated
+# header) ... Linux links the crate directly (no FFI)". The cdylib is the
+# Android/Windows/macOS artifact; the flat C ABI is the one audit surface.
+# The base RUNTIME dependency tree is exactly one crate: clearfile-core
+# (path) — plus the optional jni leg below, activated only by the host-jni
+# feature on non-Android hosts.
+[dependencies]
+clearfile-core = { path = "../core" }
+# The optional HOST leg of the jni bindings (see the android target's
+# non-optional entry below for why there are two): activated by the
+# `host-jni` feature (the JVM-host test lane) so the CI JVM unit tests
+# can System.load the host .so; the plain Linux/host .so carries none
+# of it.
+jni = { version = "0.21", optional = true }
+
+# The thin JNI shim (ADR-017: "Android via a thin JNI shim" over the same
+# flat C ABI): the standard `jni` bindings (Apache-2.0/MIT) for the JNIEnv
+# calls the marshaling needs — jbyteArray in/out, never jstring (Modified
+# UTF-8 would corrupt non-ASCII envelope text). On ANDROID the shim is
+# unconditional (the module's cfg) and so is its dependency; the two
+# entries (this + the optional host leg above) unify to the same locked
+# crate.
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.21"
+
+# cbindgen (MPL-2.0 — verified live at the 2026-11-27 N3 gate: crates.io
+# 0.29.4 + mozilla/cbindgen master both declare MPL-2.0; a BUILD-time-only
+# dependency, never linked into the cdylib, never distributed; MPL-2.0 is
+# GPL-3.0-compatible, and the license attaches to cbindgen's source, not
+# to the header it emits from OUR API declarations). Exact-pinned per the
+# N3 gate (ENG-3/SEC-7/LEGAL-1); the header regeneration is deterministic
+# under this pin (the CI freshness check regenerates + diffs).
+[build-dependencies]
+cbindgen = "=0.29.4"
+
+[features]
+# The JVM-host test lane (ENG-3/SEC-3): compiles the JNI shim for the HOST
+# build so the CI JVM unit tests can System.load the host .so and call the
+# REAL Java_* mangled symbols (the no-emulator verification lane). The
+# Android target compiles the shim unconditionally (its target-gated
+# dependency in Cargo.toml).
+host-jni = ["dep:jni"]
+# The panic-injection test hook (SEC-1): compiles the feature-gated
+# `clearfile_test_guard_panic` export the boundary battery uses to prove
+# the shared guard's panic→sentinel+named-message mapping once. Test-only;
+# NEVER enabled for the shipped artifact builds.
+panic-hook-test = []
+
+# The cdylib is the artifact (the .so the JVM loads, the .dll/.dylib the
+# N4/N5 consumers link); the rlib leg serves only the boundary battery's
+# integration tests (tests/ linking the crate directly — the standard
+# dual shape; the shipped artifact is the cdylib).
+[lib]
+name = "clearfile_core_ffi"
+crate-type = ["cdylib", "rlib"]

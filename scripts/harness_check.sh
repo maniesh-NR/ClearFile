@@ -297,5 +297,39 @@ else
   fail "release.yml references RE tooling ($RE_TOOL_REFS line(s)) — tooling never wires into artifact paths (ADR-012 (e))"
 fi
 
+# --- The N3 scaffold families (the 2026-11-27 N3 gate, ledger item 11) --------
+
+# The core-ffi crate's tracked surface: the crate root, the flat C ABI, the
+# cbindgen config + the committed header, the deny.toml, the committed lock,
+# and the boundary battery.
+FFI_FILES=$(ls core-ffi/Cargo.toml core-ffi/Cargo.lock core-ffi/deny.toml \
+  core-ffi/cbindgen.toml core-ffi/build.rs core-ffi/clearfile.h \
+  core-ffi/src/lib.rs core-ffi/tests/boundary.rs 2>/dev/null | wc -l)
+if [ "$FFI_FILES" -eq 8 ]; then
+  pass "the N3 core-ffi scaffold surface is fully tracked (the crate + the flat C ABI + the cbindgen config + the committed header + deny.toml + the lock + the boundary battery)"
+else
+  fail "core-ffi scaffold file drift ($FFI_FILES of 8) — a core-ffi crate file or the boundary battery is missing"
+fi
+
+# The committed header is the C ABI ONLY: zero JNI exports in it (the JNI
+# shim rides in the same cdylib, never in the header).
+FFI_JNI_IN_HEADER=$(grep -c "Java_" core-ffi/clearfile.h 2>/dev/null || true)
+if [ "$FFI_JNI_IN_HEADER" -eq 0 ]; then
+  pass "the committed clearfile.h carries zero Java_ symbols (the flat C ABI only — the JNI shim is never in the header)"
+else
+  fail "clearfile.h carries $FFI_JNI_IN_HEADER Java_ symbols — the header drifted into the JNI layer"
+fi
+
+# The core crate's zero-dependency assertion stays byte-scoped to core/
+# (the N2 topology: separate crate roots): core/Cargo.lock must still pin
+# exactly one package while core-ffi carries its own lock.
+CORE_PKGS=$(grep -c '^\[\[package\]\]' core/Cargo.lock 2>/dev/null || true)
+FFI_PKGS=$(grep -c '^\[\[package\]\]' core-ffi/Cargo.lock 2>/dev/null || true)
+if [ "$CORE_PKGS" -eq 1 ] && [ "$FFI_PKGS" -ge 2 ]; then
+  pass "the core lock stays exactly 1 package (the zero-dep assertion intact) while core-ffi carries its own $FFI_PKGS-package lock (the separate-root topology)"
+else
+  fail "lock topology drift: core=$CORE_PKGS (must be 1), core-ffi=$FFI_PKGS (must be >=2)"
+fi
+
 echo "harness_check: $FAILURES failure(s)"
 exit $([ "$FAILURES" -eq 0 ] && echo 0 || echo 1)

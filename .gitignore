@@ -107,6 +107,7 @@ server.log
 # N1 (ADR-017, 2026-11-26 entry gate SEC-1): the Rust core's build
 # artifacts must be ignored BEFORE any cargo invocation lands.
 /core/target/
+/core-ffi/target/
 # N2 session 1 (the palette generator scratch package — D44): its
 # pub/test build artifacts are regenerated, never tracked (the gate
 # condition-9 class: the ignore rules land WITH the scaffold, before
