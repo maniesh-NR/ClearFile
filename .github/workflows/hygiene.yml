@@ -356,6 +356,30 @@ jobs:
             exit 1
           }
           echo "assembleDebug: ok — the APK carries the cross-built .so"
+      # The SEC rider's supersession discharge (the N4 gate accepted the
+      # shape): the fail-closed gradle dependency assertions — the
+      # RUNTIME classpath resolves ZERO external artifacts (the security
+      # property a lockfile would give, asserted directly) and the TEST
+      # classpath exactly junit 4.13.2 + hamcrest-core 1.3.
+      - name: gradle dependency assertions (the rider's supersession discharge)
+        run: |
+          cd apps/android
+          RUNTIME="$(gradle --no-daemon -q :app:dependencies --configuration debugRuntimeClasspath)"
+          echo "$RUNTIME" | grep -E '^[[:space:]]*\\--- ' | grep -v ':shared' | grep -v '^$' > /tmp/ext-deps.txt || true
+          if [ -s /tmp/ext-deps.txt ]; then
+            echo "dependency assertion: FAIL — external runtime artifacts:" >&2
+            cat /tmp/ext-deps.txt >&2
+            exit 1
+          fi
+          TESTCP="$(gradle --no-daemon -q :app:dependencies --configuration debugUnitTestRuntimeClasspath)"
+          echo "$TESTCP" | grep -q 'junit:junit:4.13.2' || { echo "dependency assertion: FAIL — junit 4.13.2 missing from the test classpath" >&2; exit 1; }
+          echo "$TESTCP" | grep -E '^[[:space:]]*\\--- ' | grep -v ':shared' | grep -v 'junit:junit:4.13.2' | grep -v 'org.hamcrest:hamcrest-core:1.3' > /tmp/ext-test-deps.txt || true
+          if [ -s /tmp/ext-test-deps.txt ]; then
+            echo "dependency assertion: FAIL — unexpected external test artifacts:" >&2
+            cat /tmp/ext-test-deps.txt >&2
+            exit 1
+          fi
+          echo "dependency assertions: ok — zero external runtime artifacts; the test classpath is exactly junit 4.13.2 + hamcrest-core 1.3"
       # cargo-deny over core-ffi's lock (the crate with the cbindgen + jni
       # trees; the closed allow-list incl. the recorded MPL-2.0 join).
       - name: cargo-deny (licenses + sources + advisories, core-ffi)
@@ -365,6 +389,82 @@ jobs:
           command: check
           command-arguments: --hide-inclusion-graph
           manifest-path: core-ffi/Cargo.toml
+
+  windows-app:
+    # N4 session 2 (2026-11-27, the N4 gate's ledger): the Windows lane —
+    # the FIRST C++ consumption of the committed flat-C header, verified
+    # NATIVELY (the mingw lane rejected at the gate: a second ABI surface
+    # with no consumer). Fail-closed guards first (the rustc + host-triple
+    # assertion enforces the msvc lane mechanically); cargo --locked
+    # everywhere; the boundary battery RUNS ON WINDOWS (the real ABI
+    # lane); the MSVC compile/link (the vcvars discovery — cl is off-PATH
+    # on the runner); the .dll beside the exe before the smoke; the
+    # headless smoke diffs the full stdout against the LINUX app's
+    # committed expected text (one canonical text family, two platforms);
+    # the PE import-table network guard (Windows has no manifest
+    # permissions — the no-network claim's mechanical proof); NO uploads
+    # (nothing ships).
+    name: "Windows app (C++ seam: guards + boundary battery + MSVC build + headless smoke + import guard)"
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      # The rustc guard + the host-triple assertion (the mingw rejection
+      # enforced mechanically: the lane builds ONLY for windows-msvc).
+      - name: rustc + host-triple guard (msvc, fail-closed)
+        shell: bash
+        run: |
+          LINE="$(rustc --version)"
+          VERSION="${LINE#rustc }"
+          MAJOR="$(printf '%s' "$VERSION" | cut -d. -f1)"
+          MINOR="$(printf '%s' "$VERSION" | cut -d. -f2)"
+          case "$MAJOR" in ''|*[!0-9]*) echo "rustc guard: FAIL — unparsable: $LINE" >&2; exit 1 ;; esac
+          case "$MINOR" in ''|*[!0-9]*) echo "rustc guard: FAIL — unparsable: $LINE" >&2; exit 1 ;; esac
+          if [ "$MAJOR" -lt 1 ] || { [ "$MAJOR" -eq 1 ] && [ "$MINOR" -lt 95 ]; }; then
+            echo "rustc guard: FAIL — rustc $MAJOR.$MINOR < 1.95; refusing. $LINE" >&2
+            exit 1
+          fi
+          HOST="$(rustc -vV | sed -n 's/^host: //p')"
+          if [ "$HOST" != "x86_64-pc-windows-msvc" ]; then
+            echo "host-triple guard: FAIL — host '$HOST' is not x86_64-pc-windows-msvc (the msvc lane is the recorded N4 shape)" >&2
+            exit 1
+          fi
+          echo "guards: ok — rustc $MAJOR.$MINOR >= 1.95, host $HOST"
+      - name: the FFI cdylib (release) — the .dll + the import library
+        shell: bash
+        run: |
+          cargo build --locked --release --manifest-path core-ffi/Cargo.toml
+          test -f core-ffi/target/release/clearfile_core_ffi.dll || { echo "FAIL — the .dll was not emitted" >&2; exit 1; }
+          test -f core-ffi/target/release/clearfile_core_ffi.dll.lib || { echo "FAIL — the MSVC import library was not emitted" >&2; exit 1; }
+      - name: the boundary battery ON WINDOWS (the real ABI lane)
+        shell: bash
+        run: cargo test --locked --manifest-path core-ffi/Cargo.toml --features panic-hook-test
+      # The C++ compile + link + the PE import-table network guard, in ONE
+      # cmd step (the vcvars discovery: cl is off-PATH on the runner —
+      # vswhere finds the VS instance, vcvars64 puts cl on PATH).
+      - name: the MSVC build + the import-table network guard
+        shell: cmd
+        run: |
+          for /f "tokens=* usebackq" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSPATH=%%i"
+          call "%VSPATH%\VC\Auxiliary\Build\vcvars64.bat"
+          mkdir apps\windows\build 2>NUL
+          cl /utf-8 /std:c++17 /W4 /EHsc apps\windows\main.cpp /Fe:apps\windows\build\clearfile-windows.exe /I core-ffi /link /LIBPATH:core-ffi\target\release core-ffi\target\release\clearfile_core_ffi.dll.lib user32.lib gdi32.lib comdlg32.lib d2d1.lib dwrite.lib
+          if errorlevel 1 exit /b 1
+          echo The network-import guard (the no-network claim's mechanical proof):
+          dumpbin /DEPENDENTS apps\windows\build\clearfile-windows.exe | findstr /i "ws2_32 wininet winhttp urlmon" && exit /b 1
+          dumpbin /DEPENDENTS core-ffi\target\release\clearfile_core_ffi.dll | findstr /i "ws2_32 wininet winhttp urlmon" && exit /b 1
+          echo import guard: ok — no network imports in the exe or the dll
+      # The headless smoke (the Linux app's canonical expected text — one
+      # text family, two platforms): the .dll rides beside the exe.
+      - name: the headless smoke (diff against the Linux app's expected text)
+        shell: bash
+        run: |
+          cp core-ffi/target/release/clearfile_core_ffi.dll apps/windows/build/
+          ./apps/windows/build/clearfile-windows.exe --headless fixtures/migration/v1-web-envelope.json > /tmp/headless.out
+          diff -u apps/linux/tests/expected-headless.txt /tmp/headless.out
+          echo "headless smoke: ok — the byte-parity text family across platforms"
 
   re-tooling:
     # Stage-2 execution session 1 (2026-11-22, ADR-012 mechanics (b)/(e) +
