@@ -589,3 +589,113 @@ fn txf_import_through_the_boundary_and_the_contracts() {
     let _ = call_ok("{\"taxYear\":2025}", clearfile_compute);
     assert_eq!(last_error_text(), "");
 }
+
+// ---------------------------------------------------------------------------
+// The N6 wasm-lane additions (the 2026-11-27 N6 gate, ENG-1/SEC-1 +
+// ENG-2/SEC-3): the length-paired alloc/dealloc (interior-NUL payloads —
+// every .tax container — are the probe's trap class) + the binary
+// container export's caller-allocated-output channel. Proved on EVERY
+// target the battery runs on (the un-gated reconciliation recorded in
+// the N6 gate record).
+// ---------------------------------------------------------------------------
+
+#[test]
+fn alloc_dealloc_length_pair_survives_interior_nuls() {
+    use clearfile_core_ffi::{clearfile_alloc, clearfile_dealloc};
+
+    // >=100 cycles of alloc/write-interior-NULs/dealloc (the gate's
+    // probe-verified trap class: a strlen-derived dealloc would trap
+    // the allocator on the first interior-NUL free).
+    for cycle in 0..100 {
+        let len = 64 + cycle;
+        let ptr = clearfile_alloc(len);
+        assert!(!ptr.is_null(), "alloc must succeed; last_error: {last_error}", last_error = last_error_text());
+        // SAFETY: the buffer is len+1 bytes (the contract) and we write
+        // exactly len, interior NULs included.
+        unsafe {
+            std::ptr::write_bytes(ptr as *mut u8, 0x00, len); // ALL-zero payload: every byte an interior NUL
+        }
+        clearfile_dealloc(ptr, len);
+    }
+    // The shared 512 MiB bound refused BEFORE the allocation, with the
+    // shared named message family.
+    let too_big = clearfile_alloc(512 * 1024 * 1024 + 1);
+    assert!(too_big.is_null(), "the oversized alloc must refuse");
+    assert_eq!(last_error_text(), INPUT_TOO_LARGE_MESSAGE);
+    // clearfile_dealloc(NULL, n) is a documented no-op (never a crash).
+    clearfile_dealloc(std::ptr::null_mut(), 128);
+}
+
+#[test]
+fn container_export_is_the_length_out_binary_channel() {
+    use clearfile_core_ffi::clearfile_export_tax_container;
+
+    // The envelope payload: encode through the boundary's own function
+    // (the caller-serialization seam — export and inspect are mirror
+    // images across the envelope boundary, the core's own module docs).
+    let filing_text = "{\"taxYear\":2025}";
+    let saved_at = "2026-11-27T00:00:00Z";
+    let envelope = call_two_payloads(filing_text.as_bytes(), saved_at, clearfile_encode_envelope);
+    assert!(!envelope.is_empty());
+
+    // Probe call: capacity 0 -> the needed size (return 1, NOT an error;
+    // last_error stays the empty success string).
+    let mut needed: usize = 0;
+    let rc = clearfile_export_tax_container(
+        envelope.as_ptr() as *const _,
+        envelope.len(),
+        std::ptr::null_mut(),
+        0,
+        &mut needed,
+    );
+    assert_eq!(rc, 1, "the probe call signals too-small with 1");
+    assert!(needed > 0, "the needed size must be reported");
+    assert_eq!(last_error_text(), "", "too-small is a return code, not an error");
+
+    // The real call: a caller-allocated buffer of the reported size.
+    let mut out = vec![0u8; needed];
+    let mut written: usize = 0;
+    let rc = clearfile_export_tax_container(
+        envelope.as_ptr() as *const _,
+        envelope.len(),
+        out.as_mut_ptr() as *mut _,
+        out.len(),
+        &mut written,
+    );
+    assert_eq!(rc, 0, "the export must succeed; last_error: {last_error}", last_error = last_error_text());
+    assert_eq!(written, needed, "the written length is the needed length");
+
+    // The binary channel's own proof: the container bytes contain
+    // interior NULs (a ZIP always does), and the round-trip back through
+    // the boundary's loader reproduces the envelope payload — binary
+    // never rode the CString channel anywhere.
+    assert!(out.iter().any(|b| *b == 0), "a ZIP payload always carries interior NULs");
+    let loaded = clearfile_core_ffi::clearfile_load_and_compute(out.as_ptr() as *const _, out.len());
+    assert!(
+        !loaded.is_null(),
+        "the exported container must reload through the composed pipeline; last_error: {last_error}",
+        last_error = last_error_text(),
+    );
+    let loaded_text = unsafe { CStr::from_ptr(loaded) }.to_string_lossy().into_owned();
+    clearfile_free(loaded);
+    let parsed = Json::parse(&loaded_text).unwrap();
+    let source = parsed.as_obj().unwrap().iter().find_map(|(k, v)| match (k.as_str(), v) {
+        ("source", Json::Str(s)) => Some(s.clone()),
+        _ => None,
+    });
+    assert!(
+        source.as_deref().is_some_and(|s| s.contains("container") || s.contains("clearfile.json")),
+        "the reloaded container identifies its source: {loaded_text}"
+    );
+
+    // The NULL out_len pointer is a named error (never a crash).
+    let rc = clearfile_export_tax_container(
+        envelope.as_ptr() as *const _,
+        envelope.len(),
+        std::ptr::null_mut(),
+        0,
+        std::ptr::null_mut(),
+    );
+    assert_eq!(rc, -1);
+    assert!(!last_error_text().is_empty());
+}

@@ -1,4 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
+
+// RETIRED 2026-11-27 (N6, the epilogue's terminal gate): per ADR-016, the
+// maintenance freeze converted to retirement the day the shared Rust core
+// began serving the web (WASM); per ADR-017 this engine is now a FROZEN
+// TRANSITION ARTIFACT — out of the app's runtime import graph, kept
+// in-tree as a study artifact, still tsc-checked, and BYTE-FROZEN from
+// this edit: no further changes of any class land here, bug and security
+// fixes included — they go to the Rust core (src/lib/wasm/ is the
+// successor adapter).
 /**
  * ClearFile Return — open, documented JSON save format (ADR-015).
  *

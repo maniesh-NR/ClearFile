@@ -2,7 +2,10 @@
   "compilerOptions": {
     "target": "es2020",
     "module": "commonjs",
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "strict": true,
     "noEmitOnError": true,
     "declaration": false,
@@ -14,6 +17,6 @@
     "../src/lib/ai/ladder.ts",
     "../src/lib/ai/tasks.ts",
     "../src/lib/tax/config.ts",
-    "../src/lib/tax/engine.ts"
+    "../src/lib/wasm/core.ts"
   ]
 }

@@ -101,6 +101,57 @@ const char *clearfile_last_error(void);
  */
 void clearfile_free(char *owned);
 
+/**
+ * Allocate an input buffer of `len` usable bytes (zero-initialized, one
+ * extra zero byte appended for the text-input case's convenience) for
+ * writing an input payload into before a call — the wasm32 lane's one
+ * allocation channel (JS has no other way to place bytes in the module's
+ * memory; the native consumers own their buffers). The shared 512 MiB
+ * bound is refused BEFORE the allocation, with the shared named message
+ * family. Returns NULL with the named message. Freed ONLY by
+ * [`clearfile_dealloc`] with the SAME `len` — NEVER [`clearfile_free`]
+ * (its strlen-derived dealloc is unsound for interior-NUL payloads).
+ */
+char *clearfile_alloc(uintptr_t len);
+
+/**
+ * Free a [`clearfile_alloc`]ated buffer — length-paired with the SAME
+ * `len` that produced it (the wasm32 JS loader's release path; the
+ * native consumers never hold [`clearfile_alloc`] buffers). NULL-safe.
+ */
+void clearfile_dealloc(char *ptr, uintptr_t len);
+
+/**
+ * Export a ClearFile exchange container (the `.tax`-extension STORE-only
+ * ZIP carrying the serialized envelope as its `clearfile.json` entry)
+ * from a PRE-SERIALIZED envelope payload — the ONE binary-data export:
+ * the caller allocates `out_bytes` (`out_capacity` bytes), the function
+ * writes at most `out_capacity` bytes, stores the total needed length in
+ * `*out_len`, and returns 0 on success / 1 when the buffer was too small
+ * (the needed size is in `*out_len`; grow and call again) / -1 on a
+ * named error (the message in [`clearfile_last_error`]). Binary bytes
+ * never ride the CString channel (the N6 gate's ruling); the envelope
+ * serialization is the caller's ([`clearfile_encode_envelope`] — the
+ * core's own hoisted seam, `export` and `inspect` mirror images across
+ * the envelope boundary).
+ */
+int32_t clearfile_export_tax_container(const char *envelope_text,
+                                       uintptr_t envelope_len,
+                                       char *out_bytes,
+                                       uintptr_t out_capacity,
+                                       uintptr_t *out_len);
+
+/**
+ * The TY2025 parameter table, serialized (the N6 wasm lane's one true
+ * source of the parameter DATA — the TS config table's retirement
+ * channel; the field names + per-status keys mirror the TS
+ * `TaxYearParameters` interface exactly, the last bracket rung's
+ * infinite `up_to` as `null`). The adapter parses this once at init;
+ * its display walk reads the core-served table (the parameter LOGIC
+ * lives nowhere platform-side).
+ */
+char *clearfile_params_json(void);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

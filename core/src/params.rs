@@ -104,6 +104,100 @@ pub struct TaxYearParameters {
 }
 
 impl TaxYearParameters {
+    /// The JSON serialization (the N6 wasm lane's parameter-table service:
+    /// `clearfile_params_json` — the table's ONE true source, the TS config
+    /// table's retirement channel). The field names + the per-status keys
+    /// mirror the TS `TaxYearParameters` interface exactly (config.ts);
+    /// the last bracket rung's infinite `up_to` serializes as `null` (the
+    /// TS `Bracket.upTo: number | null`; strict JSON cannot carry
+    /// Infinity).
+    pub fn to_json(&self) -> crate::json::Json {
+        use crate::json::Json;
+        const STATUS_KEYS: [&str; 5] = [
+            "single",
+            "marriedJoint",
+            "marriedSeparate",
+            "headOfHousehold",
+            "survivingSpouse",
+        ];
+        fn by_status(values: &[f64; 5]) -> Json {
+            use crate::json::Json;
+            Json::Obj(
+                (0..5)
+                    .map(|i| {
+                        (
+                            ["single", "marriedJoint", "marriedSeparate", "headOfHousehold", "survivingSpouse"][i].to_string(),
+                            Json::Num(values[i]),
+                        )
+                    })
+                    .collect(),
+            )
+        }
+        fn brackets_by_status(schedules: &[[Bracket; 7]; 5]) -> Json {
+            use crate::json::Json;
+            Json::Obj(
+                (0..5)
+                    .map(|i| {
+                        (
+                            ["single", "marriedJoint", "marriedSeparate", "headOfHousehold", "survivingSpouse"][i].to_string(),
+                            Json::Arr(
+                                schedules[i]
+                                    .iter()
+                                    .map(|br| {
+                                        Json::Obj(vec![
+                                            ("rate".to_string(), Json::Num(br.rate)),
+                                            (
+                                                "upTo".to_string(),
+                                                if br.up_to.is_finite() {
+                                                    Json::Num(br.up_to)
+                                                } else {
+                                                    Json::Null
+                                                },
+                                            ),
+                                        ])
+                                    })
+                                    .collect(),
+                            ),
+                        )
+                    })
+                    .collect(),
+            )
+        }
+        let _ = STATUS_KEYS;
+        Json::Obj(vec![
+            ("year".to_string(), Json::Num(self.year as f64)),
+            ("standardDeduction".to_string(), by_status(&self.standard_deduction)),
+            (
+                "additionalPerAgedOrBlindPerson".to_string(),
+                by_status(&self.additional_per_aged_or_blind_person),
+            ),
+            ("seniorDeductionPerPerson".to_string(), Json::Num(self.senior_deduction_per_person)),
+            ("seniorPhaseoutStart".to_string(), by_status(&self.senior_phaseout_start)),
+            ("seniorPhaseoutRate".to_string(), Json::Num(self.senior_phaseout_rate)),
+            ("ordinaryBrackets".to_string(), brackets_by_status(&self.ordinary_brackets)),
+            ("qdiZeroCap".to_string(), by_status(&self.qdi_zero_cap)),
+            ("qdiFifteenCap".to_string(), by_status(&self.qdi_fifteen_cap)),
+            ("saltBaseCap".to_string(), by_status(&self.salt_base_cap)),
+            ("saltPhaseoutStart".to_string(), by_status(&self.salt_phaseout_start)),
+            ("saltPhaseoutRate".to_string(), Json::Num(self.salt_phaseout_rate)),
+            ("saltFloor".to_string(), by_status(&self.salt_floor)),
+            ("niitRate".to_string(), Json::Num(self.niit_rate)),
+            ("niitThreshold".to_string(), by_status(&self.niit_threshold)),
+            ("ctcPerChild".to_string(), Json::Num(self.ctc_per_child)),
+            ("actcPerChild".to_string(), Json::Num(self.actc_per_child)),
+            ("actcRate".to_string(), Json::Num(self.actc_rate)),
+            ("actcEarnedIncomeFloor".to_string(), Json::Num(self.actc_earned_income_floor)),
+            ("ctcPhaseoutStart".to_string(), by_status(&self.ctc_phaseout_start)),
+            ("ctcPhaseoutRate".to_string(), Json::Num(self.ctc_phaseout_rate)),
+            ("odcPerDependent".to_string(), Json::Num(self.odc_per_dependent)),
+            ("studentLoanMax".to_string(), Json::Num(self.student_loan_max)),
+            ("studentLoanPhaseoutStart".to_string(), by_status(&self.student_loan_phaseout_start)),
+            ("studentLoanPhaseoutEnd".to_string(), by_status(&self.student_loan_phaseout_end)),
+            ("charitableCashAgiLimit".to_string(), Json::Num(self.charitable_cash_agi_limit)),
+            ("charitableNonCashAgiLimit".to_string(), Json::Num(self.charitable_non_cash_agi_limit)),
+        ])
+    }
+
     /// Dart `saltCapFor`: the OBBBA SALT cap for `status` at MAGI `magi` —
     /// base cap, reduced by 30% of MAGI over the phaseout start, floored.
     /// The comparison structure is ported verbatim (`reduced < floor` picks

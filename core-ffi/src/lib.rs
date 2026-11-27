@@ -42,7 +42,9 @@
 use clearfile_core::envelope::{ReturnFileCodec, TaxReturnData};
 use clearfile_core::json::Json;
 use clearfile_core::palette::{scheme_role, PaletteRole};
-use clearfile_core::tax_inspect::{analyze_tax_file, import_tax_container, ContainerImport, TaxInspection};
+use clearfile_core::tax_inspect::{
+    analyze_tax_file, export_tax_container, import_tax_container, ContainerImport, TaxInspection,
+};
 use clearfile_core::txf::{export_txf, parse_txf};
 use clearfile_core::{compute_ty2025, input_file_too_large, TaxResult, INPUT_TOO_LARGE_MESSAGE};
 use std::cell::RefCell;
@@ -545,6 +547,130 @@ pub extern "C" fn clearfile_free(owned: *mut c_char) {
         // and drops the allocation.
         drop(unsafe { std::ffi::CString::from_raw(owned) });
     }
+}
+
+// ---------------------------------------------------------------------------
+// The N6 wasm-lane additions (the 2026-11-27 N6 gate's rulings, ENG-1/SEC-1
+// + ENG-2/SEC-3): the alloc/free pair is LENGTH-PAIRED (a leaked Vec freed
+// by [`clearfile_free`] would be unsound — CString::from_raw derives the
+// dealloc length from strlen, and interior-NUL payloads — every `.tax`
+// container — would trap the allocator; probe-verified at the gate), and
+// the container export is the ONE binary channel — binary bytes NEVER
+// ride the NUL-terminated CString returns, so the export is
+// caller-allocated-output with the length out. These are plain exports on
+// every target (un-gated): the wasm32 JS loader is their consumer of
+// record, and the boundary battery proves them on EVERY lane the same as
+// every other export (the gate reconciliation recorded in CONSENSUS).
+// ---------------------------------------------------------------------------
+
+/// Allocate an input buffer of `len` usable bytes (zero-initialized, one
+/// extra zero byte appended for the text-input case's convenience) for
+/// writing an input payload into before a call — the wasm32 lane's one
+/// allocation channel (JS has no other way to place bytes in the module's
+/// memory; the native consumers own their buffers). The shared 512 MiB
+/// bound is refused BEFORE the allocation, with the shared named message
+/// family. Returns NULL with the named message. Freed ONLY by
+/// [`clearfile_dealloc`] with the SAME `len` — NEVER [`clearfile_free`]
+/// (its strlen-derived dealloc is unsound for interior-NUL payloads).
+#[no_mangle]
+pub extern "C" fn clearfile_alloc(len: usize) -> *mut c_char {
+    ffi_guard(|| {
+        if input_file_too_large(len as u64) {
+            return Err(clearfile_core::INPUT_TOO_LARGE_MESSAGE.to_string());
+        }
+        let mut buffer = vec![0u8; len + 1];
+        let ptr = buffer.as_mut_ptr();
+        std::mem::forget(buffer);
+        Ok(ptr as *mut c_char)
+    })
+    .unwrap_or(std::ptr::null_mut())
+}
+
+/// Free a [`clearfile_alloc`]ated buffer — length-paired with the SAME
+/// `len` that produced it (the wasm32 JS loader's release path; the
+/// native consumers never hold [`clearfile_alloc`] buffers). NULL-safe.
+#[no_mangle]
+pub extern "C" fn clearfile_dealloc(ptr: *mut c_char, len: usize) {
+    if !ptr.is_null() {
+        // SAFETY: the pointer came from clearfile_alloc(len) on this side
+        // of the ABI — the same allocation length (+1 for the zero tail);
+        // reconstructing and dropping is the release. Interior NUL bytes
+        // are irrelevant: the recorded length governs.
+        unsafe { drop(Vec::from_raw_parts(ptr as *mut u8, len + 1, len + 1)) };
+    }
+}
+
+/// Export a ClearFile exchange container (the `.tax`-extension STORE-only
+/// ZIP carrying the serialized envelope as its `clearfile.json` entry)
+/// from a PRE-SERIALIZED envelope payload — the ONE binary-data export:
+/// the caller allocates `out_bytes` (`out_capacity` bytes), the function
+/// writes at most `out_capacity` bytes, stores the total needed length in
+/// `*out_len`, and returns 0 on success / 1 when the buffer was too small
+/// (the needed size is in `*out_len`; grow and call again) / -1 on a
+/// named error (the message in [`clearfile_last_error`]). Binary bytes
+/// never ride the CString channel (the N6 gate's ruling); the envelope
+/// serialization is the caller's ([`clearfile_encode_envelope`] — the
+/// core's own hoisted seam, `export` and `inspect` mirror images across
+/// the envelope boundary).
+#[no_mangle]
+pub extern "C" fn clearfile_export_tax_container(
+    envelope_text: *const c_char,
+    envelope_len: usize,
+    out_bytes: *mut c_char,
+    out_capacity: usize,
+    out_len: *mut usize,
+) -> i32 {
+    if out_len.is_null() {
+        set_last_error("The container export needs a length output pointer.");
+        return -1;
+    }
+    let guarded = ffi_guard(|| -> Result<i32, String> {
+        let bytes = as_bytes(envelope_text, envelope_len)?;
+        check_size(bytes.len())?;
+        let text = as_utf8(bytes)?;
+        let container = export_tax_container(text).map_err(|e| e.to_string())?;
+        let needed = container.len();
+        // SAFETY: out_len was checked non-NULL above.
+        unsafe { *out_len = needed };
+        if out_bytes.is_null() || out_capacity < needed {
+            return Ok(1);
+        }
+        // SAFETY: the caller-allocated buffer, out_capacity >= needed,
+        // non-overlapping with the container's own allocation.
+        unsafe {
+            std::ptr::copy_nonoverlapping(
+                container.as_ptr(),
+                out_bytes as *mut u8,
+                needed,
+            );
+        }
+        Ok(0)
+    });
+    match guarded {
+        Some(code) => code,
+        None => -1, // the guard set the named message
+    }
+}
+
+/// The TY2025 parameter table, serialized (the N6 wasm lane's one true
+/// source of the parameter DATA — the TS config table's retirement
+/// channel; the field names + per-status keys mirror the TS
+/// `TaxYearParameters` interface exactly, the last bracket rung's
+/// infinite `up_to` as `null`). The adapter parses this once at init;
+/// its display walk reads the core-served table (the parameter LOGIC
+/// lives nowhere platform-side).
+#[no_mangle]
+pub extern "C" fn clearfile_params_json() -> *mut c_char {
+    ffi_guard(|| {
+        let json = clearfile_core::params::TY2025.to_json();
+        let text = json
+            .write()
+            .map_err(|_| "The parameter table could not be serialized.".to_string())?;
+        Ok(std::ffi::CString::new(text)
+            .map_err(|_| "The parameter table could not be serialized.".to_string())?
+            .into_raw())
+    })
+    .unwrap_or(std::ptr::null_mut())
 }
 
 /// The panic-injection test hook (SEC-1's guard proof, feature-gated —

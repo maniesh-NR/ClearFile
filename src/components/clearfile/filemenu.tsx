@@ -12,9 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { useClearFile, filingFromStore } from '@/lib/store'
-import { serializeCfr, parseCfr, downloadText, downloadBytes, CfrParseError } from '@/lib/files/cfr'
-import { exportTxf } from '@/lib/files/txf'
-import { analyzeTaxFile, exportTaxContainer, type TaxAnalysis } from '@/lib/files/taxfile'
+import { serializeCfr, parseCfr, downloadText, downloadBytes, CfrParseError, exportTxf, analyzeTaxFile, exportTaxContainer, type TaxAnalysis } from '@/lib/wasm/core'
 
 export function FileMenu() {
   const { toast } = useToast()

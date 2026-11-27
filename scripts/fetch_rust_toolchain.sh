@@ -25,10 +25,8 @@ read_row
 if [ -x "$DEST/bin/cargo" ] && "$DEST/bin/cargo" --version 2>/dev/null | grep -q "$PINNED_VERSION"; then
   echo "fetch_rust: pinned toolchain $PINNED_VERSION already present at $DEST"
   "$DEST/bin/cargo" --version
-  exit 0
-fi
-
-echo "fetch_rust: downloading $URL (pinned $PINNED_VERSION)"
+else
+  echo "fetch_rust: downloading $URL (pinned $PINNED_VERSION)"
 # Resumable, foreground, unauthenticated (no Authorization header ever).
 # Skip the download when a previously verified tarball is already present.
 NEED_DL=1
@@ -75,3 +73,40 @@ case "$ACTUAL" in
 esac
 "$DEST/bin/rustc" --version
 echo "fetch_rust: OK — pinned toolchain $PINNED_VERSION installed at $DEST"
+fi  # end of the else (the toolchain was already present)
+
+# --- The N6 wasm32-std component (row 2, pinned-not-TOFU like row 1) -------
+# The same dist channel's channel-rust-1.100.0.toml hash for the
+# rust-std wasm32-unknown-unknown component — the local WASM lane's
+# one addition (the CI runners use rustup; the sandbox toolchain is
+# standalone). Installs into the same tools/rust prefix.
+WASM_TARBALL="/tmp/rust-std-wasm32-pinned.tar.gz"
+read_row2() {
+  set -- $(awk 'NR==2{print $1, $2, $3}' "$MANIFEST")
+  [ $# -eq 3 ] || { echo "fetch_rust: malformed manifest row 2 (need version url sha256)" >&2; exit 1; }
+  WASM_URL="$2"; WASM_SHA="$3"
+}
+read_row2
+STD_DIR="$DEST/lib/rustlib/wasm32-unknown-unknown/lib"
+if [ -d "$STD_DIR" ] && ls "$STD_DIR"/*.rlib >/dev/null 2>&1; then
+  echo "fetch_rust: the wasm32-unknown-unknown std already present at $STD_DIR"
+  exit 0
+fi
+NEED_DL2=1
+if [ -f "$WASM_TARBALL" ]; then
+  if echo "$WASM_SHA  $WASM_TARBALL" | sha256sum --check --strict >/dev/null 2>&1; then
+    NEED_DL2=0
+  fi
+fi
+if [ "$NEED_DL2" -eq 1 ]; then
+  echo "fetch_rust: downloading $WASM_URL (row 2, pinned)"
+  curl -L --fail --retry 5 --retry-delay 3 --speed-limit 1024 --speed-time 60 -o "$WASM_TARBALL" "$WASM_URL"
+fi
+echo "$WASM_SHA  $WASM_TARBALL" | sha256sum --check --strict
+mkdir -p /tmp/rust-std-wasm32-unpack && tar -xzf "$WASM_TARBALL" -C /tmp/rust-std-wasm32-unpack
+COMP_DIR="$(find /tmp/rust-std-wasm32-unpack -type d -path '*/rustlib/wasm32-unknown-unknown' | head -1)"
+[ -n "$COMP_DIR" ] || { echo "fetch_rust: the component's wasm32-unknown-unknown dir was not found" >&2; exit 1; }
+mkdir -p "$DEST/lib/rustlib/"
+cp -r "$COMP_DIR" "$DEST/lib/rustlib/wasm32-unknown-unknown"
+rm -rf /tmp/rust-std-wasm32-unpack
+echo "fetch_rust: the wasm32-unknown-unknown std installed into $DEST"

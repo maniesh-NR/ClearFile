@@ -74,16 +74,39 @@ jobs:
       # oracle (Decimal arithmetic written from the IRS form text, not from
       # either engine) runs in CI so the fixtures stay form-true.
       - run: python3 scripts/verify_golden_fixtures.py
-      # Stage-3 web parity (ADR-009, 2026-11-15): the TypeScript engine runs
-      # the SAME shared golden fixtures the Flutter suite runs (compiles the
-      # engine to .parity-build via scripts/tsconfig.parity.json, then asserts
-      # every expected field within tolerance).
-      - run: node scripts/web_parity_test.mjs
-      # Stage-3 bridges (2026-11-15): the TXF exporter verification suite +
-      # .tax container-analysis tests (compiles src/lib/files to .files-build
-      # via scripts/tsconfig.files.json, CommonJS emit, then asserts the
-      # exporter against the published TXF spec v042 structure and the
-      # .tax analyzer against synthetic containers).
+      # N6 (2026-11-27, the epilogue's terminal lane): the wasm32 build of
+      # the SAME flat C ABI (the Rust core serves the web; the TS engine +
+      # codecs retired per ADR-016's conversion day — their suites
+      # transferred to the wasm core adapter, the contracts unchanged).
+      # The panic-hook variant builds FIRST (its export set adds the
+      # test hook; the plain build below overwrites the output path).
+      - name: the wasm32 build + the import-empty guard
+        run: |
+          rustup target add wasm32-unknown-unknown
+          cargo build --locked --release --target wasm32-unknown-unknown --features panic-hook-test --manifest-path core-ffi/Cargo.toml
+          cp core-ffi/target/wasm32-unknown-unknown/release/clearfile_core_ffi.wasm core-ffi/target/wasm32-unknown-unknown/release/clearfile_core_ffi_panic.wasm
+          cargo build --locked --release --target wasm32-unknown-unknown --manifest-path core-ffi/Cargo.toml
+          test -f core-ffi/target/wasm32-unknown-unknown/release/clearfile_core_ffi.wasm || { echo "FAIL — the .wasm was not emitted" >&2; exit 1; }
+          # The import-empty guard (the no-network claim's wasm proof — the
+          # strongest form: a module with ZERO imports cannot call out at
+          # all; the otool-exact-list analogue).
+          node -e '
+            const fs = require("fs");
+            const m = new WebAssembly.Module(fs.readFileSync("core-ffi/target/wasm32-unknown-unknown/release/clearfile_core_ffi.wasm"));
+            const imports = WebAssembly.Module.imports(m);
+            if (imports.length !== 0) {
+              console.error("import guard: FAIL — the module imports " + imports.length + " functions: " + imports.map(i => i.module + "." + i.name).join(", "));
+              process.exit(1);
+            }
+            console.log("import guard: ok — the wasm module has zero imports");
+          '
+      # The TRANSFERRED parity suite (the same 17 shared golden fixtures,
+      # the same tolerance semantics — served by the wasm core adapter;
+      # also proves the length-paired allocator + the trap ruling).
+      - run: node scripts/wasm_parity_test.mjs
+      # The TRANSFERRED bridge suite (the same TXF spec v042 + container
+      # + envelope contracts — the wasm adapter; the suite's own STORE-ZIP
+      # builder makes the synthetic containers).
       - run: node scripts/txf_taxfile_test.mjs
       # Stage-5 AI hardening (2026-11-24): the AI cascade replays synthetic
       # provider fixtures (fixtures/ai/, provenance in fixtures/ai/README.md)

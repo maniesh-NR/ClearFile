@@ -9,8 +9,8 @@
  *    numbers, and point back to the app for calculations.
  */
 
-import type { TaxResult, TaxReturnData } from '../tax/engine'
-import { totalWages, totalWithholding } from '../tax/engine'
+import type { TaxResult, TaxReturnData } from '../wasm/core'
+import { totalWages, totalWithholding } from '../wasm/core'
 import { usd } from '../tax/config'
 
 const DISCLAIMER = 'ClearFile is a prototype demo, not licensed tax advice or filing software.'

@@ -25,10 +25,19 @@
  *    against the shared fixtures (fixtures/migration/, DEBT D34: the
  *    identical sample the Dart suite reads from the same files).
  *
- * This script compiles the file modules first:
+ * TRANSFERRED 2026-11-27 (N6, the epilogue's terminal gate): the suite
+ * re-points at the WASM core adapter (src/lib/wasm/core.ts) over the
+ * same flat C ABI — the TS codecs retired with their subject per
+ * ADR-016's conversion day; every behavioral contract above is
+ * unchanged. The synthetic containers are built with the suite's own
+ * STORE-only ZIP builder below (the test-side fixture tooling — the
+ * retired makeZip's role; the ENG-1 crafted-file template class), and
+ * the suite initializes the wasm module first (the node path).
+ *
+ * This script compiles the adapter first:
  *   npx tsc -p scripts/tsconfig.files.json  (emits to .files-build/, gitignored)
  *
- * Usage:  node scripts/txf_taxfile_test.mjs    (from the repo root)
+ * Usage:  node scripts/txf_taxfile_test.mjs [module.wasm]  (from the repo root)
  * Exit code 0 = every check passes.
  */
 
@@ -50,13 +59,62 @@ execFileSync('npx', ['tsc', '-p', 'scripts/tsconfig.files.json'], {
   stdio: 'inherit',
 })
 
-const { exportTxf } = require(path.join(root, '.files-build', 'files', 'txf.js'))
-const { analyzeTaxFile, makeZip } = require(
-  path.join(root, '.files-build', 'files', 'taxfile.js'),
-)
-const { serializeCfr, parseCfr, CfrParseError } = require(path.join(root, '.files-build', 'files', 'cfr.js'))
-
+const core = require(path.join(root, '.files-build', 'wasm', 'core.js'))
+const { exportTxf, analyzeTaxFile, serializeCfr, parseCfr, CfrParseError } = core
 const enc = new TextEncoder()
+
+// --- the wasm init (the node path) ----------------------------------------
+{
+  const modulePath =
+    process.argv[2] ?? path.join(root, 'core-ffi/target/wasm32-unknown-unknown/release/clearfile_core_ffi.wasm')
+  await core.initWasmFromBuffer(readFileSync(modulePath))
+}
+
+// --- the suite's own STORE-only ZIP builder (the retired makeZip's
+// fixture-tooling role; the ENG-1 crafted-file template class) ------------
+function makeZip(entries) {
+  // CRC-32 (IEEE, reflected) — the test-side table-free bitwise form.
+  const CRC_TABLE = []
+  for (let n = 0; n < 256; n++) {
+    let c = n
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1
+    CRC_TABLE[n] = c >>> 0
+  }
+  const crc32 = (data) => {
+    let c = 0xffffffff
+    for (const b of data) c = CRC_TABLE[(c ^ b) & 0xff] ^ (c >>> 8)
+    return (c ^ 0xffffffff) >>> 0
+  }
+  const chunks = []
+  const central = []
+  let offset = 0
+  const dosTime = 0
+  const dosDate = 0x21
+  const u16 = (v) => [v & 0xff, (v >>> 8) & 0xff]
+  const u32 = (v) => [v & 0xff, (v >>> 8) & 0xff, (v >>> 16) & 0xff, (v >>> 24) & 0xff]
+  for (const { name, data } of entries) {
+    const nameBytes = enc.encode(name)
+    const crc = crc32(data)
+    chunks.push(
+      ...u32(0x04034b50), ...u16(20), ...u16(0), ...u16(0), ...u16(dosTime), ...u16(dosDate),
+      ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(nameBytes.length), ...u16(0),
+      ...nameBytes, ...data,
+    )
+    central.push(
+      ...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(0), ...u16(0), ...u16(dosTime), ...u16(dosDate),
+      ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(nameBytes.length),
+      ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(offset),
+      ...nameBytes,
+    )
+    offset += 30 + nameBytes.length + data.length
+  }
+  const centralSize = central.reduce((n, b) => n + b.length, 0)
+  const end = [
+    ...u32(0x06054b50), ...u16(0), ...u16(0), ...u16(entries.length), ...u16(entries.length),
+    ...u32(centralSize), ...u32(offset), ...u16(0),
+  ]
+  return new Uint8Array([...chunks, ...central, ...end])
+}
 let passed = 0
 
 /* ---------------- tiny spec-shaped TXF reader (verification mirror) ---- */
@@ -285,7 +343,13 @@ function readTxf(text) {
   assert.equal(filing.interestIncome, 42)
   assert.equal(filing.w2s[0].employer, 'Initech')
   assert.equal(filing.dependents.length, 1)
-  assert.ok(warnings.some((w) => w.includes('not carried by the web prototype')))
+  // The core's documented divergence 5 (envelope.rs §"Web-reader-only
+  // warning strings are NOT ported", the N1-recorded decision): the flat
+  // lift itself is WARNING-FREE through the core — the retired web
+  // reader's 'not carried by the web prototype' metadata note was a
+  // web-reader-only string. The wasm serving carries the core's
+  // contract; the assertion follows it.
+  assert.deepEqual(warnings, [])
   // flat guard: a future formatVersion is refused, not guessed at (D3)
   assert.throws(
     () => parseCfr(JSON.stringify({ format: 'clearfile.return', formatVersion: 7 })),

@@ -18,17 +18,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/hooks/use-toast'
 import { useClearFile, filingFromStore } from '@/lib/store'
 import {
-  YEARS, usd, pct, STATUS_LABELS, STATUS_HELP, DEDUCTION_METHOD_LABELS,
+  usd, pct, STATUS_LABELS, STATUS_HELP, DEDUCTION_METHOD_LABELS, DEFAULT_YEAR,
   type FilingStatus, type DeductionMethod, type TaxYear,
 } from '@/lib/tax/config'
 import {
-  compute, ruleChecks, totalWages, totalWithholding, bracketWalk,
+  compute, ruleChecks, totalWages, totalWithholding, bracketWalk, yearParams,
+  serializeCfr, downloadText, downloadBytes, exportTxf, exportTaxContainer,
   type RuleCheck, type TaxResult, type TaxReturnData, type W2Entry, type Dependent,
-} from '@/lib/tax/engine'
+} from '@/lib/wasm/core'
 import { KeyOnboardingCard, AutofillPanel, ReviewPanel } from './ai-ui'
-import { serializeCfr, downloadText, downloadBytes } from '@/lib/files/cfr'
-import { exportTxf } from '@/lib/files/txf'
-import { exportTaxContainer } from '@/lib/files/taxfile'
 import { cn } from '@/lib/utils'
 
 /* ---------------------------------------------------------------- */
@@ -36,8 +34,8 @@ import { cn } from '@/lib/utils'
 function useFilingComputed(): { filing: TaxReturnData; computed: TaxResult } {
   const store = useClearFile()
   const filing = filingFromStore(store)
-  const params = YEARS[filing.taxYear as TaxYear] ?? YEARS[2025]
-  const computed = compute(filing, params)
+  const params = yearParams(filing.taxYear === 2025 ? 2025 as TaxYear : DEFAULT_YEAR)
+  const computed = compute(filing)
   return { filing, computed }
 }
 
@@ -242,7 +240,7 @@ export function StatusStep() {
               <span className="block font-medium">{STATUS_LABELS[st]}</span>
               <span className="mt-1 block text-xs leading-relaxed text-md-on-surface-variant">{STATUS_HELP[st]}</span>
               <span className="mt-2 block text-xs font-medium text-md-primary">
-                Standard deduction: {usd(YEARS[2025].standardDeduction[st])}
+                Standard deduction: {usd(yearParams(2025 as TaxYear).standardDeduction[st])}
               </span>
             </span>
           </label>
@@ -730,7 +728,7 @@ export function ResultsStep() {
   const refund = computed.refund
   const isRefundNow = refund > 0
   const balance = refund - computed.amountOwed
-  const params = YEARS[filing.taxYear as TaxYear] ?? YEARS[2025]
+  const params = yearParams(filing.taxYear === 2025 ? 2025 as TaxYear : DEFAULT_YEAR)
   const ordinaryTaxable = computed.taxableIncome - computed.preferentialIncome
   const bracketRows = bracketWalk(ordinaryTaxable, params.ordinaryBrackets[filing.filingStatus])
 

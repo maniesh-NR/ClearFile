@@ -1,5 +1,14 @@
 #!/usr/bin/env node
 // SPDX-License-Identifier: GPL-3.0-only
+// RETIRED 2026-11-27 (N6, the epilogue's terminal gate): this suite's
+// subject — the TypeScript web engine (src/lib/tax/engine.ts) — retired
+// per ADR-016's conversion day (the shared Rust core now serves the web
+// through wasm32). The parity CONTRACT transferred byte-for-byte to
+// scripts/wasm_parity_test.mjs (the same 17 shared golden fixtures, the
+// same tolerance semantics, served by the wasm core adapter); this
+// script stays as the frozen transition record and is no longer the CI
+// contract.
+// SPDX-License-Identifier: GPL-3.0-only
 /**
  * Stage-3 web-parity suite (ADR-009): runs the TypeScript web engine
  * (`src/lib/tax/engine.ts`) against the SAME shared golden fixtures the

@@ -152,3 +152,8 @@ server.log
 # (the blob policy).
 /apps/macos/.build/
 /apps/macos/.swiftpm/
+
+# The N6 wasm lane: the build artifacts (the .wasm binaries under
+# core-ffi/target — the plain + the panic-hook variants; the public/
+# browser copy at build/deploy time) — never tracked (the blob policy).
+/public/clearfile-core.wasm

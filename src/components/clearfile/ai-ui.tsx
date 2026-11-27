@@ -13,8 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Checkbox } from '@/components/ui/checkbox'
 import { useToast } from '@/hooks/use-toast'
 import { useClearFile, filingFromStore } from '@/lib/store'
-import { YEARS, type TaxYear } from '@/lib/tax/config'
-import { compute, type RuleCheck } from '@/lib/tax/engine'
+import { compute, type RuleCheck } from '@/lib/wasm/core'
 import { runLadder, LadderError, ERROR_KIND_LABEL } from '@/lib/ai/ladder'
 import {
   chatTurn,
@@ -140,7 +139,7 @@ export function CopilotDrawer() {
     try {
       const s = useClearFile.getState()
       const filing = filingFromStore(s)
-      const computed = compute(filing, YEARS[filing.taxYear as TaxYear] ?? YEARS[2025])
+      const computed = compute(filing)
       const { system, user } = chatTurn(q, filing, computed, messages)
       const res = await runLadder(system, user, { googleKey, openrouterKey })
       setMessages((m) => [...m, { role: 'assistant', content: res.text }])
@@ -455,7 +454,7 @@ export function ReviewPanel({ checks }: { checks: RuleCheck[] }) {
     try {
       const s = useClearFile.getState()
       const filing = filingFromStore(s)
-      const computed = compute(filing, YEARS[filing.taxYear as TaxYear] ?? YEARS[2025])
+      const computed = compute(filing)
       const { system, user } = reviewPrompt(filing, computed, checks)
       const res = await runLadder(system, user, { googleKey, openrouterKey }, { temperature: 0.2, maxTokens: 1400 })
       setReview(parseReview(res.text) ?? { summary: res.text, findings: [] })

@@ -2,13 +2,25 @@
   "compilerOptions": {
     "target": "es2020",
     "module": "es2020",
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "strict": true,
     "noEmitOnError": true,
     "declaration": false,
     "skipLibCheck": true,
     "outDir": "../.parity-build",
-    "rootDir": "../src/lib/tax"
+    "rootDir": "../src/lib",
+    "baseUrl": "..",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
   },
-  "files": ["../src/lib/tax/config.ts", "../src/lib/tax/engine.ts"]
+  "files": [
+    "../src/lib/tax/config.ts",
+    "../src/lib/wasm/core.ts"
+  ]
 }

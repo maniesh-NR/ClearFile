@@ -4,6 +4,7 @@
 import * as React from 'react'
 import { ChevronLeft, ChevronRight, FileCheck2 } from 'lucide-react'
 import { useClearFile, STEPS, STEP_COUNT } from '@/lib/store'
+import { initWasm, wasmReady } from '@/lib/wasm/core'
 import { HeaderBar, StepRail, MobileStepper, FooterBar } from '@/components/clearfile/shell'
 import {
   WelcomeStep, StatusStep, IncomeStep, DeductionsStep, DependentsStep, PaymentsStep, ResultsStep,
@@ -12,7 +13,7 @@ import { CopilotDrawer } from '@/components/clearfile/ai-ui'
 import { SettingsDialog } from '@/components/clearfile/settings'
 import { Button } from '@/components/ui/button'
 
-function Splash() {
+function Splash({ children }: { children?: React.ReactNode }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-3 text-md-on-surface-variant">
@@ -20,6 +21,7 @@ function Splash() {
           <FileCheck2 className="size-6" />
         </span>
         <p className="text-sm font-medium">ClearFile</p>
+        {children}
       </div>
     </div>
   )
@@ -27,13 +29,30 @@ function Splash() {
 
 export default function Home() {
   const [mounted, setMounted] = React.useState(false)
-  React.useEffect(() => setMounted(true), [])
+  const [coreReady, setCoreReady] = React.useState(wasmReady())
+  const [coreError, setCoreError] = React.useState<string | null>(null)
+  React.useEffect(() => {
+    setMounted(true)
+    if (!wasmReady()) {
+      initWasm()
+        .then(() => setCoreReady(true))
+        .catch((e: unknown) => setCoreError(e instanceof Error ? e.message : String(e)))
+    }
+  }, [])
 
   const step = useClearFile((s) => s.step)
   const next = useClearFile((s) => s.next)
   const back = useClearFile((s) => s.back)
 
-  if (!mounted) return <Splash />
+  if (!mounted || !coreReady) {
+    return (
+      <Splash>
+        {coreError ? (
+          <p className="text-sm text-md-error max-w-md text-center">{coreError}</p>
+        ) : null}
+      </Splash>
+    )
+  }
 
   const steps = [
     <WelcomeStep key="welcome" />,
