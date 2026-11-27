@@ -2423,3 +2423,37 @@ D41/D42 residues ride their lanes.**
   refreshed (the header + the epilogue bullet + "Immediately next" →
   N4's gate agenda); the checker updated (the epilogue outcome count
   4→5, the legitimate-advance precedent).
+
+## 2026-11-27 (N4 session 1) · The C++ app + the guarded header land
+
+- **The extern-"C" header guards (the gate's probe-verified finding, the
+  ruled config-emitted fix):** cbindgen.toml's `after_includes` +
+  `trailer` now wrap the declarations (`#ifdef __cplusplus extern "C"
+  { #endif` / the matching close) — the regenerated committed header
+  verified BOTH ways in-sandbox: the C99 include compiles clean, the
+  C++17 include compiles with UNMANGLED references (the link trap
+  closed for every future C++ consumer; the freshness check re-proves
+  the determinism).
+- **apps/windows/main.cpp (the first C++ consumer):** the C++17 Win32
+  + Direct2D viewer — the argv modes exactly as the Linux app
+  (--headless <path> / a bare path / no argument), the ONE shared
+  pipeline (CreateFileW + GetFileSizeEx → the 512 MiB pre-read bound
+  with the core's named message → the composed clearfile_load_and_compute),
+  the byte-exact text_summary port (the same groups/labels/formats/
+  footer; the smoke diffs the full stdout against the LINUX app's
+  committed expected text — one canonical text family, two platforms),
+  the D2D window mode (the palette-FFI theme at the corpus seed, the
+  honesty set: the three-fact disclaimer + non-affiliation + prototype
+  labels + the no-AI/no-network note, the GetOpenFileNameW open), the
+  RAII OwnedBuffer owning clearfile_free, the borrowed last_error
+  copied out immediately, zero external dependencies (user32, gdi32,
+  comdlg32, d2d1, dwrite only), zero engine logic (the JSON scanner is
+  display glue over the boundary's payload).
+- **The guard joins:** the .gitignore MSVC residue rules (x64/, Debug/,
+  Release/, build/, *.obj/*.pdb/*.dll/*.exe/*.lib — scoped under
+  apps/windows/, landed BEFORE any in-repo build) + the harness_check
+  N4 scaffold family (the main.cpp presence + the header's extern-C
+  guards ≥ 2).
+- **The window mode is the named non-verification** (the hosted runner
+  has no interactive desktop): the headless mode is the verifiable
+  surface — the working-app bar per the gate's ruling.

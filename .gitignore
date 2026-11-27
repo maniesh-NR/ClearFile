@@ -132,3 +132,16 @@ server.log
 /apps/android/.kotlin/
 /apps/android/.cxx/
 *.keystore
+
+# The N4 Windows app: the MSVC residue (x64/, Debug/, Release/, the build
+# outputs, the debug symbols) — guarded BEFORE any in-repo build; the built
+# .dll/.exe are CI-side only, never committed (the blob policy).
+/apps/windows/x64/
+/apps/windows/Debug/
+/apps/windows/Release/
+/apps/windows/build/
+/apps/windows/*.obj
+/apps/windows/*.pdb
+/apps/windows/*.dll
+/apps/windows/*.exe
+/apps/windows/*.lib

@@ -1779,3 +1779,108 @@ eleven-round CI-fix record honestly kept. The epilogue's next gate is
 N4's delta-scoped gate — the Windows native UI, the first C++
 consumption of the committed flat-C header, with SEC's dependencyLocking
 rider + the slip's EIGHTH surfacing on its agenda.)
+
+## 2026-11-27 · The N4 delta-scoped gate (the Windows native UI)
+
+**Context:** N3 CLOSED (exit PASSED); the epilogue proceeds to N4 (the
+per-OS order stands). The proposal: apps/windows/ — a C++17 Win32+Direct2D
+viewer demo consuming the COMMITTED core-ffi/clearfile.h (the first C++
+consumer; ADR-017's literal "Win32+Direct2D C++ consumes the header"),
+zero external dependencies (the platform libs only: d2d1, dwrite, user32,
+gdi32, comdlg32), the argv/headless mode + the window mode, the
+palette-FFI MD3 theme, the honesty set, the bundled envelope fixture
+pulled from the shared fixtures/migration/ family at build time, the
+512 MiB pre-read bound at the file-open path, the CI windows-latest
+NATIVE lane as the primary verification (the fail-closed rustc +
+toolchain-discovery guards; cargo build --locked (the .dll + the import
+lib) + cargo test (the boundary battery ON WINDOWS — the real ABI lane);
+the C++ compile (cl /utf-8 /std:c++17, the .dll.lib link); the headless
+smoke with the committed expected text — byte-parity with the Linux
+app's text family, the same migration fixture), the named
+non-verification (no interactive desktop run); the local mingw lane
+REJECTED (the recorded second-ABI reasoning — the same blind-authoring
+trade N5 accepts). Four reviewers in parallel isolation with their own
+probes; reports at `harness/adversarial/reports/2026-11-27-n4-*.md`.
+
+| Reviewer | Verdict | BLOCK? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (8) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (8) | no |
+| ADV-ENG | PROCEED-WITH-CONDITIONS (8) | no |
+| ADV-PROD | PROCEED-WITH-CONDITIONS (8) | no |
+
+**The probe findings the gate records (the full text in the reports):**
+(1) **the committed clearfile.h carries NO `extern "C"` guards** — a
+bare C++17 include compiles but LINK-FAILS against the flat C ABI (the
+mangled-reference trap, probe-verified both ways); the ruled fix: the
+CONFIG-EMITTED guard (cbindgen.toml's after_includes + trailer wrapping
+the declarations) — probe-verified valid C99 (N5/N6 unaffected), and the
+header edit flows through the freshness check, never a hand edit;
+(2) cargo for windows-msvc emits `clearfile_core_ffi.dll` +
+`clearfile_core_ffi.dll.lib` (the import lib) — the CI asserts the .lib
+before the link; (3) windows-latest remapped to the VS-2026 image (VS
+Enterprise 18.x, Rust 1.100.0, SDK 10.0.26100.0, vswhere present, cl
+off-PATH → the vcvars discovery guard); (4) LEGAL's PE import-table
+network guard (Windows has no manifest permissions — the no-network
+claim's mechanical proof: the built exe's imports must exclude
+ws2_32/wininet/winhttp/urlmon; the same guard for the .dll); (5) SEC's
+dependencyLocking rider DISCHARGED BY SUPERSESSION per the accepted
+shape (the fail-closed CI assertions: the runtime classpath resolves
+zero external artifacts; the test classpath exactly junit 4.13.2 +
+hamcrest-core 1.3; the exact-pinned plugins; FAIL_ON_PROJECT_REPOS) +
+the re-proving first green android run; (6) the /MD-vs-/MT CRT choice
+recorded; (7) the RAII consumption discipline (the C++ wrapper owns
+clearfile_free; the borrowed last_error copied out immediately; the
+single-threaded posture); (8) the byte-exact LF/UTF-8 smoke discipline
+(binary-mode stdout + the bash shell).
+
+**The consolidated 12-point condition ledger (binding the two execution
+sessions; the full text in the four reports):** (1) the config-emitted
+extern-"C" header guard + the regenerated committed header (valid C99;
+the freshness check green); (2) the C++ app's discipline: one pipeline,
+zero engine logic (all through the C ABI), the RAII wrapper, the honesty
+set + the prototype labels + the no-AI/no-network note; (3) the 512 MiB
+pre-read bound at the GetOpenFileNameW path (GetFileSizeEx before the
+read, the named message family); (4) the bundled fixture PULLED from the
+shared fixtures/migration/ family (the same v1 envelope the Linux
+smoke consumes — the byte-parity text family; NEVER a committed byte
+copy); (5) the headless-first checkpoint (the expected text committed +
+the byte-exact smoke before the window work); (6) the CI windows job:
+the fail-closed guards (rustc + the host-triple assertion (the mingw
+rejection enforced mechanically) + the toolchain discovery (vswhere/
+vcvars) + the SDK identity), cargo --locked everywhere, the boundary
+battery on Windows, the C++ compile/link, the .dll-beside-the-exe copy,
+the headless smoke, the PE import-table network guard, the gradle
+dependency assertions (the rider's supersession discharge), cargo-deny
+(none needed — no new crates; the existing lanes stay), NO uploads; (7)
+the guard joins (the .gitignore MSVC residue rules: x64/, Debug/,
+Release/, *.obj, *.pdb, the build outputs — scoped under apps/windows/;
+the backup scan-path coverage (apps covers apps/windows); the blob
+policy: no vendored .lib/.dll ever); (8) the variant preconditions (zero
+clearfile/+src/ paths; release.yml byte-unchanged; core + core-ffi
+Cargo.{toml,lock} byte-unchanged; apps/windows 0.1.0 as its own new
+publish=false plane... [the crate-plane form: the app has no crate —
+the version lives in the source + the record]; nothing shipped/uploaded;
+no tags); (9) the README row at the close (the honest scope, the
+unreleased status, the interim statement — the Flutter Windows app
+remains the shipped product, the CI-only lane, the no-network + non-
+affiliation notes); (10) the bookkeeping set (STATE/ROADMAP/DEBT/
+SESSION_LOG/harness_check families + the checker updates); (11) the
+Stage-2 slip re-agenda — **the EIGHTH surfacing** (the enumeration
+pinned: 1 N1-exit, 2 N2-entry, 3 N2-exit-convening, 4 N2-exit-close, 5
+the 2026-11-27 restatement, 6 the N3 entry, 7 the N3 exit, 8 this gate):
+the three owner options stand (a: fund a T3 session (the 0x24000
+keystream chase + tax-modern.md, D42); b: supersede the namespace rule;
+c: the default re-agenda); no ruling across seven prior surfacings;
+(c) continues; the NINTH rides with N5's gate; (12) the N5/N6
+pre-positioning stands + the wasm32 target question (unknown-unknown vs
+wasip1) is N6's gate's to rule.
+
+**Gate outcome:**
+
+**N4: ENTERED**
+(2026-11-27 — 4 × PROCEED-WITH-CONDITIONS, unanimous, no BLOCK; the
+extern-"C" header finding probe-verified with the ruled fix; the
+mingw-lane rejection + the CI-native lane recorded; the two-session box
+with the headless-first checkpoint; the rider discharged by the
+accepted supersession shape pending the re-proving android run.)

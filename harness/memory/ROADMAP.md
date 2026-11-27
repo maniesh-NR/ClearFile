@@ -681,8 +681,22 @@ v1's stages still close first.
   enumeration; the N4/N5/N6 pre-positioning stands in the entry-gate
   record.
 - **N4 — Windows native UI**: raw Win32 + Direct2D consuming the
-  cbindgen C header. **Gate status: FUNDED 2026-11-26 (owner,
-  in-conversation; the delta-scoped gate convenes at its turn).**
+  cbindgen C header. **Gate status: ENTERED 2026-11-27** (the delta-scoped
+  gate, 4 × PWC unanimous — SEC 8 / LEGAL 8 / ENG 8 / PROD 8, no BLOCK;
+  reports at `harness/adversarial/reports/2026-11-27-n4-*.md`; the probe
+  findings: the committed header lacked extern "C" guards (the C++ link
+  trap — the ruled fix: the config-emitted guard through the freshness
+  check), windows-latest remapped to the VS-2026 image (cl off-PATH → the
+  vcvars discovery guard), the msvc import-lib (.dll.lib) link shape, the
+  mingw-lane rejection (the second-ABI reasoning) + the CI-native lane as
+  the primary verification, SEC's dependencyLocking rider discharged by
+  the accepted supersession shape (the fail-closed gradle classpath
+  assertions + the re-proving run), and LEGAL's PE import-table network
+  guard — Windows has no manifest permissions, so the no-network claim's
+  mechanical proof is the built exe's import table. The consolidated
+  12-point ledger + the EIGHTH slip surfacing + the N5/N6 pre-positioning
+  live in CONSENSUS's 2026-11-27 N4 gate record. The execution box: TWO
+  sessions.)
 - **N5 — macOS native UI**: one Swift+AppKit app, deployment floor
   macOS 13 (confirmable here); requires the `macos-latest` CI runner or
   owner-side builds — this Linux sandbox cannot build or verify AppKit.

@@ -63,10 +63,10 @@ else
 fi
 
 FUNDED_RM=$(grep -c 'Gate status:.*FUNDED' "$ROADMAP" || true)
-if [ "$FUNDED_RM" -eq 3 ]; then
-  pass "Epilogue funding posture in ROADMAP ($FUNDED_RM FUNDED: N4–N6; N1 ENTERED+CLOSED, N2 ENTERED+CLOSED, N3 ENTERED — each unfunded-stage still enters only behind its own delta-scoped gate) — checker updated per the legitimate-advance precedent"
+if [ "$FUNDED_RM" -eq 2 ]; then
+  pass "Epilogue funding posture in ROADMAP ($FUNDED_RM FUNDED: N5–N6; N1/N2/N3 ENTERED+CLOSED (N3 exit PASSED), N4 ENTERED 2026-11-27 — each unfunded-stage still enters only behind its own delta-scoped gate) — checker updated per the legitimate-advance precedent"
 else
-  fail "ROADMAP has $FUNDED_RM 'Gate status: FUNDED' lines; expected 3 (N4–N6 still funded; N1 ENTERED+CLOSED, N2 ENTERED+CLOSED, N3 ENTERED). Update this checker if a stage legitimately advanced"
+  fail "ROADMAP has $FUNDED_RM 'Gate status: FUNDED' lines; expected 2 (N5–N6 still funded; N1/N2/N3 closed, N4 ENTERED). Update this checker if a stage legitimately advanced"
 fi
 
 S2_ENTERED_CS=$(grep -c '\*\*Stage 2: ENTERED\*\*' "$CONSENSUS" || true)
@@ -78,10 +78,10 @@ ENTERED_CS=$(grep -cE '\*\*Stage [456]: CLOSED\*\*' "$CONSENSUS" || true)
 # precedent: a checker update, not drift).
 ENTERED_N_CS=$(grep -cE '\*\*N[1-6]: (ENTERED|PASSED|CLOSED)' "$CONSENSUS" || true)
 ENTERED_TT_CS=$(grep -cE '\*\*T[1-4]: (ENTERED|PASSED|CLOSED)\*\*' "$CONSENSUS" || true)
-if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 3 ] && [ "$ENTERED_N_CS" -eq 5 ] && [ "$ENTERED_TT_CS" -eq 1 ]; then
-  pass "CONSENSUS records Stage 2's entry, the TT program's T2 entry, the Stages 4/5/6 closures, and N1's ENTERED + CLOSED + N2's ENTERED + N3's ENTERED + CLOSED outcomes"
+if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 3 ] && [ "$ENTERED_N_CS" -eq 6 ] && [ "$ENTERED_TT_CS" -eq 1 ]; then
+  pass "CONSENSUS records Stage 2's entry, the TT program's T2 entry, the Stages 4/5/6 closures, and N1/N2/N3's ENTERED+CLOSED + N4's ENTERED outcomes"
 else
-  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/5/1) — reconcile with ROADMAP"
+  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/6/1) — reconcile with ROADMAP"
 fi
 
 # --- 1b. The N1 variant precondition: release.yml stays native-free -------
@@ -329,6 +329,19 @@ if [ "$CORE_PKGS" -eq 1 ] && [ "$FFI_PKGS" -ge 2 ]; then
   pass "the core lock stays exactly 1 package (the zero-dep assertion intact) while core-ffi carries its own $FFI_PKGS-package lock (the separate-root topology)"
 else
   fail "lock topology drift: core=$CORE_PKGS (must be 1), core-ffi=$FFI_PKGS (must be >=2)"
+fi
+
+
+# --- The N4 scaffold family (the 2026-11-27 N4 gate) --------------------------
+
+# The Windows app's tracked surface: the C++ source + the extern-"C"-guarded
+# committed header (the N4 gate's probe finding: the config-emitted guards).
+WIN_FILES=$(ls apps/windows/main.cpp 2>/dev/null | wc -l)
+WIN_GUARD=$(grep -c 'extern "C"' core-ffi/clearfile.h 2>/dev/null || true)
+if [ "$WIN_FILES" -eq 1 ] && [ "$WIN_GUARD" -ge 2 ]; then
+  pass "the N4 apps/windows surface is tracked (main.cpp) and the committed clearfile.h carries the extern-C guards for C++ consumers (the config-emitted form)"
+else
+  fail "N4 scaffold drift (main.cpp present: $WIN_FILES; header extern-C guards: $WIN_GUARD) — the windows app or the guarded header drifted"
 fi
 
 echo "harness_check: $FAILURES failure(s)"
