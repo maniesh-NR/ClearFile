@@ -1884,3 +1884,53 @@ extern-"C" header finding probe-verified with the ruled fix; the
 mingw-lane rejection + the CI-native lane recorded; the two-session box
 with the headless-first checkpoint; the rider discharged by the
 accepted supersession shape pending the re-proving android run.)
+
+## 2026-11-27 · The N4 exit gate — N4: CLOSED (exit PASSED)
+
+**Context:** the N4 box closed at exactly two sessions, the Windows lane's
+first live-green run **45957061389** on 8b3cb95 (all seven jobs; the
+byte-parity headless smoke across platforms after the five-round CI-fix
+record). Four reviewers in parallel isolation over the delta
+2a3acd1..9e6cf46; reports at `harness/adversarial/reports/2026-11-27-n4exit-*.md`.
+
+| Reviewer | Verdict | BLOCK? |
+| --- | --- | --- |
+| ADV-SEC | EXIT-PASS (0 conditions; 3 advisories) | no |
+| ADV-LEGAL | PROCEED (0 conditions; the CRT-default + run-ID recording advisories) | no |
+| ADV-ENG | PASS (0 conditions; R-ENG-23/24/25 registered — the EOL-tolerance hardening via .gitattributes as an N5 pre-check, the cmd errorlevel pattern's copy-carry, the one-TU shape note) | no |
+| ADV-PROD | EXIT-PASS (3 one-line close riders — discharged at the close: the README non-verification clause + the run number; the 0.1.0 source-side marker) | no |
+
+**The registered non-blocking notes (the reports carry the full text):**
+the /MD-vs-/MT CRT default (cl's default /MT rode — lawful, the CRT row
+joins the first-conveyance LICENSES-manifest checklist; the flag-pinning
+advisory); the run-ID recording convention (the green run recorded by
+commit SHA; PROD's rider discharged by citing 45957061389 in the README +
+ROADMAP at this close); the classpath-regex `|`-pipe-line blind spot
+(SEC); the dumpbin self-verification before the findstr denylist (SEC);
+the EOL-tolerance hardening via .gitattributes eol=lf (ENG R-ENG-23 — an
+N5 pre-check); the D14 adversarial-reports un-headed-class note (LEGAL).
+
+**The Stage-2 slip re-agenda — the NINTH surfacing (PROD's mandatory
+item, restated in full in the exit report):** the enumeration — 1 the
+N1-exit, 2 the N2-entry, 3 the N2-exit convening, 4 the N2-exit close,
+5 the 2026-11-27 restatement, 6 the N3 entry, 7 the N3 exit, 8 the N4
+entry, 9 THIS exit gate. The three owner options: (a) **fund a T3
+session** (the MSI-record keystream decompile chase at payload offset
+0x24000 + tax-modern.md, debt D42), (b) **supersede the RE-protocol
+namespace rule**, (c) **the default re-agenda**. No ruling received
+across eight prior surfacings; (c) continues; the TENTH rides with
+N5's gate.
+
+**Gate outcome:**
+
+**N4: CLOSED (exit PASSED)**
+(2026-11-27 — 4 × PROCEED-family unanimous, no BLOCK; the box closed at
+exactly two sessions; the first C++ consumption of the committed header
+proven natively (the boundary battery ON WINDOWS, the MSVC build, the
+import-table network guard, the byte-parity text family across
+platforms); the mingw-lane rejection + the blind-authoring trade
+recorded; the variant preconditions byte-verified. The epilogue's next
+gate is N5's — the macOS native UI: the macos-latest live-verification
+list (the image list, the label resolution, the macos-13 retirement
+window), the bar ruling under the per-lane-status discipline, the
+owner-side-build offer, and the wasm32 question flagged for N6.)

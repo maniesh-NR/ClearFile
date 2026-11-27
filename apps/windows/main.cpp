@@ -73,6 +73,10 @@ std::string last_error_text() {
     return borrowed ? std::string(borrowed) : std::string();
 }
 
+/// The app's own version plane (apps/windows 0.1.0, the one-plane-per-
+/// native-app rule; the record-side marker — the source-side constant).
+constexpr const char *kAppVersion = "0.1.0";
+
 /// The MD3-from-seed theme (the corpus's recorded app seed, 0xFF00696E —
 /// the same seed the Linux and Android apps use).
 constexpr uint32_t kThemeSeed = 0xFF00696Eu;

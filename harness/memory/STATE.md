@@ -1,6 +1,6 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-27 LATER (N3 CLOSED — exit PASSED: the two-session box closed on the first live-green android run 45948447173 on ae9e078, all six jobs — assembleDebug with the cross-built .so packaged, the JVM tests through the REAL Java_* seam, cargo-deny over core-ffi's 74-package lock; the eleven-round CI-fix record in SESSION_LOG; the exit gate SEC PWC (1) / LEGAL PROCEED / ENG PROCEED / PROD EXIT-PASS, no BLOCK; the dependencyLocking rider rides to N4's gate; the slip's SEVENTH surfacing pinned). Earlier 2026-11-27: (the N2-exit riding record-level conditions DISCHARGED: the headless footer's three demo-disclaimer facts + the expected-text regen (app 5/5, core 174/174 re-verified live), the upstream Copyright-2021-Google + no-NOTICE notes (palette.rs + THIRD-PARTY-NOTICES), the D14 byte-pinned expected-artifact carve-out, the SEC action-SHA↔tag verification (LIVE: the annotated tag v2.1.4 → exactly the pinned 81891abc…74fda), the PROD ledger reconciliation, the CONSENSUS N2-exit close line; the pinned Rust toolchain re-fetched sha256-verified after the recycle wiped tools/; the Stage-2 slip re-agenda's FIFTH surfacing rides to N3's gate; earlier 2026-11-26: N2 sessions 1+2 executed — the Linux app + CI + the hardenings landed; the exit gate convened with 3/4 reports; earlier: N2 session 1 CLOSED — D44 complete: the palette
+**Updated:** 2026-11-27 LATEST (N4 CLOSED — exit PASSED: the two-session box closed on the Windows lane's first live-green run 45957061389 on 8b3cb95, all seven jobs — the host-triple guard (the msvc lane), the boundary battery ON WINDOWS, the MSVC build via vswhere→vcvars, the PE import-table network guard, the byte-parity headless smoke across platforms (the five-round CI-fix record); the exit gate SEC EXIT-PASS / LEGAL PROCEED / ENG PASS / PROD EXIT-PASS, no BLOCK; the extern-"C" header guards config-emitted; the rider's supersession discharge landed + the re-proving android run green; the slip's NINTH surfacing pinned — the TENTH rides with N5's gate). Earlier same day: N3 CLOSED (exit PASSED: the two-session box closed on the first live-green android run 45948447173 on ae9e078, all six jobs — assembleDebug with the cross-built .so packaged, the JVM tests through the REAL Java_* seam, cargo-deny over core-ffi's 74-package lock; the eleven-round CI-fix record in SESSION_LOG; the exit gate SEC PWC (1) / LEGAL PROCEED / ENG PROCEED / PROD EXIT-PASS, no BLOCK; the dependencyLocking rider rides to N4's gate; the slip's SEVENTH surfacing pinned). Earlier 2026-11-27: (the N2-exit riding record-level conditions DISCHARGED: the headless footer's three demo-disclaimer facts + the expected-text regen (app 5/5, core 174/174 re-verified live), the upstream Copyright-2021-Google + no-NOTICE notes (palette.rs + THIRD-PARTY-NOTICES), the D14 byte-pinned expected-artifact carve-out, the SEC action-SHA↔tag verification (LIVE: the annotated tag v2.1.4 → exactly the pinned 81891abc…74fda), the PROD ledger reconciliation, the CONSENSUS N2-exit close line; the pinned Rust toolchain re-fetched sha256-verified after the recycle wiped tools/; the Stage-2 slip re-agenda's FIFTH surfacing rides to N3's gate; earlier 2026-11-26: N2 sessions 1+2 executed — the Linux app + CI + the hardenings landed; the exit gate convened with 3/4 reports; earlier: N2 session 1 CLOSED — D44 complete: the palette
 module + corpus verification green (cargo test 170/170) + the
 apps/linux scaffold with every guard joined; earlier: the N2 gate CLOSED — ENTERED; the
 consolidation to Slint exercised under ADR-017's own clause with the
@@ -362,28 +362,29 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**N4's delta-scoped gate (the Windows native UI) — N3 CLOSED (exit
+**N5's delta-scoped gate (the macOS native UI) — N4 CLOSED (exit
 PASSED):** the agenda carries — (1) the **Stage-2 slip re-agenda (the
-MANDATORY item, the EIGHTH surfacing by the pinned enumeration)**:
-owner options (a) fund a T3 session (the MSI-record keystream
-decompile chase + tax-modern.md, debt D42), (b) supersede the
-RE-protocol namespace rule, (c) the default re-agenda — no ruling
-across seven prior surfacings, (c) continues; (2) the **measured
-sandbox facts + the two toolchain lanes** (no mingw in-sandbox; a
-portable user-space mingw cross-build from Linux vs CI windows
-runners building natively — the gate rules the lane; the runner
-facts need live verification at the gate); (3) the **first C++
-consumption of the committed flat-C header** (Win32 + Direct2D per
-ADR-017 — the header's C99 dialect, the clearfile_free +
-borrowed-last-error contract, the catch_unwind guarantees the C++
-side consumes); (4) **SEC's rider: the gradle dependencyLocking
-condition** (the `dependencyLocking { lockAllConfigurations() }` +
-the committed lockfiles generated CI-side, or the recorded
-supersession ruling + the re-proving run); (5) the per-OS order
-(N4 → N5 → N6; macOS last — the sandbox cannot build AppKit; N5's
-live-verification list is pre-positioned); (6) the variant
-preconditions (zero clearfile/ + src/ paths in the N4 delta;
-release.yml byte-unchanged; no version movement; nothing shipped);
-(7) the working-app bar (the per-lane-status discipline; the N3
-precedent: assemble-parity + the seam tests + the named
-non-verifications).
+MANDATORY item, the TENTH surfacing by the pinned enumeration)**: owner
+options (a) fund a T3 session (the MSI-record keystream decompile chase
+at payload offset 0x24000 + tax-modern.md, debt D42), (b) supersede the
+RE-protocol namespace rule, (c) the default re-agenda — no ruling across
+NINE prior surfacings, (c) continues; (2) the **macos-latest
+live-verification list** (the current image list + the label resolution
++ the macos-13 retirement window — it decides the deployment floor's CI
+coverage; probe live at the gate); (3) **the bar ruling** (the recorded
+PROD position: a macos-latest CI job alone (author-blind Swift +
+CI-verified) satisfies the settlement's demo bar under exactly the
+per-lane-status discipline, with the single-maintainer risk recorded;
+any macOS GA owes an owner-side build or the recorded acceptance);
+(4) **the shape**: one Swift+AppKit app (apps/macos), deployment floor
+macOS 13, the SPM target consuming the SAME committed header (the
+extern-"C" guards carry over — the N4 finding), the C-ABI consumption
+discipline (the RAII/ownership + the palette theme + the honesty set +
+the headless-verifiable surface + the named non-verification: no
+interactive GUI run in CI); (5) the per-OS order (N5 → N6; N6's gate
+rules the wasm32 target question + the TS retirement per ADR-016 + the
+freeze declaration); (6) the variant preconditions (zero clearfile/ +
+src/ paths in the N5 delta; release.yml byte-unchanged; no version
+movement; nothing shipped); (7) the N5 pre-checks (ENG's R-ENG-23: the
+.gitattributes eol=lf hardening consideration; the CRT-flag advisory
+class); (8) the funding posture checker alignment (N5/N6 FUNDED).

@@ -2490,3 +2490,31 @@ D41/D42 residues ride their lanes.**
   verifiable surface — proven green.
 - **The N4 EXIT gate convenes next** (the slip's NINTH surfacing rides
   with it).
+
+## 2026-11-27 (the N4 exit gate) · N4: CLOSED (exit PASSED)
+
+- **The exit gate convened 4-way in parallel isolation over the delta
+  2a3acd1..9e6cf46** (the reviewers' own probes: the both-ways TU
+  compile with the nm-verified unmangled references, the header
+  regeneration determinism, the boundary battery re-run 10/10, the
+  byte-verified variant preconditions, the classpath assertions
+  re-proven). Verdicts: **SEC EXIT-PASS (0) / LEGAL PROCEED (0) / ENG
+  PASS (0) / PROD EXIT-PASS (3 one-line riders, discharged at the
+  close) — no BLOCK.** Reports at
+  `harness/adversarial/reports/2026-11-27-n4exit-*.md`.
+- **The registered notes (the reports carry the full text):** the
+  /MT CRT default (the flag-pinning advisory + the first-conveyance CRT
+  row), the run-ID recording convention (discharged: 45957061389 now
+  cited in the README + ROADMAP), the classpath-regex pipe-line blind
+  spot, the dumpbin self-verification, the .gitattributes EOL
+  hardening as an N5 pre-check, the D14 reports-class note.
+- **The Stage-2 slip re-agenda — the NINTH surfacing, pinned by
+  enumeration** (1 N1-exit … 9 this exit gate): the three owner
+  options stand; no ruling across eight prior surfacings; (c)
+  continues; the TENTH rides with N5's gate.
+- **The close bookkeeping:** CONSENSUS's exit record; ROADMAP's N4
+  bullet → CLOSED (exit PASSED) with the full execution record; STATE
+  refreshed ("Immediately next" → N5's gate agenda); the README
+  non-verification clause + the run number; the main.cpp 0.1.0
+  source-side marker; the checker updated (the epilogue outcome count
+  6→7).

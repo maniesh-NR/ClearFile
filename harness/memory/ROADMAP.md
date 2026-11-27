@@ -681,7 +681,7 @@ v1's stages still close first.
   enumeration; the N4/N5/N6 pre-positioning stands in the entry-gate
   record.
 - **N4 — Windows native UI**: raw Win32 + Direct2D consuming the
-  cbindgen C header. **Gate status: ENTERED 2026-11-27** (the delta-scoped
+  cbindgen C header. **Gate status: ENTERED 2026-11-27; CLOSED 2026-11-27 (exit PASSED)** (the delta-scoped
   gate, 4 × PWC unanimous — SEC 8 / LEGAL 8 / ENG 8 / PROD 8, no BLOCK;
   reports at `harness/adversarial/reports/2026-11-27-n4-*.md`; the probe
   findings: the committed header lacked extern "C" guards (the C++ link
@@ -696,7 +696,27 @@ v1's stages still close first.
   mechanical proof is the built exe's import table. The consolidated
   12-point ledger + the EIGHTH slip surfacing + the N5/N6 pre-positioning
   live in CONSENSUS's 2026-11-27 N4 gate record. The execution box: TWO
-  sessions.)
+  sessions.) **The execution record (exit PASSED):** the box closed at
+  exactly two sessions — session 1 = the config-emitted extern-"C"
+  header guards (the probe-verified finding: a bare C++ include
+  compiled clean but LINK-failed on the mangled refs; the guarded
+  header verified BOTH ways) + the C++ app (apps/windows/main.cpp: the
+  byte-exact text_summary port, the D2D window + the palette-FFI
+  theme, the RAII buffer discipline, the 512 MiB pre-read bound, the
+  honesty set, zero external deps) + the guard joins; session 2 = the
+  CI windows lane closing on hygiene run **45957061389** (all seven
+  jobs: the host-triple guard, the release cdylib + the import
+  library, the boundary battery ON WINDOWS, the MSVC build via
+  vswhere→vcvars, the PE import-table network guard, the headless
+  smoke — the byte-parity text family across platforms) after the
+  five-round CI-fix record; the SEC rider's supersession discharge
+  landed (the kotlin-stdlib 2.4.21 as the one recorded runtime
+  artifact + the junit/hamcrest test classpath, the re-proving green
+  android run). The exit gate: SEC EXIT-PASS / LEGAL PROCEED / ENG
+  PASS / PROD EXIT-PASS (3 one-line close riders, discharged at the
+  close) — no BLOCK; the slip's NINTH surfacing pinned by
+  enumeration; the window mode is the named non-verification (the
+  hosted runner has no interactive desktop).
 - **N5 — macOS native UI**: one Swift+AppKit app, deployment floor
   macOS 13 (confirmable here); requires the `macos-latest` CI runner or
   owner-side builds — this Linux sandbox cannot build or verify AppKit.
