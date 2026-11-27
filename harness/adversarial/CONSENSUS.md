@@ -2122,7 +2122,15 @@ the denylist's non-network blind class libcrypto/Security.framework);
 ENG's float concern is scoped to the Xcode-owned EXE list (kept as
 the four-way denylist + the full-list echoes) — the reconciliation
 recorded here, the tightened guard landed at the close and re-proven
-by the close push's own run); (3) the ADR-017 licensing annex's Swift
+by the close push's own run). **Dated correction (the close push's
+round 4):** the tightened guard was positionally WRONG on its first
+run (otool -L lists the dylib's OWN install name — the LC_ID_DYLIB —
+as the first entry after the header; the `tail -n +2` count included
+it and red the close push's run 45980761380): round 4 fixed the
+semantics (exactly TWO lines after the header — the own install name
++ libSystem; the install-name line asserted + the count asserted +
+libSystem asserted) and re-proved green; the honest CI-fix datum is
+now N5=4; (3) the ADR-017 licensing annex's Swift
 sentence (LEGAL's exact text: the compiler/stdlib/runtime Apache-2.0 +
 the Swift Runtime Library Exception, dynamically linked from the OS at
 /usr/lib/swift, never embedded — no LICENSES row; SPM Apache-2.0

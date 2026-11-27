@@ -619,16 +619,22 @@ jobs:
           if otool -L core-ffi/target/release/libclearfile_core_ffi.dylib | grep -E 'CFNetwork|Network\.framework|libcurl|libssl'; then
             echo "link guard: FAIL — a network library is directly linked by the core" >&2; exit 1
           fi
-          DYLIB_DEPS="$(otool -L core-ffi/target/release/libclearfile_core_ffi.dylib | tail -n +2)"
-          echo "$DYLIB_DEPS"
-          echo "$DYLIB_DEPS" | grep -F '/usr/lib/libSystem.B.dylib' \
+          # NOTE (the round-4 finding): otool -L lists the dylib's OWN install
+          # name as the first entry after the header (the LC_ID_DYLIB — a
+          # `tail -n +2` miscounted it), so the exact assertion is: exactly
+          # TWO lines after the header — the own install name + libSystem.
+          DYLIB_LINKS="$(otool -L core-ffi/target/release/libclearfile_core_ffi.dylib | tail -n +2)"
+          echo "$DYLIB_LINKS"
+          echo "$DYLIB_LINKS" | grep -F '/usr/lib/libSystem.B.dylib' \
             || { echo "link guard: FAIL — the core dylib does not link libSystem" >&2; exit 1; }
-          DEP_COUNT="$(echo "$DYLIB_DEPS" | grep -c . || true)"
-          if [ "$DEP_COUNT" -ne 1 ]; then
-            echo "link guard: FAIL — the core dylib's direct links are not exactly [libSystem] ($DEP_COUNT dependency lines)" >&2
+          echo "$DYLIB_LINKS" | head -1 | grep -q 'libclearfile_core_ffi.dylib' \
+            || { echo "link guard: FAIL — the first link line is not the dylib's own install name" >&2; exit 1; }
+          LINK_COUNT="$(echo "$DYLIB_LINKS" | grep -c . || true)"
+          if [ "$LINK_COUNT" -ne 2 ]; then
+            echo "link guard: FAIL — the core dylib's links are not exactly [the own install name + libSystem] ($LINK_COUNT lines)" >&2
             exit 1
           fi
-          echo "link guard: ok — no network library directly linked; the core's direct links are exactly [libSystem]"
+          echo "link guard: ok — no network library directly linked; the core's real dependency list is exactly [libSystem]"
 
   re-tooling:
     # Stage-2 execution session 1 (2026-11-22, ADR-012 mechanics (b)/(e) +

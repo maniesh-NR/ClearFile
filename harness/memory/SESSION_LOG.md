@@ -2598,9 +2598,14 @@ stage; maximum parallelism):** N5 entered and CLOSED in one session —
   45976627388) = Result's failure type must conform to Error (String
   does not — the tiny LoadError wrapper + the three consumers reading
   error.message); round 3 (run **45977202882** on 9cfffa7) = GREEN,
-  all EIGHT jobs (the datums now N3=11, N4=5, N5=3). The identity
-  echo: macOS 26.7.2 (Build 25G332) arm64, swift-driver 1.148.6,
-  rustc 1.100 host aarch64-apple-darwin.
+  all EIGHT jobs; round 4 (run 45980761380, the close push) = the
+  exit gate's tightened exact-list guard red on its first run (otool -L
+  lists the dylib's OWN install name — the LC_ID_DYLIB — as the first
+  entry after the header; the `tail -n +2` count included it): the
+  semantics fixed (exactly two lines after the header — the own
+  install name + libSystem) + re-proved green (the datums now N3=11,
+  N4=5, N5=4). The identity echo: macOS 26.7.2 (Build 25G332) arm64,
+  swift-driver 1.148.6, rustc 1.100 host aarch64-apple-darwin.
 - **The N5 exit gate** (4 reviewers in parallel isolation over the
   delta ff127f2..9cfffa7): SEC PWC (2 close riders) / LEGAL PWC (4) /
   ENG PASS (0) / PROD EXIT-PASS (4) — no BLOCK. **N5: CLOSED (exit
