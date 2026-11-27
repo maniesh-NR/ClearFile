@@ -255,11 +255,13 @@ jobs:
       # defaults): the SDK root the image documents, NDK 29.0.14206865
       # (present per the 2026-11-27 image readme, asserted by path), JDK
       # 21 (the image default is 25), Gradle 9.9.1 (the preinstalled
-      # version, asserted — never trusted).
+      # version, asserted — never trusted; the 2026-11-27 drift catch: the
+      # image moved 9.9.1 -> 9.9.2 mid-session and the guard failed closed
+      # exactly as designed — re-pinned, not trusted).
       ANDROID_HOME: /usr/local/lib/android/sdk
       NDK_VERSION: "29.0.14206865"
       JAVA_HOME: /usr/lib/jvm/temurin-21-jdk-amd64
-      GRADLE_VERSION: "9.9.1"
+      GRADLE_VERSION: "9.9.2"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       # The rustc guard first (the linux-app job's pattern): refuse a
