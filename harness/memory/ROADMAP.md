@@ -639,7 +639,7 @@ v1's stages still close first.
   content-hash pinned — NOT the SDK version).
 - **N3 — Android native UI**: Android Views + Kotlin Multiplatform
   (Android-only) over the core via a thin JNI shim. **Gate status:
-  ENTERED 2026-11-27** (the delta-scoped gate, 4 × PWC unanimous — SEC
+  ENTERED 2026-11-27; CLOSED 2026-11-27 (exit PASSED)** (the delta-scoped gate, 4 × PWC unanimous — SEC
   11 / LEGAL 8 / ENG 7 / PROD 8, no BLOCK; reports at
   `harness/adversarial/reports/2026-11-27-n3-*.md`; the material
   corrections the probes forced: cbindgen is MPL-2.0 (not the proposal's
@@ -660,7 +660,26 @@ v1's stages still close first.
   session 2 = the CI-primary app + the CI lane + the records/README. The
   consolidated 16-item condition ledger + the sixth-surfacing slip
   enumeration + the N4/N5/N6 pre-positioning live in CONSENSUS's 2026-
-  11-27 N3 gate record.)
+  11-27 N3 gate record.) **The execution record (exit PASSED):** the box
+  closed at exactly two sessions — session 1 = the riding hardenings
+  FIRST green + committed (3493203: the indexed-lookup duplicate-scan
+  bound MAX_LINEAR_KEY_SCAN=64 + battery, the 512 MiB input-size bound
+  + battery; core 176/176, apps/linux 7/7) then the core-ffi crate
+  (f496ee4: the flat C ABI, cbindgen =0.29.4 MPL-2.0, the committed
+  deterministic header, the thin jbyteArray JNI shim (package
+  dev.clearfile.ffi class Native), the boundary battery 10/10, the
+  74-package lock, deny.toml); session 2 = the app + the CI lane
+  (the KMP one-target :shared + the zero-AndroidX :app, the
+  zero-permission manifest, the SAF viewer, the JVM host test through
+  the real Java_* seam, the additive hygiene android job) closing on
+  the first live-green run (45948447173 on ae9e078 — assembleDebug with
+  the .so packaged, all six jobs green, cargo-deny over core-ffi's
+  lock) after the eleven-round CI-fix record (SESSION_LOG 2026-11-27).
+  The exit gate: SEC PWC (1) / LEGAL PROCEED (0) / ENG PROCEED (0) /
+  PROD EXIT-PASS (0) — no BLOCK; the one rider (gradle dependencyLocking)
+  rides to N4's gate; the slip's SEVENTH surfacing pinned by
+  enumeration; the N4/N5/N6 pre-positioning stands in the entry-gate
+  record.
 - **N4 — Windows native UI**: raw Win32 + Direct2D consuming the
   cbindgen C header. **Gate status: FUNDED 2026-11-26 (owner,
   in-conversation; the delta-scoped gate convenes at its turn).**

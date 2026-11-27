@@ -72,16 +72,16 @@ fi
 S2_ENTERED_CS=$(grep -c '\*\*Stage 2: ENTERED\*\*' "$CONSENSUS" || true)
 ENTERED_CS=$(grep -cE '\*\*Stage [456]: CLOSED\*\*' "$CONSENSUS" || true)
 # The epilogue outcomes: N1 ENTERED + N1 CLOSED (both 2026-11-26) + N2
-# ENTERED + N3 ENTERED (2026-11-27) — the N2 exit closure is recorded in
-# the 2026-11-27 discharge entry's prose (not the bold outcome pattern);
-# updated at the N3 gate close (the legitimate-advance precedent: a
-# checker update, not drift).
+# ENTERED + N3 ENTERED + N3 CLOSED (2026-11-27) — the N2 exit closure is
+# recorded in the 2026-11-27 discharge entry's prose (not the bold
+# outcome pattern); updated at the N3 exit close (the legitimate-advance
+# precedent: a checker update, not drift).
 ENTERED_N_CS=$(grep -cE '\*\*N[1-6]: (ENTERED|PASSED|CLOSED)' "$CONSENSUS" || true)
 ENTERED_TT_CS=$(grep -cE '\*\*T[1-4]: (ENTERED|PASSED|CLOSED)\*\*' "$CONSENSUS" || true)
-if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 3 ] && [ "$ENTERED_N_CS" -eq 4 ] && [ "$ENTERED_TT_CS" -eq 1 ]; then
-  pass "CONSENSUS records Stage 2's entry, the TT program's T2 entry, the Stages 4/5/6 closures, and N1's ENTERED + CLOSED + N2's ENTERED + N3's ENTERED outcomes"
+if [ "$S2_ENTERED_CS" -eq 1 ] && [ "$ENTERED_CS" -eq 3 ] && [ "$ENTERED_N_CS" -eq 5 ] && [ "$ENTERED_TT_CS" -eq 1 ]; then
+  pass "CONSENSUS records Stage 2's entry, the TT program's T2 entry, the Stages 4/5/6 closures, and N1's ENTERED + CLOSED + N2's ENTERED + N3's ENTERED + CLOSED outcomes"
 else
-  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/4/1) — reconcile with ROADMAP"
+  fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/5/1) — reconcile with ROADMAP"
 fi
 
 # --- 1b. The N1 variant precondition: release.yml stays native-free -------

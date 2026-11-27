@@ -2391,3 +2391,35 @@ D41/D42 residues ride their lanes.**
   **The N3 EXIT gate convenes next** (the Stage-2 slip re-agenda's
   SEVENTH surfacing rides with it — the enumeration is pinned in the
   gate record).
+
+## 2026-11-27 (the N3 exit gate) · N3: CLOSED (exit PASSED)
+
+- **The exit gate convened 4-way in parallel isolation over the delta
+  44929c0..2f3efa1** (the reviewers' own probes: the live suite runs,
+  the symbol/export audits, the pickaxe-verified guard-join commit
+  order, the byte-verified variant preconditions). Verdicts: **SEC PWC
+  (1) / LEGAL PROCEED (0) / ENG PROCEED (0) / PROD EXIT-PASS (0) — no
+  BLOCK.** Reports at `harness/adversarial/reports/2026-11-27-n3exit-*`.
+- **The one rider (SEC's, to N4's gate per its own disposition):** the
+  gradle `dependencyLocking` + the committed lockfile(s) clause (the
+  AGP/plugin transitive tree rides unlocked) — N4's gate rules the
+  shape + the re-proving run. The registered notes (JUnit's EPL-1.0
+  test-scope invariant, the manifest permission-absence guard, the
+  Xvfb hunk inside the existing linux job, the 9.9-series tolerance,
+  the two panic-free-by-construction exports, the run-vs-tip gap, the
+  named non-verifications restated verbatim) live in the exit record.
+- **The Stage-2 slip re-agenda — the SEVENTH surfacing, pinned by
+  enumeration** (1 N1-exit … 7 this exit gate): the three owner
+  options stand; no ruling across six prior surfacings; (c) continues;
+  the EIGHTH rides with N4's gate.
+- **The box discipline held exactly:** two sessions, the hardenings
+  committed BEFORE any FFI work (verified by commit order), the
+  intra-session checkpoints, the eleven-round CI-fix record honestly
+  kept (each round's finding + fix recorded in the SESSION_LOG round
+  entries), the close citing the live-green run by number.
+- **The close bookkeeping:** CONSENSUS's exit record (the outcome +
+  the riders + the seventh surfacing + the N4 handoff); ROADMAP's N3
+  bullet → CLOSED (exit PASSED) with the full execution record; STATE
+  refreshed (the header + the epilogue bullet + "Immediately next" →
+  N4's gate agenda); the checker updated (the epilogue outcome count
+  4→5, the legitimate-advance precedent).

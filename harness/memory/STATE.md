@@ -1,6 +1,6 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-27 (the N2-exit riding record-level conditions DISCHARGED: the headless footer's three demo-disclaimer facts + the expected-text regen (app 5/5, core 174/174 re-verified live), the upstream Copyright-2021-Google + no-NOTICE notes (palette.rs + THIRD-PARTY-NOTICES), the D14 byte-pinned expected-artifact carve-out, the SEC action-SHA↔tag verification (LIVE: the annotated tag v2.1.4 → exactly the pinned 81891abc…74fda), the PROD ledger reconciliation, the CONSENSUS N2-exit close line; the pinned Rust toolchain re-fetched sha256-verified after the recycle wiped tools/; the Stage-2 slip re-agenda's FIFTH surfacing rides to N3's gate; earlier 2026-11-26: N2 sessions 1+2 executed — the Linux app + CI + the hardenings landed; the exit gate convened with 3/4 reports; earlier: N2 session 1 CLOSED — D44 complete: the palette
+**Updated:** 2026-11-27 LATER (N3 CLOSED — exit PASSED: the two-session box closed on the first live-green android run 45948447173 on ae9e078, all six jobs — assembleDebug with the cross-built .so packaged, the JVM tests through the REAL Java_* seam, cargo-deny over core-ffi's 74-package lock; the eleven-round CI-fix record in SESSION_LOG; the exit gate SEC PWC (1) / LEGAL PROCEED / ENG PROCEED / PROD EXIT-PASS, no BLOCK; the dependencyLocking rider rides to N4's gate; the slip's SEVENTH surfacing pinned). Earlier 2026-11-27: (the N2-exit riding record-level conditions DISCHARGED: the headless footer's three demo-disclaimer facts + the expected-text regen (app 5/5, core 174/174 re-verified live), the upstream Copyright-2021-Google + no-NOTICE notes (palette.rs + THIRD-PARTY-NOTICES), the D14 byte-pinned expected-artifact carve-out, the SEC action-SHA↔tag verification (LIVE: the annotated tag v2.1.4 → exactly the pinned 81891abc…74fda), the PROD ledger reconciliation, the CONSENSUS N2-exit close line; the pinned Rust toolchain re-fetched sha256-verified after the recycle wiped tools/; the Stage-2 slip re-agenda's FIFTH surfacing rides to N3's gate; earlier 2026-11-26: N2 sessions 1+2 executed — the Linux app + CI + the hardenings landed; the exit gate convened with 3/4 reports; earlier: N2 session 1 CLOSED — D44 complete: the palette
 module + corpus verification green (cargo test 170/170) + the
 apps/linux scaffold with every guard joined; earlier: the N2 gate CLOSED — ENTERED; the
 consolidation to Slint exercised under ADR-017's own clause with the
@@ -208,7 +208,19 @@ session's interrupted closing backup normalized + pushed as
   (hygiene run #44 live-green) + the R1/R2 parser hardenings; the exit
   gate (SEC 3 / LEGAL 6 / ENG 1 / PROD 5, no BLOCK) closed with every
   code-level finding fixed; the record-level riders discharged
-  2026-11-27 (CONSENSUS's entry of that date).
+  2026-11-27 (CONSENSUS's entry of that date). **N3: ENTERED and CLOSED
+  2026-11-27 (exit PASSED)** — the two-session box: session 1 = the
+  indexed-lookup duplicate-scan bound + the 512 MiB input-size bound
+  (core 176/176, apps/linux 7/7, both batteries) committed BEFORE the
+  core-ffi crate (the flat C ABI + the cbindgen =0.29.4 MPL-2.0
+  committed header + the thin JNI shim + the boundary battery 10/10 +
+  the 74-package lock + deny.toml); session 2 = the KMP one-target app
+  (zero AndroidX, the zero-permission manifest, the SAF viewer, the
+  palette-FFI theme, the honesty set) + the CI android job, closing on
+  hygiene run 45948447173 (ae9e078, all six jobs) after the
+  eleven-round CI-fix record; the exit gate unanimous (the
+  dependencyLocking rider to N4; the named non-verifications: no
+  emulator/instrumented run, no on-device run unless owner-side).
 - **TT-compatibility program (ADR-019 + ADR-020): T2 ENTERED 2026-11-22**
   at its own gate (4 × PROCEED-WITH-CONDITIONS, unanimous; T1 complete
   and verified at the gate). Stage-2's DoD box is NOT grown — TT specs
@@ -350,33 +362,28 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**N3 session 1 (the hardenings FIRST, then the core-ffi crate) — N3:
-ENTERED 2026-11-27** (the delta-scoped gate 4 × PWC unanimous — SEC 11 /
-LEGAL 8 / ENG 7 / PROD 8, no BLOCK; the consolidated 16-item ledger +
-the two-session box in CONSENSUS's 2026-11-27 N3 gate record; the reports
-at harness/adversarial/reports/2026-11-27-n3-*.md). The session-1 order
-(ledger item 15): (1) the **indexed-lookup duplicate-scan bound** in
-core/src/json.rs (MAX_LINEAR_KEY_SCAN ≈64; the order-preserving
-key→slot HashMap for find-or-insert past the threshold; byte-identical
-output; the hostile-amplification + threshold-straddling battery) +
-the **512 MiB file-size pre-check** (the core-owned pub const + the
-pure decision fn + the named message + enforcement in apps/linux's
-load_and_compute + the future Android path + the core-ffi boundary);
-both GREEN + COMMITTED before any FFI work (the checkpoint discipline —
-a session death still closes the riders); (2) the **core-ffi crate**:
-the ONE flat C ABI (≈a dozen fns matching the ADR list), strings/bytes
-only, the single clearfile_free + the borrowed last_error, catch_unwind
-at every export, cbindgen =0.29.4 as BUILD-dep (Language::C pinned; the
-Java_* shim excluded from the header; the SPDX emitted by the generator
-config; the header COMMITTED + the CI freshness check), core-ffi's
-deny.toml from its FIRST commit (the closed list + MPL-2.0
-encountered+reviewed), the JNI shim (cfg(any(android, feature
-"host-jni")); jbyteArray never jstring), the boundary batteries (the 17
-golden fixtures + the malformed classes + both cap batteries + the
-550-case corpus THROUGH the boundary), the host tests green; (3) the
-guard joins same-commit (.gitignore /core-ffi/target/ + the backup
-scan-path join). Session 2 = the CI-primary app (apps/android +
-the CI android job + the records/README; the box's CI-flakiness
-absorption rule + the per-lane live-status discipline). The N3 EXIT gate
-convenes after the box closes (the slip's SEVENTH surfacing rides with
-it — the enumeration is pinned in the gate record).
+**N4's delta-scoped gate (the Windows native UI) — N3 CLOSED (exit
+PASSED):** the agenda carries — (1) the **Stage-2 slip re-agenda (the
+MANDATORY item, the EIGHTH surfacing by the pinned enumeration)**:
+owner options (a) fund a T3 session (the MSI-record keystream
+decompile chase + tax-modern.md, debt D42), (b) supersede the
+RE-protocol namespace rule, (c) the default re-agenda — no ruling
+across seven prior surfacings, (c) continues; (2) the **measured
+sandbox facts + the two toolchain lanes** (no mingw in-sandbox; a
+portable user-space mingw cross-build from Linux vs CI windows
+runners building natively — the gate rules the lane; the runner
+facts need live verification at the gate); (3) the **first C++
+consumption of the committed flat-C header** (Win32 + Direct2D per
+ADR-017 — the header's C99 dialect, the clearfile_free +
+borrowed-last-error contract, the catch_unwind guarantees the C++
+side consumes); (4) **SEC's rider: the gradle dependencyLocking
+condition** (the `dependencyLocking { lockAllConfigurations() }` +
+the committed lockfiles generated CI-side, or the recorded
+supersession ruling + the re-proving run); (5) the per-OS order
+(N4 → N5 → N6; macOS last — the sandbox cannot build AppKit; N5's
+live-verification list is pre-positioned); (6) the variant
+preconditions (zero clearfile/ + src/ paths in the N4 delta;
+release.yml byte-unchanged; no version movement; nothing shipped);
+(7) the working-app bar (the per-lane-status discipline; the N3
+precedent: assemble-parity + the seam tests + the named
+non-verifications).

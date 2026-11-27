@@ -1708,3 +1708,74 @@ correction recorded; the two-session box set with the hardenings-first
 checkpoint ordering; the disk plan re-measured and the 3.4 GB
 re-buildable residue reclaimed; the CI-primary posture recorded as
 forced-not-chosen; the slip's sixth surfacing pinned by enumeration.)
+
+## 2026-11-27 · The N3 exit gate — N3: CLOSED (exit PASSED)
+
+**Context:** the N3 execution box closed at exactly two sessions (session
+1: the hardenings checkpoint 3493203 + the core-ffi crate f496ee4; session
+2: the Android app + the CI android lane + the eleven-round CI-fix
+record, closing on the FIRST LIVE-GREEN android run — hygiene run
+45948447173 on ae9e078, all six jobs: the fail-closed identity guards,
+the header freshness, the boundary battery 10/10, the host cdylib, the
+aarch64 cross-build, **assembleDebug with the .so packaged into the
+installable APK (the unzip proof)**, the JVM unit tests through the
+REAL Java_* seam, and the first live-green cargo-deny over core-ffi's
+74-package lock incl. the MPL-2.0 join). Four reviewers in parallel
+isolation over the delta 44929c0..2f3efa1; reports at
+`harness/adversarial/reports/2026-11-27-n3exit-*.md`.
+
+| Reviewer | Verdict | BLOCK? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (1) | no |
+| ADV-LEGAL | PROCEED (0; 4 advisories) | no |
+| ADV-ENG | PROCEED (0; 4 register notes) | no |
+| ADV-PROD | EXIT-PASS (0; advisories) | no |
+
+**The one riding condition (SEC's, riding to N4's gate per its own
+disposition):** the entry ledger item 9's "dependencyLocking + the
+committed lockfile(s)" clause never landed in apps/android (no gradle
+lockfile committed; the AGP/plugin transitive tree rides unlocked) —
+N4's gate rules the shape (a `dependencyLocking { lockAllConfigurations() }`
++ the committed lockfiles generated CI-side, or the recorded supersession
+ruling) and the first live-green run after it re-proves the lane.
+
+**The registered non-blocking notes (the reports carry the full text):**
+the JUnit 4.13.2 EPL-1.0 test-scope-only invariant (LEGAL — never linked
+into any artifact; keep it asserted); the manifest's zero-permission
+absence as a CI guard (LEGAL advisory); the Xvfb-socket-wait hunk inside
+the EXISTING linux-app job (ENG — the recorded flake fix, honestly
+departing the N2-era "purely additive" rule with its reason recorded);
+the 9.9-series Gradle tolerance (ENG — the fleet-rolling reality, the
+series guard's recorded form); the two provably-panic-free exports
+(last_error/free — ENG's audit-wording note); the run-vs-tip gap (PROD:
+the green run 45948447173 is on ae9e078; the pushed tip adds only the
+session records — the named-gap note); **the named non-verifications
+(PROYD-3's checklist, restated verbatim at the close): NO emulator or
+instrumented run (GitHub-hosted runners have no KVM; the nothing-uploaded
+rule bars hosted device labs), NO on-device run unless an owner-side
+smoke happens (the offer stands as a one-line exit-checklist item).**
+
+**The Stage-2 slip re-agenda — the SEVENTH surfacing (PROD's mandatory
+item, restated in full in the exit report):** the enumeration — 1 the
+N1-exit, 2 the N2-entry, 3 the N2-exit convening, 4 the N2-exit close,
+5 the 2026-11-27 restatement, 6 the N3 entry gate, 7 THIS exit gate.
+The three owner options: (a) **fund a T3 session** (the MSI-record
+keystream decompile chase at payload offset 0x24000 + tax-modern.md,
+debt D42), (b) **supersede the RE-protocol namespace rule** that
+requires the modern format's DoD spec, (c) **the default re-agenda**.
+No ruling received across six prior surfacings; (c) continues; the next
+surfacing rides with N4's convened gate.
+
+**Gate outcome:**
+
+**N3: CLOSED (exit PASSED)**
+(2026-11-27 — 4 × PROCEED-family unanimous, no BLOCK; the box closed at
+exactly two sessions; the working-app bar proven at the demo standard:
+assembleDebug green with the cross-built .so packaged, the JVM tests
+through the real JNI seam at shared-fixture parity, the named
+non-verifications stated; the riding hardenings closed in substance
+with their batteries; the variant preconditions byte-verified; the
+eleven-round CI-fix record honestly kept. The epilogue's next gate is
+N4's delta-scoped gate — the Windows native UI, the first C++
+consumption of the committed flat-C header, with SEC's dependencyLocking
+rider + the slip's EIGHTH surfacing on its agenda.)
