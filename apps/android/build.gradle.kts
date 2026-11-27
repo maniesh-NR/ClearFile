@@ -5,7 +5,11 @@
 // lane is guarded fail-closed in CI before any of these resolve).
 plugins {
     id("com.android.application") version "9.5.3" apply false
-    id("com.android.library") version "9.5.3" apply false
+    // AGP 9's KMP-module plugin (the second KMP finding: com.android.
+    // library is incompatible with kotlin("multiplatform") since AGP 9.0 —
+    // the KMP library plugin replaces it; com.android.library is not
+    // applied anywhere).
+    id("com.android.kotlin.multiplatform.library") version "9.5.3" apply false
     // AGP 9 has Kotlin support built in (kotl.in/gradle/agp-built-in-kotlin)
     // — the org.jetbrains.kotlin.android plugin is NOT applied anywhere
     // (the first CI round's finding: AGP 9 refuses it). The multiplatform

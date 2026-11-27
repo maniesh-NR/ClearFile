@@ -8,22 +8,22 @@
 // clearfile-core Rust core via the thin JNI shim (the cdylib).
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
-    id("com.android.library")
-}
-
-android {
-    namespace = "dev.clearfile.ffi"
-    compileSdk = 36
-    defaultConfig {
-        minSdk = 24
-    }
+    // AGP 9's KMP-module plugin (the KMP-library replacement for
+    // com.android.library — incompatible with kotlin("multiplatform")
+    // since AGP 9.0; the KMP library plugin creates the android target
+    // and carries its Android identity in androidLibrary below).
+    id("com.android.kotlin.multiplatform.library")
 }
 
 kotlin {
-    // EXACTLY one Kotlin target — android. No iOS (explicitly dropped
-    // by ADR-017), no JVM/desktop/JS targets (a second target adds
-    // surface with no consumer).
-    androidTarget()
+    // EXACTLY one Kotlin target — android (the plugin creates it; no
+    // iOS — explicitly dropped by ADR-017 — no JVM/desktop/JS targets:
+    // a second target adds surface with no consumer).
+    androidLibrary {
+        namespace = "dev.clearfile.ffi"
+        compileSdk = 36
+        minSdk = 24
+    }
 
     sourceSets {
         commonMain.dependencies {
