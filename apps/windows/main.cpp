@@ -438,6 +438,8 @@ static void render(HWND hwnd) {
     uint32_t fg = role_color(false, "onSurface");
     target->BeginDraw();
     target->Clear(d2d_of(bg));
+    ID2D1SolidColorBrush *brush = nullptr;
+    target->CreateSolidColorBrush(d2d_of(fg), &brush);
     std::string text;
     if (!g_error.empty()) {
         text = "ClearFile (prototype) \xE2\x80\x94 TY2025 federal summary\n\nThe file could not be opened as a ClearFile return.\n\n" + g_error;
@@ -453,8 +455,11 @@ static void render(HWND hwnd) {
     }
     std::wstring wtext = wide_of_utf8(text);
     D2D1_RECT_F rect = D2D1::RectF(24.0f, 24.0f, 776.0f, 576.0f);
-    target->DrawTextW(wtext.c_str(), (UINT32)wtext.size(), format, rect,
-                     d2d_of(fg), D2D1_DRAW_TEXT_OPTIONS_NONE);
+    if (brush) {
+        target->DrawTextW(wtext.c_str(), (UINT32)wtext.size(), format, rect,
+                         brush, D2D1_DRAW_TEXT_OPTIONS_NONE);
+        brush->Release();
+    }
     target->EndDraw();
 }
 
