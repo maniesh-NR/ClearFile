@@ -2542,3 +2542,102 @@ D41/D42 residues ride their lanes.**
   N6 (the WASM web + the TS retirement per ADR-016 + the epilogue's
   freeze declaration) at the required gate discipline — the next
   session resumes at N5's delta-scoped gate, exactly as STATE records.
+
+## 2026-11-27 (the N5 session, ONE-session box) · The macOS lane: N5 COMPLETE (exit PASSED)
+
+**What was done (the owner's standing single-session directive:
+everything not requiring owner input in one session; backup after each
+stage; maximum parallelism):** N5 entered and CLOSED in one session —
+- **The N5 delta-scoped gate** (convened at session start, 4 reviewers
+  in parallel isolation, unanimous PROCEED-WITH-CONDITIONS: SEC 7 /
+  LEGAL 9 / ENG 8 / PROD 8, no BLOCK): the ruled shape = the WRAPPER
+  umbrella header (the symlink proposal REJECTED — ENG's probe found
+  link creation policy-blocked and the git-plumbing route left AD by
+  the blocked checkout; SEC's probe found the cacheinfo route workable;
+  the disagreement itself + the Windows-runner core.symlinks class
+  ruled for the symlink-free wrapper with FIVE ../), the bar ruling
+  formalized (macos-latest CI job alone satisfies the demo bar; any
+  macOS GA owes an owner-side build or the recorded acceptance), the
+  macos-latest verification list resolved by THREE independent live
+  probes (macos-latest = macOS 26 arm64; the macos-13 image retired;
+  macos-14 retired 2026-11-02 — the macOS 13 floor is BUILD-TIME-ONLY
+  confirmable), the ONE-session box ruled under the owner's standing
+  directive with four mitigations; the consolidated 13-point ledger +
+  the TENTH slip surfacing in CONSENSUS.
+- **The execution:** apps/macos (the Swift+AppKit app: the SPM package
+  with the ClearFileFFI C wrapper target + the Swift executable, tools
+  5.9 = the Swift 5 language mode, platforms [.macOS(.v13)], zero
+  external dependencies asserted fail-closed; main.swift mirroring
+  apps/windows/main.cpp exactly — the argv modes, the ONE shared
+  pipeline with the 512 MiB pre-read bound, the byte-exact text
+  family, the C-ABI ownership discipline inline (guard-let + defer
+  clearfile_free + the immediate copy-out), the palette-FFI theme, the
+  AppKit window with the full honesty set); the CI macos-latest lane
+  (the eighth job: the fail-closed rustc + aarch64-apple-darwin
+  guards, the identity echo (sw_vers + swift --version), the .dylib,
+  the boundary battery ON MACOS (10/10), the wrapper-include
+  assertion, the SPM zero-dep assertion, the swift build with the
+  -Xlinker single-token form, the deployment-floor assertion
+  (LC_BUILD_VERSION minos 13.0), the headless smoke against the Linux
+  expected text (EOL-normalized both sides — one canonical text
+  family, THREE platforms), the otool -L direct-linkage guard over
+  both binaries, no cargo-deny (the android job's every-push check
+  stays — recorded), NO uploads); .gitattributes (R-ENG-23: text=auto
+  eol=lf + the binary marks — the renormalize zero-diff verified by
+  the entry-gate probes AND in-session); the .gitignore joins
+  (/apps/macos/.build/ + /apps/macos/.swiftpm/).
+- **The blind pre-flight audit** (a subagent, pre-push): 1 defect
+  caught before any CI round (the throwing FileHandle.write(contentsOf:)
+  needing try?) + the byte-parity mechanically proven (an independent
+  Python port of the formatting logic diffed against
+  apps/linux/tests/expected-headless.txt — 1766 bytes identical).
+- **The CI-fix record (THREE rounds, each diagnosed + fixed + recorded
+  in its own commit message):** round 1 (run 45976074680) = SwiftPM's
+  own rule — the tools-version directive must be the manifest's FIRST
+  LINE for Swift < 6.0 (the SPDX header preceded it); round 2 (run
+  45976627388) = Result's failure type must conform to Error (String
+  does not — the tiny LoadError wrapper + the three consumers reading
+  error.message); round 3 (run **45977202882** on 9cfffa7) = GREEN,
+  all EIGHT jobs (the datums now N3=11, N4=5, N5=3). The identity
+  echo: macOS 26.7.2 (Build 25G332) arm64, swift-driver 1.148.6,
+  rustc 1.100 host aarch64-apple-darwin.
+- **The N5 exit gate** (4 reviewers in parallel isolation over the
+  delta ff127f2..9cfffa7): SEC PWC (2 close riders) / LEGAL PWC (4) /
+  ENG PASS (0) / PROD EXIT-PASS (4) — no BLOCK. **N5: CLOSED (exit
+  PASSED).** The close riders discharged at the close: the README
+  apps/macos row (the run number + the four named non-verifications +
+  the GA clause); the cdylib EXACT-LIST tightening (SEC's rider
+  reconciled over ENG's no-tightening by scope — the Rust-owned cdylib
+  list is exactly [libSystem.B.dylib], the Xcode-owned exe list keeps
+  the denylist + the full-list echoes); the ADR-017 licensing annex's
+  Swift sentence (the OS-shipped /usr/lib/swift runtime — nothing
+  embedded, no LICENSES row at any conveyance); the D14 root-dotfile
+  un-headed class; the checker's N-outcomes 8 → 9. ENG's register
+  close-state: R-ENG-26..31 closed (both actual reds were a NEW class
+  — Swift-basis/manifest preconditions, registered as a class note),
+  R-ENG-32 NEW (the install-name note).
+- **The four named non-verifications (recorded in README/ROADMAP):**
+  no interactive GUI run in CI; no macOS-13-runtime verification (the
+  floor is a build-time target; verified on macOS 26 arm64 only); no
+  x64-macOS verification; no owner-side build (the GA debt per the bar
+  ruling — the Flutter macOS app remains the shipped product).
+
+**Decisions:** N5's shape fully ruled at its gate (the wrapper header,
+the bar, the ONE-session box); the ELEVENTH slip surfacing = the N5
+exit gate (PROD's records-honesty correction of the entry record's
+one-off undercount — the same class the N4 exit resolved); the TWELFTH
+rides with N6's TERMINAL gate, whose record must state the parking
+posture explicitly if still unruled.
+
+**Open questions:** none requiring owner input for N6's gate; the
+standing owner-side items unchanged (D30: Dependabot/branch
+protection/PAT rotation; D42: the MSI-record keystream chase at
+payload offset 0x24000 + tax-modern.md behind the T3 funding option).
+
+**Next step:** N6's delta-scoped gate (the TERMINAL gate: the wasm32
+target question (unknown-unknown vs wasip1) for the std-only core, the
+TS engine's retirement per ADR-016 with the parity suites' survival
+rule, the epilogue's OWN terminal freeze declaration per the
+v2.0.0-territory rule, the TWELFTH slip surfacing with the explicit
+parking posture) — then the epilogue closes and the program freeze
+declares.

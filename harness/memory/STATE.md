@@ -362,51 +362,33 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**The N5 execution (the macOS native UI — ENTERED 2026-11-27 at its
-delta-scoped gate, 4 × PWC unanimous, no BLOCK; reports at
-`harness/adversarial/reports/2026-11-27-n5-*.md`):** the ONE-session
-box under the owner's standing single-session directive (backup after
-each stage; the headless-first in-session ordering; the honest CI-fix
-round record). The ruling set from the gate: the wrapper umbrella
-header `apps/macos/Sources/ClearFileFFI/include/ClearFileFFI.h`
-carrying `#include "../../../../../core-ffi/clearfile.h"` (FIVE `../`
-— the symlink shape REJECTED: both sandbox probe findings recorded);
-the SPM package (tools 5.9, platforms [.macOS(.v13)], the
-comment-only shim.c, zero dependencies asserted); main.swift
-mirroring apps/windows/main.cpp (the argv modes, the ONE shared
-pipeline, the byte-exact text family — String(format:) non-localized,
-the -0.0 normalization, Array(intPart) grouping, `as? Int` for
-qualifyingChildren; guard-let owned returns + defer clearfile_free at
-the tightest scope; write(contentsOf:) not write(_:)); the smoke
-geometry (cwd = repo root, exe apps/macos/.build/debug/ClearFileMacOS,
-DYLD_LIBRARY_PATH="$PWD/core-ffi/target/release" absolute); the CI
-macos-latest job (the eighth: rustc >= 1.95 + host-triple
-aarch64-apple-darwin guards, the .dylib emission, the boundary battery
-ON MACOS, the include-line assertion, swift build -Xlinker
-single-token, the headless smoke tr -d '\r' both sides + diff -u, the
-otool -L guard over BOTH the exe and the dylib — the denylist
-CFNetwork/Network.framework/libcurl/libssl + the dylib
-must-contain-libSystem, the full output in the run log for the exit
-gate's exact-list tightening, sw_vers + swift --version recorded, no
-cargo-deny (the android job's every-push check stays), NO uploads);
-the .gitignore joins (/apps/macos/.build/ + /apps/macos/.swiftpm/)
-same-commit with the scaffold; the .gitattributes R-ENG-23 hardening
-(`* text=auto eol=lf` + the binary marks png/pdf/ico — the
-zero-diff renormalize verified by TWO isolated probes); the D14 SPDX
-sweep (the .gitattributes root-dotfile class included); the
-Swift-toolchain posture recorded in-tree (Apache-2.0 + the Swift
-Runtime Library Exception; Foundation named alongside AppKit in the
-carve-out row); at close: the README row (the honest scope, the
-unreleased/CI-only status, the Flutter-remains-shipped sentence, all
-FOUR named non-verifications, the green run number, the GA clause),
-the variant preconditions byte-verified, the exit gate (4 reviewers
-in parallel), the checker families (N-outcomes 8 → 9 at close). The
-named non-verifications: no interactive GUI run in CI; no
-macOS-13-runtime verification (macos-latest = macOS 26 arm64 per
-THREE live probes; the floor is build-time-only); no x64-macOS
-verification; no owner-side build (the GA debt per the bar ruling).
-D30 + D42 stand. After N5 closes: N6's delta-scoped gate (the wasm32
-target question unknown-unknown vs wasip1, the TS retirement per
-ADR-016, the parity suites' survival rule, the epilogue's OWN
-terminal freeze declaration per the v2.0.0-territory rule) — the
-ELEVENTH slip surfacing rides with it (the TERMINAL gate).
+**N6's delta-scoped gate — the TERMINAL gate (N5 CLOSED 2026-11-27,
+exit PASSED; the per-OS order's last lane):** the agenda carries —
+(1) **the wasm32 target question** (unknown-unknown vs wasip1) for
+the std-only zero-dependency core: the gate rules the wasm target +
+the JS binding seam (wasm-bindgen would add dependencies to a
+std-only crate — the gate rules whether the zero-dep C-ABI-style
+export surface (the same flat functions, no framework) or another
+shape serves the web, and how the .wasm is loaded by the Next.js
+prototype WITHOUT touching the frozen engines' semantics); (2) **the
+TS engine's retirement per ADR-016** (the freeze converts to
+retirement the day the shared Rust core serves the web — the gate
+rules the mechanics: what `src/lib/tax/engine.ts`'s retirement looks
+like, what the web parity suite becomes, the ADR-009 disposition row
+(the parity suites survive as long as any old engine ships anywhere),
+and the CI suites job's shape after the retirement); (3) **the
+epilogue's OWN terminal freeze declaration** (the v2.0.0-territory
+rule — N6's to declare, never an earlier stage's; v2.0.0 itself stays
+GA-gated per ADR-017's row); (4) **the TWELFTH slip surfacing** (the
+enumeration: …10 the N5 entry, 11 the N5 exit, 12 N6's gate — the
+TERMINAL gate's record must state the explicit parking posture if
+still unruled: the Stage-2 exit stays slipped; the MSI chase stands
+as recorded debt D42; D30 standing — never a silent drop; the three
+owner options restated with the no-ruling count); (5) the N6
+execution box + the per-condition discipline (the Pages deployment
+path is live at maniesh-Nr.github.io/ClearFile/ — the web-WASM build
+must keep it green; the variant preconditions: release.yml's
+byte-frozen status must be RE-RULED by the gate if the web build
+needs to change pages.yml or the suites job). Standing: D30 + D42
+(the owner-side items). After N6 closes: the epilogue program's
+close-out — the program freeze declaration + the final memory sync.

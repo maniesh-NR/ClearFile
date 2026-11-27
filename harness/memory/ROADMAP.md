@@ -724,18 +724,57 @@ v1's stages still close first.
   is macOS 15); requires the `macos-latest` CI runner or owner-side
   builds — this Linux sandbox cannot build or verify AppKit (the
   author-blind trade, the N4 precedent). **Gate status: ENTERED
-  2026-11-27** (the delta-scoped gate, 4 × PWC unanimous — SEC 7 /
-  LEGAL 9 / ENG 8 / PROD 8, no BLOCK; reports at
-  `harness/adversarial/reports/2026-11-27-n5-*.md`; the wrapper-header
-  ruling (the symlink shape rejected — both sandbox probe findings
-  recorded), the bar ruling formalized under the per-lane-status
-  discipline with the identity echo, the ONE-session box under the
-  owner's standing single-session directive; the consolidated ledger
-  in CONSENSUS's gate record). **The execution box: ONE session** (the
-  owner's standing directive: everything not requiring owner input in
-  a single session, backup after each stage, maximum parallelism — the
-  recorded owner ruling consolidating the two-session precedent; the
-  headless-first in-session ordering; the honest CI-fix round record).
+  2026-11-27; CLOSED 2026-11-27 (exit PASSED)** (the delta-scoped gate,
+  4 × PWC unanimous — SEC 7 / LEGAL 9 / ENG 8 / PROD 8, no BLOCK;
+  reports at `harness/adversarial/reports/2026-11-27-n5-*.md`; the
+  wrapper-header ruling (the symlink shape rejected — both sandbox
+  probe findings recorded), the bar ruling formalized under the
+  per-lane-status discipline with the identity echo, the ONE-session
+  box under the owner's standing single-session directive; the exit
+  gate SEC PWC (2 close riders — discharged at the close) / LEGAL PWC
+  (4 close riders — discharged at the close) / ENG PASS (0 riders; the
+  register R-ENG-26..31 closed + R-ENG-32 registered) / PROD EXIT-PASS
+  (4 close riders — discharged at the close), no BLOCK; reports at
+  `harness/adversarial/reports/2026-11-27-n5exit-*.md`. **The execution
+  record (exit PASSED):** the ONE-session box closed as ruled — the
+  app + the CI lane + the records in one session, the lane's FIRST
+  LIVE-GREEN RUN **45977202882** on 9cfffa7 (all EIGHT jobs: gitleaks,
+  suites, linux-app, android-app, windows-app, macos-app, re-tooling,
+  harness-check) after the three-round CI-fix record (round 1:
+  SwiftPM's line-1 tools-version rule — the SPDX header preceded the
+  directive; round 2: Result's failure type must conform to Error — the
+  LoadError wrapper; round 3: green — the datums N3=11, N4=5, N5=3);
+  the pre-flight blind audit caught 1 defect pre-push (the throwing
+  write(contentsOf:) needing try?) + mechanically proved the
+  byte-parity (an independent Python port of the formatting logic,
+  1766 bytes identical); the boundary battery 10/10 ON MACOS; the
+  deployment-floor assertion green (LC_BUILD_VERSION minos 13.0); the
+  headless smoke byte-parity across THREE platforms; the identity echo
+  (macOS 26.7.2 arm64, swift-driver 1.148.6, rustc 1.100,
+  aarch64-apple-darwin); the linkage facts from the green run's otool:
+  the exe's direct links = the core dylib (via the cargo build-script
+  out/ absolute path — R-ENG-32, sound for the never-shipped CI-only
+  lane) + libSystem.B.dylib + AppKit + CoreGraphics + Foundation +
+  libobjc + the OS Swift runtime at /usr/lib/swift/* (all OS-shipped,
+  nothing embedded — no Swift-runtime LICENSES row owed at any
+  conveyance); the cdylib's direct links = EXACTLY [libSystem.B.dylib]
+  (the exit gate's exact-list tightening landed in CI at the close).
+  The close riders discharged at the close: the README apps/macos row
+  (the run number, the four named non-verifications, the GA clause),
+  the ADR-017 licensing annex's Swift sentence, the D14 root-dotfile
+  class, the checker's N-outcomes 8 → 9. The four named
+  non-verifications: no interactive GUI run in CI; no
+  macOS-13-runtime verification (the floor is a build-time target; the
+  binary is verified on macOS 26 arm64 only); no x64-macOS
+  verification; no owner-side build (the GA debt per the bar ruling —
+  any macOS GA owes an owner-side build or the recorded acceptance;
+  the Flutter macOS app remains the shipped product). **The next gate
+  is N6's — the epilogue's TERMINAL gate** (the wasm32 target question
+  unknown-unknown vs wasip1, the TS engine's retirement per ADR-016,
+  the parity suites' survival rule, the epilogue's OWN terminal freeze
+  declaration per the v2.0.0-territory rule; the TWELFTH slip
+  surfacing rides with it — the enumeration correction recorded at the
+  N5 exit).
 - **N6 — web via WASM + terminal freeze**: the Rust core serves the
   web; the TS engine retires per ADR-016; the epilogue program declares
   its own freeze (v2.0.0 territory per the settlement's rule).

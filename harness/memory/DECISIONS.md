@@ -542,7 +542,14 @@ Slint under its GPL-3.0 option; Qt only under GPL-3.0 terms with a
 recorded license note. Win32+Direct2D and AppKit are proprietary
 **system libraries** under the GPLv3 §1 carve-out (no
 corresponding-source obligation for SDKs); Kotlin/Apache-2.0 is
-GPL-3-compatible. A per-platform LICENSES manifest lands with each
+GPL-3-compatible. The Swift compiler, standard library, and runtime
+are Apache-2.0 under the Swift Runtime Library Exception (runtime
+portions redistributable in binary products without Apache §4
+attribution — GPL-3-compatible, and linked dynamically from the OS
+at /usr/lib/swift, never embedded: no LICENSES row); SPM is
+Apache-2.0, build-time-only, never distributed (the cbindgen/gradle
+class); Foundation joins AppKit as an Apple system framework under
+the same §1 carve-out. A per-platform LICENSES manifest lands with each
 platform's first tagged release. Material You/MD3 is unprotectable
 functional design (*Apple v. Microsoft* filtration) — nominal references
 fine, no Google/Material logos.

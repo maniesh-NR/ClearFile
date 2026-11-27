@@ -610,12 +610,25 @@ jobs:
           if otool -L apps/macos/.build/debug/ClearFileMacOS | grep -E 'CFNetwork|Network\.framework|libcurl|libssl'; then
             echo "link guard: FAIL — a network library is directly linked by the app" >&2; exit 1
           fi
+          # The cdylib's EXACT-list assertion (the N5 exit gate's tightening —
+          # the green run closed the blind spot: the Rust core's direct links
+          # are EXACTLY [libSystem.B.dylib]; anything else reds naming the
+          # actual list, covering the denylist's non-network blind class
+          # (libcrypto/Security.framework/etc.). The EXE keeps its denylist —
+          # its list is Xcode-owned and legitimately rolls).
           if otool -L core-ffi/target/release/libclearfile_core_ffi.dylib | grep -E 'CFNetwork|Network\.framework|libcurl|libssl'; then
             echo "link guard: FAIL — a network library is directly linked by the core" >&2; exit 1
           fi
-          otool -L core-ffi/target/release/libclearfile_core_ffi.dylib | grep -q '/usr/lib/libSystem.B.dylib' \
+          DYLIB_DEPS="$(otool -L core-ffi/target/release/libclearfile_core_ffi.dylib | tail -n +2)"
+          echo "$DYLIB_DEPS"
+          echo "$DYLIB_DEPS" | grep -F '/usr/lib/libSystem.B.dylib' \
             || { echo "link guard: FAIL — the core dylib does not link libSystem" >&2; exit 1; }
-          echo "link guard: ok — no network library directly linked; the core links libSystem"
+          DEP_COUNT="$(echo "$DYLIB_DEPS" | grep -c . || true)"
+          if [ "$DEP_COUNT" -ne 1 ]; then
+            echo "link guard: FAIL — the core dylib's direct links are not exactly [libSystem] ($DEP_COUNT dependency lines)" >&2
+            exit 1
+          fi
+          echo "link guard: ok — no network library directly linked; the core's direct links are exactly [libSystem]"
 
   re-tooling:
     # Stage-2 execution session 1 (2026-11-22, ADR-012 mechanics (b)/(e) +

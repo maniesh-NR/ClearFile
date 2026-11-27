@@ -2086,3 +2086,111 @@ probes; the bar ruling formalized under the per-lane-status discipline
 with the identity echo; the ONE-session box ruled under the owner's
 standing directive with the four mitigations; the TENTH slip
 surfacing pinned by enumeration.)
+
+## 2026-11-27 · The N5 exit gate — N5: CLOSED (exit PASSED)
+
+**Context:** the ONE-session box closed as ruled (the owner's standing
+single-session directive): the app + the CI lane + the records in one
+session, the lane's FIRST LIVE-GREEN RUN **45977202882** on 9cfffa7
+(all EIGHT jobs) after the three-round CI-fix record (round 1:
+SwiftPM's line-1 tools-version rule — the SPDX header preceded the
+directive; round 2: Result's failure type must conform to Error — the
+LoadError wrapper; round 3: green — the honest datums now N3=11, N4=5,
+N5=3), plus the pre-flight blind audit (1 defect caught pre-push: the
+throwing write(contentsOf:); the byte-parity mechanically proven by
+the auditor's independent Python port of the formatting logic — 1766
+bytes identical). Four reviewers in parallel isolation over the delta
+ff127f2..9cfffa7; reports at
+`harness/adversarial/reports/2026-11-27-n5exit-*.md`.
+
+| Reviewer | Verdict | BLOCK? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (2 close riders — discharged at the close; 4 advisories) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (4 close riders — discharged at the close with the ruled exact texts) | no |
+| ADV-ENG | PASS (0 riders; the R-ENG-26..31 register closed + R-ENG-32 registered + the benign letter-deviation notes) | no |
+| ADV-PROD | EXIT-PASS (4 close riders — discharged at the close with the ruled exact README row) | no |
+
+**The close riders, discharged at the close (the full text in the
+reports):** (1) the README apps/macos row (PROD's exact text: the
+honest scope, the run number 45977202882, the four named
+non-verifications, the GA clause, the Flutter-remains-shipped
+sentence); (2) the cdylib EXACT-LIST tightening in CI (SEC's rider,
+RULED over ENG's no-tightening position by scope: SEC's tightening
+applies to the Rust-owned CDYLIB list (exactly
+[/usr/lib/libSystem.B.dylib] — stable across the pinned era, covering
+the denylist's non-network blind class libcrypto/Security.framework);
+ENG's float concern is scoped to the Xcode-owned EXE list (kept as
+the four-way denylist + the full-list echoes) — the reconciliation
+recorded here, the tightened guard landed at the close and re-proven
+by the close push's own run); (3) the ADR-017 licensing annex's Swift
+sentence (LEGAL's exact text: the compiler/stdlib/runtime Apache-2.0 +
+the Swift Runtime Library Exception, dynamically linked from the OS at
+/usr/lib/swift, never embedded — no LICENSES row; SPM Apache-2.0
+build-time-only; Foundation joins AppKit in the §1 carve-out); (4) the
+D14 root-dotfile un-headed class (LEGAL's exact text, DEBT.md); (5)
+the close-record content (LEGAL-4: the linkage facts + the no-row
+ruling + the run ID + the non-verifications — carried by this record,
+ROADMAP, SESSION_LOG, and STATE); (6) the checker's N-outcomes 8 → 9
+(PROD; FUNDED stays 1).
+
+**The linkage facts recorded from the green run's otool (LEGAL-4's
+requirement):** the EXE's direct links = the core dylib (via the cargo
+build-script out/ absolute install name — ENG's R-ENG-32: sound for a
+never-shipped CI-only lane, the absolute DYLD_LIBRARY_PATH covers
+every case) + /usr/lib/libSystem.B.dylib + AppKit + CoreGraphics +
+Foundation + libobjc + the OS Swift runtime at /usr/lib/swift/* (all
+OS-shipped — nothing embedded: **no Swift-runtime LICENSES row owed at
+any conveyance**; the macOS first-conveyance rows stay the palette
+(Apache-2.0 via the .dylib) + GPL §6; the per-platform manifest stays
+deferred to the first tagged macOS release). The CDYLIB's direct
+links = EXACTLY [itself, /usr/lib/libSystem.B.dylib].
+
+**The registered non-blocking notes (the reports carry the full
+text):** the macos-latest/release.yml recorded line (SEC); the
+install-name ship-time-rewrite note (SEC/ENG R-ENG-32); the *.so/*.a
+binary-mark extension (SEC); the palette 0-sentinel doc line (SEC);
+ENG's benign letter-deviations (the `?? 0` lossless integer fallback,
+the strlen length, the two extra no-op binary marks) — all recorded,
+none behavioral. **The register close-state (ENG):** R-ENG-26 CLOSED
+(none of its named traps fired — both actual reds were a NEW class:
+Swift-basis/manifest preconditions, registered as a class note);
+R-ENG-27 closed-accepted (the compile half retired; the runtime half =
+the named non-verification); R-ENG-28 closed-discharged; R-ENG-29
+closed-resolved; R-ENG-30 closed into the standing drift posture;
+R-ENG-31 closed; R-ENG-32 NEW (the install-name note, no action).
+**Test honesty (ENG):** the window mode (especially the palette-FFI
+chain) remains THE uncovered surface that matters — the named
+non-verification, GA's owner-side obligation.
+
+**The Stage-2 slip re-agenda — the ELEVENTH surfacing (the records
+honesty correction, PROD's finding):** the N5 entry record's "the
+ELEVENTH rides with N6's gate" pointer was a one-off undercount (the
+same class the N4 entry made and the N4 exit resolved by taking its
+own number): the pinned per-gate-event enumeration makes THIS exit
+gate the eleventh (1 the N1-exit, 2 the N2-entry, 3 the N2-exit
+convening, 4 the N2-exit close, 5 the 2026-11-27 restatement, 6 the
+N3 entry, 7 the N3 exit, 8 the N4 entry, 9 the N4 exit, 10 the N5
+entry, 11 the N5 exit). No ruling received across TEN prior
+surfacings; the three owner options stand ((a) fund a T3 session (the
+0x24000 keystream chase + tax-modern.md, D42), (b) supersede the
+namespace rule, (c) the default re-agenda); (c) continues; the
+TWELFTH rides with N6's gate — the epilogue's TERMINAL gate, whose
+record must state: the pinned enumeration; that the slip cannot ride
+past it unexamined; if still unruled, the post-epilogue parking
+posture stated explicitly (the Stage-2 exit stays slipped; the MSI
+chase stands as recorded debt D42; D30 standing) — never a silent
+drop; and the three owner options restated with the no-ruling count.
+
+**Gate outcome:**
+
+**N5: CLOSED (exit PASSED)**
+(2026-11-27 — 4 × PROCEED-family unanimous, no BLOCK; the ONE-session
+box closed as ruled with the honest three-round CI-fix record; the
+first Swift consumption of the committed header proven natively (the
+boundary battery ON MACOS, the SPM build, the exact-list link guard,
+the byte-parity text family across three platforms); the bar ruling
+recorded with its single-maintainer risk + the GA debt; the variant
+preconditions byte-verified; the close riders discharged at the close.
+The epilogue's next gate is N6's — the TERMINAL gate: the wasm32
+target question, the TS retirement per ADR-016, the parity suites'
+survival rule, the epilogue's OWN freeze declaration.)
