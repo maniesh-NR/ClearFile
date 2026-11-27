@@ -2604,8 +2604,14 @@ stage; maximum parallelism):** N5 entered and CLOSED in one session —
   entry after the header; the `tail -n +2` count included it): the
   semantics fixed (exactly two lines after the header — the own
   install name + libSystem) + re-proved green (the datums now N3=11,
-  N4=5, N5=4). The identity echo: macOS 26.7.2 (Build 25G332) arm64,
-  swift-driver 1.148.6, rustc 1.100 host aarch64-apple-darwin.
+  N4=5, N5=4). Round 4's run attempt 1 hit ONE transient flake in the
+  ANDROID lane (the Gradle plugin registry failing to resolve
+  org.jetbrains.kotlin.multiplatform:2.4.21 — resolved green in the
+  four prior runs, zero android-lane changes in the delta): the
+  failed-jobs re-run (attempt 2) went GREEN with no change — the
+  transient-network class, recorded. The identity echo: macOS 26.7.2
+  (Build 25G332) arm64, swift-driver 1.148.6, rustc 1.100 host
+  aarch64-apple-darwin.
 - **The N5 exit gate** (4 reviewers in parallel isolation over the
   delta ff127f2..9cfffa7): SEC PWC (2 close riders) / LEGAL PWC (4) /
   ENG PASS (0) / PROD EXIT-PASS (4) — no BLOCK. **N5: CLOSED (exit

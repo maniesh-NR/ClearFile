@@ -2130,7 +2130,12 @@ it and red the close push's run 45980761380): round 4 fixed the
 semantics (exactly TWO lines after the header — the own install name
 + libSystem; the install-name line asserted + the count asserted +
 libSystem asserted) and re-proved green; the honest CI-fix datum is
-now N5=4; (3) the ADR-017 licensing annex's Swift
+now N5=4; round 4's attempt 1 also hit ONE transient flake in the
+ANDROID lane (the Gradle plugin registry failing to resolve
+org.jetbrains.kotlin.multiplatform:2.4.21 — resolved green in the
+four prior runs, zero android-lane changes in the delta): the
+failed-jobs re-run (attempt 2, run 45981470513) went GREEN with no
+change — the transient-network class, recorded; (3) the ADR-017 licensing annex's Swift
 sentence (LEGAL's exact text: the compiler/stdlib/runtime Apache-2.0 +
 the Swift Runtime Library Exception, dynamically linked from the OS at
 /usr/lib/swift, never embedded — no LICENSES row; SPM Apache-2.0
