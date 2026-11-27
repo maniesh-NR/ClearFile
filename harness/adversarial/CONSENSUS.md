@@ -1418,3 +1418,77 @@ package name libxkbcommon-x11-0; the BSL-1.0 allow-list join per the
 actually-encountered rule; the wildcard disposition for the clearfile-
 core path dep — the recorded ADR-017 seam); every code-level finding
 is fixed; the gate closes when the ENG report lands.)
+
+## 2026-11-27 · The N2-exit riding list discharged (the record-level conditions + the gate-outcome close)
+
+**Context:** the N2 exit gate closed 2026-11-26 (all four reports filed —
+SEC PWC (3) / LEGAL PWC (6) / ENG PWC (1) / PROD PWC (5), no BLOCK), but
+the CONSENSUS close line and four record-level conditions rode to the next
+session per the close commit (109c3eb). This entry records their
+discharge (the opening batch of the 2026-11-27 session; the tree
+normalized to the pushed tip after the recycle's mode flips, harness_check
+0 failures first, the pinned Rust toolchain re-fetched sha256-verified —
+the corpus stays re-acquirable per the ADR-019 fetcher rule):
+
+1. **The gate-outcome close line (owed here): the N2-exit record above
+   ends on "EXIT PENDING" — the final close commit touched only
+   PROJECT_MEMORY/ROADMAP/SESSION_LOG/the ENG report. Recorded: N2:
+   CLOSED (exit PASSED) 2026-11-26 — the ENG retry filed its PWC (1)
+   report (`2026-11-26-n2exit-engineering.md`), and the gate closed with
+   every code-level finding fixed and the remaining items all
+   record-level, riding to this entry.**
+2. **ENG-riding (the residual duplicate-scan amplification)** — the
+   bound-or-record choice goes to N3's gate as a named agenda item (the
+   standing framing: closure before any FFI wiring, and N3 IS the FFI
+   wiring; the stronger bound is the default candidate). Not decided
+   here — it is execution-scope, not bookkeeping.
+3. **LEGAL-2 (the headless footer's three demo-disclaimer facts) —
+   DISCHARGED:** `apps/linux/src/main.rs`'s `text_summary` footer now
+   carries the three facts verbatim-in-substance from welcome.dart's
+   family (not IRS-authorized; cannot e-file; must not be used to file a
+   real return), `tests/expected-headless.txt` regenerated from the
+   actual output, the app suite **5/5 green**; the core re-verified
+   **174/174 green** with the palette-header edit below in place.
+4. **LEGAL-3 (the upstream copyright + no-NOTICE notes) — DISCHARGED:**
+   `core/src/palette.rs`'s provenance doc-comment names "Copyright 2021
+   Google LLC" + the no-NOTICE-file fact; the THIRD-PARTY-NOTICES.md
+   entry carries both (verified at the N2 gate). The notices link's
+   opening bracket is intact in the live file (the exit advisory's
+   one-character typo already absent — nothing to fix).
+5. **LEGAL-5 (the expected-artifact SPDX carve-out) — DISCHARGED:** D14's
+   policy line (DEBT.md) now records the byte-pinned expected-output
+   artifact class; no header added to the file itself.
+6. **SEC-riding (the action-SHA↔tag verification) — DISCHARGED LIVE:**
+   the GitHub API (2026-11-27) resolves the annotated tag
+   `EmbarkStudios/cargo-deny-action` `v2.1.4` (message "Release 2.1.4 -
+   cargo-deny 0.22.1", tagged 2026-11-24) to exactly the SHA hygiene.yml
+   pins (truncated here per the ≥32-hex harness-citation convention:
+   `81891abc19…74fda`; full form reproducible live via the API). The pin
+   is the tag's true target; the banner's cargo-deny
+   0.22.1 claim corroborated.
+7. **PROD-riding (the ledger reconciliation)** — the N2-ENTRY gate table
+   says "ADV-PROD PROCEED-WITH-CONDITIONS (7)" while the consolidated
+   13-point ledger cites PROD conditions by number only where PROD was
+   primary. The mapping, recorded so the audit trail closes: PROD-1 →
+   ledger 1 (the consolidation record); PROD-2 → ledger 12 (the drift
+   disposal); PROD-3 → ledger 5 (the two-session box + the disk plan);
+   PROD-4 → ledger 11 (the honesty surfaces); PROD-5 → ledgers 3+4 (the
+   palette verification pinning — ENG-1/SEC-7 carried it in the
+   consolidated ledger); PROD-6 (the N3/N4 pre-positioning) → carried by
+   the exit record's PROD-4 discharge (recorded in STATE's next section
+   + the exit reports), not dropped; PROD-7 → ledger 13 (the slip
+   re-agenda). Nothing was silently dropped.
+8. **The Stage-2 slip re-agenda (fifth surfacing, standing):** the three
+   owner options — (a) fund a T3 session (the MSI-record keystream
+   decompile chase + tax-modern.md, debt D42), (b) supersede the
+   RE-protocol namespace rule, (c) the default re-agenda — no ruling
+   received across four prior surfacings; (c) continues and re-agendas
+   at N3's gate (the mandatory agenda item below).
+
+**Next: N3's delta-scoped gate** (Android native UI — Android Views +
+KMP Android-only over the core via the thin JNI shim; the agenda: the
+SDK/NDK feasibility lane (the measured no-Android-SDK sandbox fact vs the
+tracked-fetcher class vs the CI android image), the cbindgen trigger (N3
+is the recorded first FFI consumer), the FFI seam shape per ADR-017, the
+ENG-riding bound-or-record, the per-OS order standing, and the slip
+re-agenda above).

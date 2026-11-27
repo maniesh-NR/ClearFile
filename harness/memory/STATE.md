@@ -1,6 +1,6 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-26 (N2 sessions 1+2 executed — the Linux app + CI + the hardenings landed; the exit gate convened with 3/4 reports; earlier: N2 session 1 CLOSED — D44 complete: the palette
+**Updated:** 2026-11-27 (the N2-exit riding record-level conditions DISCHARGED: the headless footer's three demo-disclaimer facts + the expected-text regen (app 5/5, core 174/174 re-verified live), the upstream Copyright-2021-Google + no-NOTICE notes (palette.rs + THIRD-PARTY-NOTICES), the D14 byte-pinned expected-artifact carve-out, the SEC action-SHA↔tag verification (LIVE: the annotated tag v2.1.4 → exactly the pinned 81891abc…74fda), the PROD ledger reconciliation, the CONSENSUS N2-exit close line; the pinned Rust toolchain re-fetched sha256-verified after the recycle wiped tools/; the Stage-2 slip re-agenda's FIFTH surfacing rides to N3's gate; earlier 2026-11-26: N2 sessions 1+2 executed — the Linux app + CI + the hardenings landed; the exit gate convened with 3/4 reports; earlier: N2 session 1 CLOSED — D44 complete: the palette
 module + corpus verification green (cargo test 170/170) + the
 apps/linux scaffold with every guard joined; earlier: the N2 gate CLOSED — ENTERED; the
 consolidation to Slint exercised under ADR-017's own clause with the
@@ -199,6 +199,16 @@ session's interrupted closing backup normalized + pushed as
   contract is the shared fixtures + oracle, and whose delta never
   touches `clearfile/` or `src/`.** The Flutter app and web prototype
   remain the live implementation, exactly as the ROADMAP matrix says.
+  **N2: ENTERED and CLOSED 2026-11-26 (exit PASSED)** — the delta-scoped
+  gate (4 × PWC unanimous; the consolidation to Slint exercised under
+  ADR-017's own clause; the two-session box + the disk plan) → session 1
+  = D44 complete (the palette module + the 22,242-check corpus) + the
+  apps/linux scaffold with every guard; session 2 = the Slint window app
+  + the ONE shared pipeline + the headless mode + the CI Linux-app lane
+  (hygiene run #44 live-green) + the R1/R2 parser hardenings; the exit
+  gate (SEC 3 / LEGAL 6 / ENG 1 / PROD 5, no BLOCK) closed with every
+  code-level finding fixed; the record-level riders discharged
+  2026-11-27 (CONSENSUS's entry of that date).
 - **TT-compatibility program (ADR-019 + ADR-020): T2 ENTERED 2026-11-22**
   at its own gate (4 × PROCEED-WITH-CONDITIONS, unanimous; T1 complete
   and verified at the gate). Stage-2's DoD box is NOT grown — TT specs
@@ -340,24 +350,33 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**N2's delta-scoped gate (the Linux native UI) — N1 CLOSED (exit
-PASSED):** the exit gate closed 4 × PROCEED-family unanimous with every
-condition discharged (CONSENSUS 2026-11-26; the reports at
-harness/adversarial/reports/2026-11-26-n1exit-*.md). N1's record: 17/17
-golden + the annex-(a) differential/property harness (550 × 26 exact
-parity, D43 closed) + the annex-(b) ported bridge suites (cargo test
-159/159); the box closed at exactly two sessions. N2's gate agenda
-carries: the two-toolkit question (gtk3-rs older tier / Slint modern
-tier, consolidatable if single-maintainer reality demands), the
-crate-topology question (PROD-3's exit-gate note: a cargo workspace
-would break the core-scoped zero-dep CI assertion — decide the shape),
-the C-ABI timing (cbindgen lands with the first FFI consumer, N3+),
-the MD3-palette deferral (D44: the palette lands with N2's session,
-its first consumer), and the Stage-2 slip re-agenda (see below).
-**Owner-side surfacings standing:** Dependabot alerts, branch
-protection on `main`, PAT expiry (D30 — no ruling received). **The
-Stage-2 exit slip's owner options (surfaced at the N1 exit gate):**
-(a) fund a T3 session (the MSI-record keystream decompile chase +
-tax-modern.md, debt D42), (b) supersede the RE-protocol namespace rule
-that requires the modern format's DoD spec, or (c) the slip keeps
-re-agenda-ing at every convened gate (the default until ruled).
+**N3's delta-scoped gate (the Android native UI) — N2 CLOSED (exit
+PASSED) + every rider discharged (CONSENSUS 2026-11-27):** the gate's
+agenda carries — (1) the **Stage-2 slip re-agenda (the MANDATORY item,
+fifth surfacing)**: owner options (a) fund a T3 session (the
+MSI-record keystream decompile chase + tax-modern.md, debt D42),
+(b) supersede the RE-protocol namespace rule, (c) the default
+re-agenda — no ruling received across four prior surfacings, (c)
+continues; (2) the **SDK/NDK feasibility lane** (the measured facts:
+no Android SDK/NDK anywhere in this sandbox; Java 21 present; the
+mitigations — a NEW tracked sha256-pinned fetcher class in the
+fetch_tt_corpus/fetch_rust_toolchain pattern (sdkmanager needs no
+root) and/or the CI ubuntu runners, which ship the Android SDK; the
+disk plan re-measured live — ~6 GB free class after the toolchain
+re-fetch); (3) the **JNI shim design per ADR-017's FFI seam**: one
+flat C ABI (`extern "C"`, cbindgen-generated header — N3 is the
+recorded cbindgen trigger, the first FFI consumer), the thin JNI shim
+over it, the envelope as the payload boundary, the FFI surface ≈ a
+dozen functions (compute, import_txf, export_txf, inspect_tax,
+envelope encode/decode, palette); (4) **KMP per the settlement**:
+Android-only, no second Kotlin target; (5) the **ENG-riding
+bound-or-record** (the duplicate-scan amplification — the standing
+framing: closure before any FFI wiring, and N3 is the FFI wiring);
+SEC's file-size pre-check candidate rides the same lane; (6) the
+per-OS order standing (N3 → N4 → N5 → N6; re-settable at the gate,
+no demand to re-order); (7) the variant preconditions (zero
+`clearfile/`/`src/` paths in the N3 delta; release.yml byte-unchanged;
+no version movement). The GA-lane notes carry forward: the
+file-picker constraint (rfd is GTK-backed — the eventual route is
+xdg-desktop-portal or Slint's own offering) and the distro baseline
+as a GA-gate decision.

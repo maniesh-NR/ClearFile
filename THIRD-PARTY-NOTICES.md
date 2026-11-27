@@ -51,12 +51,15 @@ The Rust core's palette module `core/src/palette.rs` is a translation — a
 derivative work, derived not vendored; no Google code text is copied — of
 Google's Dart package
 [material_color_utilities](https://pub.dev/packages/material_color_utilities)
-0.13.0, distributed under the Apache License 2.0: the CAM16/HCT color math
+0.13.0 (Copyright 2021 Google LLC), distributed under the Apache License
+2.0: the CAM16/HCT color math
 and solver, the tonal palettes, and the Material You dynamic-color scheme
 formulas (the `SchemeTonalSpot` palettes and the 34 scheme-role
 declarations), each ported item citing its Dart source file. The
 differential corpus `fixtures/palette/cases.json` pins the module's outputs
-against that reference implementation's own. The Apache License 2.0 is
+against that reference implementation's own. The upstream package archive
+carries no NOTICE file (verified at the N2 gate, 2026-11-26; this entry is
+the derivative work's attribution). The Apache License 2.0 is
 GPL-3.0-compatible; its text is available at
 <https://www.apache.org/licenses/LICENSE-2.0>.
 

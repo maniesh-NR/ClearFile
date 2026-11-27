@@ -661,7 +661,11 @@ settlement. **Version-plane note (2026-11-26, the N1 entry gate):** the
 `core/` crate's Cargo semver is a FOURTH version plane, separate from
 the app semver, the `.clearfile.json` envelope schema version, and the
 web package.json version (ADR-017 keeps three planes separate; the
-crate adds one).
+crate adds one). **Extended 2026-11-27 (the N2-exit PROD advisory):**
+each native app crate adds its own plane too — `apps/linux` 0.1.0
+(`publish = false`) is a FIFTH plane, and every later native app crate
+follows the same one-plane-per-crate rule; no app-crate version movement
+is ever an app-semver or envelope-schema movement.
 
 ---
 

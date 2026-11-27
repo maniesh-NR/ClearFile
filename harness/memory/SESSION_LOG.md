@@ -2167,3 +2167,68 @@ D41/D42 residues ride their lanes.**
   N3's delta-scoped gate** (Android native UI — the JNI shim per the
   FFI seam, KMP per the settlement, the measured no-Android-SDK
   sandbox fact ruling the fetcher-class question).
+
+## 2026-11-27 (session bootstrap + the N2-exit riding list discharged) · The record-level conditions close; the pinned toolchain re-fetched
+
+- **Bootstrap (the seventeenth recycle class):** the snapshot restore
+  left the 277-file mode-flip set (zero content delta) over the pushed
+  tip 109c3eb — normalized with `git reset --hard origin/main` BEFORE
+  any edits (quirk 9/19 discipline); tags v1.0.0/v1.0.1/v1.1 verified
+  consistent; `harness_check` 0 failures first. The recycle wiped
+  `tools/` entirely (the Rust toolchain + the RE corpus — the standing
+  expectation); the pinned toolchain re-fetched via the tracked
+  sha256-pinned fetcher (cargo 1.100.0 smoke-passed; the first
+  download call timed out at 25 MB and the resumable second call
+  completed + verified — quirk 17's pattern). Disk ~5 GB free at the
+  close of this batch (the toolchain resident; the corpus re-acquirable
+  only per the ADR-019 fetcher rule when a T-session needs it).
+- **The N2-exit riding list (the recorded list from the close commit)
+  DISCHARGED, every item checkable:**
+  - **LEGAL-2** — the headless footer's three demo-disclaimer facts
+    landed (`apps/linux/src/main.rs` text_summary footer; the
+    welcome.dart fact family: not IRS-authorized, cannot e-file, must
+    not be used to file a real return), `tests/expected-headless.txt`
+    regenerated from the actual output (repo-root-relative path
+    token), the app suite **5/5 green** + the core re-verified
+    **174/174 green** (the recorded breakdown exact).
+  - **LEGAL-3** — `core/src/palette.rs`'s provenance doc-comment names
+    "Copyright 2021 Google LLC" + the no-NOTICE-file fact; the
+    THIRD-PARTY-NOTICES.md entry carries both. The exit advisory's
+    missing-bracket typo was already absent in the live file (nothing
+    to fix — recorded as such in CONSENSUS).
+  - **LEGAL-5** — D14's policy line (DEBT.md) extended to the
+    byte-pinned expected-output artifact class; no header added to the
+    file (its bytes are its contract).
+  - **SEC (the action-SHA↔tag)** — verified LIVE via the GitHub API:
+    the annotated tag `v2.1.4` of EmbarkStudios/cargo-deny-action
+    (message "Release 2.1.4 - cargo-deny 0.22.1", tagged 2026-11-24)
+    resolves to exactly the SHA hygiene.yml pins (truncated here per the
+    ≥32-hex harness-citation convention: `81891abc19…74fda`; the full
+    form is reproducible live via the API at any time) —
+    the pinned SHA. The banner's cargo-deny 0.22.1 corroborated.
+  - **PROD (the ledger reconciliation)** — the PROD-7→13-ledger mapping
+    recorded in CONSENSUS's 2026-11-27 entry (nothing silently
+    dropped: PROD-1→1, PROD-2→12, PROD-3→5, PROD-4→11, PROD-5→3+4,
+    PROD-6→the exit-record discharge, PROD-7→13).
+  - **The CONSENSUS close line** — the N2-exit record's outcome
+    (which still read EXIT PENDING) closed in CONSENSUS's 2026-11-27
+    entry: N2: CLOSED (exit PASSED), the ENG retry's filing recorded.
+  - **The ROADMAP version-plane note** — the fifth plane (apps/linux
+    0.1.0, `publish = false`) + the one-plane-per-native-crate rule
+    appended (the N2-exit PROD advisory).
+  - **STATE.md** — the header + the gate-status N2 bullet + the
+    "Immediately next" section refreshed to the N3-gate agenda (the
+    N1-era text retired).
+- **ENG-riding (the residual duplicate-scan amplification)** — NOT
+  decided here: it is execution-scope, riding to N3's gate as a named
+  agenda item (the standing framing: closure before any FFI wiring —
+  and N3 is the FFI wiring; the bound is the default candidate), with
+  SEC's file-size pre-check candidate on the same lane.
+- **The Stage-2 slip re-agenda — FIFTH surfacing (standing):** owner
+  options (a) fund a T3 session, (b) supersede the RE-protocol
+  namespace rule, (c) default re-agenda; no ruling received across
+  four prior surfacings; (c) continues; the next surfacing rides with
+  N3's gate (the mandatory agenda item).
+- **Next: N3's delta-scoped gate** (the agenda in STATE's
+  "Immediately next"; the reviewers convene in parallel isolation
+  with their own probes).

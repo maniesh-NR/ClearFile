@@ -39,4 +39,5 @@ Import warnings (4)
   - "Adjustments to income" had no equivalent in the current model and was dropped — re-enter it as student loan interest if that is what it was.
   - Medical and "other" itemized expenses have no equivalent in the current model and were dropped.
   - Dependent counts were migrated; re-enter their names in the Dependents step.
+ClearFile prepares a simplified 2025 US federal return for study and demonstration. It is not IRS-authorized, cannot e-file, and must not be used to file a real tax return.
 Demonstration prototype — not tax advice; check with a qualified tax professional.

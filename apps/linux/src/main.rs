@@ -292,8 +292,15 @@ pub fn text_summary(loaded: &LoadedReturn) -> String {
             out.push_str(&format!("  - {warning}\n"));
         }
     }
+    // The headless footer carries the same three demo-disclaimer facts as
+    // the window's About area and the Flutter app's welcome screen
+    // (welcome.dart l.97–99's fact family): not IRS-authorized, cannot
+    // e-file, must not be used to file a real return (N2-exit LEGAL-2).
     out.push_str(
-        "Demonstration prototype — not tax advice; check with a qualified tax professional.\n",
+        "ClearFile prepares a simplified 2025 US federal return for study and \
+         demonstration. It is not IRS-authorized, cannot e-file, and must not \
+         be used to file a real tax return.\nDemonstration prototype — not \
+         tax advice; check with a qualified tax professional.\n",
     );
     out
 }

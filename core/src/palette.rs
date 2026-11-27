@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //! D44 chunk 1: the HCT color math — a translation (derived, not vendored)
-//! of Google's Apache-2.0 Dart package `material_color_utilities` 0.13.0.
+//! of Google's Apache-2.0 Dart package `material_color_utilities` 0.13.0
+//! (upstream copyright: Copyright 2021 Google LLC; the upstream archive
+//! carries no NOTICE file — verified at the N2 gate; see the
+//! THIRD-PARTY-NOTICES.md entry for the attribution this derivative work
+//! owes Apache-2.0 §4.1).
 //! Ported sources: `utils/math_utils.dart`, `utils/color_utils.dart`,
 //! `hct/viewing_conditions.dart`, `hct/cam16.dart`, `hct/hct.dart`,
 //! `hct/src/hct_solver.dart` — only the pieces the Cam16/HctSolver/Hct
