@@ -212,6 +212,17 @@ jobs:
           # in the job's setup step above.
           Xvfb :99 &
           XVFB_PID=$!
+          # The 2026-11-27 flake (run 45943612134: exit 101, the same code
+          # green on the three prior runs): the app connected before Xvfb
+          # was listening — a bounded wait for the display socket first.
+          for i in $(seq 1 50); do
+            [ -S /tmp/.X11-unix/X99 ] && break
+            sleep 0.1
+          done
+          [ -S /tmp/.X11-unix/X99 ] || {
+            echo "window smoke: FAIL — Xvfb's display socket never appeared" >&2
+            exit 1
+          }
           SLINT_BACKEND=winit-software DISPLAY=:99 timeout 60 cargo run --locked --manifest-path apps/linux/Cargo.toml -- --smoke > /tmp/window-smoke.out 2>&1 || (echo "window smoke: FAIL (exit $?)" && cat /tmp/window-smoke.out && kill "$XVFB_PID" 2>/dev/null || true && exit 1)
           kill "$XVFB_PID" 2>/dev/null || true
           grep -q "window-smoke-ok" /tmp/window-smoke.out || (echo "window smoke: the window-smoke-ok marker is missing" && cat /tmp/window-smoke.out && exit 1)
@@ -254,14 +265,15 @@ jobs:
       # The pinned identities, asserted fail-closed below (never the env
       # defaults): the SDK root the image documents, NDK 29.0.14206865
       # (present per the 2026-11-27 image readme, asserted by path), JDK
-      # 21 (the image default is 25), Gradle 9.9.1 (the preinstalled
-      # version, asserted — never trusted; the 2026-11-27 drift catch: the
-      # image moved 9.9.1 -> 9.9.2 mid-session and the guard failed closed
-      # exactly as designed — re-pinned, not trusted).
+      # 21 (the image default is 25). Gradle: the 9.9 SERIES guard (the
+      # step below) — the exact-pin caught the fleet's mid-rollout state
+      # (9.9.1 and 9.9.2 both live on 2026-11-27, two consecutive runs
+      # measuring different patch versions); the series form stays
+      # fail-closed on any drift outside 9.9 while tolerating the rolling
+      # patch updates.
       ANDROID_HOME: /usr/local/lib/android/sdk
       NDK_VERSION: "29.0.14206865"
       JAVA_HOME: /usr/lib/jvm/temurin-21-jdk-amd64
-      GRADLE_VERSION: "9.9.2"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       # The rustc guard first (the linux-app job's pattern): refuse a
@@ -299,14 +311,15 @@ jobs:
             exit 1
           }
           "$JAVA_HOME/bin/java" -version
-      - name: Gradle version guard (the pinned 9.9.1, never the unpinned default)
+      - name: Gradle version guard (the 9.9 series, fail-closed on any other)
         run: |
           G="$(gradle --version | sed -n 's/^Gradle *//p' | head -n1)"
-          [ "$G" = "$GRADLE_VERSION" ] || {
-            echo "android guard: FAIL — the runner's Gradle is '$G', expected $GRADLE_VERSION (drift)" >&2
-            exit 1
-          }
-          echo "android guard: Gradle $G"
+          case "$G" in
+            9.9.*) echo "android guard: Gradle $G (the verified 9.9 series)" ;;
+            *)
+              echo "android guard: FAIL — the runner's Gradle is '$G', outside the verified 9.9 series (drift)" >&2
+              exit 1 ;;
+          esac
       - name: header freshness (the committed clearfile.h == the regeneration)
         run: |
           cargo build --locked --manifest-path core-ffi/Cargo.toml
@@ -327,9 +340,12 @@ jobs:
       - name: assembleDebug + the JVM unit tests through the real JNI seam
         run: |
           mkdir -p apps/android/app/build/generated/clearfile/jniLibs/arm64-v8a
-          cp core-ffi/target/aarch64-linux-android/debug/libclearfile_core_ffi.so              apps/android/app/build/generated/clearfile/jniLibs/arm64-v8a/
+          cp core-ffi/target/aarch64-linux-android/debug/libclearfile_core_ffi.so \
+             apps/android/app/build/generated/clearfile/jniLibs/arm64-v8a/
           cd apps/android
-          gradle --no-daemon             -Dclearfile.host.lib="$GITHUB_WORKSPACE/core-ffi/target/debug/libclearfile_core_ffi.so"             :app:assembleDebug :app:testDebugUnitTest
+          gradle --no-daemon \
+            -Dclearfile.host.lib="$GITHUB_WORKSPACE/core-ffi/target/debug/libclearfile_core_ffi.so" \
+            :app:assembleDebug :app:testDebugUnitTest
           # The installable-APK proof: the debug APK exists and carries
           # the .so (the packaging the compile-only lane would leave
           # unproven).

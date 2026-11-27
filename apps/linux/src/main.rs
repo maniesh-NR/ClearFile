@@ -28,7 +28,7 @@ use clearfile_core::palette::{scheme_role, PaletteRole};
 use clearfile_core::tax_inspect::{analyze_tax_file, import_tax_container, ContainerImport};
 use clearfile_core::{
     compute_ty2025, input_file_too_large, DeductionMethod, FilingStatus, INPUT_TOO_LARGE_MESSAGE,
-    MAX_INPUT_FILE_BYTES, TaxResult,
+    TaxResult,
 };
 use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
 
@@ -476,6 +476,7 @@ fn main() {
 mod tests {
     use super::*;
     use clearfile_core::tax_inspect::export_tax_container;
+    use clearfile_core::MAX_INPUT_FILE_BYTES;
 
     /// The shared v1→v2 migration fixture (also the CI headless smoke's
     /// input); the path below is relative to apps/linux — in CI the same
