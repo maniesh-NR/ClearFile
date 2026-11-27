@@ -40,7 +40,10 @@ android {
 // The bundled demo fixture — PULLED from the shared fixtures/tax/ family
 // (the fixture-authoring discipline: never a newly-authored fixture; the
 // asset is byte-identical to the shared golden fixture, regenerated at
-// every build so the two can never drift apart silently).
+// every build so the two can never drift apart silently). Plain-string
+// srcDir paths: AGP 9 refuses Provider instances in the SourceSet API (the
+// second CI round's finding); the preBuild dependency below carries the
+// task ordering.
 val bundledFixture = tasks.register<Copy>("bundledFixture") {
     from("$rootDir/../../fixtures/tax/01-tax-table-single-25225.json")
     into(layout.buildDirectory.dir("generated/clearfile/assets"))
@@ -49,7 +52,7 @@ val bundledFixture = tasks.register<Copy>("bundledFixture") {
 android {
     sourceSets {
         getByName("main") {
-            assets.srcDir(layout.buildDirectory.dir("generated/clearfile/assets"))
+            assets.srcDir("build/generated/clearfile/assets")
         }
     }
 }
