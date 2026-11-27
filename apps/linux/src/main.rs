@@ -26,7 +26,10 @@ slint::include_modules!();
 use clearfile_core::envelope::{ReturnFileCodec, TaxReturnData};
 use clearfile_core::palette::{scheme_role, PaletteRole};
 use clearfile_core::tax_inspect::{analyze_tax_file, import_tax_container, ContainerImport};
-use clearfile_core::{compute_ty2025, DeductionMethod, FilingStatus, TaxResult};
+use clearfile_core::{
+    compute_ty2025, input_file_too_large, DeductionMethod, FilingStatus, INPUT_TOO_LARGE_MESSAGE,
+    MAX_INPUT_FILE_BYTES, TaxResult,
+};
 use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
 
 /// The app's MD3 seed (the corpus's recorded app seed, fixtures/palette).
@@ -52,6 +55,16 @@ pub struct LoadedReturn {
 /// core's wording family ("The file ... .") — surfaced verbatim in the
 /// window's error pane and on stderr in headless mode.
 pub fn load_and_compute(path: &str) -> Result<LoadedReturn, String> {
+    // The pre-read size bound (N3 session 1, the SEC-R2 hardening): the
+    // shared core constant + decision fn + named message, applied BEFORE
+    // `std::fs::read` so a hostile >512 MiB file is refused by metadata
+    // alone — never read into RAM (the parser caps engage only after the
+    // read; this is the entry-surface bound they cannot cover).
+    let metadata = std::fs::metadata(path)
+        .map_err(|e| format!("The file could not be read: {e}."))?;
+    if input_file_too_large(metadata.len()) {
+        return Err(INPUT_TOO_LARGE_MESSAGE.to_string());
+    }
     let bytes = std::fs::read(path)
         .map_err(|e| format!("The file could not be read: {e}."))?;
     if looks_like_zip(&bytes) {
@@ -599,6 +612,46 @@ mod tests {
         assert_eq!(
             message,
             "Unrecognized format \"something-else\" — expected \"clearfile-return\". This is not a ClearFile return."
+        );
+    }
+
+    /// The 512 MiB pre-read bound, battery part 1 — the exact boundary via
+    /// the pure decision fn (N3 session 1, ENG-2/SEC-6): 512 MiB itself is
+    /// accepted, one byte more is refused, and the named refusal message
+    /// is verbatim the core's wording-family constant.
+    #[test]
+    fn input_size_bound_exact_boundary() {
+        assert_eq!(MAX_INPUT_FILE_BYTES, 512 * 1024 * 1024);
+        assert!(!input_file_too_large(MAX_INPUT_FILE_BYTES));
+        assert!(!input_file_too_large(0));
+        assert!(input_file_too_large(MAX_INPUT_FILE_BYTES + 1));
+        assert_eq!(
+            INPUT_TOO_LARGE_MESSAGE,
+            "The file is too large to open — the limit is 512 MiB."
+        );
+    }
+
+    /// The 512 MiB pre-read bound, battery part 2 — the sparse-file
+    /// integration proof (ENG-2/SEC-6): a sparse file of 512 MiB + 1
+    /// (created by `set_len` — no disk blocks, no content) is refused by
+    /// METADATA ALONE, before any read: the error is the named message
+    /// and the refusal returns in well under a second (a read-then-refuse
+    /// would need 512 MiB of I/O first — the timing IS the proof).
+    #[test]
+    fn input_size_bound_sparse_file_refused_before_read() {
+        let sparse = std::env::temp_dir()
+            .join(format!("clearfile-linux-sparse-{}.bin", std::process::id()));
+        let file = std::fs::File::create(&sparse).unwrap();
+        file.set_len(MAX_INPUT_FILE_BYTES + 1).unwrap();
+        drop(file);
+        let start = std::time::Instant::now();
+        let message = load_and_compute(sparse.to_str().unwrap());
+        let elapsed = start.elapsed();
+        std::fs::remove_file(&sparse).ok();
+        assert_eq!(message.unwrap_err(), INPUT_TOO_LARGE_MESSAGE);
+        assert!(
+            elapsed.as_secs() < 5,
+            "the refusal took {elapsed:?} — the metadata pre-check did not short-circuit the read"
         );
     }
 }

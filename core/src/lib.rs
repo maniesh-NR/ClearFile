@@ -261,3 +261,25 @@ pub struct TaxResult {
     pub marginal_rate: f64,
     pub qualifying_children: i64,
 }
+
+/// The maximum input size every consumer refuses BEYOND, before any read
+/// or parse (the SEC-R2 pre-read bound, landed N3 session 1): 512 MiB —
+/// 2× the 256 MiB cumulative STORE-extraction cap
+/// ([`crate::tax_inspect::MAX_STORED_EXTRACTION_BYTES`]), generous over
+/// KB-scale legitimate envelopes, bounded against RAM. The core itself
+/// stays pure (no I/O anywhere); this constant + the decision fn + the
+/// message are the SHARED enforcement surface every platform pipeline
+/// (apps/linux's `load_and_compute`, the Android SAF path, the core-ffi
+/// C boundary) applies before its read/acquisition.
+pub const MAX_INPUT_FILE_BYTES: u64 = 512 * 1024 * 1024;
+
+/// The named refusal message (the core's wording family — plain, no
+/// jargon; surfaced verbatim by every platform pipeline).
+pub const INPUT_TOO_LARGE_MESSAGE: &str =
+    "The file is too large to open — the limit is 512 MiB.";
+
+/// The pure decision fn, battery-pinned at the exact boundary: 512 MiB
+/// itself is accepted, 512 MiB + 1 byte is refused.
+pub fn input_file_too_large(len: u64) -> bool {
+    len > MAX_INPUT_FILE_BYTES
+}

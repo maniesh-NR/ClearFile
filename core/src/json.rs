@@ -46,10 +46,11 @@
 //!   and `JSON.parse` (V8).
 //! - An object with MORE THAN [`MAX_OBJECT_MEMBERS`] members is rejected
 //!   ([`JsonError::TooManyMembers`]). Neither reference bounds this; the
-//!   duplicate-key resolution above is a linear scan per key, so a
-//!   crafted wide object parses in O(n²) (80,000 keys ≈ 26.8 s of pure
-//!   scan) — the quadratic-insertion risk the N1-exit gate registered,
-//!   closed fail-closed instead.
+//!   duplicate-key resolution below [`MAX_LINEAR_KEY_SCAN`] distinct
+//!   members switches from the linear scan to an indexed lookup, so the
+//!   crafted wide-object parse is O(n) (the quadratic-insertion risk the
+//!   N1-exit gate registered, closed indexed — the N3 session-1
+//!   hardening), and the member cap bounds the walk, not the scan.
 
 use std::fmt::Write as _;
 
@@ -59,11 +60,25 @@ pub const MAX_NESTING_DEPTH: usize = 128;
 
 /// Maximum number of members in one JSON object. Generous against the
 /// envelope/store schemas (each has fewer than 40 members); bounded
-/// against crafted payloads — the duplicate-key scan in
-/// [`Parser::parse_object`] is O(n²) in the member count (80,000 keys ≈
-/// 26.8 s of pure scan), the quadratic-insertion risk the N1-exit gate
-/// registered, so a wider object is refused outright, not parsed slowly.
+/// against crafted payloads — the memory + walk bound (the scan itself
+/// is O(1) amortized past [`MAX_LINEAR_KEY_SCAN`] via the duplicate-key
+/// index, so the cap's original role, bounding the O(n²) linear scan, is
+/// retired; it now bounds the walk and the allocation alone), so a wider
+/// object is still refused outright, never parsed slowly.
 pub const MAX_OBJECT_MEMBERS: usize = 10_000;
+
+/// Past this many DISTINCT members in one object, the duplicate-key
+/// lookup switches from the linear scan to a lazily built key→slot
+/// index (the N3 session-1 hardening, ENG-1/SEC-5: the R-ENG-1
+/// amplification bound — a crafted wide object with many duplicate-key
+/// occurrences previously cost O(distinct members) comparisons per
+/// occurrence, i.e. up to ~10⁸ byte-compares over a max-width object;
+/// the index is used ONLY for find-or-insert, never iterated, so
+/// insertion order, the last-value-wins-at-first-position contract, and
+/// every output byte are unchanged). Generous against the envelope/
+/// store schemas (both far under the threshold: the linear scan serves
+/// every legitimate envelope); bounded where the amplification begins.
+pub const MAX_LINEAR_KEY_SCAN: usize = 64;
 
 /// Named parser/writer errors. Every error carries the byte offset of the
 /// offending construct, so callers surface named, locatable failures
@@ -472,6 +487,17 @@ impl<'a> Parser<'a> {
     fn parse_object(&mut self, depth: usize) -> Result<Json, JsonError> {
         self.pos += 1; // '{'
         let mut pairs: Vec<(String, Json)> = Vec::new();
+        // Duplicate-key index (N3 session-1 hardening, ENG-1/SEC-5):
+        // lazily built when the DISTINCT-member count first crosses
+        // MAX_LINEAR_KEY_SCAN (i.e. when the (MAX_LINEAR_KEY_SCAN + 1)-th
+        // new member arrives), then used ONLY for find-or-insert — never
+        // iterated — so insertion order, the last-value-wins-at-first-
+        // position contract, and every output byte are unchanged. Below
+        // the threshold the linear scan serves (every legitimate
+        // envelope/store object is far under it).
+        let mut key_index: std::collections::HashMap<String, usize> =
+            std::collections::HashMap::new();
+        let mut indexed = false;
         self.skip_ws();
         if self.peek() == Some(b'}') {
             self.pos += 1;
@@ -498,20 +524,41 @@ impl<'a> Parser<'a> {
             self.skip_ws();
             let value = self.parse_value(depth + 1)?;
             // Duplicate key: last value wins at the first position
-            // (Dart LinkedHashMap / V8 semantics).
-            match pairs.iter_mut().find(|(k, _)| *k == key) {
-                Some(slot) => slot.1 = value,
+            // (Dart LinkedHashMap / V8 semantics). The lookup is the
+            // indexed one once the object crossed the threshold.
+            let found = if indexed {
+                key_index.get(&key).copied()
+            } else {
+                let hit = pairs.iter().position(|(k, _)| *k == key);
+                if hit.is_none() && pairs.len() >= MAX_LINEAR_KEY_SCAN {
+                    // The first NEW member past the threshold: build the
+                    // index over the existing members (this member joins
+                    // on push below). Duplicates never arrive here — they
+                    // hit the scan above and never grow the member count.
+                    for (i, (k, _)) in pairs.iter().enumerate() {
+                        key_index.insert(k.clone(), i);
+                    }
+                    indexed = true;
+                }
+                hit
+            };
+            match found {
+                Some(slot) => pairs[slot].1 = value,
                 None => {
-                    // Member-count cap (fail-closed, module docs): the scan
-                    // above is O(n²) in the member count, so the
+                    // Member-count cap (fail-closed, module docs): the
                     // (MAX_OBJECT_MEMBERS + 1)-th NEW member is refused
                     // outright rather than parsed slowly (duplicate keys
-                    // never grow the member count, so they never trip it).
+                    // never grow the member count, so they never trip it;
+                    // the cap now bounds the walk + allocation — the scan
+                    // is indexed past MAX_LINEAR_KEY_SCAN).
                     if pairs.len() >= MAX_OBJECT_MEMBERS {
                         return Err(JsonError::TooManyMembers {
                             offset: key_offset,
                             count: pairs.len() + 1,
                         });
+                    }
+                    if indexed {
+                        key_index.insert(key.clone(), pairs.len());
                     }
                     pairs.push((key, value));
                 }
@@ -933,6 +980,119 @@ mod tests {
         assert_eq!(v.get("a").unwrap().as_i64().unwrap(), 3);
         // Emission keeps the first position with the surviving value.
         assert_eq!(v.write().unwrap(), r#"{"a":3,"b":2}"#);
+    }
+
+    /// The N3 session-1 hardening battery (ENG-1/SEC-5, the R-ENG-1
+    /// amplification bound): a max-width (10,000 distinct member) object
+    /// followed by ~100,000 duplicate-key occurrences — the exact hostile
+    /// surface, minutes of single-core scan pre-index — now parses green
+    /// under a generous wall-clock bound. The bound is deliberately loose
+    /// (10 s): it is two-plus orders of magnitude under the pre-index
+    /// hostile case (the linear scan over 10,000 distinct keys × 100k
+    /// occurrences ≈ 10⁹ key comparisons), so CI runner variance cannot
+    /// false-trip it while the amplification still cannot slip through.
+    #[test]
+    fn duplicate_scan_indexed_past_threshold_hostile_amplification() {
+        const DUPLICATES: usize = 100_000;
+        let start = std::time::Instant::now();
+        let mut hostile = String::from("{");
+        for i in 0..MAX_OBJECT_MEMBERS {
+            if i > 0 {
+                hostile.push(',');
+            }
+            let _ = write!(hostile, "\"k{i}\":0");
+        }
+        // Every duplicate re-scans the full 10,000-member width pre-index.
+        for _ in 0..DUPLICATES {
+            let _ = write!(hostile, ",\"k0\":7");
+        }
+        hostile.push('}');
+        let v = Json::parse(&hostile).unwrap();
+        let elapsed = start.elapsed();
+        // The observable contract: duplicates never grow the member
+        // count; the last value wins at the first position.
+        let obj = v.as_obj().unwrap();
+        assert_eq!(obj.len(), MAX_OBJECT_MEMBERS);
+        assert_eq!(obj[0].0, "k0");
+        assert_eq!(v.get("k0").unwrap().as_i64().unwrap(), 7);
+        assert!(
+            elapsed.as_secs() < 10,
+            "the hostile duplicate-scan case took {elapsed:?} — the indexed bound regressed"
+        );
+    }
+
+    /// The threshold-straddling boundary pair (ENG-3): exactly at
+    /// MAX_LINEAR_KEY_SCAN distinct members the index is NOT yet built
+    /// (all linear); at threshold + 1 it IS — and in both regimes the
+    /// duplicate semantics (last value wins, first position) are
+    /// identical, including duplicates of a key inserted BEFORE the
+    /// boundary arriving AFTER it (the cross-boundary slot identity).
+    #[test]
+    fn duplicate_scan_threshold_straddling_boundaries() {
+        // Exactly at the threshold: 64 distinct members, all linear.
+        let mut at = String::from("{");
+        for i in 0..MAX_LINEAR_KEY_SCAN {
+            if i > 0 {
+                at.push(',');
+            }
+            let _ = write!(at, "\"k{i}\":{i}");
+        }
+        at.push('}');
+        let v = Json::parse(&at).unwrap();
+        assert_eq!(v.as_obj().unwrap().len(), MAX_LINEAR_KEY_SCAN);
+        assert_eq!(
+            v.get(&format!("k{}", MAX_LINEAR_KEY_SCAN - 1))
+                .unwrap()
+                .as_i64()
+                .unwrap() as usize,
+            MAX_LINEAR_KEY_SCAN - 1
+        );
+
+        // Threshold + 1 distinct members: the (MAX_LINEAR_KEY_SCAN +
+        // 1)-th new member builds the index; then a duplicate of a
+        // PRE-boundary key ("k0", slot 0) and a duplicate of the
+        // BOUNDARY key itself both resolve to their first positions
+        // with the last value.
+        let mut over = String::from("{");
+        for i in 0..=MAX_LINEAR_KEY_SCAN {
+            if i > 0 {
+                over.push(',');
+            }
+            let _ = write!(over, "\"k{i}\":{i}");
+        }
+        let _ = write!(over, ",\"k0\":100,\"k{}\":200", MAX_LINEAR_KEY_SCAN);
+        over.push('}');
+        let v = Json::parse(&over).unwrap();
+        let obj = v.as_obj().unwrap();
+        assert_eq!(obj.len(), MAX_LINEAR_KEY_SCAN + 1);
+        // The pre-boundary duplicate: slot 0, last value 100.
+        assert_eq!(obj[0].0, "k0");
+        assert_eq!(v.get("k0").unwrap().as_i64().unwrap(), 100);
+        // The boundary key's duplicate: its first position, last value.
+        let boundary = v
+            .as_obj()
+            .unwrap()
+            .iter()
+            .position(|(k, _)| k == &format!("k{}", MAX_LINEAR_KEY_SCAN))
+            .unwrap();
+        assert_eq!(boundary, MAX_LINEAR_KEY_SCAN);
+        assert_eq!(
+            v.get(&format!("k{}", MAX_LINEAR_KEY_SCAN))
+                .unwrap()
+                .as_i64()
+                .unwrap(),
+            200
+        );
+        // Emission keeps every first position with the surviving
+        // values — byte-identical semantics to the linear regime.
+        let written = v.write().unwrap();
+        assert!(written.starts_with("{\"k0\":100,"));
+        assert!(written.contains(&format!(
+            "\"k{}\":{},\"k{}\":200",
+            MAX_LINEAR_KEY_SCAN - 1,
+            MAX_LINEAR_KEY_SCAN - 1,
+            MAX_LINEAR_KEY_SCAN
+        )));
     }
 
     #[test]
