@@ -231,6 +231,123 @@ jobs:
           command-arguments: --hide-inclusion-graph
           manifest-path: apps/linux/Cargo.toml
 
+  android-app:
+    # N3 session 2 (2026-11-27, the N3 gate's ledger items 3/9/10): the
+    # Android lane — CI-primary BY MEASUREMENT (the sandbox has no
+    # Android SDK/NDK and JRE-only Java; the app session's every compile
+    # is this lane's). Guards first, fail-closed on every toolchain
+    # identity (never the runner defaults — they drift); every cargo
+    # invocation --locked; the committed-header freshness check; the
+    # boundary battery; the host cdylib (host-jni) + the android cdylib
+    # (the pinned cross-target, the NDK clang as linker); assembleDebug
+    # (the installable-APK proof: the .so packaged into lib/arm64-v8a);
+    # the JVM unit tests loading the HOST-built cdylib and calling the
+    # REAL Java_* mangled symbols through the same JNI seam the device
+    # uses (the no-emulator lane); cargo-deny over core-ffi's lock; NO
+    # uploads (nothing ships — the v2.0.0 discipline).
+    name: "Android app (JNI seam: cross-build + assembleDebug + JVM tests + cargo-deny)"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 45
+    env:
+      # The pinned identities, asserted fail-closed below (never the env
+      # defaults): the SDK root the image documents, NDK 29.0.14206865
+      # (present per the 2026-11-27 image readme, asserted by path), JDK
+      # 21 (the image default is 25), Gradle 9.9.1 (the preinstalled
+      # version, asserted — never trusted).
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      NDK_VERSION: "29.0.14206865"
+      JAVA_HOME: /usr/lib/jvm/temurin-21-jdk-amd64
+      GRADLE_VERSION: "9.9.1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      # The rustc guard first (the linux-app job's pattern): refuse a
+      # rustc older than the repo's toolchain family (the pinned
+      # 1.100.0's era; >= 1.95) rather than fail cryptically later. The
+      # rustup target add is the runner-side affordance this sandbox's
+      # standalone toolchain lacks (measured at the gate).
+      - name: rustc guard + the android rust target
+        run: |
+          LINE="$(rustc --version)"
+          VERSION="${LINE#rustc }"
+          MAJOR="$(printf '%s' "$VERSION" | cut -d. -f1)"
+          MINOR="$(printf '%s' "$VERSION" | cut -d. -f2)"
+          case "$MAJOR" in ''|*[!0-9]*) echo "rustc guard: FAIL — unparsable: $LINE" >&2; exit 1 ;; esac
+          case "$MINOR" in ''|*[!0-9]*) echo "rustc guard: FAIL — unparsable: $LINE" >&2; exit 1 ;; esac
+          if [ "$MAJOR" -lt 1 ] || { [ "$MAJOR" -eq 1 ] && [ "$MINOR" -lt 95 ]; }; then
+            echo "rustc guard: FAIL — rustc $MAJOR.$MINOR < 1.95; refusing. $LINE" >&2
+            exit 1
+          fi
+          echo "rustc guard: ok — $MAJOR.$MINOR >= 1.95 ($LINE)"
+          rustup target add aarch64-linux-android
+      - name: NDK identity guard (the pinned 29.0.14206865, never the default)
+        run: |
+          test -d "$ANDROID_HOME/ndk/$NDK_VERSION" || {
+            echo "android guard: FAIL — the pinned NDK $NDK_VERSION is absent under $ANDROID_HOME/ndk (the runner image drifted):" >&2
+            ls "$ANDROID_HOME/ndk" >&2 || true
+            exit 1
+          }
+          echo "android guard: NDK $NDK_VERSION present"
+      - name: JDK guard (JAVA_HOME pinned to 21, never the image default 25)
+        run: |
+          test -x "$JAVA_HOME/bin/java" || {
+            echo "android guard: FAIL — JDK 21 missing at $JAVA_HOME (the image layout drifted):" >&2
+            ls /usr/lib/jvm >&2 || true
+            exit 1
+          }
+          "$JAVA_HOME/bin/java" -version
+      - name: Gradle version guard (the pinned 9.9.1, never the unpinned default)
+        run: |
+          G="$(gradle --version | sed -n 's/^Gradle *//p' | head -n1)"
+          [ "$G" = "$GRADLE_VERSION" ] || {
+            echo "android guard: FAIL — the runner's Gradle is '$G', expected $GRADLE_VERSION (drift)" >&2
+            exit 1
+          }
+          echo "android guard: Gradle $G"
+      - name: header freshness (the committed clearfile.h == the regeneration)
+        run: |
+          cargo build --locked --manifest-path core-ffi/Cargo.toml
+          git diff --exit-code -- core-ffi/clearfile.h
+      - name: core-ffi boundary battery (host tests — the fixtures + the corpus through the C boundary)
+        run: cargo test --locked --manifest-path core-ffi/Cargo.toml --features panic-hook-test
+      - name: the host cdylib (host-jni — the JVM test lane's library)
+        run: cargo build --locked --manifest-path core-ffi/Cargo.toml --features host-jni
+      - name: the android cdylib (the pinned cross-target, the NDK clang as the linker)
+        run: cargo build --locked --manifest-path core-ffi/Cargo.toml --target aarch64-linux-android
+        env:
+          CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER: /usr/local/lib/android/sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang
+      # assembleDebug (PROD-3: beyond compileDebugKotlin — the installable
+      # APK with the cross-built .so packaged into lib/arm64-v8a) + the
+      # JVM unit tests through the REAL Java_* seam (the golden-fixture
+      # parity + the error surfacing). No gradle wrapper (the blob policy
+      # bars the wrapper jar): the version-guarded preinstalled Gradle.
+      - name: assembleDebug + the JVM unit tests through the real JNI seam
+        run: |
+          mkdir -p apps/android/app/build/generated/clearfile/jniLibs/arm64-v8a
+          cp core-ffi/target/aarch64-linux-android/debug/libclearfile_core_ffi.so              apps/android/app/build/generated/clearfile/jniLibs/arm64-v8a/
+          cd apps/android
+          gradle --no-daemon             -Dclearfile.host.lib="$GITHUB_WORKSPACE/core-ffi/target/debug/libclearfile_core_ffi.so"             :app:assembleDebug :app:testDebugUnitTest
+          # The installable-APK proof: the debug APK exists and carries
+          # the .so (the packaging the compile-only lane would leave
+          # unproven).
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK" || { echo "assembleDebug: FAIL — no debug APK at $APK" >&2; exit 1; }
+          unzip -l "$APK" | grep 'lib/arm64-v8a/libclearfile_core_ffi.so' || {
+            echo "assembleDebug: FAIL — the .so is not packaged in the APK" >&2
+            exit 1
+          }
+          echo "assembleDebug: ok — the APK carries the cross-built .so"
+      # cargo-deny over core-ffi's lock (the crate with the cbindgen + jni
+      # trees; the closed allow-list incl. the recorded MPL-2.0 join).
+      - name: cargo-deny (licenses + sources + advisories, core-ffi)
+        uses: EmbarkStudios/cargo-deny-action@81891abc19297b21343b15ef67dc61e4aea74fda # v2.1.4
+        with:
+          arguments: ''
+          command: check
+          command-arguments: --hide-inclusion-graph
+          manifest-path: core-ffi/Cargo.toml
+
   re-tooling:
     # Stage-2 execution session 1 (2026-11-22, ADR-012 mechanics (b)/(e) +
     # the LEGAL-1 lint + the tools' security contract): the no-binary-blob

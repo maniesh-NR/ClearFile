@@ -2287,3 +2287,58 @@ D41/D42 residues ride their lanes.**
   to the session-1 execution order.
 - **Next: N3 session 1 executes** (the hardenings first, then the
   core-ffi crate — STATE's "Immediately next" carries the full order).
+
+## 2026-11-27 (N3 session 2, the CI-primary app session) · The Android app + the CI android lane land
+
+- **apps/android/** (the KMP-shaped one-target build): a `:shared`
+  module (kotlin("multiplatform") with EXACTLY `androidTarget()`, no
+  second Kotlin target — the ADR-017 settlement held as-written; zero
+  engine logic: the JNI binding glue only) + an `:app` module (Android
+  Views, no Compose, NO AndroidX — the recorded zero-AndroidX posture;
+  the one external artifact of the whole build is the test-scope JUnit
+  4.13.2, EPL 1.0, never linked into the APK). The viewer: the bundled
+  example (PULLED from the shared `fixtures/tax/01-…` family by a
+  gradle copy task — never a committed byte-copy, never a
+  newly-authored fixture) + the SAF open (`.clearfile.json`/`.tax`,
+  the 512 MiB pre-read size query before the stream read) → the same
+  composed pipeline the Linux app runs, through the REAL `Java_*` seam;
+  the MD3-from-seed theme via the palette FFI (the corpus seed, light +
+  dark toggle); the honesty set: the three-fact disclaimer + the
+  no-AI/no-network note (the ZERO-permission manifest — the claim
+  OS-enforced) + the non-affiliation line + the prototype labels.
+- **The gradle supply chain (the SEC-8 ruling)**: NO committed wrapper
+  jar (the blob policy); the CI drives the runner's preinstalled Gradle
+  behind a fail-closed version assertion (9.9.1, never the unpinned
+  default); the plugin versions exact-pinned, verified LIVE at
+  authoring (com.android.* 9.5.3 via dl.google.com's group index;
+  Kotlin 2.4.21 via repo1.maven.org — the LEGAL risk-(a) class: license
+  and version claims are verified, never transcribed); repositories
+  google()/mavenCentral() only; `FAIL_ON_PROJECT_REPOS`.
+- **The CI android job** (additive to hygiene.yml — the existing jobs
+  byte-identical; 11 steps): the fail-closed guards FIRST (the rustc
+  ≥ 1.95 guard + `rustup target add aarch64-linux-android`; the NDK
+  identity guard asserting the pinned 29.0.14206865's path — never the
+  default; JAVA_HOME pinned to 21 — the image default is 25; the Gradle
+  9.9.1 version guard), the committed-header freshness check (regenerate
+  + `git diff --exit-code`), the boundary battery (10/10, host), the
+  host cdylib (host-jni), the aarch64 cross-build (`--locked`, the NDK
+  clang wrapper `aarch64-linux-android24-clang` — minSdk 24 paired by
+  record), **assembleDebug** (the .so copied into the generated
+  jniLibs + the APK proof: `unzip -l` asserts `lib/arm64-v8a/
+  libclearfile_core_ffi.so` is packaged) + the JVM unit tests through
+  the REAL Java_* seam (the golden-fixture parity via `-Dclearfile.
+  host.lib`, wired through to the forked test JVM), and cargo-deny over
+  core-ffi's lock (the same SHA-pinned action as the linux-app lane).
+  Permissions contents:read; no secrets; NO uploads (nothing ships).
+- **The JVM host test** (the no-emulator lane): System.load of the
+  host-built cdylib + Kotlin `external fun` calls through the real
+  mangled symbols — the fixture-01 parity (the same pinned values the
+  shared corpus asserts), the error surfacing (IllegalStateException
+  with the core's verbatim message), and the palette seam (opaque
+  colors, light/dark differ, the unknown-role exception).
+- **The local verification lane (honest per-lane statuses, per the
+  box's discipline)**: core 176/176 + the boundary battery 10/10 +
+  apps/linux 7/7 verified in-sandbox (cargo-only); the ANDROID lane is
+  CI-ONLY (the measured JRE-only Java + the absent SDK/NDK) — the
+  first live CI run's evidence is this session's closing verification
+  (the run number recorded at the close).

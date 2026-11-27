@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SPDX-License-Identifier: GPL-3.0-only
+  The honesty surfaces (the N3 gate's ledger, item 8 / LEGAL-5): the single
+  source for every user-visible claim — the same fact family the Flutter
+  app (welcome.dart) and the Linux app (app.slint) carry.
+-->
+<resources>
+    <!-- The prototype label is part of the launcher-visible name. -->
+    <string name="app_name">ClearFile (prototype)</string>
+
+    <!-- The three demo-disclaimer facts (verbatim-in-substance from
+         welcome.dart's family — not IRS-authorized; cannot e-file; must
+         not be used to file a real return) + the professional line. -->
+    <string name="disclaimer">ClearFile prepares a simplified 2025 US federal return for study and demonstration. It is not IRS-authorized, cannot e-file, and must not be used to file a real tax return. Not tax advice — check with a qualified tax professional.</string>
+
+    <!-- The no-AI / no-network note (the Linux app's fact family; the
+         zero-permission manifest makes the network claim OS-enforced). -->
+    <string name="no_network_note">No AI: this app makes no network connections, stores no keys, and sends no data anywhere.</string>
+
+    <!-- The IRS/Intuit non-affiliation line (the family both apps carry). -->
+    <string name="non_affiliation">ClearFile is an independent study project. It is not affiliated with or endorsed by the IRS, Intuit, or TurboTax.</string>
+
+    <string name="open_file">Open a return file (.clearfile.json / .tax)…</string>
+    <string name="load_bundled">Load the bundled example</string>
+    <string name="file_too_large">The file is too large to open — the limit is 512 MiB.</string>
+    <string name="load_failed">The file could not be opened as a ClearFile return.</string>
+</resources>

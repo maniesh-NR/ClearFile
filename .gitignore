@@ -119,3 +119,16 @@ server.log
 # N2 (the Linux native app crate — the guard-order rule: this rule lands
 # with the scaffold, BEFORE the first cargo invocation in apps/linux).
 /apps/linux/target/
+
+# The N3 Android app (guard-order: BEFORE any in-repo gradle state):
+# the gradle/AGP outputs, the generated jniLibs (the CI-built .so lands
+# under build/generated — never committed; the blob policy), the generated
+# bundled-fixture assets dir, the SDK-local properties, and keystores.
+/apps/android/.gradle/
+/apps/android/build/
+/apps/android/app/build/
+/apps/android/shared/build/
+/apps/android/local.properties
+/apps/android/.kotlin/
+/apps/android/.cxx/
+*.keystore
