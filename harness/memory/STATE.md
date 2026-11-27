@@ -362,29 +362,51 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**N5's delta-scoped gate (the macOS native UI) — N4 CLOSED (exit
-PASSED):** the agenda carries — (1) the **Stage-2 slip re-agenda (the
-MANDATORY item, the TENTH surfacing by the pinned enumeration)**: owner
-options (a) fund a T3 session (the MSI-record keystream decompile chase
-at payload offset 0x24000 + tax-modern.md, debt D42), (b) supersede the
-RE-protocol namespace rule, (c) the default re-agenda — no ruling across
-NINE prior surfacings, (c) continues; (2) the **macos-latest
-live-verification list** (the current image list + the label resolution
-+ the macos-13 retirement window — it decides the deployment floor's CI
-coverage; probe live at the gate); (3) **the bar ruling** (the recorded
-PROD position: a macos-latest CI job alone (author-blind Swift +
-CI-verified) satisfies the settlement's demo bar under exactly the
-per-lane-status discipline, with the single-maintainer risk recorded;
-any macOS GA owes an owner-side build or the recorded acceptance);
-(4) **the shape**: one Swift+AppKit app (apps/macos), deployment floor
-macOS 13, the SPM target consuming the SAME committed header (the
-extern-"C" guards carry over — the N4 finding), the C-ABI consumption
-discipline (the RAII/ownership + the palette theme + the honesty set +
-the headless-verifiable surface + the named non-verification: no
-interactive GUI run in CI); (5) the per-OS order (N5 → N6; N6's gate
-rules the wasm32 target question + the TS retirement per ADR-016 + the
-freeze declaration); (6) the variant preconditions (zero clearfile/ +
-src/ paths in the N5 delta; release.yml byte-unchanged; no version
-movement; nothing shipped); (7) the N5 pre-checks (ENG's R-ENG-23: the
-.gitattributes eol=lf hardening consideration; the CRT-flag advisory
-class); (8) the funding posture checker alignment (N5/N6 FUNDED).
+**The N5 execution (the macOS native UI — ENTERED 2026-11-27 at its
+delta-scoped gate, 4 × PWC unanimous, no BLOCK; reports at
+`harness/adversarial/reports/2026-11-27-n5-*.md`):** the ONE-session
+box under the owner's standing single-session directive (backup after
+each stage; the headless-first in-session ordering; the honest CI-fix
+round record). The ruling set from the gate: the wrapper umbrella
+header `apps/macos/Sources/ClearFileFFI/include/ClearFileFFI.h`
+carrying `#include "../../../../../core-ffi/clearfile.h"` (FIVE `../`
+— the symlink shape REJECTED: both sandbox probe findings recorded);
+the SPM package (tools 5.9, platforms [.macOS(.v13)], the
+comment-only shim.c, zero dependencies asserted); main.swift
+mirroring apps/windows/main.cpp (the argv modes, the ONE shared
+pipeline, the byte-exact text family — String(format:) non-localized,
+the -0.0 normalization, Array(intPart) grouping, `as? Int` for
+qualifyingChildren; guard-let owned returns + defer clearfile_free at
+the tightest scope; write(contentsOf:) not write(_:)); the smoke
+geometry (cwd = repo root, exe apps/macos/.build/debug/ClearFileMacOS,
+DYLD_LIBRARY_PATH="$PWD/core-ffi/target/release" absolute); the CI
+macos-latest job (the eighth: rustc >= 1.95 + host-triple
+aarch64-apple-darwin guards, the .dylib emission, the boundary battery
+ON MACOS, the include-line assertion, swift build -Xlinker
+single-token, the headless smoke tr -d '\r' both sides + diff -u, the
+otool -L guard over BOTH the exe and the dylib — the denylist
+CFNetwork/Network.framework/libcurl/libssl + the dylib
+must-contain-libSystem, the full output in the run log for the exit
+gate's exact-list tightening, sw_vers + swift --version recorded, no
+cargo-deny (the android job's every-push check stays), NO uploads);
+the .gitignore joins (/apps/macos/.build/ + /apps/macos/.swiftpm/)
+same-commit with the scaffold; the .gitattributes R-ENG-23 hardening
+(`* text=auto eol=lf` + the binary marks png/pdf/ico — the
+zero-diff renormalize verified by TWO isolated probes); the D14 SPDX
+sweep (the .gitattributes root-dotfile class included); the
+Swift-toolchain posture recorded in-tree (Apache-2.0 + the Swift
+Runtime Library Exception; Foundation named alongside AppKit in the
+carve-out row); at close: the README row (the honest scope, the
+unreleased/CI-only status, the Flutter-remains-shipped sentence, all
+FOUR named non-verifications, the green run number, the GA clause),
+the variant preconditions byte-verified, the exit gate (4 reviewers
+in parallel), the checker families (N-outcomes 8 → 9 at close). The
+named non-verifications: no interactive GUI run in CI; no
+macOS-13-runtime verification (macos-latest = macOS 26 arm64 per
+THREE live probes; the floor is build-time-only); no x64-macOS
+verification; no owner-side build (the GA debt per the bar ruling).
+D30 + D42 stand. After N5 closes: N6's delta-scoped gate (the wasm32
+target question unknown-unknown vs wasip1, the TS retirement per
+ADR-016, the parity suites' survival rule, the epilogue's OWN
+terminal freeze declaration per the v2.0.0-territory rule) — the
+ELEVENTH slip surfacing rides with it (the TERMINAL gate).

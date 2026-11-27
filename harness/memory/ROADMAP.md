@@ -718,10 +718,24 @@ v1's stages still close first.
   enumeration; the window mode is the named non-verification (the
   hosted runner has no interactive desktop).
 - **N5 — macOS native UI**: one Swift+AppKit app, deployment floor
-  macOS 13 (confirmable here); requires the `macos-latest` CI runner or
-  owner-side builds — this Linux sandbox cannot build or verify AppKit.
-  **Gate status: FUNDED 2026-11-26 (owner, in-conversation; the
-  delta-scoped gate convenes at its turn).**
+  macOS 13 (confirmable BUILD-TIME-ONLY on the current SDK — the live
+  probe 2026-11-27: macos-latest = macOS 26 arm64; the macos-13 image
+  is retired, macos-14 retired 2026-11-02, the oldest available family
+  is macOS 15); requires the `macos-latest` CI runner or owner-side
+  builds — this Linux sandbox cannot build or verify AppKit (the
+  author-blind trade, the N4 precedent). **Gate status: ENTERED
+  2026-11-27** (the delta-scoped gate, 4 × PWC unanimous — SEC 7 /
+  LEGAL 9 / ENG 8 / PROD 8, no BLOCK; reports at
+  `harness/adversarial/reports/2026-11-27-n5-*.md`; the wrapper-header
+  ruling (the symlink shape rejected — both sandbox probe findings
+  recorded), the bar ruling formalized under the per-lane-status
+  discipline with the identity echo, the ONE-session box under the
+  owner's standing single-session directive; the consolidated ledger
+  in CONSENSUS's gate record). **The execution box: ONE session** (the
+  owner's standing directive: everything not requiring owner input in
+  a single session, backup after each stage, maximum parallelism — the
+  recorded owner ruling consolidating the two-session precedent; the
+  headless-first in-session ordering; the honest CI-fix round record).
 - **N6 — web via WASM + terminal freeze**: the Rust core serves the
   web; the TS engine retires per ADR-016; the epilogue program declares
   its own freeze (v2.0.0 territory per the settlement's rule).
