@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// The shared glue model (commonMain — the KMP shape's shared source set;
-// the ONLY target is android per the ADR-017 settlement: "KMP second
-// target: None — Android-only. Sharing is the Rust core's job over JNI").
+// The shared glue model (androidMain — the single target's own source
+// set: the ADR-017 settlement "KMP second target: None — Android-only"
+// means the multiplatform build has exactly one target, so the model
+// lives beside its only consumer; a second target would move it to
+// commonMain).
 //
 // ZERO engine logic lives in Kotlin (the ADR-017 core boundary): every
 // value displayed flows from the clearfile-core Rust core through the
