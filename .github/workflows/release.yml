@@ -560,12 +560,62 @@ jobs:
       - run: npm ci
       - name: Typecheck
         run: npx tsc --noEmit
+      # --------------------------------------------------------------------------
+      # D46 rework (2026-11-28, the owner-ordered discharge of the N6-exit
+      # constraint): the nextjs-web job builds the wasm boot asset itself —
+      # LEGAL's pre-ruled narrow form (the wasm steps land in THIS job ONLY,
+      # built --locked from the tagged checkout). Before this rework the job
+      # was STALE-BY-DESIGN: `npm run build` is green without the .wasm
+      # (LEGAL's live probe), so a tag shipped a GREEN-built tar.gz whose app
+      # cannot boot — GREEN-THROUGH-BROKEN. The harness_check variant guard
+      # flipped to the references-confined-to-nextjs-web state in the SAME
+      # commit. The runner's preinstalled rustup/rustc only — no new action
+      # pins (the hygiene suites job's pattern); the rustc guard is
+      # fail-closed before any wasm build.
+      # --------------------------------------------------------------------------
+      - name: The wasm32 core build (the D46 boot asset, --locked from the tagged checkout)
+        run: |
+          LINE="$(rustc --version)"
+          VERSION="${LINE#rustc }"
+          MAJOR="$(printf '%s' "$VERSION" | cut -d. -f1)"
+          MINOR="$(printf '%s' "$VERSION" | cut -d. -f2)"
+          case "$MAJOR" in ''|*[!0-9]*) echo "rustc guard: FAIL — unparsable: $LINE" >&2; exit 1 ;; esac
+          case "$MINOR" in ''|*[!0-9]*) echo "rustc guard: FAIL — unparsable: $LINE" >&2; exit 1 ;; esac
+          if [ "$MAJOR" -lt 1 ] || { [ "$MAJOR" -eq 1 ] && [ "$MINOR" -lt 95 ]; }; then
+            echo "rustc guard: FAIL — rustc $MAJOR.$MINOR < 1.95; refusing. $LINE" >&2
+            exit 1
+          fi
+          echo "rustc guard: ok — $MAJOR.$MINOR >= 1.95 ($LINE)"
+          rustup target add wasm32-unknown-unknown
+          cargo build --locked --release --target wasm32-unknown-unknown --manifest-path core-ffi/Cargo.toml
+          cp core-ffi/target/wasm32-unknown-unknown/release/clearfile_core_ffi.wasm public/clearfile-core.wasm
+          test -f public/clearfile-core.wasm || { echo "FAIL — the boot asset was not emitted into public/" >&2; exit 1; }
+      - name: The import-empty guard (the no-network proof, the hygiene form)
+        run: |
+          node -e '
+            const fs = require("fs");
+            const m = new WebAssembly.Module(fs.readFileSync("public/clearfile-core.wasm"));
+            const imports = WebAssembly.Module.imports(m);
+            if (imports.length !== 0) {
+              console.error("import guard: FAIL — the shipped module imports " + imports.length + " functions: " + imports.map(i => i.module + "." + i.name).join(", "));
+              process.exit(1);
+            }
+            console.log("import guard: ok — the shipped .wasm has zero imports");
+          '
       - run: npm run build
       - name: Bundle standalone
         run: |
           cp -r .next/static .next/standalone/.next/
           cp -r public .next/standalone/
           tar czf clearfile-web-standalone-${RELEASE_TAG}.tar.gz -C .next standalone
+          # The D46 belt-and-suspenders: the boot asset must be IN the shipped
+          # tarball — a bundle without it is exactly the GREEN-THROUGH-BROKEN
+          # class the rework exists to kill (fail-closed, not fail-silent).
+          tar tzf clearfile-web-standalone-${RELEASE_TAG}.tar.gz | grep -F 'standalone/public/clearfile-core.wasm' >/dev/null || {
+            echo "FAIL — the boot asset is missing from the standalone bundle" >&2
+            exit 1
+          }
+          echo "bundle guard: ok — public/clearfile-core.wasm ships in the tarball"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: nextjs-standalone

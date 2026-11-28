@@ -84,12 +84,21 @@ else
   fail "CONSENSUS stage-outcome drift (Stage-2 entries: $S2_ENTERED_CS; Stages-4/5/6 closures: $ENTERED_CS; epilogue outcomes: $ENTERED_N_CS; TT entries: $ENTERED_TT_CS — expected 1/3/11/1) — reconcile with ROADMAP"
 fi
 
-# --- 1b. The N1 variant precondition: release.yml stays native-free -------
-RM_NATIVE=$(grep -cE 'core/|clearfile-core|cargo' ".github/workflows/release.yml" || true)
-if [ "$RM_NATIVE" -eq 0 ]; then
-  pass "release.yml references no core/, clearfile-core, or cargo (the ADR-017 variant precondition — nothing shipped depends on the Rust core)"
+# --- 1b. The variant precondition, post-D46: the core/cargo references in
+# --- release.yml are CONFINED to the nextjs-web job ------------------------
+# The D46 rework (2026-11-28) landed LEGAL's pre-ruled narrow form: the wasm
+# boot-asset steps (the rustc guard + the --locked wasm32 build + the
+# import-empty guard + the bundle-listing assertion) live in the nextjs-web
+# job ONLY. This guard asserts exactly that confinement: zero
+# core/|clearfile-core|cargo matches OUTSIDE the job block, the confined
+# steps present INSIDE it, and no other release job coupling to the Rust
+# core (the N1 variant precondition, narrowed rather than lifted).
+RM_OUTSIDE=$(awk '/^  [A-Za-z0-9_-]+:$/{innext=($0=="  nextjs-web:")} !innext && /core\/|clearfile-core|cargo/{n++} END{print n+0}' ".github/workflows/release.yml")
+RM_INSIDE=$(awk '/^  [A-Za-z0-9_-]+:$/{innext=($0=="  nextjs-web:")} innext && /core\/|clearfile-core|cargo/{n++} END{print n+0}' ".github/workflows/release.yml")
+if [ "$RM_OUTSIDE" -eq 0 ] && [ "$RM_INSIDE" -ge 1 ]; then
+  pass "release.yml's core/cargo references are confined to the nextjs-web job ($RM_INSIDE line(s) inside, 0 outside — the D46 rework state: the wasm boot asset built --locked from the tagged checkout in that job only)"
 else
-  fail "release.yml references core/|clearfile-core|cargo ($RM_NATIVE hits) — a shipped-artifact coupling the recorded variant forbids without a new gate"
+  fail "release.yml core/cargo confinement broken (outside nextjs-web: $RM_OUTSIDE; inside: $RM_INSIDE) — the D46 rework form confines the wasm steps to the nextjs-web job only; any other coupling needs a new gate"
 fi
 
 # --- 1c. The Rust suite's mechanical ledger join (N1 gate PROD-3) ----------
