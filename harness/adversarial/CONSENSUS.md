@@ -2442,3 +2442,122 @@ MSI-record keystream chase stands as recorded debt D42 (disposition
 "T3 session 2"); D30 (the owner-side hardening items) stands. These
 leave the funded scope with this declaration and remain owner
 decisions.
+
+---
+
+## 2026-11-28 · The owner's terminal-gate rulings (T3 funded / D46 discharged / T4 funded)
+
+The owner answered the terminal freeze's standing-items presentation
+in one message: **(1)** the Stage-2 slip re-agenda's option (a) — the
+T3 session is FUNDED (the 0x24000 MSI-record keystream chase +
+`tax-modern.md`, debt D42); the THIRTEENTH surfacing is disposed by
+the ruling; the Stage-2 EXIT gate convenes when the spec lands.
+**(2)** D46 — the owner ordered the web-asset rework now; it landed
+the same day in LEGAL's pre-ruled narrow form (commit 8b5c553: the
+wasm steps confined to the nextjs-web job + the same-commit
+harness_check confinement flip + the bundle-listing assertion; the
+verification record in DEBT's D46 row); the no-tag constraint's
+rationale is discharged. **(3)** T4 is FUNDED — execution strictly
+behind its own entry gate (no T4 code exists yet). Full texts in
+DECISIONS.md (Owner rulings recorded 2026-11-28).
+
+---
+
+## 2026-11-28 · THE STAGE-2 EXIT GATE (the slip resolved: 4 × PROCEED-WITH-CONDITIONS unanimous, no BLOCK)
+
+**The convening.** The owner's option-(a) ruling (2026-11-28) funded the
+T3 session whose two deliverables — the 0x24000 chase and
+`tax-modern.md` — are the slip's own recorded trigger ("the exit gate
+therefore convenes when T3 delivers"). The funded session delivered
+both: the chase ran to closure and **FALSIFIED the slip's premise** (the
+variant-A cipher decodes BOTH MSI-record targets end-to-end with
+byte-exact arithmetic closure — Personal-USA 2026 dsize 383,877,541
+consumed exactly → 390,117,376 B out, Z_STREAM_END; Personal-CAN 2025
+dsize 246,582,748 → 251,319,296 B, Z_STREAM_END; NO divergence exists —
+the recorded "clean to 0x24000 then dies" was a bench artifact of the
+wiped session's pipeline, the entry/record field-offset trap class), and
+spec 4 of 4 was PUBLISHED (`docs/formats/tax-modern.md`, shape level,
+crypto by existence only, the no-owned-sample honest limit). The gate
+reviewed the delta since the N6 exit (`1ccfa43..02d7289` + the close
+records) with the named risk surfaces (the new spec's §7 compliance; the
+falsification's mechanics; the D46 rework commit 8b5c553; the records;
+the provenance normalization).
+
+**The reviewers** (4, parallel isolation, independent):
+`adversarial/reports/2026-11-28-stage2exit-{security,legal,engineering,product}.md`.
+
+| Reviewer | Verdict | BLOCK? |
+| --- | --- | --- |
+| ADV-SEC | PROCEED-WITH-CONDITIONS (3) | no |
+| ADV-LEGAL | PROCEED-WITH-CONDITIONS (2) | no |
+| ADV-ENG | PROCEED-WITH-CONDITIONS (2) | no |
+| ADV-PROD | PROCEED-WITH-CONDITIONS (5) | no |
+
+**The substance verified independently by the reviewers:** ADV-ENG and
+ADV-SEC each RE-RAN the bench scripts read-only and reproduced the
+byte-exact closures (ENG: the hand-walked record tables predicted the
+MSI payload offsets exactly — 0x133bf90 USA / 0x74ec922 CAN — with zero
+unexplained bytes; SEC: the scripts write nothing to disk, sha-pinned
+before/after); ADV-LEGAL's independent key-material scan (hex ≥ 16,
+base64, byte-list shapes) found the specs clean of the write-up's
+published key values; ADV-PROD cross-checked the falsification's numbers
+against the independently recorded T2 values (dsize/output/offsets all
+matching) and found the artifact explanation honestly bounded. The DoD
+checklist verified green by three reviewers' own runs: 4 of 4 named
+specs + §7.5-clean, exactly 2 Stage-2 execution sessions (the T3
+session is a TT-program session per the namespace rule), refusal/cap
+tests green (23/23), blob assertion clean.
+
+**The condition ledger — every condition, discharged AT the close:**
+
+1. **SEC-1/SEC-2 + ENG-1 + PROD-4 (the close ritual):** the
+   2026-11-28 SESSION_LOG entry lands; the ruling records (DECISIONS /
+   ROADMAP / CONSENSUS / DEBT) commit; the backup push follows as the
+   final action → `harness_check.sh` 0 failures. DISCHARGED at the
+   teardown (the backup is the session's last action per WORKFLOW §1).
+2. **SEC-3 (the confinement guard's blind spots):** the harness_check
+   job-header recognition hardened — comment-/trailing-space-tolerant
+   and dotted-name-capable (an unrecognized header counts its refs as
+   outside and FAILS — the fail-closed direction). DISCHARGED (the same
+   commit; the guard re-verified green: 6 inside / 0 outside).
+3. **LEGAL-1 (the D45 enforcement):** the first-conveyance LICENSES
+   manifest landed as a tracked file (`LICENSES-web.md` — the three D45
+   rows with the GPL §6 same-tag --locked discipline) AND the release
+   job now FAILS CLOSED without it and ships it as a release asset —
+   D45 is no longer records-only enforcement; a release can never
+   silently miss it. DISCHARGED (commit at the close).
+4. **LEGAL-2 + PROD-1 + PROD-2 (the records truth):** DEBT's D42 row
+   updated (the keystream item CLOSED as falsified; the remaining
+   residues (a)–(d) re-ridden with the tax-modern.md cross-check noted);
+   ROADMAP's slip block rewritten (the resolution + the verbatim
+   historical record preserved; the falsification supersedes the
+   premise, not the honesty). DISCHARGED (the same commit).
+5. **ENG-2 (the closure evidence beyond the recycle):** the two runs'
+   verbatim stdout + the bench scripts' sha256 digests pinned in
+   `docs/re-research/bench-evidence-2026-11-28.md` — the lint's SECOND
+   recorded known-hash instance (the ADR-019 allow-list class; the
+   exemption set extended in `lint_format_specs.py`) so a post-recycle
+   session can diff-verify instead of re-arguing. DISCHARGED (commit at
+   the close; the note cross-references the evidence file).
+6. **PROD-3 (the CONSENSUS outcomes):** THIS entry records the gate
+   outcome + the full ledger. DISCHARGED by this entry.
+7. **PROD-5 (the lint scope-all wiring):** the hygiene RE-tools job now
+   runs `lint_format_specs.py --scope all` (the T3-era extension
+   flipped ON with the deliverables in place). DISCHARGED (commit at
+   the close).
+
+**Gate outcome:**
+
+**Stage 2: EXIT PASSED — Stage 2 CLOSED (2026-11-28).** The DoD is
+complete exactly as fixed at the 2026-11-17 entry gate: the four named
+specs published and clean, the two-session box respected, the refusal/
+cap and blob assertions green. The THIRTEEN-gate slip is disposed: the
+owner ruled option (a), the funded chase closed the question, the spec
+landed, the gate verified the whole — no BLOCK anywhere.
+
+**Post-gate standing items:** D30 (the owner-side hardening: Dependabot,
+branch protection, PAT rotation) stands; D45's manifest is IN the tree
+with fail-closed enforcement (its remaining duty is only the first
+actual tag); D42's remaining residues ride T3/T4 lanes; T4 is FUNDED
+with its entry gate pending (no T4 code exists); the epilogue program
+remains closed and frozen (the terminal posture unchanged).

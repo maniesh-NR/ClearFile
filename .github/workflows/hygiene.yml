@@ -692,7 +692,12 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - run: python3 scripts/check_binary_blobs.py
       - run: python3 scripts/test_re_tools.py
-      - run: python3 scripts/lint_format_specs.py
+      # PROD-5 (the Stage-2 exit gate, 2026-11-28): the lint's --scope all
+      # extension (T3's SEC-6 condition — docs/re-research/ coverage) is
+      # WIRED now that T3's deliverables exist; the known-hash exemption
+      # list (the corpus manifest + the bench-evidence record) is the
+      # lint's own recorded escape hatch for legitimate sha256 provenance.
+      - run: python3 scripts/lint_format_specs.py --scope all
 
   harness-check:
     name: Harness memory self-check (D19)

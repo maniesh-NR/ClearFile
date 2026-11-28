@@ -327,26 +327,49 @@ two-session box):
   smoke 6/6, audit gate 0, RE tools 23/23, blob assertion clean, formats
   lint 3/3 clean.
 - **The execution box is CLOSED at exactly two sessions.**
-  **Exit-gate slip (recorded 2026-11-26, mandatory agenda item at the
-  next convened gate):** T3 session 2's password-layer chase found the
-  MSI-record keystream diverging from the recorded formula at payload
-  offset 0x24000 (the documented variant-A cipher inflates cleanly to
-  0x24000 then dies; 14 cipher variants, 1024 phase deltas and 256 key
-  constants swept with a continue-stream oracle — no match; the
-  decompile-level chase over the ISSetupStream cipher is required), so
-  `tax-modern.md` remains unwritten and the exit gate remains
-  unconvened. No DoD claim was falsified: 3/4 named specs §7.5-clean,
-  exactly 2 execution sessions, refusal/cap tests green, blob assertion
-  green — the checklist is otherwise green.
-  `tax-modern.md` (the fourth named spec) was NEVER landable inside the
-  box — it awaits T3's format-family findings incl. the password layer,
-  exactly as the box's own plan recorded (no stub was written: §7.5
-  forbids placeholder specs). The **exit gate** therefore convenes when
-  T3 delivers; the checklist is otherwise green: 3 of 4 named specs
-  present + §7.5-clean, ≤2 execution sessions (exactly 2), refusal/cap
-  tests green, blob assertion green. The owner's corpus statement is on
-  record (ADR-019 + `docs/re-research/corpus-manifest.md` — the four TT
-  targets; TT specs never count toward N=4 per the namespace rule).
+  **Exit-gate slip — RESOLVED 2026-11-28 (the slip's own recorded
+  trigger fired and the exit gate PASSED; the historical slip text
+  below is preserved verbatim for the record).** The funded T3 session
+  2 (owner ruling option (a), 2026-11-28) ran the 0x24000 chase to
+  closure and **FALSIFIED its premise**: the variant-A cipher decodes
+  BOTH MSI-record targets end-to-end with byte-exact arithmetic closure
+  (Personal-USA 2026 dsize 383,877,541 consumed exactly → 390,117,376 B
+  out, Z_STREAM_END; Personal-CAN 2025 dsize 246,582,748 → 251,319,296
+  B, Z_STREAM_END) — **no divergence exists**; the recorded "clean to
+  0x24000 then dies" was a bench artifact of the wiped session's
+  pipeline (the entry/record field-offset trap class). The decompile
+  chase was mooted. `tax-modern.md` (spec 4 of 4) PUBLISHED the same
+  session (shape level per the linked public write-up, crypto by
+  existence only, the no-owned-sample honest limit). The **Stage-2 EXIT
+  gate convened 2026-11-28** (4 × PROCEED-WITH-CONDITIONS unanimous, no
+  BLOCK — the reports at `adversarial/reports/2026-11-28-stage2exit-*`
+  and the full condition ledger + discharges in CONSENSUS's 2026-11-28
+  entry): the DoD checklist verified green — **4 of 4 named specs
+  present + §7.5-clean (lint default + scope-all), exactly 2 execution
+  sessions, refusal/cap tests green, blob assertion green** — and the
+  gate's conditions discharged at the close. The owner's corpus
+  statement is on record (ADR-019 + `docs/re-research/corpus-manifest.md`
+  — the four TT targets; TT specs never count toward N=4 per the
+  namespace rule).
+
+  *The historical slip record (2026-11-26, verbatim):* T3 session 2's
+  password-layer chase found the MSI-record keystream diverging from
+  the recorded formula at payload offset 0x24000 (the documented
+  variant-A cipher inflates cleanly to 0x24000 then dies; 14 cipher
+  variants, 1024 phase deltas and 256 key constants swept with a
+  continue-stream oracle — no match; the decompile-level chase over the
+  ISSetupStream cipher is required), so `tax-modern.md` remained
+  unwritten and the exit gate remained unconvened. No DoD claim was
+  falsified at the time: 3/4 named specs §7.5-clean, exactly 2
+  execution sessions, refusal/cap tests green, blob assertion green.
+  `tax-modern.md` was NEVER landable inside the box — it awaited T3's
+  format-family findings, exactly as the box's own plan recorded (no
+  stub was written: §7.5 forbids placeholder specs). The slip then
+  surfaced at THIRTEEN consecutive gates (the enumeration in CONSENSUS's
+  terminal-gate record) until the owner ruled option (a) on 2026-11-28.
+  **The falsification supersedes the premise, not the honesty:** the
+  sweep record stands as what was (honestly) believed then; the 2026-11-28
+  record states what is (mechanically) true now.
 
 ## Stage 3 — Parity & clean-room bridges (highest value)
 
@@ -867,7 +890,11 @@ sha256-verified by `scripts/fetch_tt_corpus.sh` since the TT gate).
   [session 2 ran stricter: all decodes in-memory, zero derived bytes
   on disk].)
 - **T3 — format-family specs** (Phase-5 template, §7.5-clean) incl. the
-  password layer's clean-room documentation. **Namespace rule (TT
+  password layer's clean-room documentation. **FUNDED 2026-11-28**
+  (owner ruling, option (a) of the slip re-agenda: the 0x24000
+  MSI-record keystream chase + `tax-modern.md`, debt D42 — DECISIONS's
+  2026-11-28 rulings; the Stage-2 EXIT gate convenes when the spec
+  lands). **Namespace rule (TT
   gate, PROD-3/ENG-6):** TT specs are program deliverables under
   `docs/re-research/` (or `docs/formats/` only with an explicit
   TT/non-DoD provenance marker) and NEVER count toward Stage-2's
@@ -875,7 +902,10 @@ sha256-verified by `scripts/fetch_tt_corpus.sh` since the TT gate).
   password-layer spec are distinct files or an explicit recorded
   supersession.
 - **T4 — the password-based bridge + UI functional-layout parity** in
-  ClearFile's own Material You expression. **Gate rulings binding T4
+  ClearFile's own Material You expression. **FUNDED 2026-11-28** (owner
+  ruling — DECISIONS's 2026-11-28 rulings; funding gates the lane, not
+  any work: the ENTRY GATE convenes at T4's session start before any
+  T4 code exists). **Gate rulings binding T4
   (ADV-ENG ruling + the T4 merge-gate conditions in CONSENSUS):**
   Flutter-first — no TT bridge code under `src/` absent a recorded
   owner ADR (ADR-016's freeze reads a new file-format bridge as a

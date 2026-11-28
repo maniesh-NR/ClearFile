@@ -705,6 +705,21 @@ jobs:
         run: |
           cp docs/reverse-engineering-protocol.md flat/
           cp docs/blueprint.pdf flat/ 2>/dev/null || true
+      # D45 (ADV-LEGAL N6-exit, 2026-11-27; the fail-closed enforcement
+      # landed at the Stage-2 exit close, 2026-11-28 — LEGAL's condition 1):
+      # the FIRST CONVEYANCE of the wasm-served web asset owes the web
+      # LICENSES manifest — the palette module (Apache-2.0), the
+      # statically-linked Rust std (MIT OR Apache-2.0), and the carried MIT
+      # shadcn set. Fail-closed: a release job without the manifest refuses,
+      # so D45 can never be silently missed at a "too small to owe anything"
+      # v1.x patch. The manifest ships as a release asset too.
+      - name: D45 LICENSES manifest (fail-closed + shipped)
+        run: |
+          test -f LICENSES-web.md || {
+            echo "D45: LICENSES-web.md is absent — the first-conveyance manifest duty is unmet; refusing to publish (DEBT D45)" >&2
+            exit 1
+          }
+          cp LICENSES-web.md flat/
       - name: Generate SHA256SUMS
         run: |
           cd flat

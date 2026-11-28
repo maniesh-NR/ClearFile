@@ -218,6 +218,29 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
 
 ## Session snapshot (one bullet per session; decisions / files / next)
 
+- **2026-11-28** — the owner's three-ruling session: (1) D46 discharged
+  (8b5c553: the release.yml wasm boot-asset steps confined to the
+  nextjs-web job — the rustc guard + the --locked build + the
+  import-empty guard + the fail-closed bundle-listing assertion — and
+  the same-commit harness_check confinement flip; verified end-to-end
+  on the pinned toolchain); (2) the funded T3 session 2: the bench
+  rebuilt (tools/re/tt3_*.py), two field-layout corrections (the entry
+  table's variable-offset fields; the v4 record header's dsize @+0x0A /
+  u16=1 @+0x16), and THE 0x24000 DIVERGENCE FALSIFIED — the variant-A
+  cipher decodes both MSI-record targets end-to-end (USA
+  383,877,541→390,117,376 B; CAN 246,582,748→251,319,296 B,
+  Z_STREAM_END, byte-exact closure; the closure evidence pinned in
+  bench-evidence-2026-11-28.md, the lint's second known-hash instance);
+  spec 4 of 4 published (docs/formats/tax-modern.md — shape level, the
+  linked write-up, crypto by existence, the no-owned-sample limit); (3)
+  T4 funded (entry gate pending, no T4 code). THE STAGE-2 EXIT GATE
+  PASSED (4 × PWC unanimous, no BLOCK; the condition ledger discharged
+  at the close: the D45 fail-closed enforcement — LICENSES-web.md + the
+  release job refuses without it and ships it; the SEC-3 confinement
+  hardening; the records truth; the CI lint scope-all wiring) — Stage 2
+  CLOSED, the 13-gate slip disposed. Next: T4's entry gate at T4's
+  session start.
+
 - **2026-11-17** — Stage-2 entry gate: 4 × PROCEED-WITH-CONDITIONS, no
   BLOCKs; Stage 3 CLOSED; ADR-012 (in-repo placement) / ADR-016
   (TS-engine maintenance freeze) / ADR-017 (re-platforming settlement)
@@ -365,23 +388,37 @@ STATE.md sync → PROJECT_MEMORY.md zero-noise update →
 ## Recent Progress & Git Activity
 
 ```diff
-### Commit: 92bd77b - backup(sandbox): The N4 EXIT GATE CLOSED - N4: COMPLETE (exit PASSED). Four reviewers, parallel isolation: SEC EXIT-PASS (0) / LEGAL PROCEED (0) / ENG PASS (0) / PROD EXIT-PASS (3 one-line riders discharged at the close) - no BLOCK. The record: two sessions exactly (the config-emitted extern-C header guards + the C++ app in session 1; the CI windows lane in session 2 closing on the first live-green run 45957061389 after the five-round CI-fix record); the first C++ consumption of the committed header proven natively (the boundary battery ON WINDOWS, the MSVC build, the PE import-table network guard, the byte-parity text family across platforms); the mingw rejection recorded; the variant preconditions byte-verified; the SEC rider's supersession discharge landed + re-proven green; the registered notes (the /MT CRT default, the EOL hardening as an N5 pre-check, the run-ID convention) in the exit record. The slip's NINTH surfacing pinned - the TENTTH rides with N5's gate. ROADMAP/STATE/README/checker (N-outcomes 6->7) closed out. Next: N5's delta-scoped gate (macOS - the macos-latest live-verification list, the bar ruling, the SPM consumption of the same committed header). 0 failures @ 2026-11-27 @ 2026-11-27T07:32:27Z (Z User, 2026-11-27)
- README.md                        |  2 +-
- apps/windows/main.cpp            |  4 ++++
- harness/adversarial/CONSENSUS.md | 50 +++++++++++++++++++++++++++++++++++++++
- harness/memory/ROADMAP.md        | 24 +++++++++++++++++--
- harness/memory/SESSION_LOG.md    | 28 ++++++++++++++++++++++
- harness/memory/STATE.md          | 51 ++++++++++++++++++++--------------------
- scripts/harness_check.sh         |  6 ++---
- 7 files changed, 134 insertions(+), 31 deletions(-)
+### Commit: 02d7289 - T3 session 2 (FUNDED, owner option (a) 2026-11-28): the 0x24000 MSI-record keystream chase RUN TO CLOSURE — the divergence FALSIFIED. The bench rebuilt from the recorded layer path (tools/re/: tt3_chase2/tt3_stream/tt3_can): the ISSetupStream v8 header validates at the recorded 0x198c00; the v4 record-table field offsets byte-derived and CORRECTED (dsize @+0x0A, u16=1 @+0x16 — the T2-s3 prose's field boundaries were ambiguous; the entry-table fields are VARIABLE-OFFSET after the name, the T2-s1 table's +0x10/+0x18/+0x1c were the namelen-9 case); all 8 records byte-match the recorded inventory; the variant-A cipher decodes TurboTax 2026.msi END-TO-END: Z_STREAM_END at input exactly dsize 383,877,541 -> 390,117,376 B out (= the T2-s3 recorded size); the CAN-Personal v7 target likewise: TurboTax 2025.msi dsize 246,582,748 consumed exactly -> 251,319,296 B. NO divergence exists on either target — the recorded 'clean to 0x24000 then dies' premise (12+ gates' slip) was a bench artifact of the wiped session's pipeline (the field-offset trap class this session's own first walk hit); the decompile chase is MOOTED. spec 4 of 4 PUBLISHED: docs/formats/tax-modern.md (the 2017+ Intuit return container at shape level per the linked public write-up — 2-entry ZIP, encrypted manifest.xml + tax:UUID entry, AES-CBC 16-byte per-year keys BY EXISTENCE ONLY, no key values; the engine-module existence anchors incl. the no-ole32 cross-check; the no-owned-sample honest limit; the namespace note) — lint-clean (default + scope-all). The lint's SEC-6 scope-all extension FLIPPED ON (T3's deliverables exist): the six re-research notes normalized with the Provenance heading (formatting only, add_provenance_headings.py kept). DoD checklist green: 4/4 named specs present + §7.5-clean, exactly 2 Stage-2 execution sessions, blob assertion clean, oracle 17/17. The Stage-2 EXIT gate convenes (the slip's own recorded trigger) (Z User, 2026-11-28)
+ docs/formats/tax-modern.md                       | 175 +++++++++++++++++++++++
+ docs/re-research/2026-11-22-tt-t2-reader.md      |   3 +
+ docs/re-research/2026-11-22-tt-t2-session2.md    |   3 +
+ docs/re-research/2026-11-22-tt-targets-phase1.md |   3 +
+ docs/re-research/2026-11-23-tt-t2-session3.md    |   3 +
+ docs/re-research/2026-11-23-tt-t3-session1.md    |   3 +
+ docs/re-research/2026-11-28-tt-t3-session2.md    | 122 ++++++++++++++++
+ scripts/add_provenance_headings.py               |  43 ++++++
+ 8 files changed, 355 insertions(+)
 
-### Commit: 9e6cf46 - backup(sandbox): N4 session 2 CLOSED - the Windows lane's FIRST LIVE-GREEN RUN on 8b3cb95, ALL SEVEN JOBS: the host-triple guard (the msvc lane enforced), the release cdylib + the MSVC import library, the boundary battery ON WINDOWS, the MSVC build via vswhere->vcvars, the PE import-table network guard (the no-network claim's mechanical proof), and the headless smoke - the byte-exact text family across platforms (EOL-normalized both sides after the autocrlf root-cause round). The android job green WITH the rider's supersession assertions (the kotlin-stdlib 2.4.21 as the one recorded runtime artifact). The five-round honest record in SESSION_LOG (my DrawTextW brush bug, the over-strict rider assertion, the cmd errorlevel gotcha, the one-sided EOL diagnosis, the autocrlf root cause). Two sessions exactly; the window mode is the named non-verification. Next: the N4 EXIT gate (the slip's NINTH surfacing rides with it). 0 failures @ 2026-11-27 @ 2026-11-27T07:21:57Z (Z User, 2026-11-27)
- README.md                     |  1 +
- harness/memory/SESSION_LOG.md | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 34 insertions(+)
+### Commit: 8b5c553 - D46 DISCHARGED (owner-ordered 2026-11-28 'do that small rework now'): LEGAL's pre-ruled narrow form — the wasm boot-asset steps land in the nextjs-web job ONLY (the fail-closed rustc >= 1.95 guard + rustup target add wasm32-unknown-unknown + the --locked wasm32 build from the tagged checkout + the copy into public/clearfile-core.wasm + the import-empty guard, zero imports) and the bundle step gains the fail-closed tar-listing assertion (the boot asset must be IN the tarball — the GREEN-THROUGH-BROKEN class is structurally dead); the harness_check variant guard flipped in the SAME commit to the references-confined-to-nextjs-web state (0 matches outside the job block, the confined steps present inside — awk-scoped); the README src/ row updated to the post-rework truth (D45's LICENSES manifest owed at the first tag); DEBT D46 marked DONE with the verification record. Local end-to-end proof on the pinned toolchain (rustc 1.100.0): cargo wasm32 build 28.6s → public/ → import guard ok → tsc ok → npm run build green WITH the asset → the tar listing carries standalone/public/clearfile-core.wasm → harness_check 0 failures. The no-tag constraint's rationale is discharged — a tag is again the owner's ordinary decision (D45 rides it) (Z User, 2026-11-28)
+ .github/workflows/release.yml | 50 +++++++++++++++++++++++++++++++++++++++++++
+ README.md                     |  2 +-
+ harness/memory/DEBT.md        |  2 +-
+ scripts/harness_check.sh      | 19 +++++++++++-----
+ 4 files changed, 66 insertions(+), 7 deletions(-)
 
-### Commit: 8b3cb95 - backup(sandbox): The CI windows round 5 (run at ed51621): the round-4 diagnosis was half-right - the one-sided EOL normalization still differed on every line with identical content. The REAL root cause: git's core.autocrlf on the Windows runner converts the EXPECTED file's LF to CRLF at CHECKOUT (the runner-side working tree), while the exe's output (after the first normalization) is LF. The smoke now EOL-normalizes BOTH sides (tr -d \\r on the expected + the output) before the byte-exact content diff - the canonical text family stays the assertion, EOL-independent. 0 failures @ 2026-11-27 @ 2026-11-27T07:14:07Z (Z User, 2026-11-27)
- .github/workflows/hygiene.yml | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+### Commit: 1ccfa43 - backup(sandbox): THE TERMINAL CLOSE - N6: CLOSED (exit PASSED) + THE EPILOGUE PROGRAM CLOSED + THE TERMINAL FREEZE DECLARED. The N6 exit gate: 4 reviewers, unanimous PROCEED-family - SEC PWC (6 close riders) / LEGAL PWC (5) / ENG PWC (5) / PROD EXIT-PASS (9), no BLOCK. Every rider discharged AT the close: the trap assertion's shape bug FIXED (it had silently skipped - now really running + passing); the bridge fixture via the adapter's own exportTaxContainer; the poisoned-dealloc guards; the rustc guard before the wasm build; the store.ts type rehome; the run-ID dated correction (the hygiene run is 45991786766); D45 (the LICENSES-at-next-tag trigger) + D46 (the stale-by-design nextjs-web job - GREEN-THROUGH-BROKEN, the no-tag constraint) opened; the README honest surface; the checker N-outcomes 11; a form-only orchestrator note on the n6exit-product report (the raw-hex guard class). THE TERMINAL FREEZE (the full text in CONSENSUS + README + STATE): the epilogue COMPLETE (N1-N6 all gated/executed/closed); the core serves every platform; the TS engine + codecs retired byte-frozen; v2.0.0 stays GA-gated; the post-epilogue maintenance posture; the standing owner items parked explicitly (Stage-2 slipped; D42; D30) - never a silent drop. All suites green: parity 17/17 + bridge 11/11 + AI 5/5+4/4 + tsc + battery 12/12 + harness_check 0. 0 failures @ 2026-11-27 @ 2026-11-27T12:06:43Z (Z User, 2026-11-27)
+ .github/workflows/hygiene.yml    |  14 +++++
+ README.md                        |  31 +++++++---
+ harness/adversarial/CONSENSUS.md | 126 +++++++++++++++++++++++++++++++++++++++
+ harness/memory/DEBT.md           |   2 +
+ harness/memory/ROADMAP.md        |   2 +-
+ harness/memory/SESSION_LOG.md    |  60 +++++++++++++++++++
+ harness/memory/STATE.md          |  63 ++++++++++----------
+ scripts/harness_check.sh         |   6 +-
+ scripts/txf_taxfile_test.mjs     |  10 ++--
+ scripts/wasm_parity_test.mjs     |  33 ++++++----
+ src/lib/store.ts                 |   2 +-
+ src/lib/wasm/core.ts             |  10 +++-
+ 12 files changed, 295 insertions(+), 64 deletions(-)
 ```
 

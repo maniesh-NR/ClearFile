@@ -293,14 +293,19 @@ in **declared maintenance mode: parameter corrections only.**
   every OS; the Dart engine remains the frozen reference; the TS engine
   and TS codecs are retired frozen transition artifacts (their cleanup
   after v2.0.0 GA is a future owner decision; nothing deletes or rewrites
-  them). **Standing owner items parked at the terminal gate:** the
-  Stage-2 exit stays slipped (the MSI-record keystream chase = D42,
-  disposition "T3 session 2"); D30 (the owner-side hardening items)
-  stands; D46 (the no-tag web-release constraint) stands.
+  them). **Standing owner items after the 2026-11-28 session:** the
+  Stage-2 exit gate PASSED 2026-11-28 (the slip resolved — the funded
+  T3 session falsified the 0x24000 divergence premise and landed spec
+  4 of 4; the DoD is complete); D30 (the owner-side hardening items)
+  stands; D45's web LICENSES manifest is in the tree with fail-closed
+  release enforcement (its duty is only the first actual tag); D42's
+  remaining residues ride the T3/T4 lanes.
 - **Out of scope without a new owner directive:** new engine features, new
   platforms, new UI features, the TT compatibility program beyond its own
-  gated lanes (ADR-019/020 — T3/T4 unfunded), and any work on the frozen
-  transition artifacts beyond keeping them compiling.
+  gated lanes (ADR-019/020 — T3 session 2 executed 2026-11-28 under the
+  owner's option-(a) ruling; T4 FUNDED 2026-11-28, execution strictly
+  behind its own entry gate — no T4 code exists), and any work on the
+  frozen transition artifacts beyond keeping them compiling.
 
 ## License
 

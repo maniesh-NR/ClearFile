@@ -874,3 +874,42 @@ dependencies land") that may appear elsewhere — the N1 gate discharged
 it with the zero-dependency fail-closed assertion in the same commit
 series as the core, upgraded to a real cargo-deny at the first external
 dependency.
+
+## Owner rulings recorded 2026-11-28 (owner, in-conversation)
+
+The terminal-freeze state presented the parked owner decisions
+(CONSENSUS's 2026-11-27 parking posture). The owner ruled on three in
+one message.
+
+**The Stage-2 slip re-agenda — OPTION (a) CHOSEN: T3 session 2 FUNDED.**
+The owner funded the T3 session (the 0x24000 MSI-record keystream chase
++ `tax-modern.md`, debt D42), resolving the THIRTEENTH surfacing of the
+slip by ruling. The funded session's scope: the keystream chase
+(decompile-level over the ISSetupStream cipher, or the
+structural-hypothesis sweep), the `tax-modern.md` Stage-2 DoD spec
+(shape level, crypto by existence only per the Stage-2 entry gate's
+own definition), and the D42 residues the session budget allows. The
+Stage-2 EXIT gate convenes when the spec lands. The T3 findings remain
+TT-program deliverables — the namespace rule (TT specs never count
+toward Stage-2's N=4) stands; only `tax-modern.md` itself is the named
+Stage-2 DoD artifact.
+
+**D46 — DISCHARGED (owner-ordered "do that small rework now").** The
+release.yml web-asset rework landed in LEGAL's pre-ruled narrow form
+(the wasm boot-asset steps confined to the `nextjs-web` job, built
+--locked from the tagged checkout; the harness_check variant guard
+flipped to the confinement state in the same commit; verified locally
+end-to-end on the pinned toolchain — the record in DEBT's D46 row).
+The no-tag constraint's rationale is gone: a tag is again the owner's
+ordinary decision, and the first tag still owes D45's LICENSES
+manifest (unchanged).
+
+**T4 — FUNDED.** The owner funded the T4 lane (the password-based
+bridge + UI functional-layout parity, the ADR-019/020 scope). Funding
+gates the lane, not any work: T4 still enters ONLY behind its own
+entry gate per the TT program's gate record (the 2026-11-22 gate's
+rulings bind T4's shape: Flutter-first, the codec layer pure/portable
+for the Rust core, ADR-020's boundary conditions as tests, the
+save-fidelity rule, the README/SECURITY disclosure replacement incl.
+the Intuit non-affiliation line). No T4 code exists yet; the entry
+gate convenes at T4's session start.

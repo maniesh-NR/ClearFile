@@ -15,11 +15,12 @@ Lints the format-specification docs:
 - no leftover placeholders (TODO / XXX / 【…】).
 
 Scope: docs/formats/ by default; `--scope all` extends to docs/re-research/
-(T3's SEC-6 condition — the extension point is built now, flipped on when
-T3 starts) with the one recorded known-hash exemption: the TT corpus
-provenance manifest (docs/re-research/corpus-manifest.md) legitimately
-carries sha256 checksums of publicly-posted installers (ADR-019's
-known-hash allow-list instance, mirrored in the backup secret guard).
+(the extension flipped ON at the Stage-2 exit close, 2026-11-28 — T3's
+deliverables exist; CI's hygiene RE-tools job runs the wide scope) with
+the recorded known-hash exemption set: the TT corpus provenance manifest
+(sha256 checksums of publicly-posted installers, ADR-019) and the
+bench-evidence record (the digests pinning the gitignored analysis
+scripts, the ENG-2 Stage-2-exit condition). Everything else stays hex-free.
 
 Posture: read-only. Exit 0 clean · 1 violations listed · 2 usage error.
 """
@@ -36,7 +37,17 @@ IMAGE_EMBED = re.compile(r"!\[[^\]]*\]\(")
 PLACEHOLDERS = re.compile(r"TODO|XXX|【[^】]*】")
 PROVENANCE_SECTION = re.compile(r"^#+ .*provenance", re.IGNORECASE | re.MULTILINE)
 
-KNOWN_HASH_EXEMPT = "docs/re-research/corpus-manifest.md"
+# The known-hash exemption class (ADR-019's allow-list instance): files
+# that legitimately carry sha256 provenance digests of PUBLICLY-POSTED,
+# sha256-verified material — the TT corpus manifest, and (the Stage-2
+# exit close, 2026-11-28, ENG-2's condition) the bench-evidence record
+# whose digests pin the gitignored analysis scripts so a post-recycle
+# session can diff-verify the falsification evidence instead of
+# re-arguing it. Everything else stays hex-free (§7.3).
+KNOWN_HASH_EXEMPT = {
+    "docs/re-research/corpus-manifest.md",
+    "docs/re-research/bench-evidence-2026-11-28.md",
+}
 
 
 def lint(path: Path) -> list[str]:
@@ -85,7 +96,7 @@ def main(argv: list[str] | None = None) -> int:
     for path in targets:
         rel = path.relative_to(ROOT).as_posix()
         problems = lint(path)
-        if rel == KNOWN_HASH_EXEMPT and args.scope == "all":
+        if rel in KNOWN_HASH_EXEMPT and args.scope == "all":
             # The recorded known-hash instance (ADR-019): its sha256
             # checksums are the one legitimate ≥32-hex content; every other
             # rule still applies.

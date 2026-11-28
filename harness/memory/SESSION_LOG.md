@@ -2712,3 +2712,87 @@ release.yml rework, the Flutter-target retirement sequencing).
 
 **Next step:** none owed by the program — the epilogue is closed and
 frozen. The next session is a fresh directive's.
+
+---
+
+## 2026-11-28 (the owner's three-ruling session) · D46 discharged + the funded T3 session (the falsification) + spec 4 landed + THE STAGE-2 EXIT GATE PASSED
+
+**What was done (the owner's message ruled three items: "1:A" (fund the
+T3 session), "D46: do that small rework now", "T4 funding: approved"):**
+
+- **Bootstrap:** the recycle had wiped tools/ (corpus, Ghidra bench, the
+  Rust toolchain — the standing expectation). An UNPUSHED DUPLICATE
+  backup commit was found and resolved FIRST (f2118ef local vs 1ccfa43
+  origin — the platform-snapshot duplicate class: byte-identical trees,
+  mode flips only, verified 0-insertions diff, soft-reset to origin, the
+  quirk-19 mode normalization). harness_check 0 at baseline. The pinned
+  Rust toolchain re-fetched sha256-verified (rustc 1.100.0 + the
+  wasm32-unknown-unknown std, the manifest's two rows).
+- **D46 DISCHARGED** (commit 8b5c553): LEGAL's pre-ruled narrow form —
+  the wasm boot-asset steps land in release.yml's nextjs-web job ONLY
+  (the fail-closed rustc >= 1.95 guard + the --locked wasm32 build from
+  the tagged checkout + the cp into public/clearfile-core.wasm + the
+  import-empty guard) + the bundle step's fail-closed tar-listing
+  assertion; the harness_check variant guard flipped in the SAME commit
+  to the references-confined-to-nextjs-web state. Verified locally
+  end-to-end (the wasm build 28.6 s → the import guard ok → tsc ok →
+  npm run build green WITH the asset → the tar carries the asset →
+  harness_check 0). The no-tag constraint's rationale is gone.
+- **The owner rulings recorded** (DECISIONS's 2026-11-28 register +
+  CONSENSUS's dated entry + ROADMAP's T3/T4 FUNDED markers).
+- **The funded T3 session 2 — the chase RUN TO CLOSURE:** the bench
+  rebuilt from the recorded layer path (tools/re/tt3_chase2.py,
+  tt3_stream.py, tt3_can.py — gitignored, read-only, in-memory,
+  retention-free). Two field-layout corrections derived live (the entry
+  table's VARIABLE-OFFSET fields after the name — the T2-s1 table's
+  offsets were the namelen-9 case; the v4 record header's dsize @+0x0A
+  and u16=1 @+0x16 — the T2-s3 prose's field boundaries). All 8 + 7
+  records byte-match the recorded inventories. **THE RESULT: the
+  recorded "0x24000 MSI-record keystream divergence" is FALSIFIED** —
+  the variant-A cipher decodes TurboTax 2026.msi END-TO-END (Z_STREAM_END
+  at input exactly dsize 383,877,541 → 390,117,376 B out, the T2-s3
+  recorded size) AND TurboTax 2025.msi (246,582,748 → 251,319,296 B) —
+  no divergence, no re-key; the 12-gate slip premise was a bench
+  artifact of the wiped session's pipeline; the decompile chase MOOTED.
+  The closure evidence pinned (bench-evidence-2026-11-28.md: the
+  verbatim stdout + the scripts' digests — the lint's second known-hash
+  instance; the reviewers re-ran both scripts and reproduced the
+  closures independently).
+- **spec 4 of 4 PUBLISHED** (`docs/formats/tax-modern.md`): the 2017+
+  Intuit return container at shape level per the linked public write-up
+  (the 2-entry ZIP: encrypted manifest.xml + tax:UUID entry; AES-CBC,
+  16-byte per-year keys BY EXISTENCE ONLY — no key values anywhere; the
+  engine-module existence anchors incl. the no-ole32 cross-check; the
+  no-owned-sample honest limit; the §6 namespace note). Lint-clean in
+  both scopes; the six re-research notes normalized with Provenance
+  headings (formatting-only; the lint's --scope all extension flipped
+  ON — T3's SEC-6 condition — and WIRED into CI's RE-tools job, the
+  gate's PROD-5).
+- **THE STAGE-2 EXIT GATE CONVENED AND PASSED** (4 reviewers in parallel
+  isolation: SEC PWC 3 / LEGAL PWC 2 / ENG PWC 2 / PROD PWC 5, no
+  BLOCK; the reports at adversarial/reports/2026-11-28-stage2exit-*):
+  the DoD verified green by three reviewers' own runs (4/4 named specs,
+  exactly 2 execution sessions, refusal/cap 23/23, blob clean); ENG and
+  SEC each re-ran the bench and reproduced the closures; the full
+  condition ledger discharged AT the close (the close ritual; the
+  SEC-3 confinement-guard hardening; the D45 fail-closed enforcement —
+  LICENSES-web.md tracked + the release job refuses without it and
+  ships it; the D42/ROADMAP records truth; the evidence pinning; this
+  entry; the CI lint wiring). **Stage 2: EXIT PASSED — Stage 2 CLOSED.**
+
+**Decisions:** the slip's THIRTEENTH surfacing disposed by the owner's
+option-(a) ruling + the falsification; T4 funded with its entry gate
+pending (no T4 code exists); D45's enforcement landed fail-closed; the
+no-tag constraint's rationale discharged (a tag is again the owner's
+ordinary decision).
+
+**Open questions:** none blocking. Riding: D42's residues (a)-(d)
+(the password-layer construction; the container-host question —
+sharpened by the spec's no-ole32 cross-check; the 26 MB module import
+strategy; the export-table glitch) ride T3/T4 lanes; D30 (Dependabot,
+branch protection, PAT rotation) stands with the owner.
+
+**Next step:** T4's entry gate convenes at T4's session start (the
+funded lane's own gate — the ADR-020 boundary conditions as tests, the
+Flutter-first ruling, the save-fidelity rule). Otherwise the terminal
+posture stands: maintenance-only on the frozen program; nothing is owed.

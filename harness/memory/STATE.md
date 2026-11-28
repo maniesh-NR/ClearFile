@@ -1,75 +1,59 @@
 # Current state (snapshot)
 
-**Updated:** 2026-11-27 LATEST (N4 CLOSED — exit PASSED: the two-session box closed on the Windows lane's first live-green run 45957061389 on 8b3cb95, all seven jobs — the host-triple guard (the msvc lane), the boundary battery ON WINDOWS, the MSVC build via vswhere→vcvars, the PE import-table network guard, the byte-parity headless smoke across platforms (the five-round CI-fix record); the exit gate SEC EXIT-PASS / LEGAL PROCEED / ENG PASS / PROD EXIT-PASS, no BLOCK; the extern-"C" header guards config-emitted; the rider's supersession discharge landed + the re-proving android run green; the slip's NINTH surfacing pinned — the TENTH rides with N5's gate). Earlier same day: N3 CLOSED (exit PASSED: the two-session box closed on the first live-green android run 45948447173 on ae9e078, all six jobs — assembleDebug with the cross-built .so packaged, the JVM tests through the REAL Java_* seam, cargo-deny over core-ffi's 74-package lock; the eleven-round CI-fix record in SESSION_LOG; the exit gate SEC PWC (1) / LEGAL PROCEED / ENG PROCEED / PROD EXIT-PASS, no BLOCK; the dependencyLocking rider rides to N4's gate; the slip's SEVENTH surfacing pinned). Earlier 2026-11-27: (the N2-exit riding record-level conditions DISCHARGED: the headless footer's three demo-disclaimer facts + the expected-text regen (app 5/5, core 174/174 re-verified live), the upstream Copyright-2021-Google + no-NOTICE notes (palette.rs + THIRD-PARTY-NOTICES), the D14 byte-pinned expected-artifact carve-out, the SEC action-SHA↔tag verification (LIVE: the annotated tag v2.1.4 → exactly the pinned 81891abc…74fda), the PROD ledger reconciliation, the CONSENSUS N2-exit close line; the pinned Rust toolchain re-fetched sha256-verified after the recycle wiped tools/; the Stage-2 slip re-agenda's FIFTH surfacing rides to N3's gate; earlier 2026-11-26: N2 sessions 1+2 executed — the Linux app + CI + the hardenings landed; the exit gate convened with 3/4 reports; earlier: N2 session 1 CLOSED — D44 complete: the palette
-module + corpus verification green (cargo test 170/170) + the
-apps/linux scaffold with every guard joined; earlier: the N2 gate CLOSED — ENTERED; the
-consolidation to Slint exercised under ADR-017's own clause with the
-demand verified live; the two-session box + the disk plan set; earlier
-the same day: N1 CLOSED — exit gate PASSED; N1 session 2 executed: the annex-(a)
-differential/property harness + the annex-(b) ported bridge suites
-landed — the core's format codecs (envelope incl. the v1→v2 migration
-with verbatim warning strings IN the core, TXF import/export with the
-bit-faithful toFixed(2), the .tax inspection with the malformed-ZIP
-crash battery, the exchange container + CRC32, the shared
-zero-dependency strict JSON module), the tracked Dart generator (seed
-771937021) emitting the 550-case byte-deterministic corpus consumed at
-exact binary64 parity, the 7-test property harness incl. the D33
-QSS↔MFJ pin, the payload-seam composition; cargo test 159/159 green;
-harness_check 21 oks 0 failures; a real port bug found by the ported
-Dart canonical test — the reversed import-date year tail — fixed). The
-N1 execution box closed at exactly two sessions. Earlier this date:
-continuation session: the owner ruled — the
-three Stages-4/5/6 gate ratification surfacings RATIFIED (the
-after-the-fact sequencing, the PAT Pages-enablement, the pages.yml
-`id-token: write` grant; recorded in DECISIONS.md's 2026-11-26
-ratification register + CONSENSUS + DEBT + WORKFLOW §5) and the
-epilogue N1–N6 program FUNDED (ROADMAP's six statuses → FUNDED;
-funding gates the program, not any stage). The N1 full-depth entry
-gate convened and CLOSED — **N1: ENTERED** (4 × PROCEED-WITH-
-CONDITIONS unanimous; the reports at
-harness/adversarial/reports/2026-11-26-n1-*.md; the gate-level
-conditions discharged in-session). **N1 session 1 EXECUTED: the Rust
-core landed** — `core/` = clearfile-core 0.1.0, std-only zero-
-dependency, SPDX-everywhere, the TY2025 tables + calculator.dart
-ported whole (f64-first, the four traps documented), the third
-golden-fixture runner + strict reader + skip map, the CI license
-assertion + cargo-test step, the harness_check ledger join; **cargo
-test 47/47 green, 17 of 17 shared fixtures RUN-GREEN** (orchestrator
-re-verified; the port's field-by-field parity audit vs the oracle:
-442 fields, max delta 0.0). The earlier same-day session: Stages
-4+5+6 executed + gated after the fact — 4 ×
-PROCEED-WITH-CONDITIONS unanimous with every condition discharged;
-the v1.1 release SHIPPED (release 459120788, 11 assets + SHA256SUMS,
-tag → e099bc0) with D29 verified live and the tag guard FIXED; the
-Pages web demo LIVE at maniesh-Nr.github.io/ClearFile/ after the
-web-boot fix (in-memory stores, disclosed) + the owner-PAT Pages
-enablement (surfaced for ratification); the AI hardening complete
-both engines (timeout parity, header-only key transport, the
-platform-accurate disclosure + privacy pins, the injection suites
-and the shared fixtures/ai cascade e2e); the Stage-2 exit gate
-SLIPPED honestly — the T3 MSI-record keystream diverges at payload
-offset 0x24000, decompile chase required, tax-modern.md unwritten;
-suites at close: flutter 126/126, parity 17/17, bridge 11/11,
-ai_cascade 5/5, ai_injection 4/4, oracle 17/17, RE tools 23/23,
-tag guard 6/6 (CI-wired), audit 0, harness_check 0. Prior snapshot
-2026-11-23 (T3 session 1 — the ttax engine module ENTERED: the MSI-cab
-codec byte-proven (the InstallShield
-MSZIP variant — every block a CK-marked complete raw-deflate stream
-whose distance codes reach into the previous block's output; decoded
-via ctypes zlib inflateReset+inflateSetDictionary with the rolling
-32-KiB window; 859/859 blocks of folder 87 → the arithmetic closure
-at exactly 28,140,152 B); the ttax engine DLL carved (26,137,680 B,
-the one resident module, gitignored) + triaged (PE32+ x64
-mixed-mode MFC/mscoree; .text 17.47 MB; 58,890 .pdata functions;
-no ole32 import, zero structured-storage constants — the .tax
-container is not OLE inside this module); the .tax-layer anchors
-identified at identifier level (the IData:: serialization family,
-embedded Crypto++, the save-dialog password surface, the z-prefixed
-bridge commands, the "legacy ttax.dll" self-identity); the REA
-entry map built (89 lea-rip xrefs → 67 .pdata-anchored functions).
-D42 opened for the construction chase. Also this session: the prior
-session's interrupted closing backup normalized + pushed as
-`8f9db50`)
+**Updated:** 2026-11-28 LATEST (the owner's three-ruling session: D46
+DISCHARGED — the release.yml web-asset rework landed in LEGAL's
+pre-ruled narrow form (the wasm boot-asset steps confined to the
+nextjs-web job, the same-commit harness_check confinement flip, the
+fail-closed bundle-listing assertion; verified end-to-end locally) +
+THE FUNDED T3 SESSION 2 — the 0x24000 MSI-record keystream chase RUN TO
+CLOSURE AND THE PREMISE FALSIFIED (the variant-A cipher decodes BOTH
+MSI-record targets end-to-end with byte-exact closure: USA dsize
+383,877,541 → 390,117,376 B and CAN 246,582,748 → 251,319,296 B,
+Z_STREAM_END; no divergence exists — the 12-gate slip premise was a
+bench artifact; the decompile chase mooted) + spec 4 of 4 PUBLISHED
+(docs/formats/tax-modern.md, shape level, crypto by existence) +
+**THE STAGE-2 EXIT GATE PASSED (4 × PWC unanimous, no BLOCK; the
+condition ledger discharged at the close — Stage 2: EXIT PASSED, Stage
+2 CLOSED; the DoD complete: 4/4 named specs, exactly 2 execution
+sessions, refusal/cap green, blob clean)** + T4 FUNDED (its entry gate
+pending — no T4 code exists) + D45's fail-closed enforcement landed
+(LICENSES-web.md tracked; the release job refuses without it and ships
+it) + the lint's --scope all extension flipped ON and wired into CI +
+the two field-layout corrections recorded (the entry table's
+variable-offset fields; the v4 record header's dsize @+0x0A / u16=1
+@+0x16). Earlier same day: the session bootstrap resolved an UNPUSHED
+DUPLICATE backup commit (f2118ef local vs 1ccfa43 origin — the
+platform-snapshot class, byte-identical trees, mode flips only, soft
+reset; the quirk-9 normalization re-applied). Earlier: 2026-11-27 LATEST
+(N4 CLOSED — exit PASSED: the two-session box closed on the Windows
+lane's first live-green run 45957061389 on 8b3cb95, all seven jobs —
+the host-triple guard (the msvc lane), the boundary battery ON WINDOWS,
+the MSVC build via vswhere→vcvars, the PE import-table network guard,
+the byte-parity headless smoke across platforms (the five-round CI-fix
+record); the exit gate SEC EXIT-PASS / LEGAL PROCEED / ENG PASS / PROD
+EXIT-PASS, no BLOCK; the extern-"C" header guards config-emitted; the
+rider's supersession discharge landed + the re-proving android run
+green; the slip's NINTH surfacing pinned — the TENTH rides with N5's
+gate). N3 CLOSED 2026-11-27 (exit PASSED: the android lane's first
+live-green run 45948447173 on ae9e078, all six jobs; SEC PWC (1) /
+LEGAL PROCEED / ENG PROCEED / PROD EXIT-PASS; the dependencyLocking
+rider rides to N4's gate; the slip's SEVENTH surfacing pinned). The
+N2-exit riding record-level conditions DISCHARGED 2026-11-27; N2
+sessions 1+2 executed 2026-11-26 (the Linux app + CI + the hardenings
+landed; the exit gate 3/4 reports then closed with riders discharged).
+N1: ENTERED + CLOSED 2026-11-26 (the Rust core: cargo test 47/47 green,
+17 of 17 shared fixtures RUN-GREEN, the parity audit 442 fields max
+delta 0.0; the port bug — the reversed import-date year tail — found
+and fixed). Stages 4+5+6 executed + gated after the fact 2026-11-23
+(4 × PWC unanimous, every condition discharged; the v1.1 release
+SHIPPED — release 459120788, 11 assets + SHA256SUMS, tag → e099bc0 —
+with D29 verified live and the tag guard FIXED; the Pages web demo
+LIVE; the AI hardening complete both engines). Prior: the Stage-2
+execution box CLOSED at exactly two sessions (2026-11-22/23: specs 1-3
+of the N=4 DoD published; D34 closed; 23 RE-tool tests). The
+TT-compatibility program: T2 ENTERED 2026-11-22 at its own gate (4 ×
+PWC unanimous; T1 complete — the corpus + Phase-1 + the REA first
+pass).
 
 ## Repository
 
@@ -362,36 +346,25 @@ session's interrupted closing backup normalized + pushed as
 
 ## Immediately next
 
-**THE EPILOGUE PROGRAM IS CLOSED AND FROZEN (2026-11-27, N6 exit
-PASSED; the terminal freeze declared — the full text in CONSENSUS +
-README):** the ADR-017 program's six lanes each entered, executed, and
-closed behind their own gates with unanimous exit records — the Rust
-core (N1), Linux/Slint (N2), Android/JNI (N3), Windows/C++ (N4),
-macOS/Swift (N5), and the web via wasm32-unknown-unknown (N6 — the
-same flat C ABI, the .wasm with ZERO imports; the TS engine + codecs
-retired byte-frozen; the parity + bridge suites transferred; the
-FIRST-green run 45991786766, ONE CI round after the local node
-pre-flight). Every native app is a demonstration prototype,
-unreleased, CI-verified-only; the Flutter app remains the shipped
-product on every OS; the Dart engine remains the frozen reference;
-v2.0.0 stays GA-gated (earned only at the first native-stack GA
-release). **The post-epilogue maintenance posture:** parameter
-corrections through the shared fixtures + the oracle; bug/security
-fixes with regression tests; format-guard compliance in the core's
-envelope codec; dependency security bumps — nothing else without a
-new owner directive. **The standing owner items, parked explicitly at
-the terminal gate (never a silent drop):** the Stage-2 exit stays
-SLIPPED (the MSI-record keystream chase at payload offset 0x24000 +
-tax-modern.md = D42, disposition "T3 session 2" — behind the T3
-funding option); D30 (Dependabot, branch protection on main, PAT
-rotation) stands; D45 (the first-conveyance LICENSES manifest at the
-NEXT tag: the palette + the statically-linked Rust std + the carried
-shadcn set); D46 (the NO-TAG web-release constraint until the
-web-asset rework — the nextjs-web job is stale-by-design,
-GREEN-THROUGH-BROKEN). **The pre-positioned v2.0.0-GA readiness list**
-(the owner's GA decision, whenever it comes): the owner-side builds
-+ verification on every OS (the recorded bar rulings); the release.yml
-web-asset rework (D46's pre-ruled shape); the per-OS LICENSES
-manifests; the Flutter-target retirement sequencing per ADR-017's
-staged GA; the per-platform LICENSES-manifest rows. **The next
-session is a fresh directive's** — nothing is owed by the program.
+**T4's entry gate convenes at T4's session start** (the owner-funded
+lane, 2026-11-28): the ADR-020 boundary conditions as tests, the
+Flutter-first ruling (no TT bridge code under src/ absent a recorded
+owner ADR), the codec layer pure/portable for the Rust core, the
+save-fidelity rule, the README/SECURITY disclosure replacement incl.
+the Intuit non-affiliation line. **Stage 2 is CLOSED** (the exit gate
+passed 2026-11-28; the DoD complete — the four named specs, the
+two-session box, the green assertions). **The post-terminal posture
+stands:** the epilogue program N1-N6 closed and frozen; the Flutter app
+remains the shipped product; v2.0.0 stays GA-gated (earned only at the
+first native-stack GA release — the owner-side builds, the per-OS
+LICENSES manifests (D45's manifest is now in the tree with fail-closed
+release enforcement), the release.yml web-asset rework is DONE (D46),
+the Flutter-target retirement sequencing per ADR-017's staged GA).
+**The standing owner items:** D30 (Dependabot, branch protection on
+main, PAT rotation) stands; D42's remaining residues ride T3/T4 lanes
+(the password-layer construction; the container-host question; the 26
+MB module import strategy; the export-table glitch). **The
+post-epilogue maintenance posture:** parameter corrections through the
+shared fixtures + the oracle; bug/security fixes with regression tests;
+format-guard compliance in the core's envelope codec; dependency
+security bumps — nothing else without a new owner directive.

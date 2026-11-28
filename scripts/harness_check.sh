@@ -93,8 +93,14 @@ fi
 # core/|clearfile-core|cargo matches OUTSIDE the job block, the confined
 # steps present INSIDE it, and no other release job coupling to the Rust
 # core (the N1 variant precondition, narrowed rather than lifted).
-RM_OUTSIDE=$(awk '/^  [A-Za-z0-9_-]+:$/{innext=($0=="  nextjs-web:")} !innext && /core\/|clearfile-core|cargo/{n++} END{print n+0}' ".github/workflows/release.yml")
-RM_INSIDE=$(awk '/^  [A-Za-z0-9_-]+:$/{innext=($0=="  nextjs-web:")} innext && /core\/|clearfile-core|cargo/{n++} END{print n+0}' ".github/workflows/release.yml")
+# job-header recognition is comment-/trailing-space-tolerant and
+# dotted-name-capable (the Stage-2 exit SEC-3 hardening: a job header
+# written as `  foo.bar:` or `  foo:  # comment` must not hide its core
+# references OUTSIDE the confined job — the misclassification direction
+# here is fail-closed, i.e. an unrecognized header counts its refs as
+# outside and FAILS the check).
+RM_OUTSIDE=$(awk '/^  [^ ].*:/{h=$0; sub(/[[:space:]]*#.*$/,"",h); sub(/[[:space:]]+$/,"",h); sub(/:.*$/,"",h); innext=(substr(h,3)=="nextjs-web")} !innext && /core\/|clearfile-core|cargo/{n++} END{print n+0}' ".github/workflows/release.yml")
+RM_INSIDE=$(awk '/^  [^ ].*:/{h=$0; sub(/[[:space:]]*#.*$/,"",h); sub(/[[:space:]]+$/,"",h); sub(/:.*$/,"",h); innext=(substr(h,3)=="nextjs-web")} innext && /core\/|clearfile-core|cargo/{n++} END{print n+0}' ".github/workflows/release.yml")
 if [ "$RM_OUTSIDE" -eq 0 ] && [ "$RM_INSIDE" -ge 1 ]; then
   pass "release.yml's core/cargo references are confined to the nextjs-web job ($RM_INSIDE line(s) inside, 0 outside — the D46 rework state: the wasm boot asset built --locked from the tagged checkout in that job only)"
 else
