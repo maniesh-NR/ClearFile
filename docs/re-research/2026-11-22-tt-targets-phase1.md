@@ -1,5 +1,8 @@
 # TT targets — Phase-1 passive survey + first-pass Phase-4 (2026-11-22)
 
+## Provenance (protocol §7.1)
+
+The corpus is the four publicly-posted installer targets, sha256-pinned in `docs/re-research/corpus-manifest.md` (re-verified on re-acquisition by `scripts/fetch_tt_corpus.sh`). The study is owner-directed interoperability research under the protocol's private-research posture: read-only on the corpus, function-fact findings only — no expression lifts (§7.4), no decrypted content committed (§7.2), crypto and keys by existence never by value (§7.3).
 **Status:** pre-gate research record for the TT-compatibility program
 (ADR-019). Read-only, function-fact findings only (protocol §6/§7.4 —
 no expression lifts; proprietary strings paraphrased, identifiers kept).
